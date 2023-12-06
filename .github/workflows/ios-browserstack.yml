@@ -9,7 +9,7 @@ jobs:
       - uses: actions/checkout@v2
 
       - name: fastlane build swift-sample-app
-        run: fastlane build_for_browserstack
+        run: bundle exec fastlane build_for_browserstack
 
       - name: upload swift-sample-app .ipa to browserstack
         id: upload_ipa
