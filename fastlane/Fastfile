@@ -26,7 +26,7 @@ platform :ios do
         provisioningProfiles: {
           "iterable.swift-sample-app" => "ios-dev-swift-sample-app",
           "iterable.swift-sample-app.swift-sample-app-notification-extension" => "ios-dev-swift-sample-app-notification-extension"
-        } 
+        }, 
         compileBitcode: false 
       } 
     )
