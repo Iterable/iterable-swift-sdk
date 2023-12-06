@@ -6,7 +6,11 @@ jobs:
     runs-on: macos-latest
 
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
+      - uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: "3.2.2"
+          bundler-cache: true
 
       - name: fastlane build swift-sample-app
         run: bundle exec fastlane build_for_browserstack
