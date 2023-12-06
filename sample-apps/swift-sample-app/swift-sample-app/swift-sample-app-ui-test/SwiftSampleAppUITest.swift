@@ -8,10 +8,8 @@
 
 import XCTest
 
-final class SwiftSampleAppUITest: XCUITestBase {    
+class SwiftSampleAppUITest: XCUITestBase {
     func testElementsVisible() {
-        let app = XCUIApplication()
-
         XCTAssertTrue(app.staticTexts["Coffees"].exists)
     }
 }
