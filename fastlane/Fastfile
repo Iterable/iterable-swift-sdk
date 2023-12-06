@@ -1,23 +1,43 @@
-# This file contains the fastlane.tools configuration
-# You can find the documentation at https://docs.fastlane.tools
-#
-# For a list of all available actions, check out
-#
-#     https://docs.fastlane.tools/actions
-#
-# For a list of all available plugins, check out
-#
-#     https://docs.fastlane.tools/plugins/available-plugins
-#
-
-# Uncomment the line if you want fastlane to automatically update itself
-# update_fastlane
-
 default_platform(:ios)
 
 platform :ios do
-  desc "Description of what the lane does"
-  lane :custom_lane do
-    # add actions here: https://docs.fastlane.tools/actions
+  desc "build swift-sample-app .ipa and ui-test.zip for browserstack"
+  lane :build_for_browserstack do
+    setup_ci
+    build_swift_sample_app
+    build_ui_tests
+  end
+  
+  desc "build swift-sample-app .ipa"
+  lane :build_swift_sample_app do
+    build_app(
+      project: "sample-apps/swift-sample-app/swift-sample-app.xcodeproj",
+      configuration: "Debug",
+      scheme: "swift-sample-app",
+      silent: true,
+      clean: true,
+      destination: "generic/platform=iOS",
+      output_directory: "./build-swift-sample-app",
+      output_name: "swift-sample-app.ipa",
+      skip_codesigning: true,
+      export_method: "development",
+      export_team_id: "BP98Z28R86",
+    )
+  end
+
+  desc "build swift-sample-app UI tests"
+  lane :build_ui_tests do      
+    scan(
+      project: "sample-apps/swift-sample-app/swift-sample-app.xcodeproj",
+      scheme: "swift-sample-app",
+      skip_build: false,
+      derived_data_path: "./build-swift-sample-app",
+      build_for_testing: true
+    )
+    
+    zip(
+      path: "./build-swift-sample-app/Build/Products/Debug-iphonesimulator/SwiftSampleAppUITest-Runner.app",
+      output_path: "./build-swift-sample-app/swift-sample-app-ui-test.zip"
+    )
   end
 end
