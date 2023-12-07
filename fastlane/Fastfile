@@ -22,8 +22,13 @@ platform :ios do
       output_directory: "./build-swift-sample-app",
       output_name: "swift-sample-app.ipa",
       export_method: "development",
-      export_team_id: "BP98Z28R86",
-      export_options: options[:plist]
+      export_options: {
+        provisioningProfiles: {
+          "iterable.swift-sample-app" => "ios-dev-swift-sample-app",
+          "iterable.swift-sample-app.swift-sample-app-notification-extension" => "ios-dev-swift-sample-app-notification-extension"
+        }
+      }
+      # export_options: options[:plist],
     )
   end
 
