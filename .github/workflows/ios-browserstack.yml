@@ -61,7 +61,7 @@ jobs:
           method: "POST"
           username: ${{ secrets.BROWSERSTACK_USERNAME }}
           password: ${{ secrets.BROWSERSTACK_ACCESS_KEY }}
-          files: '{ "file": ${{ github.workspace }}/build-swift-sample-app/swift-sample-app.ipa", "custom_id": "swift-sample-app" }'
+          files: '{ "file": "${{ github.workspace }}/build-swift-sample-app/swift-sample-app.ipa", "custom_id": "swift-sample-app" }'
 
       - name: get browserstack app_url
         id: get_app_url
