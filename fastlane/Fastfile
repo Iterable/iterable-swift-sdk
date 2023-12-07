@@ -2,16 +2,17 @@ default_platform(:ios)
 
 platform :ios do
   desc "build swift-sample-app .ipa and ui-test.zip for browserstack"
-  lane :build_for_browserstack do
+  lane :build_for_browserstack do |options|
     xcodes(version: "14.2", select_for_current_build_only: true)
     ensure_xcode_version(version: "14.2")
     setup_ci
-    build_swift_sample_app
+    build_swift_sample_app(plist:options[:plist])
     build_ui_tests
   end
   
   desc "build swift-sample-app .ipa"
-  lane :build_swift_sample_app do
+  lane :build_swift_sample_app do |options|
+    export_option(options[:plist])
     build_app(
       project: "sample-apps/swift-sample-app/swift-sample-app.xcodeproj",
       configuration: "Debug",
@@ -23,15 +24,6 @@ platform :ios do
       output_name: "swift-sample-app.ipa",
       export_method: "development",
       export_team_id: "BP98Z28R86",
-      skip_profile_detection: true,
-      export_options: {
-        signingStyle: "manual",
-        compileBitcode: false,
-        provisioningProfiles: {
-          "iterable.swift-sample-app" => "ios-dev-swift-sample-app",
-          "iterable.swift-sample-app.swift-sample-app-notification-extension" => "ios-dev-swift-sample-app-notification-extension"
-        }, 
-      } 
     )
   end
 
