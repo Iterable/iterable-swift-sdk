@@ -77,7 +77,7 @@ jobs:
           method: "POST"
           username: ${{ secrets.BROWSERSTACK_USERNAME }}
           password: ${{ secrets.BROWSERSTACK_ACCESS_KEY }}
-          files: '{ "file": ${{ github.workspace }}/build-swift-sample-app/swift-sample-app-ui-test.zip", "custom_id": "swift-sample-app-ui-test" }'
+          files: '{ "file": "${{ github.workspace }}/build-swift-sample-app/swift-sample-app-ui-test.zip", "custom_id": "swift-sample-app-ui-test" }'
 
       - name: get browserstack test_suite_url
         id: get_test_suite_url
