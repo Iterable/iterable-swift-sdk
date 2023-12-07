@@ -11,6 +11,7 @@ jobs:
         with:
           ruby-version: "3.2.2"
           bundler-cache: true
+      - run: brew install xcodesorg/made/xcodes
 
       - name: fastlane build swift-sample-app
         run: bundle exec fastlane build_for_browserstack
