@@ -1,13 +1,10 @@
 default_platform(:ios)
 
 platform :ios do
-  before_all do
-    xcodes(version: "14.2", select_for_current_build_only: true)
-    ensure_xcode_version(version: "14.2")
-  end
-
   desc "build swift-sample-app .ipa and ui-test.zip for browserstack"
   lane :build_for_browserstack do
+    xcodes(version: "14.2", select_for_current_build_only: true)
+    ensure_xcode_version(version: "14.2")
     setup_ci
     build_swift_sample_app
     build_ui_tests
