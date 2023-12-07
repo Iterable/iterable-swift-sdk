@@ -12,7 +12,6 @@ platform :ios do
   
   desc "build swift-sample-app .ipa"
   lane :build_swift_sample_app do |options|
-    export_option(options[:plist])
     build_app(
       project: "sample-apps/swift-sample-app/swift-sample-app.xcodeproj",
       configuration: "Debug",
@@ -24,6 +23,7 @@ platform :ios do
       output_name: "swift-sample-app.ipa",
       export_method: "development",
       export_team_id: "BP98Z28R86",
+      export_options: options[:plist]
     )
   end
 
