@@ -22,12 +22,14 @@ platform :ios do
       output_name: "swift-sample-app.ipa",
       export_method: "development",
       export_team_id: "BP98Z28R86",
+      skip_profile_detection: true,
       export_options: {
+        signingStyle: "manual",
+        compileBitcode: false,
         provisioningProfiles: {
           "iterable.swift-sample-app" => "ios-dev-swift-sample-app",
           "iterable.swift-sample-app.swift-sample-app-notification-extension" => "ios-dev-swift-sample-app-notification-extension"
         }, 
-        compileBitcode: false 
       } 
     )
   end
