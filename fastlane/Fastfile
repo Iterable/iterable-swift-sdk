@@ -10,7 +10,6 @@ platform :ios do
   
   desc "build swift-sample-app .ipa"
   lane :build_swift_sample_app do
-    xcodes(version: "14.2")
     build_app(
       project: "sample-apps/swift-sample-app/swift-sample-app.xcodeproj",
       configuration: "Debug",
