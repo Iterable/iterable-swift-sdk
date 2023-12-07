@@ -5,7 +5,6 @@ platform :ios do
   lane :build_for_browserstack do |options|
     xcodes(version: "14.2", select_for_current_build_only: true)
     ensure_xcode_version(version: "14.2")
-    setup_ci
     build_swift_sample_app(plist:options[:plist])
     build_ui_tests
   end
@@ -28,7 +27,6 @@ platform :ios do
           "iterable.swift-sample-app.swift-sample-app-notification-extension" => "ios-dev-swift-sample-app-notification-extension"
         }
       }
-      # export_options: options[:plist],
     )
   end
 
