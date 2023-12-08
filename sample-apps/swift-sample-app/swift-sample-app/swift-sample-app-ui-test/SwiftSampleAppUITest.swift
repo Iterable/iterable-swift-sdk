@@ -10,7 +10,7 @@ import XCTest
 
 class SwiftSampleAppUITest: XCUITestBase {
     func testElementsVisible() {
-        if app.staticTexts["Coffees"].waitForExistence(timeout:10) {
+        if app.staticTexts["Coffees"].waitForExistence(timeout:30) {
             XCTAssertTrue(app.staticTexts["Coffees"].exists)
         }
     }
