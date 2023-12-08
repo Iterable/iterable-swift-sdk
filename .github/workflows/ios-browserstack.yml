@@ -55,13 +55,11 @@ jobs:
 
       - name: upload swift-sample-app .ipa to browserstack
         id: upload_ipa
-        uses: fjogeleit/http-request-action@v1
-        with:
-          url: "https://api-cloud.browserstack.com/app-automate/xcuitest/v2/app"
-          method: "POST"
-          username: ${{ secrets.BROWSERSTACK_USERNAME }}
-          password: ${{ secrets.BROWSERSTACK_ACCESS_KEY }}
-          files: '{ "file": ${{ github.workspace }}/build-swift-sample-app/swift-sample-app.ipa", "custom_id": "swift-sample-app" }'
+        run: |
+          curl -u "${{ secrets.BROWSERSTACK_USERNAME }}:${{ secrets.BROWSERSTACK_ACCESS_KEY }}" \
+          -X POST "https://api-cloud.browserstack.com/app-automate/xcuitest/v2/app" \
+          -F "file=@${{ github.workspace }}/build-swift-sample-app/swift-sample-app.ipa" \
+          -F "custom_id=swift-sample-app"
 
       - name: get browserstack app_url
         id: get_app_url
@@ -71,13 +69,11 @@ jobs:
 
       - name: upload test suite .zip to browserstack
         id: upload_test_zip
-        uses: fjogeleit/http-request-action@v1
-        with:
-          url: "https://api-cloud.browserstack.com/app-automate/xcuitest/v2/test-suite"
-          method: "POST"
-          username: ${{ secrets.BROWSERSTACK_USERNAME }}
-          password: ${{ secrets.BROWSERSTACK_ACCESS_KEY }}
-          files: '{ "file": "${{ github.workspace }}/build-swift-sample-app/swift-sample-app-ui-test.zip", "custom_id": "swift-sample-app-ui-test" }'
+        run: |
+          curl -u "${{ secrets.BROWSERSTACK_USERNAME }}:${{ secrets.BROWSERSTACK_ACCESS_KEY }}" \
+          -X POST "https://api-cloud.browserstack.com/app-automate/xcuitest/v2/test-suite" \
+          -F "file=@${{ github.workspace }}/build-swift-sample-app/swift-sample-app-ui-test.zip" \
+          -F "custom_id=swift-sample-app-ui-test"
 
       - name: get browserstack test_suite_url
         id: get_test_suite_url
@@ -86,12 +82,8 @@ jobs:
           echo "::set-output name=test_suite_url::$bs_test_suite_url"
 
       - name: execute test suite on browserstack
-        uses: fjogeleit/http-request-action@v1
-        with:
-          url: "https://api-cloud.browserstack.com/app-automate/xcuitest/v2/build"
-          method: "POST"
-          username: "justinyu_cIqvyB"
-          password: "TszLVeLKEjzwXpVUSB48"
-          data: "${{ steps.get_app_url.app_url }},${{ steps.get_test_suite_url.test_suite_url }}"
-          file: "${{ github.workspace }}/build-swift-sample-app/swift-sample-app-ui-test.zip"
-          customHeaders: '{"Content-Type": "application/json"}'
+        run: |
+          curl -u "${{ secrets.BROWSERSTACK_USERNAME }}:${{ secrets.BROWSERSTACK_ACCESS_KEY }}" \
+          -X POST "https://api-cloud.browserstack.com/app-automate/xcuitest/v2/build" \
+          -d {"${{ steps.get_app_url.app_url }},${{ steps.get_test_suite_url.test_suite_url }}","project" : "swift-sample-app-ui-testing" "devices": ["iPhone X-11", "iPhone XS-13"]} \
+          -H "Content-Type: application/json"
