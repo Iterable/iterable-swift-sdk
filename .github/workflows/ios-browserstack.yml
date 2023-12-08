@@ -77,13 +77,5 @@ jobs:
         run: |
           curl -u "${{ secrets.BROWSERSTACK_USERNAME }}:${{ secrets.BROWSERSTACK_ACCESS_KEY }}" \
           -X POST "https://api-cloud.browserstack.com/app-automate/xcuitest/v2/build" \
-          -d {"app": "bs://9c6dcb5649a8280ca800075bfd8f151115bba6b3", "testSuite": "bs://89c874f21852ba57957a3fdc33f47514288c4ba1", \
-              "devices": [{"device": "iPhone 15.*", "os_version": "17.0"}, \
-                          {"device": "iPhone 15.*", "os_version": "16.0"}, \
-                          {"device": "iPhone 14.*", "os_version": "17.0"}, \
-                          {"device": "iPhone 14.*", "os_version": "16.0"}, \
-                          {"device": "iPhone 13.*", "os_version": "17.0"}, \
-                          {"device": "iPhone 13.*", "os_version": "16.0"}  \
-                         ] \
-              } \
+          -d '{"devices": [{"device": "iPhone 15.*", "os_version": "1[56]"}, {"device": "iPhone 14.*", "os_version": "1[56]"}], "app": ${{ steps.upload_ipa.outputs.app_url }}, "testSuite": ${{ steps.upload_test.outputs.test_suite_url }}}' \
           -H "Content-Type: application/json"
