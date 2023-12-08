@@ -35,6 +35,7 @@ platform :ios do
   lane :build_ui_tests do      
     scan(
       project: "sample-apps/swift-sample-app/swift-sample-app.xcodeproj",
+      configuration: "Debug",
       scheme: "swift-sample-app",
       sdk: "iphoneos",
       destination: "generic/platform=iOS",
@@ -42,6 +43,7 @@ platform :ios do
       derived_data_path: "./build-swift-sample-app",
       build_for_testing: true,
       clean: true,
+      xcargs: "-allowProvisioningUpdates"
     )
     
     zip(
