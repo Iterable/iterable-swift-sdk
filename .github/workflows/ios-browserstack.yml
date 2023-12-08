@@ -56,34 +56,22 @@ jobs:
       - name: upload swift-sample-app .ipa to browserstack
         id: upload_ipa
         run: |
-          curl -u "${{ secrets.BROWSERSTACK_USERNAME }}:${{ secrets.BROWSERSTACK_ACCESS_KEY }}" \
+          app_url=$(curl -u "${{ secrets.BROWSERSTACK_USERNAME }}:${{ secrets.BROWSERSTACK_ACCESS_KEY }}" \
           -X POST "https://api-cloud.browserstack.com/app-automate/xcuitest/v2/app" \
           -F "file=@${{ github.workspace }}/build-swift-sample-app/swift-sample-app.ipa" \
-          -F "custom_id=swift-sample-app"
-
-      - name: get browserstack app_url
-        id: get_app_url
-        run: |
-          bs_app_url=${{ fromJson(steps.upload_ipa.outputs.response).app_url }}
-          echo "::set-output name=app_url::$bs_app_url"
+          -F "custom_id=swift-sample-app" | jq -r '.app_url'); echo "app_url=$app_url" >> $GITHUB_OUTPUT
 
       - name: upload test suite .zip to browserstack
         id: upload_test_zip
         run: |
-          curl -u "${{ secrets.BROWSERSTACK_USERNAME }}:${{ secrets.BROWSERSTACK_ACCESS_KEY }}" \
+          test_suite_url=$(curl -u "${{ secrets.BROWSERSTACK_USERNAME }}:${{ secrets.BROWSERSTACK_ACCESS_KEY }}" \
           -X POST "https://api-cloud.browserstack.com/app-automate/xcuitest/v2/test-suite" \
           -F "file=@${{ github.workspace }}/build-swift-sample-app/swift-sample-app-ui-test.zip" \
-          -F "custom_id=swift-sample-app-ui-test"
-
-      - name: get browserstack test_suite_url
-        id: get_test_suite_url
-        run: |
-          bs_test_suite_url=${{ fromJson(steps.upload_test_zip.outputs.response).test_suite_url }}
-          echo "::set-output name=test_suite_url::$bs_test_suite_url"
+          -F "custom_id=swift-sample-app-ui-test" | jq -r '.test_suite_url'); echo "test_suite_url=$test_suite_url" >> $GITHUB_OUTPUT
 
       - name: execute test suite on browserstack
         run: |
           curl -u "${{ secrets.BROWSERSTACK_USERNAME }}:${{ secrets.BROWSERSTACK_ACCESS_KEY }}" \
           -X POST "https://api-cloud.browserstack.com/app-automate/xcuitest/v2/build" \
-          -d {"${{ steps.get_app_url.app_url }},${{ steps.get_test_suite_url.test_suite_url }}","project" : "swift-sample-app-ui-testing" "devices": ["iPhone X-11", "iPhone XS-13"]} \
+          -d {"${{ steps.upload_ipa.outputs.app_url }},${{ steps.upload_test_zip.outputs.test_suite_url }}","project" : "swift-sample-app-ui-testing" "devices": ["iPhone X-11", "iPhone XS-13"]} \
           -H "Content-Type: application/json"
