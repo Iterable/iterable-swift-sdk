@@ -17,6 +17,7 @@ platform :ios do
       scheme: "swift-sample-app",
       silent: true,
       clean: true,
+      sdk: "iphoneos",
       destination: "generic/platform=iOS",
       output_directory: "./build-swift-sample-app",
       output_name: "swift-sample-app.ipa",
