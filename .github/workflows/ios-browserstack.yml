@@ -79,9 +79,9 @@ jobs:
           -X POST "https://api-cloud.browserstack.com/app-automate/xcuitest/v2/build" \
           -d {"app": "${{ steps.upload_ipa.outputs.app_url }}", "testSuite": "${{ steps.upload_test.outputs.test_suite_url }}", \ 
               "devices": [{"device": "iPhone 15.*", "os_version": "17.0"}, \
-                          {"device": "iPhone 15.*", "os_version": "16.0"}] \
-                          {"device": "iPhone 14.*", "os_version": "17.0"}] \
-                          {"device": "iPhone 14.*", "os_version": "16.0"}] \
-                          {"device": "iPhone 13.*", "os_version": "17.0"}] \
+                          {"device": "iPhone 15.*", "os_version": "16.0"}, \
+                          {"device": "iPhone 14.*", "os_version": "17.0"}, \
+                          {"device": "iPhone 14.*", "os_version": "16.0"}, \
+                          {"device": "iPhone 13.*", "os_version": "17.0"}, \
                           {"device": "iPhone 13.*", "os_version": "16.0"}] \
           -H "Content-Type: application/json"
