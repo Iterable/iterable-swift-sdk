@@ -38,6 +38,7 @@ platform :ios do
       skip_build: false,
       derived_data_path: "./build-swift-sample-app",
       build_for_testing: true
+      clean: true
     )
     
     zip(
