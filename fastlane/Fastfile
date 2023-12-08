@@ -43,7 +43,7 @@ platform :ios do
     )
     
     zip(
-      path: "./build-swift-sample-app/Build/Products/Debug-iphonesimulator/SwiftSampleAppUITest-Runner.app",
+      path: "./build-swift-sample-app/Build/Products/Debug-iphoneos/SwiftSampleAppUITest-Runner.app",
       output_path: "./build-swift-sample-app/swift-sample-app-ui-test.zip"
     )
   end
