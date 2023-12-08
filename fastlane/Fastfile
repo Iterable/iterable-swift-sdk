@@ -36,10 +36,12 @@ platform :ios do
     scan(
       project: "sample-apps/swift-sample-app/swift-sample-app.xcodeproj",
       scheme: "swift-sample-app",
+      sdk: "iphoneos",
       destination: "generic/platform=iOS",
       skip_build: false,
       derived_data_path: "./build-swift-sample-app",
       build_for_testing: true,
+      clean: true,
     )
     
     zip(
