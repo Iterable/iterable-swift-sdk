@@ -18,6 +18,7 @@ jobs:
           P12_PASSWORD: ${{ secrets.P12_PASSWORD }}
           BUILD_PROVISION_PROFILE_BASE64: ${{ secrets.BUILD_PROVISION_PROFILE_BASE64 }}
           BUILD_PROVISION_EXTENSION_PROFILE_BASE64: ${{ secrets.BUILD_PROVISION_EXTENSION_PROFILE_BASE64 }}
+          BUILD_PROVISION_WILDCARD_PROFILE_BASE64: ${{ secrets.BUILD_PROVISION_WILDCARD_PROFILE_BASE64 }}
           KEYCHAIN_PASSWORD: ${{ secrets.KEYCHAIN_PASSWORD }}
           EXPORT_OPTIONS_PLIST: ${{ secrets.EXPORT_OPTIONS_PLIST }}
         run: |
@@ -25,12 +26,14 @@ jobs:
           CERTIFICATE_PATH=$RUNNER_TEMP/build_certificate.p12
           PP_1_PATH=$RUNNER_TEMP/build_pp_1.mobileprovision
           PP_2_PATH=$RUNNER_TEMP/build_pp_2.mobileprovision
+          PP_3_PATH=$RUNNER_TEMP/build_pp_3.mobileprovision
           KEYCHAIN_PATH=$RUNNER_TEMP/app-signing.keychain-db
 
           # import certificate and provisioning profile from secrets
           echo -n "$BUILD_CERTIFICATE_BASE64" | base64 --decode -o $CERTIFICATE_PATH
           echo -n "$BUILD_PROVISION_PROFILE_BASE64" | base64 --decode -o $PP_1_PATH
           echo -n "$BUILD_PROVISION_EXTENSION_PROFILE_BASE64" | base64 --decode -o $PP_2_PATH
+          echo -n "$BUILD_PROVISION_WILDCARD_PROFILE_BASE64" | base64 --decode -o $PP_3_PATH
 
           # create temporary keychain
           security create-keychain -p "$KEYCHAIN_PASSWORD" $KEYCHAIN_PATH
@@ -45,6 +48,7 @@ jobs:
           mkdir -p ~/Library/MobileDevice/Provisioning\ Profiles
           cp $PP_1_PATH ~/Library/MobileDevice/Provisioning\ Profiles
           cp $PP_2_PATH ~/Library/MobileDevice/Provisioning\ Profiles
+          cp $PP_3_PATH ~/Library/MobileDevice/Provisioning\ Profiles
 
           # create plist
           EXPORT_OPTS_PATH=$RUNNER_TEMP/ExportOptions.plist
