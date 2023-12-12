@@ -166,7 +166,7 @@ class IterableEmbeddedManager: NSObject, IterableEmbeddedManagerProtocol {
     }
     
     public func reset() {
-        let processor = EmbeddedMessagingProcessor(currentMessages: self.messages, fetchedMessages: [])
+        let processor = EmbeddedMessagingProcessor(currentMessages: self.messages, fetchedMessages: [:])
         self.setMessages(processor)
         self.notifyUpdateDelegates(processor)
     }
