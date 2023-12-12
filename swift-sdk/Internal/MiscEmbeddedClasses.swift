@@ -12,6 +12,9 @@ public class IterableEmbeddedImpression: NSObject, Codable {
     /// The message ID of message
     public let messageId: String
     
+    /// The placement ID of message
+    public let placementId: Double
+    
     /// How many times this message was displayed
     public var displayCount: Int
     
@@ -19,9 +22,11 @@ public class IterableEmbeddedImpression: NSObject, Codable {
     public var displayDuration: TimeInterval
     
     public init(messageId: String,
+                placementId: Double,
                 displayCount: Int,
                 displayDuration: TimeInterval) {
         self.messageId = messageId
+        self.placementId = placementId
         self.displayCount = displayCount
         self.displayDuration = displayDuration
     }
@@ -31,9 +36,6 @@ public class IterableEmbeddedImpression: NSObject, Codable {
 final public class IterableEmbeddedSession: NSObject, Codable {
     /// UUID of the session
     public let embeddedSessionId: String
-    
-    /// Placement ID, optional
-    public let placementId: String?
     
     /// Start time of the session
     public let embeddedSessionStart: Date?
@@ -47,13 +49,11 @@ final public class IterableEmbeddedSession: NSObject, Codable {
     public var isActive: Bool
     
     public init(embeddedSessionId: String = UUID().uuidString,
-                placementId: String? = nil,
                 embeddedSessionStart: Date,
                 embeddedSessionEnd: Date? = nil,
                 impressions: [IterableEmbeddedImpression],
                 isActive: Bool = false) {
         self.embeddedSessionId = embeddedSessionId
-        self.placementId = placementId
         self.embeddedSessionStart = embeddedSessionStart
         self.embeddedSessionEnd = embeddedSessionEnd
         self.impressions = impressions
