@@ -5,7 +5,12 @@
 import Foundation
 import UIKit
 
-class IterableEmbeddedManager: NSObject, IterableEmbeddedManagerProtocol {
+
+protocol IterableInternalEmbeddedManagerProtocol: IterableEmbeddedManagerProtocol, EmbeddedNotifiable {
+    // we can add the internal delegate methods here
+}
+
+class IterableEmbeddedManager: NSObject, IterableInternalEmbeddedManagerProtocol {
     init(apiClient: ApiClientProtocol,
          urlDelegate: IterableURLDelegate?,
          urlOpener: UrlOpenerProtocol,
@@ -45,10 +50,6 @@ class IterableEmbeddedManager: NSObject, IterableEmbeddedManagerProtocol {
     
     public func removeUpdateListener(_ listener: IterableEmbeddedUpdateDelegate) {
         listeners.remove(listener)
-    }
-
-    public func syncMessages(completion: @escaping () -> Void) {
-        retrieveEmbeddedMessages(completion: completion)
     }
     
     public func handleEmbeddedClick(message: IterableEmbeddedMessage, buttonIdentifier: String?, clickedUrl: String) {
@@ -175,5 +176,11 @@ class IterableEmbeddedManager: NSObject, IterableEmbeddedManagerProtocol {
         for listener in listeners.allObjects {
             listener.onEmbeddedMessagingDisabled()
         }
+    }
+}
+
+extension IterableEmbeddedManager: EmbeddedNotifiable {
+    public func syncMessages(completion: @escaping () -> Void) {
+        retrieveEmbeddedMessages(completion: completion)
     }
 }

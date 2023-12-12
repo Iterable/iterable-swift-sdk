@@ -4,7 +4,7 @@
 
 import Foundation
 
-class EmptyEmbeddedManager: IterableEmbeddedManagerProtocol {
+class EmptyEmbeddedManager: IterableInternalEmbeddedManagerProtocol {
    
     func addUpdateListener(_ listener: IterableEmbeddedUpdateDelegate) {
         
