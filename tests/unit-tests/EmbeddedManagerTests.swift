@@ -14,6 +14,7 @@ final class EmbeddedManagerTests: XCTestCase {
         
         let manager = IterableEmbeddedManager(apiClient: mockApiClient,
                                               urlDelegate: nil,
+                                              customActionDelegate: nil,
                                               urlOpener: MockUrlOpener(),
                                               allowedProtocols: [])
         
@@ -37,6 +38,7 @@ final class EmbeddedManagerTests: XCTestCase {
         let mockApiClient = MockApiClient()
         let manager = IterableEmbeddedManager(apiClient: mockApiClient,
                                               urlDelegate: nil,
+                                              customActionDelegate: nil,
                                               urlOpener: MockUrlOpener(),
                                               allowedProtocols: [])
         XCTAssertEqual(manager.getMessages().count, 0)
@@ -51,6 +53,7 @@ final class EmbeddedManagerTests: XCTestCase {
         ])
         let manager = IterableEmbeddedManager(apiClient: mockApiClient,
                                               urlDelegate: nil,
+                                              customActionDelegate: nil,
                                               urlOpener: MockUrlOpener(),
                                               allowedProtocols: [])
         
@@ -78,6 +81,7 @@ final class EmbeddedManagerTests: XCTestCase {
         
         let manager = IterableEmbeddedManager(apiClient: mockApiClient,
                                               urlDelegate: nil,
+                                              customActionDelegate: nil,
                                               urlOpener: MockUrlOpener(),
                                               allowedProtocols: [])
         
@@ -109,6 +113,7 @@ final class EmbeddedManagerTests: XCTestCase {
         
         let manager = IterableEmbeddedManager(apiClient: mockApiClient,
                                               urlDelegate: nil,
+                                              customActionDelegate: nil,
                                               urlOpener: MockUrlOpener(),
                                               allowedProtocols: [])
         
@@ -130,6 +135,7 @@ final class EmbeddedManagerTests: XCTestCase {
         mockApiClient.setInvalidAPIKey()
         let manager = IterableEmbeddedManager(apiClient: mockApiClient,
                                               urlDelegate: nil,
+                                              customActionDelegate: nil,
                                               urlOpener: MockUrlOpener(),
                                               allowedProtocols: [])
         
@@ -152,6 +158,7 @@ final class EmbeddedManagerTests: XCTestCase {
         let mockApiClient = MockApiClient()
         let manager = IterableEmbeddedManager(apiClient: mockApiClient,
                                               urlDelegate: nil,
+                                              customActionDelegate: nil,
                                               urlOpener: MockUrlOpener(),
                                               allowedProtocols: [])
 
@@ -184,6 +191,7 @@ final class EmbeddedManagerTests: XCTestCase {
         let mockApiClient = MockApiClient()
         let manager = IterableEmbeddedManager(apiClient: mockApiClient,
                                               urlDelegate: nil,
+                                              customActionDelegate: nil,
                                               urlOpener: MockUrlOpener(),
                                               allowedProtocols: [])
 
@@ -220,6 +228,7 @@ final class EmbeddedManagerTests: XCTestCase {
         let mockApiClient = MockApiClient()
         var manager: IterableEmbeddedManager? = IterableEmbeddedManager(apiClient: mockApiClient,
                                                                         urlDelegate: nil,
+                                                                        customActionDelegate: nil,
                                                                         urlOpener: MockUrlOpener(),
                                                                         allowedProtocols: [])
         manager?.onDeinit = {
@@ -238,6 +247,7 @@ final class EmbeddedManagerTests: XCTestCase {
         let mockApiClient = MockApiClient()
         let manager = IterableEmbeddedManager(apiClient: mockApiClient,
                                               urlDelegate: nil,
+                                              customActionDelegate: nil,
                                               urlOpener: MockUrlOpener(),
                                               allowedProtocols: [])
         

@@ -8,12 +8,14 @@ import UIKit
 class IterableEmbeddedManager: NSObject, IterableEmbeddedManagerProtocol {
     init(apiClient: ApiClientProtocol,
          urlDelegate: IterableURLDelegate?,
+         customActionDelegate: IterableCustomActionDelegate?,
          urlOpener: UrlOpenerProtocol,
          allowedProtocols: [String]) {
          ITBInfo()
         
         self.apiClient = apiClient
         self.urlDelegate = urlDelegate
+        self.customActionDelegate = customActionDelegate
         self.urlOpener = urlOpener
         self.allowedProtocols = allowedProtocols
         
@@ -52,11 +54,28 @@ class IterableEmbeddedManager: NSObject, IterableEmbeddedManagerProtocol {
     }
     
     public func handleEmbeddedClick(message: IterableEmbeddedMessage, buttonIdentifier: String?, clickedUrl: String) {
-
         if let url = URL(string: clickedUrl) {
-            handleUrl(url: url.absoluteString)
+            handleClick(clickedUrl: url, forMessage: message)
         } else {
             print("Invalid URL: \(clickedUrl)")
+        }
+    }
+    
+    public func handleClick(clickedUrl: URL?, forMessage message: IterableEmbeddedMessage) {
+        guard let url = clickedUrl, let embeddedClickedUrl = EmbeddedHelper.parse(embeddedUrl: url) else {
+            ITBError("Could not parse url: \(clickedUrl?.absoluteString ?? "nil")")
+            return
+        }
+        
+        switch embeddedClickedUrl {
+        case let .iterableCustomAction(name: iterableCustomActionName):
+            handleIterableCustomAction(name: iterableCustomActionName, forMessage: message)
+        case let .customAction(name: customActionName):
+            handleUrlOrAction(urlOrAction: customActionName)
+        case let .localResource(name: localResourceName):
+            handleUrlOrAction(urlOrAction: localResourceName)
+        case .regularUrl:
+            handleUrlOrAction(urlOrAction: url.absoluteString)
         }
     }
     
@@ -64,6 +83,19 @@ class IterableEmbeddedManager: NSObject, IterableEmbeddedManagerProtocol {
         let processor = EmbeddedMessagingProcessor(currentMessages: self.messages, fetchedMessages: [])
         self.setMessages(processor)
         self.notifyUpdateDelegates(processor)
+    }
+    
+    private func handleIterableCustomAction(name: String, forMessage message: IterableEmbeddedMessage) {
+        guard let iterableCustomActionName = IterableCustomActionName(rawValue: name) else {
+            return
+        }
+        print("iterable custom action name: \(iterableCustomActionName) on embeddedMessage: \(message)")
+        switch iterableCustomActionName {
+            case .delete:
+                break;
+            case .dismiss:
+                break
+        }
     }
     
     private func createAction(fromUrlOrAction url: String) -> IterableAction? {
@@ -74,9 +106,9 @@ class IterableEmbeddedManager: NSObject, IterableEmbeddedManagerProtocol {
         }
     }
     
-    private func handleUrl(url: String) {
-        guard let action = createAction(fromUrlOrAction: url) else {
-            ITBError("Could not create action from: \(url)")
+    private func handleUrlOrAction(urlOrAction: String) {
+        guard let action = createAction(fromUrlOrAction: urlOrAction) else {
+            ITBError("Could not create action from: \(urlOrAction)")
             return
         }
 
@@ -85,6 +117,7 @@ class IterableEmbeddedManager: NSObject, IterableEmbeddedManagerProtocol {
             ActionRunner.execute(action: action,
                                          context: context,
                                          urlHandler: IterableUtil.urlHandler(fromUrlDelegate: self?.urlDelegate, inContext: context),
+                                         customActionHandler: IterableUtil.customActionHandler(fromCustomActionDelegate: self?.customActionDelegate, inContext: context),
                                          urlOpener: self?.urlOpener,
                                          allowedProtocols: self?.allowedProtocols ?? [])
         }
@@ -93,6 +126,7 @@ class IterableEmbeddedManager: NSObject, IterableEmbeddedManagerProtocol {
     // MARK: - PRIVATE/INTERNAL
     private var apiClient: ApiClientProtocol
     private let urlDelegate: IterableURLDelegate?
+    private let customActionDelegate: IterableCustomActionDelegate?
     private let urlOpener: UrlOpenerProtocol
     private let allowedProtocols: [String]
     private var messages: [IterableEmbeddedMessage] = []
