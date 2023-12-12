@@ -107,8 +107,8 @@ final class EmbeddedManagerTests: XCTestCase {
         let mockApiClient = MockApiClient()
         
         mockApiClient.populateMessages([
-            IterableEmbeddedMessage(messageId: "1", placementId: 1),
-            IterableEmbeddedMessage(messageId: "2", placementId: 1),
+            1: [IterableEmbeddedMessage(messageId: "1", placementId: 1),
+                IterableEmbeddedMessage(messageId: "2", placementId: 1)],
         ])
         
         let manager = IterableEmbeddedManager(apiClient: mockApiClient,
