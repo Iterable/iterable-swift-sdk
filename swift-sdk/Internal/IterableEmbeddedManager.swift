@@ -61,9 +61,9 @@ class IterableEmbeddedManager: NSObject, IterableEmbeddedManagerProtocol {
         }
     }
     
-    public func handleClick(clickedUrl url: URL?, forMessage message: IterableEmbeddedMessage) {
-        guard let theUrl = url, let embeddedClickedUrl = EmbeddedHelper.parse(embeddedUrl: theUrl) else {
-            ITBError("Could not parse url: \(url?.absoluteString ?? "nil")")
+    public func handleClick(clickedUrl: URL?, forMessage message: IterableEmbeddedMessage) {
+        guard let url = clickedUrl, let embeddedClickedUrl = EmbeddedHelper.parse(embeddedUrl: url) else {
+            ITBError("Could not parse url: \(clickedUrl?.absoluteString ?? "nil")")
             return
         }
         
@@ -75,7 +75,7 @@ class IterableEmbeddedManager: NSObject, IterableEmbeddedManagerProtocol {
         case let .localResource(name: localResourceName):
             handleUrlOrAction(urlOrAction: localResourceName)
         case .regularUrl:
-            handleUrlOrAction(urlOrAction: theUrl.absoluteString)
+            handleUrlOrAction(urlOrAction: url.absoluteString)
         }
     }
     
