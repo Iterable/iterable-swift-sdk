@@ -44,6 +44,7 @@ class IterableEmbeddedManager: NSObject, IterableEmbeddedManagerProtocol {
         
         super.init()
         addForegroundObservers()
+        syncMessages { print("Retrieving embedded message")}
     }
     
     var onDeinit: (() -> Void)?

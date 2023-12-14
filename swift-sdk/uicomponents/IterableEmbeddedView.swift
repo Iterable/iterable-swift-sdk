@@ -209,10 +209,18 @@ public class IterableEmbeddedView:UIView {
 
     
     @IBAction func bannerPressed(_ sender: UITapGestureRecognizer) {
+        guard let EMmessage = message else {
+            ITBInfo("message not set in IterableEmbeddedView. Set the property so that clickhandlers have reference")
+            return
+        }
+        
         if let defaultActionData = message?.elements?.defaultAction?.data, !defaultActionData.isEmpty {
             IterableAPI.track(embeddedMessageClick: message!, buttonIdentifier: nil, clickedUrl: defaultActionData)
+            IterableAPI.embeddedManager.handleEmbeddedClick(message: EMmessage, buttonIdentifier: nil, clickedUrl: EMmessage.elements?.defaultAction?.data ?? "")
         }
-        //TODO: Delegate method 
+        
+        
+        //TODO: Delegate method
 //        if (iterableEmbeddedViewDelegate != nil) {
 //            iterableEmbeddedViewDelegate.didPressBanner(banner: self, viewTag: self.tag, message: message)
 //        }
@@ -406,6 +414,7 @@ public class IterableEmbeddedView:UIView {
             
             let clickedUrl = actionData
             IterableAPI.track(embeddedMessageClick: message!, buttonIdentifier: buttonIdentifier, clickedUrl: clickedUrl)
+            IterableAPI.embeddedManager.handleEmbeddedClick(message: message!, buttonIdentifier: buttonIdentifier, clickedUrl: clickedUrl)
         }
 
         //TODO: Delegate handling
@@ -479,6 +488,7 @@ public class IterableEmbeddedView:UIView {
             
             let clickedUrl = actionData
             IterableAPI.track(embeddedMessageClick: message!, buttonIdentifier: buttonIdentifier, clickedUrl: clickedUrl)
+            IterableAPI.embeddedManager.handleEmbeddedClick(message: message!, buttonIdentifier: buttonIdentifier, clickedUrl: clickedUrl)
         }
         //TODO: Delegate handling
 //        if (iterableEmbeddedViewDelegate != nil) {
