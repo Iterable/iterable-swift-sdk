@@ -44,7 +44,7 @@ enum Const {
         static let embeddedMessageClick = "embedded-messaging/events/click"
         static let embeddedMessageDismiss = "embedded-messaging/events/dismiss"
         static let embeddedMessageImpression = "embedded-messaging/events/impression"
-        static let trackEmbeddedSession = "embedded-messaging/events/impression"
+        static let trackEmbeddedSession = "embedded-messaging/events/session"
     }
     
     public enum UserDefault {
@@ -289,6 +289,11 @@ enum JsonValue {
     }
 }
 
+public enum IterableDataRegion {
+    public static let US = "https://api.iterable.com/api/"
+    public static let EU = "https://api.eu.iterable.com/api/"
+}
+
 public protocol JsonValueRepresentable {
     var jsonValue: Any { get }
 }
@@ -374,6 +379,7 @@ enum MobileDeviceType: String, Codable {
     case push
     case universalLink
     case inApp
+    case embedded
 }
 
 // Lowest level that will be logged. By default the LogLevel is set to LogLevel.info.

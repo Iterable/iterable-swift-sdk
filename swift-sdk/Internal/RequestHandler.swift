@@ -8,7 +8,7 @@ class RequestHandler: RequestHandlerProtocol {
     init(onlineProcessor: OnlineRequestProcessor,
          offlineProcessor: OfflineRequestProcessor?,
          healthMonitor: HealthMonitor?,
-         offlineMode: Bool = true) {
+         offlineMode: Bool = false) {
         ITBInfo()
         self.onlineProcessor = onlineProcessor
         self.offlineProcessor = offlineProcessor
