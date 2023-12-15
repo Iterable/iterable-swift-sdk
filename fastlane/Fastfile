@@ -8,11 +8,12 @@ platform :ios do
   lane :release_sdk do
     set_version = prompt(text: "Please set the release version number")
     set_output_dir = prompt(text: "Please specify an output directory")
+    set_github_token = prompt(text: "Please provide github token") 
    
     bump_release_version(version:set_version)
     clean_and_lint
     build_xcframework(output_dir:set_output_dir)
-    tag_version(version:set_version)
+    create_release(version:set_version, output_dir:set_output_dir, github_token:set_github_token)
     pod_trunk_push
   end 
 
@@ -76,12 +77,14 @@ platform :ios do
   end
 
   desc "create github release and upload assets"
-  lane :tag_version do |options|
+  lane :create_release do |options|
     version = options[:version]
     output_dir = options[:output_dir]
+    
+    github_token = options[:github_token]
+    set_api_token = github_token.empty? ? ENV["GITHUB_TOKEN"] : github_token
 
-    add_git_tag(tag: "#{version}")
-    push_git_tags
+    add_git_tag(tag: "#{version}") 
 
     version_changelog = read_changelog(
       changelog_path: 'CHANGELOG.md',
@@ -90,8 +93,8 @@ platform :ios do
 
     github_release = set_github_release(
       repository_name: "Iterable/swift-sdk",
-      api_token: ENV["GITHUB_TOKEN"],
-      name: "github release version #{version}",
+      api_token: set_api_token,
+      name: "#{version}",
       tag_name: "#{version}",
       description: version_changelog,
       commitish: "master",
