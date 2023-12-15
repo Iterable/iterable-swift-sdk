@@ -1,0 +1,29 @@
+name: ios-sdk-release
+run-name: ${{ github.actor }} is starting iOS SDK release
+
+on:
+  workflow_dispatch:
+    inputs:
+      version_number:
+        description: "iOS SDK version"
+        required: true
+
+jobs:
+  ios-sdk-release:
+    runs-on: macos-latest
+
+    steps:
+      - name: set version number and push podspecs to git
+        run: bundle exec fastlane ios bump_release_version version:${{ github.event.inputs.version_number }}
+
+      - name: clean cocaopods cache and lint
+        run: bundle exec fastlane ios clean_and_lint
+
+      - name: create xcframeworks and zip
+        run: bundle exec fastlane ios build_xcframework output_dir:./output_dir
+
+      - name: create github release and upload assets
+        run: bundle exec fastlane ios tag_version version:${{ github.event.inputs.version_number }} output_dir:./output_dir
+
+      - name: push pods to trunk
+        run: bundle exec fastlane ios pod_trunk_push
