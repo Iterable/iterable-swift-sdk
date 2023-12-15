@@ -4,7 +4,7 @@ ios_sdk_podspec = "Iterable-iOS-SDK.podspec"
 
 platform :ios do
 
-  desc "execute full automated iOS SDK release"
+  desc "locally execute full automated iOS SDK release on your terminal"
   lane :release_sdk do
     set_version = prompt(text: "Please set the release version number")
     set_output_dir = prompt(text: "Please specify an output directory")
@@ -40,11 +40,12 @@ platform :ios do
     pod_lib_lint
   end
 
-  desc "create xcframework and zip"
+  desc "create xcframeworks and zip"
   lane :build_xcframework do |options|
     output_dir = options[:output_dir]
     
     # create xcframework IterableSDK
+    # creates destinations: "generic/platform=iOS" and "generic/platform=iOS Simulator"
     create_xcframework(
       workspace: "swift-sdk.xcodeproj/project.xcworkspace",
       scheme: "swift-sdk",
@@ -54,6 +55,7 @@ platform :ios do
     )
 
     # create xcframework IterableAppExtensions
+    # creates destination: "generic/platform=macOS,variant=Mac Catalyst"
     create_xcframework(
       workspace: "swift-sdk.xcodeproj/project.xcworkspace",
       scheme: "swift-sdk",
@@ -73,10 +75,28 @@ platform :ios do
     )
   end
 
-  desc "add git tag version and push"
+  desc "create github release and upload assets"
   lane :tag_version do |options|
-    add_git_tag(tag: "#{options[:version]}")
+    version = options[:version]
+    output_dir = options[:output_dir]
+
+    add_git_tag(tag: "#{version}")
     push_git_tags
+
+    version_changelog = read_changelog(
+      changelog_path: 'CHANGELOG.md',
+      section_identifier: "[#{version}]",	
+    )
+
+    github_release = set_github_release(
+      repository_name: "Iterable/swift-sdk",
+      api_token: ENV["GITHUB_TOKEN"],
+      name: "github release version #{version}",
+      tag_name: "#{version}",
+      description: version_changelog,
+      commitish: "master",
+      upload_assets: ["./#{output_dir}/IterableSDK.xcframework.zip", "./#{output_dir}/IterableAppExtensions.xcframework.zip"]
+    )
   end
 
   desc "push pod trunk"
