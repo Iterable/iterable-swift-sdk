@@ -587,18 +587,6 @@ public class IterableEmbeddedView:UIView {
             self.updateButtonConstraints()
         }
     }
-    
-    //TODO: Remove commented lines before release
-//    public func configure(title: String?, description: String?, image: UIImage?, buttonText: String?, buttonTwoText: String?, message: IterableEmbeddedMessage?, style: String?) {
-//        self.EMtitle = message?.elements?.title
-//        self.EMdescription = message?.elements?.body
-//        self.EMimage =
-//        self.EMbuttonText = message?.
-//        self.EMbuttonTwoText = buttonTwoText
-//        self.message = message
-//        self.EMstyle = style
-//        self.updateButtonConstraints()
-//    }
 }
 
 public class IterableEMButton: UIButton {
