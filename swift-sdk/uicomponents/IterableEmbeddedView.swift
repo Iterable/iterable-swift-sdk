@@ -172,9 +172,9 @@ public class IterableEmbeddedView:UIView {
     ///setDefaultValue assign default values to IterableEmbeddedView
     func setDefaultValue() {
         bannerBackgroundColor = UIColor.white
-        bannerBorderWidth = 0
+        bannerBorderWidth = 1.0
         bannerBorderColor = UIColor.clear
-        bannerCornerRadius = 0
+        bannerCornerRadius = 8.0
         bannerShadowColor = UIColor.lightGray
         bannerShadowWidth = 1
         bannerShadowHeight = 1
@@ -193,7 +193,7 @@ public class IterableEmbeddedView:UIView {
         primaryBtnTextColor = UIColor.white
         primaryBtnTextAlignment = "center"
         secondaryBtnColor = UIColor.clear
-        secondaryButtonRoundedSides = false
+        secondaryButtonRoundedSides = true
         secondaryBtnBorderRadius = 0
         secondaryBtnTextFontSize = 16
         secondaryBtnTextFontName = "HelveticaNeue"
@@ -232,12 +232,12 @@ public class IterableEmbeddedView:UIView {
         didSet {
             bannerBackgroundColor = viewConfig?.backgroundColor
             bannerBorderColor = viewConfig?.borderColor ?? UIColor.clear
-            bannerBorderWidth = viewConfig?.borderWidth ?? 0
-            bannerCornerRadius = viewConfig?.borderCornerRadius ?? 0
-            primaryBtnColor = viewConfig?.firstButtonTextColor ?? UIColor.purple
+            bannerBorderWidth = viewConfig?.borderWidth ?? 1.0
+            bannerCornerRadius = viewConfig?.borderCornerRadius ?? 8.0
+            primaryBtnColor = viewConfig?.firstButtonBackgroundColor ?? UIColor.purple
             primaryBtnTextColor = viewConfig?.firstButtonTextColor ?? UIColor.white
-            secondaryBtnColor = viewConfig?.secondButtonTextColor ?? UIColor.purple
-            secondaryBtnTextColor = viewConfig?.firstButtonTextColor ?? UIColor.white
+            secondaryBtnColor = viewConfig?.secondButtonBackgroundColor ?? UIColor.white
+            secondaryBtnTextColor = viewConfig?.secondButtonTextColor ?? UIColor.purple
             titleTextColor = viewConfig?.titleTextColor ?? UIColor.black
             descriptionTextColor = viewConfig?.bodyTextColor ?? UIColor.black
         }
@@ -254,7 +254,7 @@ public class IterableEmbeddedView:UIView {
     }
 
     /// Banner Border Width
-    @IBInspectable public var bannerBorderWidth: CGFloat = 0 {
+    @IBInspectable public var bannerBorderWidth: CGFloat = 1.0 {
         didSet {
             self.layer.borderWidth = bannerBorderWidth
         }
@@ -268,7 +268,7 @@ public class IterableEmbeddedView:UIView {
     }
     
     /// Banner Corner Radius
-    @IBInspectable public var bannerCornerRadius: CGFloat = 0 {
+    @IBInspectable public var bannerCornerRadius: CGFloat = 8.0 {
         didSet {
             self.layer.cornerRadius = bannerCornerRadius
             contentView.layer.cornerRadius = bannerCornerRadius
@@ -689,8 +689,8 @@ public enum IterableEmbeddedViewType: String {
 public class IterableEmbeddedViewConfig: NSObject {
     var backgroundColor: UIColor? = UIColor.white
     var borderColor: UIColor? = UIColor.white
-    var borderWidth: CGFloat? = 0
-    var borderCornerRadius: CGFloat? = 0
+    var borderWidth: CGFloat? = 1.0
+    var borderCornerRadius: CGFloat? = 8.0
     var firstButtonBackgroundColor: UIColor?
     var firstButtonBorderColor: UIColor?
     var firstButtonTextColor: UIColor?
@@ -702,8 +702,8 @@ public class IterableEmbeddedViewConfig: NSObject {
     
     public init(backgroundColor: UIColor? = UIColor.white,
          borderColor: UIColor? = UIColor.white,
-         borderWidth: CGFloat? = 0,
-         borderCornerRadius: CGFloat? = 0,
+         borderWidth: CGFloat? = 1.0,
+         borderCornerRadius: CGFloat? = 8.0,
          firstButtonBackgroundColor: UIColor? = nil,
          firstButtonBorderColor: UIColor? = nil,
          firstButtonTextColor: UIColor? = nil,
