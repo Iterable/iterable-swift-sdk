@@ -233,6 +233,70 @@ public class IterableEmbeddedView:UIView {
         imgViewWidth = 100
         imgViewHeight = 100
     }
+    
+    public func configure(viewType: IterableEmbeddedViewType, config: IterableEmbeddedViewConfig?) {
+        
+        let cardBorderColor = UIColor(red: 0.88, green: 0.87, blue: 0.87, alpha: 1.00)
+        let cardTitleTextColor = UIColor(red: 0.24, green: 0.23, blue: 0.23, alpha: 1.00)
+        let cardBodyTextColor = UIColor(red: 0.47, green: 0.44, blue: 0.45, alpha: 1.00)
+        let notificationBackgroundColor = UIColor(red: 0.90, green: 0.98, blue: 1.00, alpha: 1.00)
+        let notificationBorderColor = UIColor(red: 0.76, green: 0.94, blue: 0.99, alpha: 1.00)
+        let notificationTextColor = UIColor(red: 0.14, green: 0.54, blue: 0.66, alpha: 1.00)
+        
+        let cardOrBanner = viewType == IterableEmbeddedViewType.card || viewType == IterableEmbeddedViewType.banner
+        
+        let defaultBackgroundColor = (cardOrBanner) ? UIColor.white : notificationBackgroundColor
+        let defaultBorderColor = (cardOrBanner) ? cardBorderColor : notificationBorderColor
+        let defaultPrimaryBtnColor = (cardOrBanner) ? UIColor.purple : UIColor.white
+        let defaultPrimaryBtnTextColor = (cardOrBanner) ? UIColor.white : notificationTextColor
+        let defaultSecondaryBtnColor = (cardOrBanner) ? UIColor.white : notificationBackgroundColor
+        let defaultSecondaryBtnTextColor = (cardOrBanner) ? UIColor.purple : notificationTextColor
+        let defaultTitleTextColor = (cardOrBanner) ? cardTitleTextColor : notificationTextColor
+        let defaultBodyTextColor = (cardOrBanner) ? cardBodyTextColor : notificationTextColor
+
+        switch viewType {
+            case .card:
+                imgView.isHidden = true
+                let shouldShowCardImageView = EMimage != nil
+                if shouldShowCardImageView {
+                    // Show cardImageView
+                    cardImageView.isHidden = false
+                    cardImageTopConstraint.isActive = true
+                    titleToTopConstraint.isActive = false
+                } else {
+                    // Hide cardImageView and deactivate its constraints
+                    cardImageView.isHidden = true
+                    cardImageTopConstraint.isActive = false
+                    titleToTopConstraint.isActive = true
+
+                    // Remove cardImageView from its superview and release it
+                    cardImageView.removeFromSuperview()
+                    cardImageView = nil
+                }
+            case .banner:
+                imgView.isHidden = EMimage == nil
+                bannerBorderColor = cardBorderColor
+                cardImageView.isHidden = true
+                cardImageTopConstraint.isActive = false
+                titleToTopConstraint.isActive = true
+            case .notification:
+                imgView.isHidden = true
+                cardImageView.isHidden = true
+                cardImageTopConstraint.isActive = false
+                titleToTopConstraint.isActive = true
+        }
+        
+        bannerBackgroundColor = config?.backgroundColor ?? defaultBackgroundColor
+        bannerBorderColor = config?.borderColor ?? defaultBorderColor
+        bannerBorderWidth = config?.borderWidth ?? 1.0
+        bannerCornerRadius = config?.borderCornerRadius ?? 8.0
+        primaryBtnColor = config?.primaryBtnBackgroundColor ?? defaultPrimaryBtnColor
+        primaryBtnTextColor = config?.primaryBtnTextColor ?? defaultPrimaryBtnTextColor
+        secondaryBtnColor = config?.secondaryBtnBackgroundColor ?? defaultSecondaryBtnColor
+        secondaryBtnTextColor = config?.secondaryBtnTextColor ?? defaultSecondaryBtnTextColor
+        titleTextColor = config?.titleTextColor ?? defaultTitleTextColor
+        descriptionTextColor = config?.bodyTextColor ?? defaultBodyTextColor
+    }
 
     
     @IBAction func bannerPressed(_ sender: UITapGestureRecognizer) {
@@ -255,20 +319,19 @@ public class IterableEmbeddedView:UIView {
     }
     
     
-    public var viewConfig: IterableEmbeddedViewConfig? {
-        didSet {
-            bannerBackgroundColor = viewConfig?.backgroundColor
-            bannerBorderColor = viewConfig?.borderColor ?? UIColor.clear
-            bannerBorderWidth = viewConfig?.borderWidth ?? 1.0
-            bannerCornerRadius = viewConfig?.borderCornerRadius ?? 8.0
-            primaryBtnColor = viewConfig?.primaryBtnBackgroundColor ?? UIColor.purple
-            primaryBtnTextColor = viewConfig?.primaryBtnTextColor ?? UIColor.white
-            secondaryBtnColor = viewConfig?.secondaryBtnBackgroundColor ?? UIColor.white
-            secondaryBtnTextColor = viewConfig?.secondaryBtnTextColor ?? UIColor.purple
-            titleTextColor = viewConfig?.titleTextColor ?? UIColor.black
-            descriptionTextColor = viewConfig?.bodyTextColor ?? UIColor.black
-        }
-    }
+    public var viewConfig: IterableEmbeddedViewConfig?
+//        didSet {
+//            bannerBackgroundColor = viewConfig?.backgroundColor
+//            bannerBorderColor = viewConfig?.borderColor ?? UIColor.clear
+//            bannerBorderWidth = viewConfig?.borderWidth ?? 1.0
+//            bannerCornerRadius = viewConfig?.borderCornerRadius ?? 8.0
+//            primaryBtnColor = viewConfig?.primaryBtnBackgroundColor ?? UIColor.purple
+//            primaryBtnTextColor = viewConfig?.primaryBtnTextColor ?? UIColor.white
+//            secondaryBtnColor = viewConfig?.secondaryBtnBackgroundColor ?? UIColor.white
+//            secondaryBtnTextColor = viewConfig?.secondaryBtnTextColor ?? UIColor.purple
+//            titleTextColor = viewConfig?.titleTextColor ?? UIColor.black
+//            descriptionTextColor = viewConfig?.bodyTextColor ?? UIColor.black
+//        }
 
     
     // MARK: Banner
@@ -714,8 +777,8 @@ public enum IterableEmbeddedViewType: String {
 
 
 public class IterableEmbeddedViewConfig: NSObject {
-    var backgroundColor: UIColor? = UIColor.white
-    var borderColor: UIColor? = UIColor.white
+    var backgroundColor: UIColor?
+    var borderColor: UIColor?
     var borderWidth: CGFloat? = 1.0
     var borderCornerRadius: CGFloat? = 8.0
     var primaryBtnBackgroundColor: UIColor?
@@ -727,8 +790,9 @@ public class IterableEmbeddedViewConfig: NSObject {
     var titleTextColor: UIColor?
     var bodyTextColor: UIColor?
     
-    public init(backgroundColor: UIColor? = UIColor.white,
-         borderColor: UIColor? = UIColor.white,
+    public init(
+         backgroundColor: UIColor? = nil,
+         borderColor: UIColor? = nil,
          borderWidth: CGFloat? = 1.0,
          borderCornerRadius: CGFloat? = 8.0,
          primaryBtnBackgroundColor: UIColor? = nil,
