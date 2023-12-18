@@ -8,7 +8,7 @@ on:
         description: "iOS SDK version"
         required: true
       changelog_section:
-        description: "Changelog version header (e.g. 6.5.0)"
+        description: "Changelog version header (e.g. 6.4.17, 6.5.0-beta)"
 
 jobs:
   ios-sdk-release:
