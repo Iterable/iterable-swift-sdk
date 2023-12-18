@@ -318,21 +318,7 @@ public class IterableEmbeddedView:UIView {
 //        else { }
     }
     
-    
     public var viewConfig: IterableEmbeddedViewConfig?
-//        didSet {
-//            bannerBackgroundColor = viewConfig?.backgroundColor
-//            bannerBorderColor = viewConfig?.borderColor ?? UIColor.clear
-//            bannerBorderWidth = viewConfig?.borderWidth ?? 1.0
-//            bannerCornerRadius = viewConfig?.borderCornerRadius ?? 8.0
-//            primaryBtnColor = viewConfig?.primaryBtnBackgroundColor ?? UIColor.purple
-//            primaryBtnTextColor = viewConfig?.primaryBtnTextColor ?? UIColor.white
-//            secondaryBtnColor = viewConfig?.secondaryBtnBackgroundColor ?? UIColor.white
-//            secondaryBtnTextColor = viewConfig?.secondaryBtnTextColor ?? UIColor.purple
-//            titleTextColor = viewConfig?.titleTextColor ?? UIColor.black
-//            descriptionTextColor = viewConfig?.bodyTextColor ?? UIColor.black
-//        }
-
     
     // MARK: Banner
     /// Banner Background Color
