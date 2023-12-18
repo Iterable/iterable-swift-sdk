@@ -95,7 +95,7 @@ platform :ios do
 
     github_release = set_github_release(
       repository_name: "Iterable/swift-sdk",
-      api_token: set_api_token,
+      api_bearer: set_api_token,
       name: "#{version}",
       tag_name: "#{version}",
       description: version_changelog,
