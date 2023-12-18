@@ -90,6 +90,7 @@ platform :ios do
       changelog_path: 'CHANGELOG.md',
       section_identifier: "[#{changelog_section}]",	
     )
+    emojified_changelog = emojify_changelog
 
     github_release = set_github_release(
       repository_name: "Iterable/swift-sdk",
@@ -100,6 +101,14 @@ platform :ios do
       commitish: "master",
       upload_assets: ["./#{output_dir}/IterableSDK.xcframework.zip", "./#{output_dir}/IterableAppExtensions.xcframework.zip"]
     )
+
+    slack(
+      message: "iOS SDK #{version} has been released! This release includes the following: #{emojified_changelog}",
+      channel: "#eng-mobile-sdk-release",
+      success: true,
+      slack_url: "https://hooks.slack.com/services/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"
+    )
+
   end
 
   desc "push pod trunk"
