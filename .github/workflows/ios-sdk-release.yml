@@ -31,7 +31,11 @@ jobs:
         run: bundle exec fastlane ios build_xcframework output_dir:./output_dir
 
       - name: create github release and upload assets
-        run: bundle exec fastlane ios create_release version:${{ github.event.inputs.version_number }} changelog_section:${{ github.event.inputs.changelog_section }} output_dir:./output_dir github_token:${{ secrets.GITHUB_TOKEN }}
+        run: bundle exec fastlane ios create_release \
+          version:${{ github.event.inputs.version_number }} \
+          changelog_section:${{ github.event.inputs.changelog_section }} \
+          output_dir:./output_dir \
+          github_token:${{ secrets.GITHUB_TOKEN }}
 
       - name: push pods to trunk
         run: bundle exec fastlane ios pod_trunk_push

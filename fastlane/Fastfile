@@ -90,16 +90,20 @@ platform :ios do
       changelog_path: 'CHANGELOG.md',
       section_identifier: "[#{changelog_section}]",	
     )
+    emojified_changelog = emojify_changelog # Emojify the output of `read_changelog` action
 
     github_release = set_github_release(
       repository_name: "Iterable/swift-sdk",
-      api_token: set_api_token,
+      api_token: github_token,
       name: "#{version}",
       tag_name: "#{version}",
       description: version_changelog,
       commitish: "master",
       upload_assets: ["./#{output_dir}/IterableSDK.xcframework.zip", "./#{output_dir}/IterableAppExtensions.xcframework.zip"]
     )
+
+    slack(message: "Hey team, iOS SDK v#{version} is released, which includes the following: #{emojified_changelog}") # share on Slack
+
   end
 
   desc "push pod trunk"
