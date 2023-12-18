@@ -31,7 +31,7 @@ jobs:
         run: bundle exec fastlane ios build_xcframework output_dir:./output_dir
 
       - name: create github release and upload assets
-        run:
+        run: |
           bundle exec fastlane ios create_release version:${{ github.event.inputs.version_number }} \
           changelog_section:${{ github.event.inputs.changelog_section }} \
           output_dir:./output_dir \
