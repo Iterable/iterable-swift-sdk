@@ -1,4 +1,4 @@
-name: ios-sdk-release
+name: iOS SDK Release
 run-name: ${{ github.actor }} is starting iOS SDK release
 
 on:
@@ -13,6 +13,12 @@ jobs:
     runs-on: macos-latest
 
     steps:
+      - uses: actions/checkout@v4
+      - uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: "3.2"
+          bundler-cache: true
+
       - name: set version number and push podspecs to git
         run: bundle exec fastlane ios bump_release_version version:${{ github.event.inputs.version_number }}
 
