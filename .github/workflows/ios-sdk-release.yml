@@ -20,6 +20,8 @@ jobs:
         with:
           ruby-version: "3.2"
           bundler-cache: true
+      - name: Install Cocoapods
+        run: gem install cocoapods
 
       - name: set version number and push podspecs to git
         run: bundle exec fastlane ios bump_release_version version:${{ github.event.inputs.version_number }}
@@ -36,3 +38,5 @@ jobs:
 
       - name: push pods to trunk
         run: bundle exec fastlane ios pod_trunk_push
+        env:
+          COCOAPODS_TRUNK_TOKEN: ${{ secrets.COCOAPODS_TRUNK_TOKEN }}
