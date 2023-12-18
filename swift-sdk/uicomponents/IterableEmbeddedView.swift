@@ -261,10 +261,10 @@ public class IterableEmbeddedView:UIView {
             bannerBorderColor = viewConfig?.borderColor ?? UIColor.clear
             bannerBorderWidth = viewConfig?.borderWidth ?? 1.0
             bannerCornerRadius = viewConfig?.borderCornerRadius ?? 8.0
-            primaryBtnColor = viewConfig?.firstButtonBackgroundColor ?? UIColor.purple
-            primaryBtnTextColor = viewConfig?.firstButtonTextColor ?? UIColor.white
-            secondaryBtnColor = viewConfig?.secondButtonBackgroundColor ?? UIColor.white
-            secondaryBtnTextColor = viewConfig?.secondButtonTextColor ?? UIColor.purple
+            primaryBtnColor = viewConfig?.primaryBtnBackgroundColor ?? UIColor.purple
+            primaryBtnTextColor = viewConfig?.primaryBtnTextColor ?? UIColor.white
+            secondaryBtnColor = viewConfig?.secondaryBtnBackgroundColor ?? UIColor.white
+            secondaryBtnTextColor = viewConfig?.secondaryBtnTextColor ?? UIColor.purple
             titleTextColor = viewConfig?.titleTextColor ?? UIColor.black
             descriptionTextColor = viewConfig?.bodyTextColor ?? UIColor.black
         }
@@ -718,12 +718,12 @@ public class IterableEmbeddedViewConfig: NSObject {
     var borderColor: UIColor? = UIColor.white
     var borderWidth: CGFloat? = 1.0
     var borderCornerRadius: CGFloat? = 8.0
-    var firstButtonBackgroundColor: UIColor?
-    var firstButtonBorderColor: UIColor?
-    var firstButtonTextColor: UIColor?
-    var secondButtonBackgroundColor: UIColor?
-    var secondButtonBorderColor: UIColor?
-    var secondButtonTextColor: UIColor?
+    var primaryBtnBackgroundColor: UIColor?
+    var primaryBtnBorderColor: UIColor?
+    var primaryBtnTextColor: UIColor?
+    var secondaryBtnBackgroundColor: UIColor?
+    var secondaryBtnBorderColor: UIColor?
+    var secondaryBtnTextColor: UIColor?
     var titleTextColor: UIColor?
     var bodyTextColor: UIColor?
     
@@ -731,12 +731,12 @@ public class IterableEmbeddedViewConfig: NSObject {
          borderColor: UIColor? = UIColor.white,
          borderWidth: CGFloat? = 1.0,
          borderCornerRadius: CGFloat? = 8.0,
-         firstButtonBackgroundColor: UIColor? = nil,
-         firstButtonBorderColor: UIColor? = nil,
-         firstButtonTextColor: UIColor? = nil,
-         secondButtonBackgroundColor: UIColor? = nil,
-         secondButtonBorderColor: UIColor? = nil,
-         secondButtonTextColor: UIColor? = nil,
+         primaryBtnBackgroundColor: UIColor? = nil,
+         primaryBtnBorderColor: UIColor? = nil,
+         primaryBtnTextColor: UIColor? = nil,
+         secondaryBtnBackgroundColor: UIColor? = nil,
+         secondaryBtnBorderColor: UIColor? = nil,
+         secondaryBtnTextColor: UIColor? = nil,
          titleTextColor: UIColor? = nil,
          bodyTextColor: UIColor? = nil) {
         
@@ -744,12 +744,12 @@ public class IterableEmbeddedViewConfig: NSObject {
         self.borderColor = borderColor
         self.borderWidth = borderWidth
         self.borderCornerRadius = borderCornerRadius
-        self.firstButtonBackgroundColor = firstButtonBackgroundColor
-        self.firstButtonBorderColor = firstButtonBorderColor
-        self.firstButtonTextColor = firstButtonTextColor
-        self.secondButtonBackgroundColor = secondButtonBackgroundColor
-        self.secondButtonBorderColor = secondButtonBorderColor
-        self.secondButtonTextColor = secondButtonTextColor
+        self.primaryBtnBackgroundColor = primaryBtnBackgroundColor
+        self.primaryBtnBorderColor = primaryBtnBorderColor
+        self.primaryBtnTextColor = primaryBtnTextColor
+        self.secondaryBtnBackgroundColor = secondaryBtnBackgroundColor
+        self.secondaryBtnBorderColor = secondaryBtnBorderColor
+        self.secondaryBtnTextColor = secondaryBtnTextColor
         self.titleTextColor = titleTextColor
         self.bodyTextColor = bodyTextColor
     }
