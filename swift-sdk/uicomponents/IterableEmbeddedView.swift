@@ -124,14 +124,41 @@ public class IterableEmbeddedView:UIView {
             case .card:
                 imgView.isHidden = true
                 let shouldShowCardImageView = EMimage != nil
-                cardImageView.isHidden = !shouldShowCardImageView
-                cardImageTopConstraint.isActive = true
-                titleToTopConstraint.isActive = false
-            case .banner, .notification:
+                bannerBorderColor = UIColor(red: 0.88, green: 0.87, blue: 0.87, alpha: 1.00)
+                if shouldShowCardImageView {
+                    // Show cardImageView
+                    cardImageView.isHidden = false
+                    cardImageTopConstraint.isActive = true
+                    titleToTopConstraint.isActive = false
+                } else {
+                    // Hide cardImageView and deactivate its constraints
+                    cardImageView.isHidden = true
+                    cardImageTopConstraint.isActive = false
+                    titleToTopConstraint.isActive = true
+
+                    // Remove cardImageView from its superview and release it
+                    cardImageView.removeFromSuperview()
+                    cardImageView = nil
+                }
+            case .banner:
                 imgView.isHidden = EMimage == nil
+                bannerBorderColor = UIColor(red: 0.88, green: 0.87, blue: 0.87, alpha: 1.00)
                 cardImageView.isHidden = true
                 cardImageTopConstraint.isActive = false
                 titleToTopConstraint.isActive = true
+            case .notification:
+                imgView.isHidden = true
+                cardImageView.isHidden = true
+                cardImageTopConstraint.isActive = false
+                titleToTopConstraint.isActive = true
+                bannerBackgroundColor = UIColor(red: 0.90, green: 0.98, blue: 1.00, alpha: 1.00)
+                bannerBorderColor = UIColor(red: 0.76, green: 0.94, blue: 0.99, alpha: 1.00)
+                titleTextColor = UIColor(red: 0.14, green: 0.54, blue: 0.66, alpha: 1.00)
+                descriptionTextColor = UIColor(red: 0.14, green: 0.54, blue: 0.66, alpha: 1.00)
+                primaryBtnColor = UIColor.white
+                primaryBtnTextColor = UIColor(red: 0.14, green: 0.54, blue: 0.66, alpha: 1.00)
+                secondaryBtnColor = UIColor(red: 0.90, green: 0.98, blue: 1.00, alpha: 1.00)
+                secondaryBtnTextColor = UIColor(red: 0.14, green: 0.54, blue: 0.66, alpha: 1.00)
             }
         }
     }
@@ -173,7 +200,7 @@ public class IterableEmbeddedView:UIView {
     func setDefaultValue() {
         bannerBackgroundColor = UIColor.white
         bannerBorderWidth = 1.0
-        bannerBorderColor = UIColor.clear
+        bannerBorderColor = UIColor(red: 0.88, green: 0.87, blue: 0.87, alpha: 1.00)
         bannerCornerRadius = 8.0
         bannerShadowColor = UIColor.lightGray
         bannerShadowWidth = 1
@@ -727,5 +754,3 @@ public class IterableEmbeddedViewConfig: NSObject {
         self.bodyTextColor = bodyTextColor
     }
 }
-
-
