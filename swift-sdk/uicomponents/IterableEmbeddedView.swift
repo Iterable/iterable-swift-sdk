@@ -8,17 +8,19 @@
 import Foundation
 import UIKit
 
-public protocol IterableEmbeddedViewDelegate: NSObject {
-    func didPressPrimaryButton(button: UIButton, viewTag: Int, message: IterableEmbeddedMessage?)
-    func didPressSecondaryButton(button: UIButton, viewTag: Int, message: IterableEmbeddedMessage?)
-    func didPressBanner(banner: IterableEmbeddedView, viewTag: Int, message: IterableEmbeddedMessage?)
-}
+
+//TODO: Featuring in D6
+//public protocol IterableEmbeddedViewDelegate: NSObject {
+//    func didPressPrimaryButton(button: UIButton, viewTag: Int, message: IterableEmbeddedMessage?)
+//    func didPressSecondaryButton(button: UIButton, viewTag: Int, message: IterableEmbeddedMessage?)
+//    func didPressBanner(banner: IterableEmbeddedView, viewTag: Int, message: IterableEmbeddedMessage?)
+//}
 
 @IBDesignable
 public class IterableEmbeddedView:UIView {
     
     // Delegate Methods
-    weak public var iterableEmbeddedViewDelegate: IterableEmbeddedViewDelegate!
+//    weak public var iterableEmbeddedViewDelegate: IterableEmbeddedViewDelegate!
     
     /// Set background color of view in container view.
     @IBOutlet weak public var contentView: UIView!
@@ -49,6 +51,7 @@ public class IterableEmbeddedView:UIView {
     @IBOutlet weak public var imageViewWidthConstraint:NSLayoutConstraint!
     @IBOutlet weak public var imageViewHeightConstraint:NSLayoutConstraint!
     
+
     // MARK: Embedded Message Content
     /// Title
     var EMtitle: String? = "Placeholding Title" {
@@ -75,7 +78,7 @@ public class IterableEmbeddedView:UIView {
     }
     
     /// Image
-    var EMimage: UIImage? = nil {
+    public var EMimage: UIImage? = nil {
         didSet {
             if let image = EMimage {
                 imgView.image = image
@@ -88,7 +91,7 @@ public class IterableEmbeddedView:UIView {
     }
 
     /// Primary Button Text
-    var EMbuttonText: String? = "Placeholding BTN 1" {
+    public var EMbuttonText: String? = "Placeholding BTN 1" {
         didSet {
             if let btn = EMbuttonText {
                 primaryBtn.titleText = btn
@@ -100,7 +103,7 @@ public class IterableEmbeddedView:UIView {
     }
     
     /// Secondary Button Text
-    var EMbuttonTwoText: String? = "Placeholding BTN 2" {
+    public var EMbuttonTwoText: String? = "Placeholding BTN 2" {
         didSet {
             if let btn = EMbuttonTwoText {
                 secondaryBtn.titleText = btn
@@ -115,23 +118,51 @@ public class IterableEmbeddedView:UIView {
     public var message: IterableEmbeddedMessage? = nil
     
     /// Layout style of Embedded Message
-    var EMstyle: String? = "banner" {
+    public var EMstyle: IterableEmbeddedViewType = IterableEmbeddedViewType.banner {
         didSet {
             switch EMstyle {
-            case "card":
+            case .card:
                 imgView.isHidden = true
                 let shouldShowCardImageView = EMimage != nil
-                cardImageView.isHidden = !shouldShowCardImageView
-                cardImageTopConstraint.isActive = true
-                titleToTopConstraint.isActive = false
-            case "banner", .none, .some:
+                bannerBorderColor = UIColor(red: 0.88, green: 0.87, blue: 0.87, alpha: 1.00)
+                if shouldShowCardImageView {
+                    // Show cardImageView
+                    cardImageView.isHidden = false
+                    cardImageTopConstraint.isActive = true
+                    titleToTopConstraint.isActive = false
+                } else {
+                    // Hide cardImageView and deactivate its constraints
+                    cardImageView.isHidden = true
+                    cardImageTopConstraint.isActive = false
+                    titleToTopConstraint.isActive = true
+
+                    // Remove cardImageView from its superview and release it
+                    cardImageView.removeFromSuperview()
+                    cardImageView = nil
+                }
+            case .banner:
                 imgView.isHidden = EMimage == nil
+                bannerBorderColor = UIColor(red: 0.88, green: 0.87, blue: 0.87, alpha: 1.00)
                 cardImageView.isHidden = true
                 cardImageTopConstraint.isActive = false
                 titleToTopConstraint.isActive = true
+            case .notification:
+                imgView.isHidden = true
+                cardImageView.isHidden = true
+                cardImageTopConstraint.isActive = false
+                titleToTopConstraint.isActive = true
+                bannerBackgroundColor = UIColor(red: 0.90, green: 0.98, blue: 1.00, alpha: 1.00)
+                bannerBorderColor = UIColor(red: 0.76, green: 0.94, blue: 0.99, alpha: 1.00)
+                titleTextColor = UIColor(red: 0.14, green: 0.54, blue: 0.66, alpha: 1.00)
+                descriptionTextColor = UIColor(red: 0.14, green: 0.54, blue: 0.66, alpha: 1.00)
+                primaryBtnColor = UIColor.white
+                primaryBtnTextColor = UIColor(red: 0.14, green: 0.54, blue: 0.66, alpha: 1.00)
+                secondaryBtnColor = UIColor(red: 0.90, green: 0.98, blue: 1.00, alpha: 1.00)
+                secondaryBtnTextColor = UIColor(red: 0.14, green: 0.54, blue: 0.66, alpha: 1.00)
             }
         }
     }
+    
 
     
     // MARK: IterableEmbeddedView init method
@@ -168,9 +199,9 @@ public class IterableEmbeddedView:UIView {
     ///setDefaultValue assign default values to IterableEmbeddedView
     func setDefaultValue() {
         bannerBackgroundColor = UIColor.white
-        bannerBorderWidth = 0
-        bannerBorderColor = UIColor.clear
-        bannerCornerRadius = 0
+        bannerBorderWidth = 1.0
+        bannerBorderColor = UIColor(red: 0.88, green: 0.87, blue: 0.87, alpha: 1.00)
+        bannerCornerRadius = 8.0
         bannerShadowColor = UIColor.lightGray
         bannerShadowWidth = 1
         bannerShadowHeight = 1
@@ -189,7 +220,7 @@ public class IterableEmbeddedView:UIView {
         primaryBtnTextColor = UIColor.white
         primaryBtnTextAlignment = "center"
         secondaryBtnColor = UIColor.clear
-        secondaryButtonRoundedSides = false
+        secondaryButtonRoundedSides = true
         secondaryBtnBorderRadius = 0
         secondaryBtnTextFontSize = 16
         secondaryBtnTextFontName = "HelveticaNeue"
@@ -205,15 +236,40 @@ public class IterableEmbeddedView:UIView {
 
     
     @IBAction func bannerPressed(_ sender: UITapGestureRecognizer) {
+        guard let EMmessage = message else {
+            ITBInfo("message not set in IterableEmbeddedView. Set the property so that clickhandlers have reference")
+            return
+        }
+        
         if let defaultActionData = message?.elements?.defaultAction?.data, !defaultActionData.isEmpty {
             IterableAPI.track(embeddedMessageClick: message!, buttonIdentifier: nil, clickedUrl: defaultActionData)
+            IterableAPI.embeddedManager.handleEmbeddedClick(message: EMmessage, buttonIdentifier: nil, clickedUrl: EMmessage.elements?.defaultAction?.data ?? "")
         }
-        if (iterableEmbeddedViewDelegate != nil) {
-            iterableEmbeddedViewDelegate.didPressBanner(banner: self, viewTag: self.tag, message: message)
-        }
-        else { }
+        
+        
+        //TODO: Delegate method
+//        if (iterableEmbeddedViewDelegate != nil) {
+//            iterableEmbeddedViewDelegate.didPressBanner(banner: self, viewTag: self.tag, message: message)
+//        }
+//        else { }
     }
     
+    
+    public var viewConfig: IterableEmbeddedViewConfig? {
+        didSet {
+            bannerBackgroundColor = viewConfig?.backgroundColor
+            bannerBorderColor = viewConfig?.borderColor ?? UIColor.clear
+            bannerBorderWidth = viewConfig?.borderWidth ?? 1.0
+            bannerCornerRadius = viewConfig?.borderCornerRadius ?? 8.0
+            primaryBtnColor = viewConfig?.firstButtonBackgroundColor ?? UIColor.purple
+            primaryBtnTextColor = viewConfig?.firstButtonTextColor ?? UIColor.white
+            secondaryBtnColor = viewConfig?.secondButtonBackgroundColor ?? UIColor.white
+            secondaryBtnTextColor = viewConfig?.secondButtonTextColor ?? UIColor.purple
+            titleTextColor = viewConfig?.titleTextColor ?? UIColor.black
+            descriptionTextColor = viewConfig?.bodyTextColor ?? UIColor.black
+        }
+    }
+
     
     // MARK: Banner
     /// Banner Background Color
@@ -225,7 +281,7 @@ public class IterableEmbeddedView:UIView {
     }
 
     /// Banner Border Width
-    @IBInspectable public var bannerBorderWidth: CGFloat = 0 {
+    @IBInspectable public var bannerBorderWidth: CGFloat = 1.0 {
         didSet {
             self.layer.borderWidth = bannerBorderWidth
         }
@@ -239,7 +295,7 @@ public class IterableEmbeddedView:UIView {
     }
     
     /// Banner Corner Radius
-    @IBInspectable public var bannerCornerRadius: Double = 0 {
+    @IBInspectable public var bannerCornerRadius: CGFloat = 8.0 {
         didSet {
             self.layer.cornerRadius = bannerCornerRadius
             contentView.layer.cornerRadius = bannerCornerRadius
@@ -385,11 +441,13 @@ public class IterableEmbeddedView:UIView {
             
             let clickedUrl = actionData
             IterableAPI.track(embeddedMessageClick: message!, buttonIdentifier: buttonIdentifier, clickedUrl: clickedUrl)
+            IterableAPI.embeddedManager.handleEmbeddedClick(message: message!, buttonIdentifier: buttonIdentifier, clickedUrl: clickedUrl)
         }
 
-        if (iterableEmbeddedViewDelegate != nil) {
-            iterableEmbeddedViewDelegate.didPressPrimaryButton(button: sender, viewTag: self.tag, message: message)
-        }
+        //TODO: Delegate handling
+//        if (iterableEmbeddedViewDelegate != nil) {
+//            iterableEmbeddedViewDelegate.didPressPrimaryButton(button: sender, viewTag: self.tag, message: message)
+//        }
         else { }
     }
     
@@ -457,11 +515,13 @@ public class IterableEmbeddedView:UIView {
             
             let clickedUrl = actionData
             IterableAPI.track(embeddedMessageClick: message!, buttonIdentifier: buttonIdentifier, clickedUrl: clickedUrl)
+            IterableAPI.embeddedManager.handleEmbeddedClick(message: message!, buttonIdentifier: buttonIdentifier, clickedUrl: clickedUrl)
         }
-        if (iterableEmbeddedViewDelegate != nil) {
-            iterableEmbeddedViewDelegate.didPressSecondaryButton(button: sender, viewTag: self.tag, message: message)
-        }
-        else  { }
+        //TODO: Delegate handling
+//        if (iterableEmbeddedViewDelegate != nil) {
+//            iterableEmbeddedViewDelegate.didPressSecondaryButton(button: sender, viewTag: self.tag, message: message)
+//        }
+//        else  { }
         
     }
     
@@ -554,17 +614,6 @@ public class IterableEmbeddedView:UIView {
             self.updateButtonConstraints()
         }
     }
-    
-    public func configure(title: String?, description: String?, image: UIImage?, buttonText: String?, buttonTwoText: String?, message: IterableEmbeddedMessage?, style: String?) {
-        self.EMtitle = title
-        self.EMdescription = description
-        self.EMimage = image
-        self.EMbuttonText = buttonText
-        self.EMbuttonTwoText = buttonTwoText
-        self.message = message
-        self.EMstyle = style
-        self.updateButtonConstraints()
-    }
 }
 
 public class IterableEMButton: UIButton {
@@ -654,5 +703,54 @@ public class IterableEMButton: UIButton {
                                     cornerRadii: CGSize(width: bounds.height / 2, height: bounds.height / 2))
             maskLayer.path = path.cgPath
         }
+    }
+}
+
+public enum IterableEmbeddedViewType: String {
+    case banner
+    case card
+    case notification
+}
+
+
+public class IterableEmbeddedViewConfig: NSObject {
+    var backgroundColor: UIColor? = UIColor.white
+    var borderColor: UIColor? = UIColor.white
+    var borderWidth: CGFloat? = 1.0
+    var borderCornerRadius: CGFloat? = 8.0
+    var firstButtonBackgroundColor: UIColor?
+    var firstButtonBorderColor: UIColor?
+    var firstButtonTextColor: UIColor?
+    var secondButtonBackgroundColor: UIColor?
+    var secondButtonBorderColor: UIColor?
+    var secondButtonTextColor: UIColor?
+    var titleTextColor: UIColor?
+    var bodyTextColor: UIColor?
+    
+    public init(backgroundColor: UIColor? = UIColor.white,
+         borderColor: UIColor? = UIColor.white,
+         borderWidth: CGFloat? = 1.0,
+         borderCornerRadius: CGFloat? = 8.0,
+         firstButtonBackgroundColor: UIColor? = nil,
+         firstButtonBorderColor: UIColor? = nil,
+         firstButtonTextColor: UIColor? = nil,
+         secondButtonBackgroundColor: UIColor? = nil,
+         secondButtonBorderColor: UIColor? = nil,
+         secondButtonTextColor: UIColor? = nil,
+         titleTextColor: UIColor? = nil,
+         bodyTextColor: UIColor? = nil) {
+        
+        self.backgroundColor = backgroundColor
+        self.borderColor = borderColor
+        self.borderWidth = borderWidth
+        self.borderCornerRadius = borderCornerRadius
+        self.firstButtonBackgroundColor = firstButtonBackgroundColor
+        self.firstButtonBorderColor = firstButtonBorderColor
+        self.firstButtonTextColor = firstButtonTextColor
+        self.secondButtonBackgroundColor = secondButtonBackgroundColor
+        self.secondButtonBorderColor = secondButtonBorderColor
+        self.secondButtonTextColor = secondButtonTextColor
+        self.titleTextColor = titleTextColor
+        self.bodyTextColor = bodyTextColor
     }
 }
