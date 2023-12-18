@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## [6.8.0-testing]
+
+### Added
+
+- testing `GA Actions`
+
 ## [6.4.16]
 
 ### Added
