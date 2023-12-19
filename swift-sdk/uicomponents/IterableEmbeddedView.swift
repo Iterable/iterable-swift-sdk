@@ -305,11 +305,12 @@ public class IterableEmbeddedView:UIView {
             return
         }
         
-        if let defaultActionData = message?.elements?.defaultAction?.data, !defaultActionData.isEmpty {
-            IterableAPI.track(embeddedMessageClick: message!, buttonIdentifier: nil, clickedUrl: defaultActionData)
-            IterableAPI.embeddedManager.handleEmbeddedClick(message: EMmessage, buttonIdentifier: nil, clickedUrl: EMmessage.elements?.defaultAction?.data ?? "")
+        if let defaultAction = message?.elements?.defaultAction {
+            if let clickedUrl = defaultAction.data?.isEmpty == false ? defaultAction.data : defaultAction.type {
+                IterableAPI.track(embeddedMessageClick: message!, buttonIdentifier: nil, clickedUrl: clickedUrl)
+                IterableAPI.embeddedManager.handleEmbeddedClick(message: EMmessage, buttonIdentifier: nil, clickedUrl: clickedUrl)
+            }
         }
-        
         
         //TODO: Delegate method
 //        if (iterableEmbeddedViewDelegate != nil) {
@@ -480,17 +481,14 @@ public class IterableEmbeddedView:UIView {
     /// Primary button on touchup inside event.
     @IBAction public func primaryButtonPressed(_ sender: UIButton) {
         var buttonIdentifier: String?
-        if let buttonData = message?.elements?.buttons?.first,
-           let actionData = buttonData.action?.data,
-           !actionData.isEmpty {
+        let primaryButton = message?.elements?.buttons?.first
+        if let primaryButtonAction = primaryButton?.action {
+            buttonIdentifier = primaryButton?.id
             
-            if !buttonData.id.isEmpty {
-                buttonIdentifier = buttonData.id
+            if let clickedUrl = primaryButtonAction.data?.isEmpty == false ? primaryButtonAction.data : primaryButtonAction.type {
+                IterableAPI.track(embeddedMessageClick: message!, buttonIdentifier: buttonIdentifier, clickedUrl: clickedUrl)
+                IterableAPI.embeddedManager.handleEmbeddedClick(message: message!, buttonIdentifier: buttonIdentifier, clickedUrl: clickedUrl)
             }
-            
-            let clickedUrl = actionData
-            IterableAPI.track(embeddedMessageClick: message!, buttonIdentifier: buttonIdentifier, clickedUrl: clickedUrl)
-            IterableAPI.embeddedManager.handleEmbeddedClick(message: message!, buttonIdentifier: buttonIdentifier, clickedUrl: clickedUrl)
         }
 
         //TODO: Delegate handling
@@ -554,18 +552,16 @@ public class IterableEmbeddedView:UIView {
     /// Secondary button on press event
     @IBAction func secondaryButtonPressed(_ sender: UIButton) {
         var buttonIdentifier: String?
-        if let buttonData = message?.elements?.buttons?.dropFirst().first,
-           let actionData = buttonData.action?.data,
-           !actionData.isEmpty {
+        let secondaryButton = message?.elements?.buttons?[1]
+        if let secondaryButtonAction = secondaryButton?.action {
+            buttonIdentifier = secondaryButton?.id
             
-            if !buttonData.id.isEmpty {
-                buttonIdentifier = buttonData.id
+            if let clickedUrl = secondaryButtonAction.data?.isEmpty == false ? secondaryButtonAction.data : secondaryButtonAction.type {
+                IterableAPI.track(embeddedMessageClick: message!, buttonIdentifier: buttonIdentifier, clickedUrl: clickedUrl)
+                IterableAPI.embeddedManager.handleEmbeddedClick(message: message!, buttonIdentifier: buttonIdentifier, clickedUrl: clickedUrl)
             }
-            
-            let clickedUrl = actionData
-            IterableAPI.track(embeddedMessageClick: message!, buttonIdentifier: buttonIdentifier, clickedUrl: clickedUrl)
-            IterableAPI.embeddedManager.handleEmbeddedClick(message: message!, buttonIdentifier: buttonIdentifier, clickedUrl: clickedUrl)
         }
+        
         //TODO: Delegate handling
 //        if (iterableEmbeddedViewDelegate != nil) {
 //            iterableEmbeddedViewDelegate.didPressSecondaryButton(button: sender, viewTag: self.tag, message: message)
