@@ -305,11 +305,12 @@ public class IterableEmbeddedView:UIView {
             return
         }
         
-        if let defaultActionData = message?.elements?.defaultAction?.data, !defaultActionData.isEmpty {
-            IterableAPI.track(embeddedMessageClick: message!, buttonIdentifier: nil, clickedUrl: defaultActionData)
-            IterableAPI.embeddedManager.handleEmbeddedClick(message: EMmessage, buttonIdentifier: nil, clickedUrl: EMmessage.elements?.defaultAction?.data ?? "")
+        if let defaultAction = message?.elements?.defaultAction {
+            if let clickedUrl = defaultAction.data?.isEmpty == false ? defaultAction.data : defaultAction.type {
+                IterableAPI.track(embeddedMessageClick: message!, buttonIdentifier: nil, clickedUrl: clickedUrl)
+                IterableAPI.embeddedManager.handleEmbeddedClick(message: EMmessage, buttonIdentifier: nil, clickedUrl: clickedUrl)
+            }
         }
-        
         
         //TODO: Delegate method
 //        if (iterableEmbeddedViewDelegate != nil) {
