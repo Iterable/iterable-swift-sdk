@@ -7,13 +7,14 @@ platform :ios do
   desc "locally execute full automated iOS SDK release on your terminal"
   lane :release_sdk do
     set_version = prompt(text: "Please set the release version number")
+    set_changelog_section = prompt(text: "Please provide changelog section header") 
     set_output_dir = prompt(text: "Please specify an output directory")
     set_github_token = prompt(text: "Please provide github token") 
    
     bump_release_version(version:set_version)
     clean_and_lint
     build_xcframework(output_dir:set_output_dir)
-    create_release(version:set_version, output_dir:set_output_dir, github_token:set_github_token)
+    create_release(version:set_version, output_dir:set_output_dir, changelog_section:set_changelog_section, github_token:set_github_token)
     pod_trunk_push
   end 
 
@@ -79,21 +80,20 @@ platform :ios do
   desc "create github release and upload assets"
   lane :create_release do |options|
     version = options[:version]
+    changelog_section = options[:changelog_section]
     output_dir = options[:output_dir]
-    
     github_token = options[:github_token]
-    set_api_token = github_token.empty? ? ENV["GITHUB_TOKEN"] : github_token
 
     add_git_tag(tag: "#{version}") 
 
     version_changelog = read_changelog(
       changelog_path: 'CHANGELOG.md',
-      section_identifier: "[#{version}]",	
+      section_identifier: "[#{changelog_section}]",	
     )
 
     github_release = set_github_release(
       repository_name: "Iterable/swift-sdk",
-      api_token: set_api_token,
+      api_token: github_token,
       name: "#{version}",
       tag_name: "#{version}",
       description: version_changelog,
