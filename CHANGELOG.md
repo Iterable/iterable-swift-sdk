@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## [6.4.17]
+
+### Changed
+
+- IterableTaskRunner’s stop function now to set `running` variable as `false`
+
 ## [6.4.16]
 
 ### Added
