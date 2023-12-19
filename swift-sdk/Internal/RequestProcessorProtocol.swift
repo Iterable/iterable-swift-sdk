@@ -31,11 +31,27 @@ protocol RequestProcessorProtocol {
                     onFailure: OnFailureHandler?) -> Pending<SendRequestValue, SendRequestError>
     
     @discardableResult
+    func updateCart(items: [CommerceItem],
+                    withUser user: [AnyHashable:Any],
+                    createdAt: Int,
+                    onSuccess: OnSuccessHandler?,
+                    onFailure: OnFailureHandler?) -> Pending<SendRequestValue, SendRequestError>
+    
+    @discardableResult
     func trackPurchase(_ total: NSNumber,
                        items: [CommerceItem],
                        dataFields: [AnyHashable: Any]?,
                        campaignId: NSNumber?,
                        templateId: NSNumber?,
+                       onSuccess: OnSuccessHandler?,
+                       onFailure: OnFailureHandler?) -> Pending<SendRequestValue, SendRequestError>
+    
+    @discardableResult
+    func trackPurchase(_ total: NSNumber,
+                       items: [CommerceItem],
+                       dataFields: [AnyHashable: Any]?,
+                       withUser user: [AnyHashable: Any],
+                       createdAt: Int,
                        onSuccess: OnSuccessHandler?,
                        onFailure: OnFailureHandler?) -> Pending<SendRequestValue, SendRequestError>
     
@@ -51,6 +67,12 @@ protocol RequestProcessorProtocol {
     @discardableResult
     func track(event: String,
                dataFields: [AnyHashable: Any]?,
+               onSuccess: OnSuccessHandler?,
+               onFailure: OnFailureHandler?) -> Pending<SendRequestValue, SendRequestError>
+    
+    @discardableResult
+    func track(event: String,
+               withBody body: [AnyHashable: Any]?,
                onSuccess: OnSuccessHandler?,
                onFailure: OnFailureHandler?) -> Pending<SendRequestValue, SendRequestError>
     

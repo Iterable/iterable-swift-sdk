@@ -41,10 +41,33 @@ class ApiClient {
         return apiCallRequest.convertToURLRequest(sentAt: currentDate)
     }
     
+    func convertToURLRequestWithoutCreatedAt(iterableRequest: IterableRequest) -> URLRequest? {
+        guard let authProvider = authProvider else {
+            return nil
+        }
+        
+        let currentDate = dateProvider.currentDate
+        let apiCallRequest = IterableAPICallRequest(apiKey: apiKey,
+                                                    endpoint: endpoint,
+                                                    authToken: authProvider.auth.authToken,
+                                                    deviceMetadata: deviceMetadata,
+                                                    iterableRequest: iterableRequest)
+        return apiCallRequest.convertToURLRequest(sentAt: currentDate)
+    }
+    
     func send(iterableRequestResult result: Result<IterableRequest, IterableError>) -> Pending<SendRequestValue, SendRequestError> {
         switch result {
         case let .success(iterableRequest):
             return send(iterableRequest: iterableRequest)
+        case let .failure(iterableError):
+            return SendRequestError.createErroredFuture(reason: iterableError.localizedDescription)
+        }
+    }
+    
+    func sendWithoutCreatedAt(iterableRequestResult result: Result<IterableRequest, IterableError>) -> Pending<SendRequestValue, SendRequestError> {
+        switch result {
+        case let .success(iterableRequest):
+            return sendWithoutCreatedAt(iterableRequest: iterableRequest)
         case let .failure(iterableError):
             return SendRequestError.createErroredFuture(reason: iterableError.localizedDescription)
         }
@@ -61,6 +84,14 @@ class ApiClient {
     
     func send(iterableRequest: IterableRequest) -> Pending<SendRequestValue, SendRequestError> {
         guard let urlRequest = convertToURLRequest(iterableRequest: iterableRequest) else {
+            return SendRequestError.createErroredFuture()
+        }
+        
+        return RequestSender.sendRequest(urlRequest, usingSession: networkSession)
+    }
+    
+    func sendWithoutCreatedAt(iterableRequest: IterableRequest) -> Pending<SendRequestValue, SendRequestError> {
+        guard let urlRequest = convertToURLRequestWithoutCreatedAt(iterableRequest: iterableRequest) else {
             return SendRequestError.createErroredFuture()
         }
         
@@ -130,6 +161,12 @@ extension ApiClient: ApiClientProtocol {
         return send(iterableRequestResult: result)
     }
     
+    func updateCart(items: [CommerceItem], withUser user: [AnyHashable:Any], createdAt: Int) -> Pending<SendRequestValue, SendRequestError> {
+        let result = createRequestCreator().flatMap { $0.createUpdateCartRequest(items: items, withUser: user, createdAt: createdAt) }
+
+        return sendWithoutCreatedAt(iterableRequestResult: result)
+    }
+    
     func track(purchase total: NSNumber,
                items: [CommerceItem],
                dataFields: [AnyHashable: Any]?,
@@ -143,6 +180,19 @@ extension ApiClient: ApiClientProtocol {
         return send(iterableRequestResult: result)
     }
     
+    func track(purchase total: NSNumber,
+               items: [CommerceItem],
+               dataFields: [AnyHashable: Any]?,
+               withUser user: [AnyHashable: Any],
+               createdAt: Int) -> Pending<SendRequestValue, SendRequestError> {
+        let result = createRequestCreator().flatMap { $0.createTrackPurchaseRequest(total,
+                                                                                    items: items,
+                                                                                    dataFields: dataFields,
+                                                                                    withUser: user,
+                                                                                    createdAt: createdAt) }
+        return send(iterableRequestResult: result)
+    }
+    
     func track(pushOpen campaignId: NSNumber, templateId: NSNumber?, messageId: String, appAlreadyRunning: Bool, dataFields: [AnyHashable: Any]?) -> Pending<SendRequestValue, SendRequestError> {
         let result = createRequestCreator().flatMap { $0.createTrackPushOpenRequest(campaignId,
                                                                                     templateId: templateId,
@@ -153,6 +203,18 @@ extension ApiClient: ApiClientProtocol {
     }
     
     func track(event eventName: String, dataFields: [AnyHashable: Any]?) -> Pending<SendRequestValue, SendRequestError> {
+        let result = createRequestCreator().flatMap { $0.createTrackEventRequest(eventName,
+                                                                                 dataFields: dataFields) }
+        return send(iterableRequestResult: result)
+    }
+    
+    func track(event eventName: String, withBody body: [AnyHashable: Any]?) -> Pending<SendRequestValue, SendRequestError> {
+        let result = createRequestCreator().flatMap { $0.createTrackEventRequest(eventName,
+                                                                                 withBody: body) }
+        return sendWithoutCreatedAt(iterableRequestResult: result)
+    }
+
+    func track(event eventName: String, body: [AnyHashable: Any]?, dataFields: [AnyHashable: Any]?) -> Pending<SendRequestValue, SendRequestError> {
         let result = createRequestCreator().flatMap { $0.createTrackEventRequest(eventName,
                                                                                  dataFields: dataFields) }
         return send(iterableRequestResult: result)

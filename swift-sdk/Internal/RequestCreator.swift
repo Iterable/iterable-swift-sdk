@@ -107,6 +107,20 @@ struct RequestCreator {
         return .success(.post(createPostRequest(path: Const.Path.updateCart, body: body)))
     }
     
+    func createUpdateCartRequest(items: [CommerceItem], withUser user: [AnyHashable: Any], createdAt: Int) -> Result<IterableRequest, IterableError> {
+        if case .none = auth.emailOrUserId {
+            ITBError(Self.authMissingMessage)
+            return .failure(IterableError.general(description: Self.authMissingMessage))
+        }
+        let itemsToSerialize = items.map { $0.toDictionary() }
+
+        let body: [String: Any] = [JsonKey.Commerce.user: user,
+                                   JsonKey.Body.createdAt: createdAt,
+                                   JsonKey.Commerce.items: itemsToSerialize]
+
+        return .success(.post(createPostRequest(path: Const.Path.updateCart, body: body)))
+    }
+    
     func createTrackPurchaseRequest(_ total: NSNumber,
                                     items: [CommerceItem],
                                     dataFields: [AnyHashable: Any]?,
@@ -136,6 +150,30 @@ struct RequestCreator {
         }
         if let templateId = templateId {
             body[JsonKey.templateId] = templateId
+        }
+
+        return .success(.post(createPostRequest(path: Const.Path.trackPurchase, body: body)))
+    }
+    
+    func createTrackPurchaseRequest(_ total: NSNumber,
+                                    items: [CommerceItem],
+                                    dataFields: [AnyHashable: Any]?,
+                                    withUser user: [AnyHashable: Any],
+                                    createdAt: Int) -> Result<IterableRequest, IterableError> {
+        if case .none = auth.emailOrUserId {
+            ITBError(Self.authMissingMessage)
+            return .failure(IterableError.general(description: Self.authMissingMessage))
+        }
+
+        let itemsToSerialize = items.map { $0.toDictionary() }
+
+        var body: [String: Any] = [JsonKey.Commerce.user: user,
+                                   JsonKey.Body.createdAt: createdAt,
+                                   JsonKey.Commerce.items: itemsToSerialize,
+                                   JsonKey.Commerce.total: total]
+
+        if let dataFields = dataFields {
+            body[JsonKey.dataFields] = dataFields
         }
 
         return .success(.post(createPostRequest(path: Const.Path.trackPurchase, body: body)))
@@ -189,6 +227,24 @@ struct RequestCreator {
         }
         
         return .success(.post(createPostRequest(path: Const.Path.trackEvent, body: body)))
+    }
+    
+    func createTrackEventRequest(_ eventName: String, withBody body: [AnyHashable: Any]?) -> Result<IterableRequest, IterableError> {
+        if case .none = auth.emailOrUserId {
+            ITBError(Self.authMissingMessage)
+            return .failure(IterableError.general(description: Self.authMissingMessage))
+        }
+
+        var postBody = [AnyHashable: Any]()
+        if let _body = body {
+            postBody = _body
+        }
+
+        setCurrentUser(inDict: &postBody)
+
+        postBody.setValue(for: JsonKey.eventName, value: eventName)
+
+        return .success(.post(createPostRequest(path: Const.Path.trackEvent, body: postBody)))
     }
     
     func createUpdateSubscriptionsRequest(_ emailListIds: [NSNumber]? = nil,

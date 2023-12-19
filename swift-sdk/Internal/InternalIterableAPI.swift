@@ -82,6 +82,10 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
         self.dependencyContainer.createAuthManager(config: self.config)
     }()
     
+    lazy var anonymousUserManager: AnonymousUserManagerProtocol = {
+            self.dependencyContainer.createAnonymousUserManager()
+    }()
+    
     var apiEndPointForTest: String {
         get {
             apiEndPoint
@@ -120,6 +124,11 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
     func setEmail(_ email: String?, authToken: String? = nil, successHandler: OnSuccessHandler? = nil, failureHandler: OnFailureHandler? = nil) {
         ITBInfo()
         
+        
+        if email == nil {
+            anonymousUserManager.logout()
+        }
+        
         if _email == email && email != nil && authToken != nil {
             checkAndUpdateAuthToken(authToken)
             return
@@ -143,6 +152,10 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
     
     func setUserId(_ userId: String?, authToken: String? = nil, successHandler: OnSuccessHandler? = nil, failureHandler: OnFailureHandler? = nil) {
         ITBInfo()
+        
+        if userId == nil {
+            anonymousUserManager.logout()
+        }
         
         if _userId == userId && userId != nil && authToken != nil {
             checkAndUpdateAuthToken(authToken)
@@ -180,6 +193,10 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
             _failureCallback?(errorMessage, nil)
             onFailure?(errorMessage, nil)
             return
+        }
+        
+        if !isEitherUserIdOrEmailSet() {
+            anonymousUserManager.trackAnonTokenRegistration(token: token.hexString())
         }
         
         hexToken = token.hexString()
@@ -261,7 +278,19 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
     func updateCart(items: [CommerceItem],
                     onSuccess: OnSuccessHandler? = nil,
                     onFailure: OnFailureHandler? = nil) -> Pending<SendRequestValue, SendRequestError> {
-        requestHandler.updateCart(items: items, onSuccess: onSuccess, onFailure: onFailure)
+        if !isEitherUserIdOrEmailSet() {
+                   anonymousUserManager.trackAnonUpdateCart(items: items)
+               }
+               return requestHandler.updateCart(items: items, onSuccess: onSuccess, onFailure: onFailure)
+           }
+
+           @discardableResult
+           func updateCart(items: [CommerceItem],
+                           withUser user: [AnyHashable:Any],
+                           createdAt: Int,
+                           onSuccess: OnSuccessHandler? = nil,
+                           onFailure: OnFailureHandler? = nil) -> Pending<SendRequestValue, SendRequestError> {
+               return requestHandler.updateCart(items: items, withUser: user, createdAt: createdAt, onSuccess: onSuccess, onFailure: onFailure)
     }
     
     @discardableResult
@@ -272,6 +301,9 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
                        templateId: NSNumber? = nil,
                        onSuccess: OnSuccessHandler? = nil,
                        onFailure: OnFailureHandler? = nil) -> Pending<SendRequestValue, SendRequestError> {
+        if !isEitherUserIdOrEmailSet() {
+                    anonymousUserManager.trackAnonPurchaseEvent(total: total, items: items, dataFields: dataFields)
+                }
         requestHandler.trackPurchase(total,
                                      items: items,
                                      dataFields: dataFields,
@@ -281,6 +313,22 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
                                      onFailure: onFailure)
     }
 
+    @discardableResult
+    func trackPurchase(_ total: NSNumber,
+                       items: [CommerceItem],
+                       dataFields: [AnyHashable: Any]? = nil,
+                       withUser user: [AnyHashable: Any],
+                       createdAt: Int,
+                       onSuccess: OnSuccessHandler? = nil,
+                       onFailure: OnFailureHandler? = nil) -> Pending<SendRequestValue, SendRequestError> {
+        return requestHandler.trackPurchase(total,
+                                     items: items,
+                                     dataFields: dataFields,
+                                     withUser: user,
+                                     createdAt: createdAt,
+                                     onSuccess: onSuccess,
+                                     onFailure: onFailure)
+    }
     
     @discardableResult
     func trackPushOpen(_ userInfo: [AnyHashable: Any],
@@ -325,6 +373,18 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
                onSuccess: OnSuccessHandler? = nil,
                onFailure: OnFailureHandler? = nil) -> Pending<SendRequestValue, SendRequestError> {
         requestHandler.track(event: eventName, dataFields: dataFields, onSuccess: onSuccess, onFailure: onFailure)
+        if !isEitherUserIdOrEmailSet() {
+                    anonymousUserManager.trackAnonEvent(name: eventName, dataFields: dataFields)
+                }
+                return requestHandler.track(event: eventName, dataFields: dataFields, onSuccess: onSuccess, onFailure: onFailure)
+            }
+
+            @discardableResult
+            func track(_ eventName: String,
+                       withBody body: [AnyHashable: Any],
+                       onSuccess: OnSuccessHandler? = nil,
+                       onFailure: OnFailureHandler? = nil) -> Pending<SendRequestValue, SendRequestError> {
+                requestHandler.track(event: eventName, withBody: body, onSuccess: onSuccess, onFailure: onFailure)
     }
     
     @discardableResult
@@ -494,7 +554,7 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
         }
     }
     
-    private func isEitherUserIdOrEmailSet() -> Bool {
+    public func isEitherUserIdOrEmailSet() -> Bool {
         IterableUtil.isNotNullOrEmpty(string: _email) || IterableUtil.isNotNullOrEmpty(string: _userId)
     }
     
