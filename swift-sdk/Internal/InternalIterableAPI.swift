@@ -82,9 +82,7 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
         self.dependencyContainer.createAuthManager(config: self.config)
     }()
     
-    lazy var anonymousUserManager: AnonymousUserManagerProtocol = {
-            self.dependencyContainer.createAnonymousUserManager()
-    }()
+    lazy var anonymousUserMerge: AnonymousUserMerge
     
     var apiEndPointForTest: String {
         get {
@@ -122,6 +120,7 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
     }
     
     func setEmail(_ email: String?, authToken: String? = nil, successHandler: OnSuccessHandler? = nil, failureHandler: OnFailureHandler? = nil) {
+        anonymousUserMerge.mergeUserUsingUserId(apiClient, destinationUserId: email)
         ITBInfo()
         
         
@@ -151,6 +150,7 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
     }
     
     func setUserId(_ userId: String?, authToken: String? = nil, successHandler: OnSuccessHandler? = nil, failureHandler: OnFailureHandler? = nil) {
+        anonymousUserMerge.mergeUserUsingUserId(apiClient, destinationUserId: userId)
         ITBInfo()
         
         if userId == nil {
