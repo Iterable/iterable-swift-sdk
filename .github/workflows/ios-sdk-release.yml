@@ -45,3 +45,6 @@ jobs:
         run: bundle exec fastlane ios pod_trunk_push
         env:
           COCOAPODS_TRUNK_TOKEN: ${{ secrets.COCOAPODS_TRUNK_TOKEN }}
+
+      - name: slack notification
+        run: bundle exec fastlane ios slack version:${{ github.event.inputs.version_number }} changelog_section:${{ github.event.inputs.changelog_section }} slack_webhook:${{ secrets.SLACK_WEBHOOK }}

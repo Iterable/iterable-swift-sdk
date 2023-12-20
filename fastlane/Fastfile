@@ -109,4 +109,22 @@ platform :ios do
     pod_push(path: "Iterable-iOS-AppExtensions.podspec", allow_warnings: true)
     pod_push(path: "Iterable-iOS-SDK.podspec", allow_warnings: true)
   end
+
+  desc "slack message"
+  lane :slack do |options|
+    version = options[:version]
+    changelog_section = options[:changelog_section]
+    slack_webhook = options[:slack_webhook]
+    
+    read_changelog(
+      changelog_path: 'CHANGELOG.md',
+      section_identifier: "[#{changelog_section}]",	
+    )
+    emojified_changelog = emojify_changelog # Emojify the output of `read_changelog` action
+    
+    slack(
+      message: ":appleinc: *iOS SDK #{version}* has been released, which includes the following: #{emojified_changelog}",
+      slack_url: slack_webhook,
+    )
+  end 
 end
