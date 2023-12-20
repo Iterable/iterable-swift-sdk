@@ -112,7 +112,7 @@ platform :ios do
   end
 
   desc "slack message"
-  lane :slack do |options|
+  lane :slack_message do |options|
     version = options[:version]
     changelog_section = options[:changelog_section]
     slack_webhook = options[:slack_webhook]
