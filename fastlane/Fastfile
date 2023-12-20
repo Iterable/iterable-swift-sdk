@@ -80,6 +80,7 @@ platform :ios do
   desc "create github release and upload assets"
   lane :create_release do |options|
     version = options[:version]
+    branch = options[:branch]
     changelog_section = options[:changelog_section]
     output_dir = options[:output_dir]
     github_token = options[:github_token]
@@ -98,7 +99,7 @@ platform :ios do
       name: "#{version}",
       tag_name: "#{version}",
       description: version_changelog,
-      commitish: "master",
+      commitish: "#{branch}",
       upload_assets: ["./#{output_dir}/IterableSDK.xcframework.zip", "./#{output_dir}/IterableAppExtensions.xcframework.zip"],
       is_prerelease: set_prerelease
     )
