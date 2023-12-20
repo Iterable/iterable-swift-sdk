@@ -60,4 +60,4 @@ jobs:
         run: bundle exec fastlane ios pod_trunk_push
 
       - name: slack notification
-        run: bundle exec fastlane ios slack version:$VERSION changelog_section:$CHANGELOG_SECTION slack_webhook:$SLACK_WEBHOOK
+        run: bundle exec fastlane ios slack_message version:$VERSION changelog_section:$CHANGELOG_SECTION slack_webhook:$SLACK_WEBHOOK
