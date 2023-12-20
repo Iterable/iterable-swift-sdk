@@ -83,6 +83,7 @@ platform :ios do
     changelog_section = options[:changelog_section]
     output_dir = options[:output_dir]
     github_token = options[:github_token]
+    set_prerelease = options[:set_prerelease]
 
     add_git_tag(tag: "#{version}") 
 
@@ -98,7 +99,8 @@ platform :ios do
       tag_name: "#{version}",
       description: version_changelog,
       commitish: "master",
-      upload_assets: ["./#{output_dir}/IterableSDK.xcframework.zip", "./#{output_dir}/IterableAppExtensions.xcframework.zip"]
+      upload_assets: ["./#{output_dir}/IterableSDK.xcframework.zip", "./#{output_dir}/IterableAppExtensions.xcframework.zip"],
+      is_prerelease: set_prerelease
     )
   end
 

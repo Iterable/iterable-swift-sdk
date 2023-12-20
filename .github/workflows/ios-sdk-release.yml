@@ -9,6 +9,11 @@ on:
         required: true
       changelog_section:
         description: "Changelog version header (e.g. 6.4.17, 6.5.0-beta)"
+        required: true
+      set_prerelease:
+        type: boolean
+        description: "Is this a prerelease?"
+        default: false
 
 jobs:
   ios-sdk-release:
@@ -34,7 +39,7 @@ jobs:
 
       - name: create github release and upload assets
         run: |
-          bundle exec fastlane ios create_release version:${{ github.event.inputs.version_number }} changelog_section:${{ github.event.inputs.changelog_section }} output_dir:./output_dir github_token:${{ secrets.SDK_RELEASE_TOKEN }}
+          bundle exec fastlane ios create_release version:${{ github.event.inputs.version_number }} changelog_section:${{ github.event.inputs.changelog_section }} output_dir:./output_dir github_token:${{ secrets.SDK_RELEASE_TOKEN }} set_prerelease: ${{ github.event.inputs.set_prerelease }}
 
       - name: push pods to trunk
         run: bundle exec fastlane ios pod_trunk_push
