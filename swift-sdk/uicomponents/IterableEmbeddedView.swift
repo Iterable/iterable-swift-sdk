@@ -186,9 +186,10 @@ public class IterableEmbeddedView:UIView {
             contentView.trailingAnchor.constraint(equalTo: self.trailingAnchor)
         ])
     }
-    
+
     func loadViewFromNib() -> UIView? {
-        let nib = UINib(nibName: "IterableEmbeddedView", bundle: .module)
+        let bundle = Bundle(for: type(of: self))
+        let nib = UINib(nibName: "IterableEmbeddedView", bundle: bundle)
         let view = nib.instantiate(withOwner: self, options: nil).first as? UIView
         view?.backgroundColor = UIColor.clear
         self.clipsToBounds = false
