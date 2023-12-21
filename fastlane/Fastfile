@@ -80,9 +80,11 @@ platform :ios do
   desc "create github release and upload assets"
   lane :create_release do |options|
     version = options[:version]
+    branch = options[:branch]
     changelog_section = options[:changelog_section]
     output_dir = options[:output_dir]
     github_token = options[:github_token]
+    set_prerelease = options[:set_prerelease]
 
     add_git_tag(tag: "#{version}") 
 
@@ -97,8 +99,9 @@ platform :ios do
       name: "#{version}",
       tag_name: "#{version}",
       description: version_changelog,
-      commitish: "master",
-      upload_assets: ["./#{output_dir}/IterableSDK.xcframework.zip", "./#{output_dir}/IterableAppExtensions.xcframework.zip"]
+      commitish: "#{branch}",
+      upload_assets: ["./#{output_dir}/IterableSDK.xcframework.zip", "./#{output_dir}/IterableAppExtensions.xcframework.zip"],
+      is_prerelease: set_prerelease
     )
   end
 
@@ -107,4 +110,22 @@ platform :ios do
     pod_push(path: "Iterable-iOS-AppExtensions.podspec", allow_warnings: true)
     pod_push(path: "Iterable-iOS-SDK.podspec", allow_warnings: true)
   end
+
+  desc "slack message"
+  lane :slack_message do |options|
+    version = options[:version]
+    changelog_section = options[:changelog_section]
+    slack_webhook = options[:slack_webhook]
+    
+    read_changelog(
+      changelog_path: 'CHANGELOG.md',
+      section_identifier: "[#{changelog_section}]",	
+    )
+    emojified_changelog = emojify_changelog # Emojify the output of `read_changelog` action
+    
+    slack(
+      message: ":appleinc: *iOS SDK #{version}* has been released, which includes the following: #{emojified_changelog}",
+      slack_url: slack_webhook,
+    )
+  end 
 end
