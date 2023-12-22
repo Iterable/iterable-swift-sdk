@@ -47,6 +47,9 @@ enum Const {
         static let updateEmail = "users/updateEmail"
         static let updateSubscriptions = "users/updateSubscriptions"
         static let getRemoteConfiguration = "mobile/getRemoteConfiguration"
+        static let userByUserId = "users/byUserId";
+        static let userByEmail = "users/getByEmail";
+        static let mergeUser = "users/merge";
     }
     
     public enum UserDefault {
@@ -112,6 +115,11 @@ enum JsonKey {
     static let unsubscribedMessageTypeIds = "unsubscribedMessageTypeIds"
     static let subscribedMessageTypeIds = "subscribedMessageTypeIds"
     static let preferUserId = "preferUserId"
+    
+    static let sourceEmail = "sourceEmail"
+    static let sourceUserId = "sourceUserId"
+    static let destinationEmail = "destinationEmail"
+    static let destinationUserId = "destinationUserId"
     
     static let mergeNestedObjects = "mergeNestedObjects"
     

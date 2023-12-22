@@ -498,6 +498,37 @@ struct RequestCreator {
         return .success(.get(createGetRequest(forPath: Const.Path.getRemoteConfiguration, withArgs: args as! [String: String])))
     }
     
+    func createGetUserByUserIdRequest(_ userId: String) -> Result<IterableRequest, IterableError> {
+        var body: [AnyHashable: Any] = [JsonKey.userId: userId]
+        return .success(.get(createGetRequest(forPath: Const.Path.userByUserId, withArgs: body as! [String: String])))
+    }
+    
+    func createGetUserByEmailRequest(_ email: String) -> Result<IterableRequest, IterableError> {
+        var body: [AnyHashable: Any] = [JsonKey.email: email]
+        return .success(.get(createGetRequest(forPath: Const.Path.userByEmail, withArgs: body as! [String: String])))
+    }
+    
+    func createMergeUserRequest(_ sourceEmail: String, _ sourceUserId: String, _ destinationEmail: String, destinationUserId: String) -> Result<IterableRequest, IterableError> {
+        var body = [AnyHashable: Any]()
+        
+        if IterableUtil.isNotNullOrEmpty(string: sourceEmail) {
+            body.setValue(for: JsonKey.sourceEmail, value: sourceEmail)
+        }
+        
+        if IterableUtil.isNotNullOrEmpty(string: sourceUserId) {
+            body.setValue(for: JsonKey.sourceUserId, value: sourceUserId)
+        }
+        
+        if IterableUtil.isNotNullOrEmpty(string: destinationEmail) {
+            body.setValue(for: JsonKey.destinationEmail, value: destinationEmail)
+        }
+        
+        if IterableUtil.isNotNullOrEmpty(string: destinationUserId) {
+            body.setValue(for: JsonKey.destinationUserId, value: destinationUserId)
+        }
+        return .success(.post(createPostRequest(path: Const.Path.mergeUser, body: body)))
+    }
+    
     // MARK: - PRIVATE
     
     private static let authMissingMessage = "Both email and userId are nil"

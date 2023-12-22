@@ -278,4 +278,19 @@ extension ApiClient: ApiClientProtocol {
         let result = createRequestCreator().flatMap { $0.createGetRemoteConfigurationRequest() }
         return send(iterableRequestResult: result)
     }
+    
+    func getUserByUserID(userId: String, onSuccess: OnSuccessHandler? = nil)  -> Pending<SendRequestValue, SendRequestError> {
+        let result = createRequestCreator().flatMap { $0.createGetUserByUserIdRequest(userId) }
+        return send(iterableRequestResult: result)
+    }
+
+    func getUserByEmail(email: String, onSuccess: OnSuccessHandler? = nil)  -> Pending<SendRequestValue, SendRequestError> {
+        let result = createRequestCreator().flatMap { $0.createGetUserByEmailRequest(email) }
+        return send(iterableRequestResult: result)
+    }
+
+    func mergeUser(sourceEmail: String, sourceUserId: String, destinationEmail: String, destinationUserId: String)  -> Pending<SendRequestValue, SendRequestError> {
+        let result = createRequestCreator().flatMap { $0.createMergeUserRequest(sourceEmail, sourceUserId, destinationEmail, destinationUserId: destinationUserId) }
+        return send(iterableRequestResult: result)
+    }
 }

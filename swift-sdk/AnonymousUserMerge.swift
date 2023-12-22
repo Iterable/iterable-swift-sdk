@@ -1,43 +1,40 @@
 //
 //  AnonymousUserMerge.swift
-//
+//  Iterable-iOS-SDK
 //
 //  Created by Hani Vora on 19/12/23.
 //
 
 import Foundation
 
-@objc public protocol AnonymousUserMergeProtocol {
-    func mergeUserUsingUserId(apiClient: IterableApiClient, destinationUserId: String)
-    func mergeUserUsingEmail(apiClient: IterableApiClient, destinationEmail: String)
-}
+class AnonymousUserMerge {
 
-class AnonymousUserMerge : AnonymousUserMergeProtocol {
-    private static let anonymousUserManager = AnonymousUserManager()
-
-    func mergeUserUsingUserId(apiClient: IterableApiClient, destinationUserId: String) {
-        guard let sourceUserId = IterableApi.getInstance().getUserId(), !sourceUserId.isEmpty else {
+    public func mergeUserUsingUserId(apiClient: ApiClientProtocol, destinationUserId: String, sourceUserId: String, destinationEmail: String) {
+        
+        if IterableUtil.isNullOrEmpty(string: sourceUserId) || sourceUserId == destinationUserId {
             return
         }
-
-        apiClient.getUserByUserID(sourceUserId) { data in
+        
+        let data = apiClient.getUserByUserID(userId: sourceUserId, onSuccess: {data in
             if let data = data {
                 do {
                     let dataObj = try JSONSerialization.jsonObject(with: data, options: []) as? [String: Any]
                     if let user = dataObj?["user"] as? [String: Any] {
-                        self.callMergeApi(apiClient: apiClient, sourceEmail: "", sourceUserId: sourceUserId, destinationEmail: IterableApi.getInstance().getEmail(), destinationUserId: destinationUserId)
+                        self.callMergeApi(apiClient: apiClient, sourceEmail: "", sourceUserId: sourceUserId, destinationEmail: destinationEmail, destinationEmail: destinationUserId)
                     }
                 } catch {
                     fatalError("Error parsing JSON: \(error)")
                 }
             }
-        }
+        })
     }
 
-    func mergeUserUsingEmail(apiClient: IterableApiClient, destinationEmail: String) {
-        guard let sourceEmail = IterableApi.getInstance().getUserId(), !sourceEmail.isEmpty else {
+    public func mergeUserUsingEmail(apiClient: ApiClientProtocol, destinationEmail: String, sourceEmail: String) {
+        
+        if IterableUtil.isNullOrEmpty(string: sourceEmail) || sourceEmail == destinationEmail {
             return
         }
+
 
         apiClient.getUserByEmail(sourceEmail) { data in
             if let data = data {
@@ -46,13 +43,13 @@ class AnonymousUserMerge : AnonymousUserMergeProtocol {
         }
     }
 
-    private func callMergeApi(apiClient: IterableApiClient, sourceEmail: String, sourceUserId: String, destinationEmail: String, destinationUserId: String) {
-        apiClient.mergeUser(sourceEmail: sourceEmail, sourceUserId: sourceUserId, destinationEmail: destinationEmail, destinationUserId: destinationUserId) { data in
+    private func callMergeApi(apiClient: ApiClient, sourceEmail: String, sourceUserId: String, destinationEmail: String, destinationUserId: String) {
+        apiClient.mergeUser(sourceEmail: sourceEmail, sourceUserId: sourceUserId, destinationEmail: destinationEmail, destinationUserId: destinationUserId) {
+            data in
             if let data = data {
                 do {
                     let jsonData = try JSONSerialization.jsonObject(with: data, options: []) as? [String: Any]
                     if let jsonData = jsonData {
-                        print("Merge User Data: \(jsonData)")
                         self.anonymousUserManager.syncEvents()
                     }
                 } catch {

@@ -51,4 +51,10 @@ protocol ApiClientProtocol: AnyObject {
     func disableDevice(forAllUsers allUsers: Bool, hexToken: String) -> Pending<SendRequestValue, SendRequestError>
 
     func getRemoteConfiguration() -> Pending<RemoteConfiguration, SendRequestError>
+    
+    func getUserByUserID(userId: String, onSuccess: OnSuccessHandler) -> Pending<SendRequestValue, SendRequestError>
+    
+    func getUserByEmail(email: String, onSuccess: OnSuccessHandler) -> Pending<SendRequestValue, SendRequestError>
+    
+    func mergeUser(sourceEmail: String, sourceUserId: String, destinationEmail: String, destinationUserId: String) -> Pending<SendRequestValue, SendRequestError>
 }
