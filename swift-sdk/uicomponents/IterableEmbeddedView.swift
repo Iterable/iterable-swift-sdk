@@ -302,8 +302,36 @@ public class IterableEmbeddedView:UIView {
         EMbuttonText = message.elements?.buttons?.first?.title
         EMbuttonTwoText = message.elements?.buttons?[1].title
         
-    }
+        let group = DispatchGroup()
+        
+        group.enter()
+        
+        let imageUrl = message.elements?.mediaUrl
+        
+        if let imageUrl = imageUrl, let url = URL(string: imageUrl) {
+            var request = URLRequest(url: url)
+            request.setValue("Mozilla/5.0 (iPhone; CPU iPhone OS 16_5_1 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/16.5 Mobile/15E148 Safari/604.1", forHTTPHeaderField: "User-Agent")
 
+            let config = URLSessionConfiguration.default
+            config.httpAdditionalHeaders = request.allHTTPHeaderFields
+
+            let session = URLSession(configuration: config)
+                
+            session.dataTask(with: request) { (data, _, _) in
+                defer { group.leave() }
+
+            guard let imageData = data else {
+                print("Unable to load image data")
+                return
+            }
+
+            self.EMimage = UIImage(data: imageData)
+
+            }.resume()
+        } else {
+            self.EMimage = nil
+        }
+    }
     
     @IBAction func bannerPressed(_ sender: UITapGestureRecognizer) {
         guard let EMmessage = message else {
