@@ -148,8 +148,8 @@ public class IterableEmbeddedView:UIView {
                 titleToTopConstraint.isActive = true
             case .notification:
                 imgView.isHidden = true
-                cardImageView.isHidden = true
-                cardImageTopConstraint.isActive = false
+//                cardImageView.isHidden = true
+//                cardImageTopConstraint.isActive = false
                 titleToTopConstraint.isActive = true
                 bannerBackgroundColor = UIColor(red: 0.90, green: 0.98, blue: 1.00, alpha: 1.00)
                 bannerBorderColor = UIColor(red: 0.76, green: 0.94, blue: 0.99, alpha: 1.00)
@@ -234,7 +234,7 @@ public class IterableEmbeddedView:UIView {
         imgViewHeight = 100
     }
     
-    public func configure(viewType: IterableEmbeddedViewType, config: IterableEmbeddedViewConfig?) {
+    public func configure(viewType: IterableEmbeddedViewType, message: IterableEmbeddedMessage, config: IterableEmbeddedViewConfig?) {
         
         let cardBorderColor = UIColor(red: 0.88, green: 0.87, blue: 0.87, alpha: 1.00)
         let cardTitleTextColor = UIColor(red: 0.24, green: 0.23, blue: 0.23, alpha: 1.00)
@@ -296,6 +296,12 @@ public class IterableEmbeddedView:UIView {
         secondaryBtnTextColor = config?.secondaryBtnTextColor ?? defaultSecondaryBtnTextColor
         titleTextColor = config?.titleTextColor ?? defaultTitleTextColor
         descriptionTextColor = config?.bodyTextColor ?? defaultBodyTextColor
+        
+        EMtitle = message.elements?.title
+        EMdescription = message.elements?.body
+        EMbuttonText = message.elements?.buttons?.first?.title
+        EMbuttonTwoText = message.elements?.buttons?[1].title
+        
     }
 
     
