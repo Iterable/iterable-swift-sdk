@@ -8,53 +8,54 @@
 import Foundation
 
 class AnonymousUserMerge {
-
-    public func mergeUserUsingUserId(apiClient: ApiClientProtocol, destinationUserId: String, sourceUserId: String, destinationEmail: String) {
+    
+    var dependencyContainer: DependencyContainerProtocol
+    
+    lazy var anonymousUserManager: AnonymousUserManagerProtocol = {
+        self.dependencyContainer.createAnonymousUserManager()
+    }()
+    
+    init(dependencyContainer: DependencyContainerProtocol) {
+        self.dependencyContainer = dependencyContainer
+    }
+    
+    public func mergeUserUsingUserId(apiClient: ApiClient, destinationUserId: String, sourceUserId: String, destinationEmail: String) {
         
         if IterableUtil.isNullOrEmpty(string: sourceUserId) || sourceUserId == destinationUserId {
             return
         }
-        
-        let data = apiClient.getUserByUserID(userId: sourceUserId, onSuccess: {data in
-            if let data = data {
-                do {
-                    let dataObj = try JSONSerialization.jsonObject(with: data, options: []) as? [String: Any]
-                    if let user = dataObj?["user"] as? [String: Any] {
-                        self.callMergeApi(apiClient: apiClient, sourceEmail: "", sourceUserId: sourceUserId, destinationEmail: destinationEmail, destinationEmail: destinationUserId)
-                    }
-                } catch {
-                    fatalError("Error parsing JSON: \(error)")
-                }
+        apiClient.getUserByUserID(userId: sourceUserId).onSuccess { data in
+            if data["user"] is [String: Any] {
+                self.callMergeApi(apiClient: apiClient, sourceEmail: "", sourceUserId: sourceUserId, destinationEmail: destinationEmail, destinationUserId: destinationUserId)
             }
-        })
+        }
     }
 
-    public func mergeUserUsingEmail(apiClient: ApiClientProtocol, destinationEmail: String, sourceEmail: String) {
+    public func mergeUserUsingEmail(apiClient: ApiClient, destinationUserId: String, destinationEmail: String, sourceEmail: String) {
         
         if IterableUtil.isNullOrEmpty(string: sourceEmail) || sourceEmail == destinationEmail {
             return
         }
-
-
-        apiClient.getUserByEmail(sourceEmail) { data in
-            if let data = data {
-                self.callMergeApi(apiClient: apiClient, sourceEmail: sourceEmail, sourceUserId: "", destinationEmail: destinationEmail, destinationUserId: IterableApi.getInstance().getUserId())
+        apiClient.getUserByEmail(email: sourceEmail).onSuccess { data in
+            if data["user"] is [String: Any] {
+                self.callMergeApi(apiClient: apiClient, sourceEmail: sourceEmail, sourceUserId: "", destinationEmail: destinationEmail, destinationUserId: destinationUserId)
             }
         }
     }
 
     private func callMergeApi(apiClient: ApiClient, sourceEmail: String, sourceUserId: String, destinationEmail: String, destinationUserId: String) {
-        apiClient.mergeUser(sourceEmail: sourceEmail, sourceUserId: sourceUserId, destinationEmail: destinationEmail, destinationUserId: destinationUserId) {
-            data in
-            if let data = data {
-                do {
-                    let jsonData = try JSONSerialization.jsonObject(with: data, options: []) as? [String: Any]
-                    if let jsonData = jsonData {
-                        self.anonymousUserManager.syncEvents()
-                    }
-                } catch {
-                    fatalError("Error parsing JSON: \(error)")
+        apiClient.mergeUser(sourceEmail: sourceEmail, sourceUserId: sourceUserId, destinationEmail: destinationEmail, destinationUserId: destinationUserId).onSuccess { response in
+            if let data = response as? [String: Any] {
+                // Check for the presence of the expected key or perform other operations
+                if data["key"] is [String: Any] {
+                    self.anonymousUserManager.syncNonSyncedEvents()
+                } else {
+                    // Handle the case when the expected key is not present
+                    print("Error: 'key' not found in response")
                 }
+            } else {
+                // Handle the case when the response is not a dictionary
+                print("Error: Response is not a dictionary")
             }
         }
     }

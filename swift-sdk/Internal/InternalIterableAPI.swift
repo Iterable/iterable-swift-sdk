@@ -82,6 +82,10 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
         self.dependencyContainer.createAuthManager(config: self.config)
     }()
     
+    lazy var anonymousUserManager: AnonymousUserManagerProtocol = {
+        self.dependencyContainer.createAnonymousUserManager()
+    }()
+    
     var anonymousUserMerge: AnonymousUserMerge
     
     var apiEndPointForTest: String {
@@ -120,7 +124,7 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
     }
     
     func setEmail(_ email: String?, authToken: String? = nil, successHandler: OnSuccessHandler? = nil, failureHandler: OnFailureHandler? = nil) {
-        anonymousUserMerge.mergeUserUsingEmail(apiClient: apiClient as! ApiClient, destinationEmail: email ?? "", sourceEmail: _email ?? "")
+        anonymousUserMerge.mergeUserUsingEmail(apiClient: apiClient as! ApiClient, destinationUserId: _userId ?? "", destinationEmail: email ?? "", sourceEmail: _email ?? "")
         ITBInfo()
         
         
@@ -150,7 +154,7 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
     }
     
     func setUserId(_ userId: String?, authToken: String? = nil, successHandler: OnSuccessHandler? = nil, failureHandler: OnFailureHandler? = nil) {
-        anonymousUserMerge.mergeUserUsingUserId(apiClient: apiClient as! ApiClient, destinationUserId: userId ?? "", sourceUserId: _userId ?? "")
+        anonymousUserMerge.mergeUserUsingUserId(apiClient: apiClient as! ApiClient, destinationUserId: userId ?? "", sourceUserId: _userId ?? "", destinationEmail: _email ?? "")
         ITBInfo()
         
         if userId == nil {
@@ -304,7 +308,7 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
         if !isEitherUserIdOrEmailSet() {
                     anonymousUserManager.trackAnonPurchaseEvent(total: total, items: items, dataFields: dataFields)
                 }
-        requestHandler.trackPurchase(total,
+        return requestHandler.trackPurchase(total,
                                      items: items,
                                      dataFields: dataFields,
                                      campaignId: campaignId,
@@ -673,6 +677,7 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
         inAppDisplayer = dependencyContainer.inAppDisplayer
         urlOpener = dependencyContainer.urlOpener
         deepLinkManager = DeepLinkManager(redirectNetworkSessionProvider: dependencyContainer)
+        self.anonymousUserMerge = AnonymousUserMerge(dependencyContainer: dependencyContainer)
     }
     
     func start() -> Pending<Bool, Error> {

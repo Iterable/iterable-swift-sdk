@@ -279,12 +279,12 @@ extension ApiClient: ApiClientProtocol {
         return send(iterableRequestResult: result)
     }
     
-    func getUserByUserID(userId: String, onSuccess: OnSuccessHandler? = nil)  -> Pending<SendRequestValue, SendRequestError> {
+    func getUserByUserID(userId: String) -> Pending<SendRequestValue, SendRequestError> {
         let result = createRequestCreator().flatMap { $0.createGetUserByUserIdRequest(userId) }
         return send(iterableRequestResult: result)
     }
 
-    func getUserByEmail(email: String, onSuccess: OnSuccessHandler? = nil)  -> Pending<SendRequestValue, SendRequestError> {
+    func getUserByEmail(email: String) -> Pending<SendRequestValue, SendRequestError> {
         let result = createRequestCreator().flatMap { $0.createGetUserByEmailRequest(email) }
         return send(iterableRequestResult: result)
     }

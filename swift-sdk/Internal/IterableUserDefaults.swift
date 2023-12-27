@@ -279,10 +279,10 @@ class IterableUserDefaults {
         static let deviceId = UserDefaultsKey(value: Const.UserDefault.deviceId)
         static let sdkVersion = UserDefaultsKey(value: Const.UserDefault.sdkVersion)
         static let offlineMode = UserDefaultsKey(value: Const.UserDefault.offlineMode)
+        static let anonymousUserEvents = UserDefaultsKey(value: Const.UserDefault.offlineMode)
+        static let criteriaData = UserDefaultsKey(value: Const.UserDefault.criteriaData)
+        static let anonymousSessions = UserDefaultsKey(value: Const.UserDefault.anonymousSessions)
     }
-    static let anonymousUserEvents = UserDefaultsKey(value: Const.UserDefault.offlineMode)
-    static let criteriaData = UserDefaultsKey(value: Const.UserDefault.criteriaData)
-    static let anonymousSessions = UserDefaultsKey(value: Const.UserDefault.anonymousSessions)
     private struct Envelope: Codable {
         let payload: Data
         let expiration: Date?
