@@ -10,17 +10,17 @@ import UIKit
 
 
 //TODO: Featuring in D6
-//public protocol IterableEmbeddedViewDelegate: NSObject {
-//    func didPressPrimaryButton(button: UIButton, viewTag: Int, message: IterableEmbeddedMessage?)
-//    func didPressSecondaryButton(button: UIButton, viewTag: Int, message: IterableEmbeddedMessage?)
-//    func didPressBanner(banner: IterableEmbeddedView, viewTag: Int, message: IterableEmbeddedMessage?)
-//}
+public protocol IterableEmbeddedViewDelegate: NSObject {
+    func didPressPrimaryButton(button: UIButton, viewTag: Int, message: IterableEmbeddedMessage?)
+    func didPressSecondaryButton(button: UIButton, viewTag: Int, message: IterableEmbeddedMessage?)
+    func didPressBanner(banner: IterableEmbeddedView, viewTag: Int, message: IterableEmbeddedMessage?)
+}
 
 @IBDesignable
 public class IterableEmbeddedView:UIView {
     
     // Delegate Methods
-//    weak public var iterableEmbeddedViewDelegate: IterableEmbeddedViewDelegate!
+    weak public var iterableEmbeddedViewDelegate: IterableEmbeddedViewDelegate!
     
     /// Set background color of view in container view.
     @IBOutlet weak public var contentView: UIView!
@@ -128,13 +128,13 @@ public class IterableEmbeddedView:UIView {
                 if shouldShowCardImageView {
                     // Show cardImageView
                     cardImageView.isHidden = false
-                    cardImageTopConstraint.isActive = true
-                    titleToTopConstraint.isActive = false
+                    cardImageTopConstraint?.isActive = true // Constraints becomes nil in listviews when scrolling as it gets disconnected
+                    titleToTopConstraint?.isActive = false // Constraints becomes nil in listviews when scrolling as it gets disconnected
                 } else {
                     // Hide cardImageView and deactivate its constraints
                     cardImageView.isHidden = true
-                    cardImageTopConstraint.isActive = false
-                    titleToTopConstraint.isActive = true
+                    cardImageTopConstraint?.isActive = false // Constraints becomes nil in listviews when scrolling as it gets disconnected
+                    titleToTopConstraint?.isActive = true // Constraints becomes nil in listviews when scrolling as it gets disconnected
 
                     // Remove cardImageView from its superview and release it
                     cardImageView.removeFromSuperview()
@@ -144,13 +144,13 @@ public class IterableEmbeddedView:UIView {
                 imgView.isHidden = EMimage == nil
                 bannerBorderColor = UIColor(red: 0.88, green: 0.87, blue: 0.87, alpha: 1.00)
                 cardImageView.isHidden = true
-                cardImageTopConstraint.isActive = false
-                titleToTopConstraint.isActive = true
+                cardImageTopConstraint?.isActive = false // Constraints becomes nil in listviews when scrolling as it gets disconnected
+                titleToTopConstraint?.isActive = true // Constraints becomes nil in listviews when scrolling as it gets disconnected
             case .notification:
                 imgView.isHidden = true
                 cardImageView.isHidden = true
-                cardImageTopConstraint.isActive = false
-                titleToTopConstraint.isActive = true
+                cardImageTopConstraint?.isActive = false // Constraints becomes nil in listviews when scrolling as it gets disconnected
+                titleToTopConstraint?.isActive = true // Constraints becomes nil in listviews when scrolling as it gets disconnected 
                 bannerBackgroundColor = UIColor(red: 0.90, green: 0.98, blue: 1.00, alpha: 1.00)
                 bannerBorderColor = UIColor(red: 0.76, green: 0.94, blue: 0.99, alpha: 1.00)
                 titleTextColor = UIColor(red: 0.14, green: 0.54, blue: 0.66, alpha: 1.00)
@@ -261,13 +261,13 @@ public class IterableEmbeddedView:UIView {
                 if shouldShowCardImageView {
                     // Show cardImageView
                     cardImageView.isHidden = false
-                    cardImageTopConstraint.isActive = true
-                    titleToTopConstraint.isActive = false
+                    cardImageTopConstraint?.isActive = true
+                    titleToTopConstraint?.isActive = false
                 } else {
                     // Hide cardImageView and deactivate its constraints
                     cardImageView.isHidden = true
-                    cardImageTopConstraint.isActive = false
-                    titleToTopConstraint.isActive = true
+                    cardImageTopConstraint?.isActive = false
+                    titleToTopConstraint?.isActive = true
 
                     // Remove cardImageView from its superview and release it
                     cardImageView.removeFromSuperview()
@@ -312,10 +312,9 @@ public class IterableEmbeddedView:UIView {
         
         
         //TODO: Delegate method
-//        if (iterableEmbeddedViewDelegate != nil) {
-//            iterableEmbeddedViewDelegate.didPressBanner(banner: self, viewTag: self.tag, message: message)
-//        }
-//        else { }
+        if (iterableEmbeddedViewDelegate != nil) {
+            iterableEmbeddedViewDelegate.didPressBanner(banner: self, viewTag: self.tag, message: message)
+        }
     }
     
     public var viewConfig: IterableEmbeddedViewConfig?
