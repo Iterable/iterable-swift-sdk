@@ -21,7 +21,7 @@ protocol LocalStorageProtocol {
     
     var anonymousUserEvents: [[AnyHashable: Any]]? { get set }
 
-    var criteriaData: [Criteria]? { get set }
+    var criteriaData: Data? { get set }
 
     var anonymousSessions: IterableAnonSessionsWrapper? { get set }
     

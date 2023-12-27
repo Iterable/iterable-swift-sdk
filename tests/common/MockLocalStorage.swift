@@ -7,6 +7,12 @@ import Foundation
 @testable import IterableSDK
 
 class MockLocalStorage: LocalStorageProtocol {
+    var anonymousUserEvents: [[AnyHashable : Any]]?
+    
+    var criteriaData: Data?
+    
+    var anonymousSessions: IterableSDK.IterableAnonSessionsWrapper?
+    
     var userId: String? = nil
     
     var email: String? = nil

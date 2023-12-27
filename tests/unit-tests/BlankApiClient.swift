@@ -7,6 +7,24 @@ import Foundation
 @testable import IterableSDK
 
 class BlankApiClient: ApiClientProtocol {
+    
+    func track(event eventName: String, dataFields: [AnyHashable : Any]?) -> IterableSDK.Pending<IterableSDK.SendRequestValue, IterableSDK.SendRequestError> {
+        Pending()
+    }
+    
+    func track(event eventName: String, withBody body: [AnyHashable : Any]?) -> IterableSDK.Pending<IterableSDK.SendRequestValue, IterableSDK.SendRequestError> {
+        Pending()
+    }
+    
+    
+    func updateCart(items: [IterableSDK.CommerceItem], withUser user: [AnyHashable : Any], createdAt: Int) -> IterableSDK.Pending<IterableSDK.SendRequestValue, IterableSDK.SendRequestError> {
+        Pending()
+    }
+    
+    func track(purchase total: NSNumber, items: [IterableSDK.CommerceItem], dataFields: [AnyHashable : Any]?, withUser user: [AnyHashable : Any], createdAt: Int) -> IterableSDK.Pending<IterableSDK.SendRequestValue, IterableSDK.SendRequestError> {
+        Pending()
+    }
+    
     func register(registerTokenInfo: RegisterTokenInfo, notificationsEnabled: Bool) -> Pending<SendRequestValue, SendRequestError> {
         Pending()
     }
@@ -28,10 +46,6 @@ class BlankApiClient: ApiClientProtocol {
     }
     
     func track(pushOpen campaignId: NSNumber, templateId: NSNumber?, messageId: String, appAlreadyRunning: Bool, dataFields: [AnyHashable : Any]?) -> Pending<SendRequestValue, SendRequestError> {
-        Pending()
-    }
-    
-    func track(event eventName: String, dataFields: [AnyHashable : Any]?) -> Pending<SendRequestValue, SendRequestError> {
         Pending()
     }
     

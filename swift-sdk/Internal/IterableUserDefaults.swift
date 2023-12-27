@@ -78,9 +78,9 @@ class IterableUserDefaults {
         }
     }
     
-    var criteriaData: [Criteria]? {
+    var criteriaData: Data? {
         get {
-            return criteriaData(withKey: .criteriaData)
+            return getCriteriaData(withKey: .criteriaData)
         } set {
             saveCriteriaData(data: newValue, withKey: .criteriaData)
         }
@@ -118,10 +118,8 @@ class IterableUserDefaults {
         return nil
     }
     
-    private func saveCriteriaData(data: [Criteria]?, withKey key: UserDefaultsKey) {
-        if let encodedData = try? JSONEncoder().encode(data) {
-            userDefaults.set(encodedData, forKey: key.value)
-        }
+    private func saveCriteriaData(data: Data?, withKey key: UserDefaultsKey) {
+        userDefaults.set(data, forKey: key.value)
     }
     
     private func saveEventData(anonymousUserEvents: [[AnyHashable: Any]]?, withKey key: UserDefaultsKey) {
@@ -198,6 +196,10 @@ class IterableUserDefaults {
     
     private func eventData(withKey key: UserDefaultsKey) -> [[AnyHashable: Any]]? {
         userDefaults.array(forKey: key.value) as? [[AnyHashable: Any]]
+    }
+    
+    private func getCriteriaData(withKey key: UserDefaultsKey) -> Data? {
+        userDefaults.object(forKey: key.value) as? Data
     }
     
     private static func isExpired(expiration: Date?, currentDate: Date) -> Bool {

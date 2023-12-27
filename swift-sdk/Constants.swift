@@ -11,8 +11,9 @@ enum Endpoint {
 }
 
 enum EventType {
-    static let track = "track"
-    static let trackPurchase = "trackPurchase"
+    static let customEvent = "customEvent"
+    static let purchase = "purchase"
+    static let updateUser = "updateUser"
     static let cartUpdate = "cartUpdate"
     static let anonSession = "anonSession"
     static let tokenRegistration = "tokenRegistration"
@@ -187,7 +188,7 @@ enum JsonKey {
     static let contentType = "Content-Type"
     
     static let createNewFields = "createNewFields"
-    static let eventType = "eventType"
+    static let eventType = "dataType"
     static let eventTimeStamp = "eventTimeStamp"
 
     enum ActionButton {

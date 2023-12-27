@@ -127,7 +127,6 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
         anonymousUserMerge.mergeUserUsingEmail(apiClient: apiClient as! ApiClient, destinationUserId: _userId ?? "", destinationEmail: email ?? "", sourceEmail: _email ?? "")
         ITBInfo()
         
-        
         if email == nil {
             anonymousUserManager.logout()
         }
@@ -257,7 +256,10 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
                     mergeNestedObjects: Bool,
                     onSuccess: OnSuccessHandler? = nil,
                     onFailure: OnFailureHandler? = nil) -> Pending<SendRequestValue, SendRequestError> {
-        requestHandler.updateUser(dataFields, mergeNestedObjects: mergeNestedObjects, onSuccess: onSuccess, onFailure: onFailure)
+        if !isEitherUserIdOrEmailSet() {
+            anonymousUserManager.trackAnonUpdateUser(dataFields)
+        }
+        return requestHandler.updateUser(dataFields, mergeNestedObjects: mergeNestedObjects, onSuccess: onSuccess, onFailure: onFailure)
     }
     
     @discardableResult
@@ -283,18 +285,18 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
                     onSuccess: OnSuccessHandler? = nil,
                     onFailure: OnFailureHandler? = nil) -> Pending<SendRequestValue, SendRequestError> {
         if !isEitherUserIdOrEmailSet() {
-                   anonymousUserManager.trackAnonUpdateCart(items: items)
-               }
-               return requestHandler.updateCart(items: items, onSuccess: onSuccess, onFailure: onFailure)
-           }
-
-           @discardableResult
-           func updateCart(items: [CommerceItem],
-                           withUser user: [AnyHashable:Any],
-                           createdAt: Int,
-                           onSuccess: OnSuccessHandler? = nil,
-                           onFailure: OnFailureHandler? = nil) -> Pending<SendRequestValue, SendRequestError> {
-               return requestHandler.updateCart(items: items, withUser: user, createdAt: createdAt, onSuccess: onSuccess, onFailure: onFailure)
+            anonymousUserManager.trackAnonUpdateCart(items: items)
+        }
+        return requestHandler.updateCart(items: items, onSuccess: onSuccess, onFailure: onFailure)
+    }
+    
+    @discardableResult
+    func updateCart(items: [CommerceItem],
+                    withUser user: [AnyHashable:Any],
+                    createdAt: Int,
+                    onSuccess: OnSuccessHandler? = nil,
+                    onFailure: OnFailureHandler? = nil) -> Pending<SendRequestValue, SendRequestError> {
+        return requestHandler.updateCart(items: items, withUser: user, createdAt: createdAt, onSuccess: onSuccess, onFailure: onFailure)
     }
     
     @discardableResult
@@ -306,8 +308,8 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
                        onSuccess: OnSuccessHandler? = nil,
                        onFailure: OnFailureHandler? = nil) -> Pending<SendRequestValue, SendRequestError> {
         if !isEitherUserIdOrEmailSet() {
-                    anonymousUserManager.trackAnonPurchaseEvent(total: total, items: items, dataFields: dataFields)
-                }
+            anonymousUserManager.trackAnonPurchaseEvent(total: total, items: items, dataFields: dataFields)
+        }
         return requestHandler.trackPurchase(total,
                                      items: items,
                                      dataFields: dataFields,
@@ -316,7 +318,7 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
                                      onSuccess: onSuccess,
                                      onFailure: onFailure)
     }
-
+    
     @discardableResult
     func trackPurchase(_ total: NSNumber,
                        items: [CommerceItem],
@@ -333,6 +335,7 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
                                      onSuccess: onSuccess,
                                      onFailure: onFailure)
     }
+
     
     @discardableResult
     func trackPushOpen(_ userInfo: [AnyHashable: Any],
@@ -376,19 +379,18 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
                dataFields: [AnyHashable: Any]? = nil,
                onSuccess: OnSuccessHandler? = nil,
                onFailure: OnFailureHandler? = nil) -> Pending<SendRequestValue, SendRequestError> {
-        requestHandler.track(event: eventName, dataFields: dataFields, onSuccess: onSuccess, onFailure: onFailure)
         if !isEitherUserIdOrEmailSet() {
-                    anonymousUserManager.trackAnonEvent(name: eventName, dataFields: dataFields)
-                }
-                return requestHandler.track(event: eventName, dataFields: dataFields, onSuccess: onSuccess, onFailure: onFailure)
-            }
-
-            @discardableResult
-            func track(_ eventName: String,
-                       withBody body: [AnyHashable: Any],
-                       onSuccess: OnSuccessHandler? = nil,
-                       onFailure: OnFailureHandler? = nil) -> Pending<SendRequestValue, SendRequestError> {
-                requestHandler.track(event: eventName, withBody: body, onSuccess: onSuccess, onFailure: onFailure)
+            anonymousUserManager.trackAnonEvent(name: eventName, dataFields: dataFields)
+        }
+        return requestHandler.track(event: eventName, dataFields: dataFields, onSuccess: onSuccess, onFailure: onFailure)
+    }
+    
+    @discardableResult
+    func track(_ eventName: String,
+               withBody body: [AnyHashable: Any],
+               onSuccess: OnSuccessHandler? = nil,
+               onFailure: OnFailureHandler? = nil) -> Pending<SendRequestValue, SendRequestError> {
+        requestHandler.track(event: eventName, withBody: body, onSuccess: onSuccess, onFailure: onFailure)
     }
     
     @discardableResult

@@ -83,7 +83,7 @@ struct LocalStorage: LocalStorageProtocol {
         }
     }
 
-    var criteriaData: [Criteria]? {
+    var criteriaData: Data? {
         get {
             iterableUserDefaults.criteriaData
         } set {
