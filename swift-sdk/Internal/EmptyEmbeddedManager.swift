@@ -4,7 +4,11 @@
 
 import Foundation
 
-class EmptyEmbeddedManager: IterableInternalEmbeddedManagerProtocol {
+class EmptyEmbeddedManager: IterableEmbeddedManagerProtocol {
+    func resolveMessages(_ messages: [IterableEmbeddedMessage], completion: @escaping ([ResolvedMessage]) -> Void) {
+        
+    }
+    
    
     func addUpdateListener(_ listener: IterableEmbeddedUpdateDelegate) {
         

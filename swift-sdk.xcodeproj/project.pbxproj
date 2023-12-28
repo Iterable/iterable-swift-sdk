@@ -175,6 +175,8 @@
 		55E02D39253F8D86009DB8BC /* WebViewProtocolTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55E02D38253F8D86009DB8BC /* WebViewProtocolTests.swift */; };
 		55E6F462238E066400808BCE /* DeepLinkTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55E6F45E238E066400808BCE /* DeepLinkTests.swift */; };
 		55E9BE3429F9F5E6000C9FF2 /* DependencyContainerProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55E9BE3329F9F5E6000C9FF2 /* DependencyContainerProtocol.swift */; };
+		560ACF482A308C8A007F9503 /* IterableBannerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 560ACF462A308C8A007F9503 /* IterableBannerView.swift */; };
+		564BCC302A30B60500A699B9 /* IterableBannerView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 560ACF452A308C8A007F9503 /* IterableBannerView.xib */; };
 		5B49BB3E27CFB71500E6F00C /* PopupInboxSessionUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5B49BB3D27CFB71500E6F00C /* PopupInboxSessionUITests.swift */; };
 		5B5AA711284F1A6D0093FED4 /* MockNetworkSession.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5B5AA710284F1A6D0093FED4 /* MockNetworkSession.swift */; };
 		5B5AA712284F1A6D0093FED4 /* MockNetworkSession.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5B5AA710284F1A6D0093FED4 /* MockNetworkSession.swift */; };
@@ -185,6 +187,7 @@
 		5B5AA717284F1A6D0093FED4 /* MockNetworkSession.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5B5AA710284F1A6D0093FED4 /* MockNetworkSession.swift */; };
 		5B6C3C1127CE871F00B9A753 /* NavInboxSessionUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5B6C3C1027CE871F00B9A753 /* NavInboxSessionUITests.swift */; };
 		5B88BC482805D09D004016E5 /* NetworkSession.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5B88BC472805D09D004016E5 /* NetworkSession.swift */; };
+		9F76FFFF2B17884900962526 /* EmbeddedHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F76FFFE2B17884900962526 /* EmbeddedHelper.swift */; };
 		9FF05EAC2AFEA5FA005311F7 /* MockAuthManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FF05EAB2AFEA5FA005311F7 /* MockAuthManager.swift */; };
 		9FF05EAD2AFEA5FA005311F7 /* MockAuthManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FF05EAB2AFEA5FA005311F7 /* MockAuthManager.swift */; };
 		9FF05EAE2AFEA5FA005311F7 /* MockAuthManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FF05EAB2AFEA5FA005311F7 /* MockAuthManager.swift */; };
@@ -596,11 +599,14 @@
 		55E02D38253F8D86009DB8BC /* WebViewProtocolTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WebViewProtocolTests.swift; sourceTree = "<group>"; };
 		55E6F45E238E066400808BCE /* DeepLinkTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DeepLinkTests.swift; sourceTree = "<group>"; };
 		55E9BE3329F9F5E6000C9FF2 /* DependencyContainerProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DependencyContainerProtocol.swift; sourceTree = "<group>"; };
+		560ACF452A308C8A007F9503 /* IterableBannerView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = IterableBannerView.xib; sourceTree = "<group>"; };
+		560ACF462A308C8A007F9503 /* IterableBannerView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = IterableBannerView.swift; sourceTree = "<group>"; };
 		5B49BB3D27CFB71500E6F00C /* PopupInboxSessionUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PopupInboxSessionUITests.swift; sourceTree = "<group>"; };
 		5B5AA710284F1A6D0093FED4 /* MockNetworkSession.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockNetworkSession.swift; sourceTree = "<group>"; };
 		5B6C3C1027CE871F00B9A753 /* NavInboxSessionUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NavInboxSessionUITests.swift; sourceTree = "<group>"; };
 		5B88BC472805D09D004016E5 /* NetworkSession.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkSession.swift; sourceTree = "<group>"; };
 		5BFC7CED27FC9AF300E77479 /* inbox-ui-tests-app.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = "inbox-ui-tests-app.entitlements"; sourceTree = "<group>"; };
+		9F76FFFE2B17884900962526 /* EmbeddedHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmbeddedHelper.swift; sourceTree = "<group>"; };
 		9FF05EAB2AFEA5FA005311F7 /* MockAuthManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockAuthManager.swift; sourceTree = "<group>"; };
 		AC02480722791E2100495FB9 /* IterableInboxNavigationViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IterableInboxNavigationViewController.swift; sourceTree = "<group>"; };
 		AC02CAA5234E50B5006617E0 /* RegistrationTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegistrationTests.swift; sourceTree = "<group>"; };
@@ -913,6 +919,7 @@
 		551FA75C2988AC800072D0A9 /* Embedded Messaging */ = {
 			isa = PBXGroup;
 			children = (
+				9F76FFFE2B17884900962526 /* EmbeddedHelper.swift */,
 				1CCA911F2A27FA8700AEA213 /* MiscEmbeddedClasses.swift */,
 				1CCA91212A28075A00AEA213 /* EmbeddedSessionManager.swift */,
 				551FA75D2988AC930072D0A9 /* EmptyEmbeddedManager.swift */,
@@ -958,6 +965,24 @@
 			);
 			name = misc;
 			path = "swift-sdk/misc";
+			sourceTree = "<group>";
+		};
+		55684317298C8036006A5EB4 /* embedded-messaging-tests */ = {
+			isa = PBXGroup;
+			children = (
+				55684318298C8052006A5EB4 /* EmbeddedManagerTests.swift */,
+				553449A229C26A95002E4599 /* EmbeddedMessagingProcessorTests.swift */,
+				55C87D33299EE633002013D0 /* EmbeddedMessagingSerializationTests.swift */,
+			);
+			path = "embedded-messaging-tests";
+			sourceTree = "<group>";
+		};
+		560ACF442A308C8A007F9503 /* uicomponents */ = {
+			isa = PBXGroup;
+			children = (
+				560ACF462A308C8A007F9503 /* IterableBannerView.swift */,
+			);
+			path = uicomponents;
 			sourceTree = "<group>";
 		};
 		AC0248062279132400495FB9 /* Dwifft */ = {
@@ -1019,9 +1044,10 @@
 		AC2263E120CF49B8009800EB /* swift-sdk */ = {
 			isa = PBXGroup;
 			children = (
+				AC44C0EB22615F8100E0641D /* Resources */,
+				560ACF442A308C8A007F9503 /* uicomponents */,
 				AC5C467E2756AEA4000762B6 /* swiftui */,
 				AC72A0BB20CF4C8C004D7997 /* Internal */,
-				AC44C0EB22615F8100E0641D /* Resources */,
 				AC2263F920CF4B63009800EB /* Supporting Files */,
 				AC72A0C120CF4CB8004D7997 /* CommerceItem.swift */,
 				AC72A0BE20CF4CB8004D7997 /* Constants.swift */,
@@ -1182,6 +1208,7 @@
 		AC44C0EB22615F8100E0641D /* Resources */ = {
 			isa = PBXGroup;
 			children = (
+				560ACF452A308C8A007F9503 /* IterableBannerView.xib */,
 				AC219C522260006600B98631 /* Assets.xcassets */,
 				AC50865224C60172001DC132 /* IterableDataModel.xcdatamodeld */,
 				AC219C4F225FEDBD00B98631 /* SampleInboxCell.xib */,
@@ -1914,6 +1941,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				564BCC302A30B60500A699B9 /* IterableBannerView.xib in Resources */,
 				AC219C532260006600B98631 /* Assets.xcassets in Resources */,
 				AC219C51225FEDBD00B98631 /* SampleInboxCell.xib in Resources */,
 			);
@@ -2014,6 +2042,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				1CCA91222A28075A00AEA213 /* EmbeddedSessionManager.swift in Sources */,
+				9F76FFFF2B17884900962526 /* EmbeddedHelper.swift in Sources */,
 				1CCA91202A27FA8700AEA213 /* MiscEmbeddedClasses.swift in Sources */,
 				AC31B042232AB53500BE25EB /* InboxImpressionTracker.swift in Sources */,
 				55D54656239AE5750093ED1E /* IterableLogUtil.swift in Sources */,
@@ -2045,6 +2074,7 @@
 				AC684A86222EF75C00F29749 /* InAppMessageParser.swift in Sources */,
 				AC72A0C920CF4CE2004D7997 /* IterableAction.swift in Sources */,
 				AC72A0CA20CF4CE2004D7997 /* ActionRunner.swift in Sources */,
+				560ACF482A308C8A007F9503 /* IterableBannerView.swift in Sources */,
 				ACC3FDB1253724DB0004A2E0 /* InAppCalculations.swift in Sources */,
 				ACD6116C2107D004003E7F6B /* NetworkHelper.swift in Sources */,
 				ACC362B624D16D91002C67BA /* IterableRequest.swift in Sources */,
@@ -2807,7 +2837,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = BP98Z28R86;
 				INFOPLIST_FILE = "Tests/unit-tests/Info.plist";
-				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 13.6;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -2827,7 +2857,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = BP98Z28R86;
 				INFOPLIST_FILE = "Tests/unit-tests/Info.plist";
-				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 13.6;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
