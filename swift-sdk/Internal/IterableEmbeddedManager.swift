@@ -28,7 +28,11 @@ public struct ResolvedMessage {
     }
 }
 
-class IterableEmbeddedManager: NSObject, IterableEmbeddedManagerProtocol {
+protocol IterableInternalEmbeddedManagerProtocol: IterableEmbeddedManagerProtocol, EmbeddedNotifiable {
+    // we can add the internal delegate methods here
+}
+
+class IterableEmbeddedManager: NSObject, IterableInternalEmbeddedManagerProtocol {
     init(apiClient: ApiClientProtocol,
          urlDelegate: IterableURLDelegate?,
          customActionDelegate: IterableCustomActionDelegate?,
