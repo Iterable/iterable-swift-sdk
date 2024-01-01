@@ -86,7 +86,9 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
         self.dependencyContainer.createAnonymousUserManager()
     }()
     
-    var anonymousUserMerge: AnonymousUserMerge
+    lazy var anonymousUserMerge: AnonymousUserMergeProtocol = {
+        self.dependencyContainer.createAnonymousUserMerge(apiClient: apiClient as! ApiClient, anonymousUserManager: anonymousUserManager)
+    }()
     
     var apiEndPointForTest: String {
         get {
@@ -124,7 +126,7 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
     }
     
     func setEmail(_ email: String?, authToken: String? = nil, successHandler: OnSuccessHandler? = nil, failureHandler: OnFailureHandler? = nil) {
-        anonymousUserMerge.mergeUserUsingEmail(apiClient: apiClient as! ApiClient, destinationUserId: _userId ?? "", destinationEmail: email ?? "", sourceEmail: _email ?? "")
+        anonymousUserMerge.mergeUserUsingEmail(destinationUserId: _userId ?? "", destinationEmail: email ?? "", sourceEmail: _email ?? "")
         ITBInfo()
         
         if email == nil {
@@ -153,7 +155,7 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
     }
     
     func setUserId(_ userId: String?, authToken: String? = nil, successHandler: OnSuccessHandler? = nil, failureHandler: OnFailureHandler? = nil) {
-        anonymousUserMerge.mergeUserUsingUserId(apiClient: apiClient as! ApiClient, destinationUserId: userId ?? "", sourceUserId: _userId ?? "", destinationEmail: _email ?? "")
+        anonymousUserMerge.mergeUserUsingUserId(destinationUserId: userId ?? "", sourceUserId: _userId ?? "", destinationEmail: _email ?? "")
         ITBInfo()
         
         if userId == nil {
@@ -679,7 +681,6 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
         inAppDisplayer = dependencyContainer.inAppDisplayer
         urlOpener = dependencyContainer.urlOpener
         deepLinkManager = DeepLinkManager(redirectNetworkSessionProvider: dependencyContainer)
-        self.anonymousUserMerge = AnonymousUserMerge(dependencyContainer: dependencyContainer)
     }
     
     func start() -> Pending<Bool, Error> {
