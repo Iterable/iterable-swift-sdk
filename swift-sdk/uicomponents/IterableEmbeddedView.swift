@@ -8,20 +8,9 @@
 import Foundation
 import UIKit
 
-
-//TODO: Featuring in D6
-//public protocol IterableEmbeddedViewDelegate: NSObject {
-//    func didPressPrimaryButton(button: UIButton, viewTag: Int, message: IterableEmbeddedMessage?)
-//    func didPressSecondaryButton(button: UIButton, viewTag: Int, message: IterableEmbeddedMessage?)
-//    func didPressBanner(banner: IterableEmbeddedView, viewTag: Int, message: IterableEmbeddedMessage?)
-//}
-
 @IBDesignable
 public class IterableEmbeddedView:UIView {
-    
-    // Delegate Methods
-//    weak public var iterableEmbeddedViewDelegate: IterableEmbeddedViewDelegate!
-    
+
     /// Set background color of view in container view.
     @IBOutlet weak public var contentView: UIView!
     @IBOutlet weak var innerContentView: UIView!
@@ -54,9 +43,9 @@ public class IterableEmbeddedView:UIView {
 
     // MARK: Embedded Message Content
     /// Title
-    var EMtitle: String? = "Placeholding Title" {
+    var embeddedMessageTitle: String? = "Placeholding Title" {
         didSet {
-            if let title = EMtitle {
+            if let title = embeddedMessageTitle {
                 labelTitle.text = title
                 labelTitle.isHidden = false
             } else {
@@ -66,10 +55,10 @@ public class IterableEmbeddedView:UIView {
     }
     
     /// Description
-    var EMdescription: String? = "Placeholding Description" {
+    var embeddedMessageBody: String? = "Placeholding Description" {
         didSet {
-            if let description = EMdescription {
-                labelDescription.text = description
+            if let body = embeddedMessageBody {
+                labelDescription.text = body
                 labelDescription.isHidden = false
             } else {
                 labelDescription.isHidden = true
@@ -91,9 +80,9 @@ public class IterableEmbeddedView:UIView {
     }
 
     /// Primary Button Text
-    public var EMbuttonText: String? = "Placeholding BTN 1" {
+    public var embeddedMessagePrimaryBtnTitle: String? = "Placeholding BTN 1" {
         didSet {
-            if let btn = EMbuttonText {
+            if let btn = embeddedMessagePrimaryBtnTitle {
                 primaryBtn.titleText = btn
                 primaryBtn.isHidden = false
             } else {
@@ -103,9 +92,9 @@ public class IterableEmbeddedView:UIView {
     }
     
     /// Secondary Button Text
-    public var EMbuttonTwoText: String? = "Placeholding BTN 2" {
+    public var embeddedMessageSecondaryBtnTitle: String? = "Placeholding BTN 2" {
         didSet {
-            if let btn = EMbuttonTwoText {
+            if let btn = embeddedMessageSecondaryBtnTitle {
                 secondaryBtn.titleText = btn
                 secondaryBtn.isHidden = false
             } else {
@@ -232,7 +221,7 @@ public class IterableEmbeddedView:UIView {
         imgViewHeight = 100
     }
     
-    public func configure(viewType: IterableEmbeddedViewType, message: ResolvedMessage, config: IterableEmbeddedViewConfig?) {
+    public func configure(viewType: IterableEmbeddedViewType, message: IterableEmbeddedMessage, config: IterableEmbeddedViewConfig?) {
         
         let cardBorderColor = UIColor(red: 0.88, green: 0.87, blue: 0.87, alpha: 1.00)
         let cardTitleTextColor = UIColor(red: 0.24, green: 0.23, blue: 0.23, alpha: 1.00)
@@ -295,11 +284,10 @@ public class IterableEmbeddedView:UIView {
         titleTextColor = config?.titleTextColor ?? defaultTitleTextColor
         descriptionTextColor = config?.bodyTextColor ?? defaultBodyTextColor
         
-        EMtitle = message.title
-        EMdescription = message.description
-        EMbuttonText = message.buttonText
-        EMbuttonTwoText = message.buttonTwoText
-        EMimage = message.image
+        embeddedMessageTitle = message.elements?.title
+        embeddedMessageBody = message.elements?.body
+        embeddedMessagePrimaryBtnTitle = message.elements?.buttons?.first?.title
+        embeddedMessageSecondaryBtnTitle = message.elements?.buttons?[1].title
     }
     
     @IBAction func bannerPressed(_ sender: UITapGestureRecognizer) {
@@ -314,12 +302,6 @@ public class IterableEmbeddedView:UIView {
                 IterableAPI.embeddedManager.handleEmbeddedClick(message: EMmessage, buttonIdentifier: nil, clickedUrl: clickedUrl)
             }
         }
-        
-        //TODO: Delegate method
-//        if (iterableEmbeddedViewDelegate != nil) {
-//            iterableEmbeddedViewDelegate.didPressBanner(banner: self, viewTag: self.tag, message: message)
-//        }
-//        else { }
     }
     
     public var viewConfig: IterableEmbeddedViewConfig?
@@ -493,12 +475,6 @@ public class IterableEmbeddedView:UIView {
                 IterableAPI.embeddedManager.handleEmbeddedClick(message: message!, buttonIdentifier: buttonIdentifier, clickedUrl: clickedUrl)
             }
         }
-
-        //TODO: Delegate handling
-//        if (iterableEmbeddedViewDelegate != nil) {
-//            iterableEmbeddedViewDelegate.didPressPrimaryButton(button: sender, viewTag: self.tag, message: message)
-//        }
-        else { }
     }
     
     // MARK: Second Button
@@ -564,13 +540,6 @@ public class IterableEmbeddedView:UIView {
                 IterableAPI.embeddedManager.handleEmbeddedClick(message: message!, buttonIdentifier: buttonIdentifier, clickedUrl: clickedUrl)
             }
         }
-        
-        //TODO: Delegate handling
-//        if (iterableEmbeddedViewDelegate != nil) {
-//            iterableEmbeddedViewDelegate.didPressSecondaryButton(button: sender, viewTag: self.tag, message: message)
-//        }
-//        else  { }
-        
     }
     
     // MARK: Image
