@@ -56,6 +56,7 @@ enum Const {
         static let deviceId = "itbl_device_id"
         static let sdkVersion = "itbl_sdk_version"
         static let offlineMode = "itbl_offline_mode"
+        static let embeddedCurrentMessageIds = "itbl_embedded_current_messageIds"
         
         static let attributionInfoExpiration = 24
     }
@@ -220,6 +221,7 @@ enum JsonKey {
     enum Embedded {
         static let packageName = "packageName"
         static let sdkVersion = "SDKVersion"
+        static let currentMessageIds = "currentMessageIds"
     }
     
     enum Header {
