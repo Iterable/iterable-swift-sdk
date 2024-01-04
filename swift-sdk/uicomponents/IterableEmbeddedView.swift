@@ -65,6 +65,8 @@ public class IterableEmbeddedView:UIView {
         }
     }
     
+    public var EMimage: UIImage? = nil
+    
     /// Description
     private var EMdescription: String? = "Placeholding Description" {
         didSet {
@@ -184,11 +186,16 @@ public class IterableEmbeddedView:UIView {
         self.EMtitle = message.elements?.title
         self.EMdescription = message.elements?.body
         
-        if let imageUrl = message.elements?.mediaUrl {
-            if let url = URL(string: imageUrl) {
-                loadImage(from: url, withViewType: viewType)
+        if let _ = self.EMimage {
+            self.loadViewType(viewType: viewType)
+        } else {
+            if let imageUrl = message.elements?.mediaUrl {
+                if let url = URL(string: imageUrl) {
+                    loadImage(from: url, withViewType: viewType)
+                }
             }
         }
+        
         
         let cardBorderColor = UIColor(red: 0.88, green: 0.87, blue: 0.87, alpha: 1.00)
         let cardTitleTextColor = UIColor(red: 0.24, green: 0.23, blue: 0.23, alpha: 1.00)
@@ -220,6 +227,41 @@ public class IterableEmbeddedView:UIView {
         descriptionTextColor = config?.bodyTextColor ?? defaultBodyTextColor
     }
     
+    private func loadViewType(viewType: IterableEmbeddedViewType) {
+        switch viewType {
+            case .card:
+                imgView.isHidden = true
+                let shouldShowCardImageView = EMimage != nil
+                if shouldShowCardImageView {
+                    // Show cardImageView
+                    cardImageView.image = EMimage
+                    cardImageView.isHidden = false
+                    cardImageTopConstraint.isActive = true
+                    titleToTopConstraint?.isActive = false
+                } else {
+                    // Hide cardImageView and deactivate its constraints
+                    cardImageView.isHidden = true
+                    cardImageTopConstraint.isActive = false
+                    titleToTopConstraint?.isActive = true
+
+                    // Remove cardImageView from its superview and release it
+                    cardImageView.removeFromSuperview()
+                    cardImageView = nil
+                }
+            case .banner:
+                imgView.isHidden = self.EMimage == nil
+                imgView.image = EMimage
+                cardImageView.isHidden = true
+                cardImageTopConstraint?.isActive = false
+                titleToTopConstraint?.isActive = true
+            case .notification:
+                imgView.isHidden = true
+                cardImageView.isHidden = true
+                cardImageTopConstraint?.isActive = false
+                titleToTopConstraint?.isActive = true
+        }
+    }
+    
     private func loadImage(from url: URL, withViewType viewType: IterableEmbeddedViewType) {
         var request = URLRequest(url: url)
         request.setValue("Mozilla/5.0 (iPhone; CPU iPhone OS 16_5_1 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/16.5 Mobile/15E148 Safari/604.1", forHTTPHeaderField: "User-Agent")
@@ -231,43 +273,12 @@ public class IterableEmbeddedView:UIView {
 
         session.dataTask(with: request) { [weak self] (data, _, _) in
             
+            if let imageData = data {
+                self?.EMimage = UIImage(data: imageData)
+            }
+            
             DispatchQueue.main.async {
-                
-                switch viewType {
-                    case .card:
-                        self?.imgView.isHidden = true
-                        if let imageData = data {
-                            // Show cardImageView
-                            self?.cardImageView.image = UIImage(data: imageData)
-                            self?.cardImageView.isHidden = false
-                            self?.cardImageTopConstraint.isActive = true
-                            self?.titleToTopConstraint?.isActive = false
-                        } else {
-                            // Hide cardImageView and deactivate its constraints
-                            self?.cardImageView.isHidden = true
-                            self?.cardImageTopConstraint.isActive = false
-                            self?.titleToTopConstraint?.isActive = true
-
-                            // Remove cardImageView from its superview and release it
-                            self?.cardImageView.removeFromSuperview()
-                            self?.cardImageView = nil
-                        }
-                    case .banner:
-                        if let imageData = data {
-                            self?.imgView.isHidden = false
-                            self?.imgView.image = UIImage(data: imageData)
-                        } else {
-                            self?.imgView.isHidden = true
-                        }
-                        self?.cardImageView.isHidden = true
-                        self?.cardImageTopConstraint?.isActive = false
-                        self?.titleToTopConstraint?.isActive = true
-                    case .notification:
-                        self?.imgView.isHidden = true
-                        self?.cardImageView.isHidden = true
-                        self?.cardImageTopConstraint?.isActive = false
-                        self?.titleToTopConstraint?.isActive = true
-                }
+                self?.loadViewType(viewType: viewType)
             }
 
         }.resume()
