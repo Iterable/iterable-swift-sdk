@@ -188,8 +188,9 @@ public class IterableEmbeddedView:UIView {
     }
 
     func loadViewFromNib() -> UIView? {
-        let bundle = Bundle(for: type(of: self))
-        let nib = UINib(nibName: "IterableEmbeddedView", bundle: bundle)
+//        let bundle = Bundle(for: type(of: self))
+//        let nib = UINib(nibName: "IterableEmbeddedView", bundle: bundle)
+        let nib = UINib(nibName: "IterableEmbeddedView", bundle: Bundle.module)
         let view = nib.instantiate(withOwner: self, options: nil).first as? UIView
         view?.backgroundColor = UIColor.clear
         self.clipsToBounds = false
