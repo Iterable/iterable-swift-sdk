@@ -67,9 +67,9 @@ public class IterableEmbeddedView:UIView {
     }
     
     /// Image
-    public var EMimage: UIImage? = nil {
+    public var embeddedMessageImage: UIImage? = nil {
         didSet {
-            if let image = EMimage {
+            if let image = embeddedMessageImage {
                 imgView.image = image
                 cardImageView.image = image
             } else {
@@ -107,7 +107,7 @@ public class IterableEmbeddedView:UIView {
     public var message: IterableEmbeddedMessage? = nil
     
     /// Layout style of Embedded Message
-    public var EMstyle: IterableEmbeddedViewType = IterableEmbeddedViewType.banner {
+    public var viewType: IterableEmbeddedViewType = IterableEmbeddedViewType.banner {
         didSet {
             switch EMstyle {
             case .card:
