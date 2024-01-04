@@ -5,29 +5,6 @@
 import Foundation
 import UIKit
 
-public struct ResolvedMessage {
-    public let title: String?
-    public let description: String?
-    public var image: UIImage?
-    public let buttonText: String?
-    public let buttonTwoText: String?
-    public let message: IterableEmbeddedMessage
-
-    init(title: String?,
-         description: String?,
-         image: UIImage?,
-         buttonText: String?,
-         buttonTwoText: String?,
-         message: IterableEmbeddedMessage) {
-        self.title = title
-        self.description = description
-        self.image = image
-        self.buttonText = buttonText
-        self.buttonTwoText = buttonTwoText
-        self.message = message
-    }
-}
-
 class IterableEmbeddedManager: NSObject, IterableEmbeddedManagerProtocol {
     init(apiClient: ApiClientProtocol,
          urlDelegate: IterableURLDelegate?,
@@ -60,72 +37,6 @@ class IterableEmbeddedManager: NSObject, IterableEmbeddedManagerProtocol {
     
     public func getMessages(for placementId: Int) -> [IterableEmbeddedMessage] {
         return messages[placementId] ?? []
-    }
-    
-    public func resolveMessages(_ messages: [IterableEmbeddedMessage], completion: @escaping ([ResolvedMessage]) -> Void) {
-        var resolvedMessages: [Int: ResolvedMessage] = [:]
-
-        let group = DispatchGroup()
-
-        for (index, message) in messages.enumerated() {
-            group.enter()
-
-            let title = message.elements?.title
-            let description = message.elements?.body
-            let imageUrl = message.elements?.mediaUrl
-            let buttonText = message.elements?.buttons?.first?.title
-            let buttonTwoText = message.elements?.buttons?.count ?? 0 > 1 ? message.elements?.buttons?[1].title : nil
-
-            DispatchQueue.global().async {
-                if let imageUrl = imageUrl, let url = URL(string: imageUrl) {
-                    var request = URLRequest(url: url)
-                    request.setValue("Mozilla/5.0 (iPhone; CPU iPhone OS 16_5_1 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/16.5 Mobile/15E148 Safari/604.1", forHTTPHeaderField: "User-Agent")
-
-                    let config = URLSessionConfiguration.default
-                    config.httpAdditionalHeaders = request.allHTTPHeaderFields
-
-                    let session = URLSession(configuration: config)
-                    
-                    session.dataTask(with: request) { (data, _, _) in
-                        defer { group.leave() }
-
-                        guard let imageData = data else {
-                            print("Unable to load image data")
-                            return
-                        }
-
-                        let resolvedMessage = ResolvedMessage(title: title,
-                                                              description: description,
-                                                              image: UIImage(data: imageData),
-                                                              buttonText: buttonText,
-                                                              buttonTwoText: buttonTwoText,
-                                                              message: message)
-
-                        DispatchQueue.main.async {
-                            resolvedMessages[index] = resolvedMessage
-                        }
-
-                    }.resume()
-                } else {
-                    let resolvedMessage = ResolvedMessage(title: title,
-                                                          description: description,
-                                                          image: nil,
-                                                          buttonText: buttonText,
-                                                          buttonTwoText: buttonTwoText,
-                                                          message: message)
-                    DispatchQueue.main.async {
-                        resolvedMessages[index] = resolvedMessage
-                        group.leave()
-                    }
-                }
-            }
-
-        }
-
-        group.notify(queue: .main) {
-            let sortedResolvedMessages = resolvedMessages.sorted { $0.key < $1.key }.map { $0.value }
-            completion(sortedResolvedMessages)
-        }
     }
     
     public func addUpdateListener(_ listener: IterableEmbeddedUpdateDelegate) {

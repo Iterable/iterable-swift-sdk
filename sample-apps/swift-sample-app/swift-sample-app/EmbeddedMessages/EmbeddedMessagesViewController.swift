@@ -24,7 +24,7 @@ class EmbeddedMessagesViewController: UIViewController {
     @IBOutlet weak var syncButton: UIButton!
     @IBOutlet weak var embeddedBannerView: IterableEmbeddedView!
     @IBOutlet weak var carouselCollectionView: UICollectionView!
-    var cardViews: [ResolvedMessage] = []
+    var cardViews: [IterableEmbeddedMessage] = []
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -66,39 +66,34 @@ class EmbeddedMessagesViewController: UIViewController {
     }
     
     func processEmbeddedMessages(_ messages: [IterableEmbeddedMessage]) {
-        
-        // getMessages fetch embedded messages as shown in embeddedmessages.json response
-        IterableAPI.embeddedManager.resolveMessages(messages) { [self] resolvedMessages in
-            // Handle the resolved messages here
-            // The resolvedMessages array contains the results
-            if (resolvedMessages.count > 0) {
-                // We get one placement only from which we will consider 1st message as banner
-                let bannerView = resolvedMessages[0]
-                // We consider rest of messages as carousel of cardviews
-                cardViews = Array(resolvedMessages[1..<resolvedMessages.count])
-                loadBannerView(bannerView)
-                embeddedBannerView.isHidden = false
-                carouselCollectionView.reloadData()
-            }
+        guard !messages.isEmpty else {
+            // Handle the case where messages array is empty
+            return
         }
-        
+        // getMessages fetch embedded messages as shown in embeddedmessages.json response
+        let bannerView = messages[0]
+        // We consider rest of messages as carousel of cardviews
+        cardViews = Array(messages[1..<messages.count])
+        loadBannerView(bannerView)
+        embeddedBannerView.isHidden = false
+        carouselCollectionView.reloadData()
     }
     
-    func loadCardView(_ embeddedView: IterableEmbeddedView, _ embeddedMessage: ResolvedMessage) {
+    func loadCardView(_ embeddedView: IterableEmbeddedView, _ embeddedMessage: IterableEmbeddedMessage) {
         DispatchQueue.main.async { [self] in
             loadEmbeddedView(embeddedView, embeddedMessage: embeddedMessage, type: IterableEmbeddedViewType.card)
         }
         
     }
     
-    func loadBannerView(_ embeddedMessage: ResolvedMessage) {
+    func loadBannerView(_ embeddedMessage: IterableEmbeddedMessage) {
         DispatchQueue.main.async { [self] in
             loadEmbeddedView(embeddedBannerView, embeddedMessage: embeddedMessage, type: IterableEmbeddedViewType.banner)
         }
         
     }
     
-    func loadEmbeddedView(_ embeddedView: IterableEmbeddedView, embeddedMessage: ResolvedMessage, type: IterableEmbeddedViewType) {
+    func loadEmbeddedView(_ embeddedView: IterableEmbeddedView, embeddedMessage: IterableEmbeddedMessage, type: IterableEmbeddedViewType) {
         
         embeddedView.iterableEmbeddedViewDelegate = self
         embeddedView.primaryBtn.isRoundedSides = true
@@ -106,16 +101,10 @@ class EmbeddedMessagesViewController: UIViewController {
         // We are setting the width of buttons as 140 as per our embedded messages width. You can change as per your need
         embeddedView.primaryBtn.widthAnchor.constraint(equalToConstant: 140).isActive = true
         embeddedView.secondaryBtn.widthAnchor.constraint(equalToConstant: 140).isActive = true
-        embeddedView.labelTitle.text = embeddedMessage.title
-        embeddedView.labelDescription.text = embeddedMessage.description
-        embeddedView.EMimage = embeddedMessage.image
-        embeddedView.EMbuttonText = embeddedMessage.buttonText
-        embeddedView.EMbuttonTwoText = embeddedMessage.buttonTwoText
-        embeddedView.message = embeddedMessage.message
 
         let config = IterableEmbeddedViewConfig(borderCornerRadius: 10)
         // You must call this method which sets the type for this view which helps render the particular layout of cardview/bannerview
-        embeddedView.configure(viewType: type, config: config)
+        embeddedView.configure(message: embeddedMessage, viewType: type, config: config)
         
         
     }
@@ -166,9 +155,7 @@ extension EmbeddedMessagesViewController: UICollectionViewDelegate, UICollection
     func collectionView(_ collectionView: UICollectionView,
                         cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
 
-        guard let cell  = collectionView.dequeueReusableCell(withReuseIdentifier: "IterableEmbeddedCardViewCell", for: indexPath) as? IterableEmbeddedCardViewCell else {
-            return UICollectionViewCell()
-        }
+        let cell  = collectionView.dequeueReusableCell(withReuseIdentifier: "IterableEmbeddedCardViewCell", for: indexPath) as! IterableEmbeddedCardViewCell
         if indexPath.row < cardViews.count {
             let cardView = cardViews[indexPath.row]
             loadCardView(cell.embeddedCardView, cardView)
@@ -176,6 +163,7 @@ extension EmbeddedMessagesViewController: UICollectionViewDelegate, UICollection
             
         return cell
     }
+    
         
     func collectionView(_ collectionView: UICollectionView,
                         layout collectionViewLayout: UICollectionViewLayout,
