@@ -8,9 +8,20 @@
 import Foundation
 import UIKit
 
+
+//TODO: Featuring in D6
+public protocol IterableEmbeddedViewDelegate: NSObject {
+    func didPressPrimaryButton(button: UIButton, viewTag: Int, message: IterableEmbeddedMessage?)
+    func didPressSecondaryButton(button: UIButton, viewTag: Int, message: IterableEmbeddedMessage?)
+    func didPressBanner(banner: IterableEmbeddedView, viewTag: Int, message: IterableEmbeddedMessage?)
+}
+
 @IBDesignable
 public class IterableEmbeddedView:UIView {
-
+    
+    // Delegate Methods
+    weak public var iterableEmbeddedViewDelegate: IterableEmbeddedViewDelegate!
+    
     /// Set background color of view in container view.
     @IBOutlet weak public var contentView: UIView!
     @IBOutlet weak var innerContentView: UIView!
@@ -43,9 +54,9 @@ public class IterableEmbeddedView:UIView {
 
     // MARK: Embedded Message Content
     /// Title
-    var embeddedMessageTitle: String? = "Placeholding Title" {
+    var EMtitle: String? = "Placeholding Title" {
         didSet {
-            if let title = embeddedMessageTitle {
+            if let title = EMtitle {
                 labelTitle.text = title
                 labelTitle.isHidden = false
             } else {
@@ -55,10 +66,10 @@ public class IterableEmbeddedView:UIView {
     }
     
     /// Description
-    var embeddedMessageBody: String? = "Placeholding Description" {
+    var EMdescription: String? = "Placeholding Description" {
         didSet {
-            if let body = embeddedMessageBody {
-                labelDescription.text = body
+            if let description = EMdescription {
+                labelDescription.text = description
                 labelDescription.isHidden = false
             } else {
                 labelDescription.isHidden = true
@@ -66,23 +77,10 @@ public class IterableEmbeddedView:UIView {
         }
     }
     
-    /// Image
-    public var embeddedMessageImage: UIImage? = nil {
-        didSet {
-            if let image = embeddedMessageImage {
-                imgView.image = image
-                cardImageView.image = image
-            } else {
-                imgView.isHidden = true
-                cardImageView.isHidden = true
-            }
-        }
-    }
-
     /// Primary Button Text
-    public var embeddedMessagePrimaryBtnTitle: String? = "Placeholding BTN 1" {
+    public var EMbuttonText: String? = "Placeholding BTN 1" {
         didSet {
-            if let btn = embeddedMessagePrimaryBtnTitle {
+            if let btn = EMbuttonText {
                 primaryBtn.titleText = btn
                 primaryBtn.isHidden = false
             } else {
@@ -92,9 +90,9 @@ public class IterableEmbeddedView:UIView {
     }
     
     /// Secondary Button Text
-    public var embeddedMessageSecondaryBtnTitle: String? = "Placeholding BTN 2" {
+    public var EMbuttonTwoText: String? = "Placeholding BTN 2" {
         didSet {
-            if let btn = embeddedMessageSecondaryBtnTitle {
+            if let btn = EMbuttonTwoText {
                 secondaryBtn.titleText = btn
                 secondaryBtn.isHidden = false
             } else {
@@ -107,7 +105,7 @@ public class IterableEmbeddedView:UIView {
     public var message: IterableEmbeddedMessage? = nil
     
     /// Layout style of Embedded Message
-    public var viewType: IterableEmbeddedViewType = IterableEmbeddedViewType.banner {
+    public var EMstyle: IterableEmbeddedViewType = IterableEmbeddedViewType.banner {
         didSet {
             switch EMstyle {
             case .card:
@@ -117,13 +115,13 @@ public class IterableEmbeddedView:UIView {
                 if shouldShowCardImageView {
                     // Show cardImageView
                     cardImageView.isHidden = false
-                    cardImageTopConstraint.isActive = true
-                    titleToTopConstraint.isActive = false
+                    cardImageTopConstraint?.isActive = true // Constraints becomes nil in listviews when scrolling as it gets disconnected
+                    titleToTopConstraint?.isActive = false // Constraints becomes nil in listviews when scrolling as it gets disconnected
                 } else {
                     // Hide cardImageView and deactivate its constraints
                     cardImageView.isHidden = true
-                    cardImageTopConstraint.isActive = false
-                    titleToTopConstraint.isActive = true
+                    cardImageTopConstraint?.isActive = false // Constraints becomes nil in listviews when scrolling as it gets disconnected
+                    titleToTopConstraint?.isActive = true // Constraints becomes nil in listviews when scrolling as it gets disconnected
 
                     // Remove cardImageView from its superview and release it
                     cardImageView.removeFromSuperview()
@@ -133,11 +131,13 @@ public class IterableEmbeddedView:UIView {
                 imgView.isHidden = EMimage == nil
                 bannerBorderColor = UIColor(red: 0.88, green: 0.87, blue: 0.87, alpha: 1.00)
                 cardImageView.isHidden = true
-                cardImageTopConstraint.isActive = false
-                titleToTopConstraint.isActive = true
+                cardImageTopConstraint?.isActive = false // Constraints becomes nil in listviews when scrolling as it gets disconnected
+                titleToTopConstraint?.isActive = true // Constraints becomes nil in listviews when scrolling as it gets disconnected
             case .notification:
                 imgView.isHidden = true
-                titleToTopConstraint.isActive = true
+                cardImageView.isHidden = true
+                cardImageTopConstraint?.isActive = false // Constraints becomes nil in listviews when scrolling as it gets disconnected
+                titleToTopConstraint?.isActive = true // Constraints becomes nil in listviews when scrolling as it gets disconnected
                 bannerBackgroundColor = UIColor(red: 0.90, green: 0.98, blue: 1.00, alpha: 1.00)
                 bannerBorderColor = UIColor(red: 0.76, green: 0.94, blue: 0.99, alpha: 1.00)
                 titleTextColor = UIColor(red: 0.14, green: 0.54, blue: 0.66, alpha: 1.00)
@@ -221,7 +221,15 @@ public class IterableEmbeddedView:UIView {
         imgViewHeight = 100
     }
     
-    public func configure(viewType: IterableEmbeddedViewType, message: IterableEmbeddedMessage, config: IterableEmbeddedViewConfig?) {
+    public func configure(message: IterableEmbeddedMessage, viewType: IterableEmbeddedViewType, config: IterableEmbeddedViewConfig?) {
+        
+        self.message = message
+        
+        if let imageUrl = message.elements?.mediaUrl {
+            if let url = URL(string: imageUrl) {
+                loadImage(from: url, withViewType: viewType)
+            }
+        }
         
         let cardBorderColor = UIColor(red: 0.88, green: 0.87, blue: 0.87, alpha: 1.00)
         let cardTitleTextColor = UIColor(red: 0.24, green: 0.23, blue: 0.23, alpha: 1.00)
@@ -240,38 +248,6 @@ public class IterableEmbeddedView:UIView {
         let defaultSecondaryBtnTextColor = (cardOrBanner) ? UIColor.purple : notificationTextColor
         let defaultTitleTextColor = (cardOrBanner) ? cardTitleTextColor : notificationTextColor
         let defaultBodyTextColor = (cardOrBanner) ? cardBodyTextColor : notificationTextColor
-
-        switch viewType {
-            case .card:
-                imgView.isHidden = true
-                let shouldShowCardImageView = EMimage != nil
-                if shouldShowCardImageView {
-                    // Show cardImageView
-                    cardImageView.isHidden = false
-                    cardImageTopConstraint.isActive = true
-                    titleToTopConstraint.isActive = false
-                } else {
-                    // Hide cardImageView and deactivate its constraints
-                    cardImageView.isHidden = true
-                    cardImageTopConstraint.isActive = false
-                    titleToTopConstraint.isActive = true
-
-                    // Remove cardImageView from its superview and release it
-                    cardImageView.removeFromSuperview()
-                    cardImageView = nil
-                }
-            case .banner:
-                imgView.isHidden = EMimage == nil
-                bannerBorderColor = cardBorderColor
-                cardImageView.isHidden = true
-                cardImageTopConstraint.isActive = false
-                titleToTopConstraint.isActive = true
-            case .notification:
-                imgView.isHidden = true
-                cardImageView.isHidden = true
-                cardImageTopConstraint.isActive = false
-                titleToTopConstraint.isActive = true
-        }
         
         bannerBackgroundColor = config?.backgroundColor ?? defaultBackgroundColor
         bannerBorderColor = config?.borderColor ?? defaultBorderColor
@@ -283,12 +259,61 @@ public class IterableEmbeddedView:UIView {
         secondaryBtnTextColor = config?.secondaryBtnTextColor ?? defaultSecondaryBtnTextColor
         titleTextColor = config?.titleTextColor ?? defaultTitleTextColor
         descriptionTextColor = config?.bodyTextColor ?? defaultBodyTextColor
-        
-        embeddedMessageTitle = message.elements?.title
-        embeddedMessageBody = message.elements?.body
-        embeddedMessagePrimaryBtnTitle = message.elements?.buttons?.first?.title
-        embeddedMessageSecondaryBtnTitle = message.elements?.buttons?[1].title
     }
+    
+    private func loadImage(from url: URL, withViewType viewType: IterableEmbeddedViewType) {
+        var request = URLRequest(url: url)
+        request.setValue("Mozilla/5.0 (iPhone; CPU iPhone OS 16_5_1 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/16.5 Mobile/15E148 Safari/604.1", forHTTPHeaderField: "User-Agent")
+
+        let config = URLSessionConfiguration.default
+        config.httpAdditionalHeaders = request.allHTTPHeaderFields
+
+        let session = URLSession(configuration: config)
+
+        session.dataTask(with: request) { [weak self] (data, _, _) in
+            
+            DispatchQueue.main.async {
+                
+                switch viewType {
+                    case .card:
+                        self?.imgView.isHidden = true
+                        if let imageData = data {
+                            // Show cardImageView
+                            self?.cardImageView.image = UIImage(data: imageData)
+                            self?.cardImageView.isHidden = false
+                            self?.cardImageTopConstraint?.isActive = true
+                            self?.titleToTopConstraint?.isActive = false
+                        } else {
+                            // Hide cardImageView and deactivate its constraints
+                            self?.cardImageView.isHidden = true
+                            self?.cardImageTopConstraint?.isActive = false
+                            self?.titleToTopConstraint?.isActive = true
+
+                            // Remove cardImageView from its superview and release it
+                            self?.cardImageView.removeFromSuperview()
+                            self?.cardImageView = nil
+                        }
+                    case .banner:
+                        if let imageData = data {
+                            self?.imgView.isHidden = false
+                            self?.imgView.image = UIImage(data: imageData)
+                        } else {
+                            self?.imgView.isHidden = true
+                        }
+                        self?.cardImageView.isHidden = true
+                        self?.cardImageTopConstraint.isActive = false
+                        self?.titleToTopConstraint.isActive = true
+                    case .notification:
+                        self?.imgView.isHidden = true
+                        self?.cardImageView.isHidden = true
+                        self?.cardImageTopConstraint.isActive = false
+                        self?.titleToTopConstraint.isActive = true
+                }
+            }
+
+        }.resume()
+    }
+
     
     @IBAction func bannerPressed(_ sender: UITapGestureRecognizer) {
         guard let EMmessage = message else {
@@ -296,11 +321,15 @@ public class IterableEmbeddedView:UIView {
             return
         }
         
-        if let defaultAction = message?.elements?.defaultAction {
-            if let clickedUrl = defaultAction.data?.isEmpty == false ? defaultAction.data : defaultAction.type {
-                IterableAPI.track(embeddedMessageClick: message!, buttonIdentifier: nil, clickedUrl: clickedUrl)
-                IterableAPI.embeddedManager.handleEmbeddedClick(message: EMmessage, buttonIdentifier: nil, clickedUrl: clickedUrl)
-            }
+        if let defaultActionData = message?.elements?.defaultAction?.data, !defaultActionData.isEmpty {
+            IterableAPI.track(embeddedMessageClick: message!, buttonIdentifier: nil, clickedUrl: defaultActionData)
+            IterableAPI.embeddedManager.handleEmbeddedClick(message: EMmessage, buttonIdentifier: nil, clickedUrl: EMmessage.elements?.defaultAction?.data ?? "")
+        }
+        
+        
+        //TODO: Delegate method
+        if (iterableEmbeddedViewDelegate != nil) {
+            iterableEmbeddedViewDelegate.didPressBanner(banner: self, viewTag: self.tag, message: message)
         }
     }
     
@@ -466,15 +495,24 @@ public class IterableEmbeddedView:UIView {
     /// Primary button on touchup inside event.
     @IBAction public func primaryButtonPressed(_ sender: UIButton) {
         var buttonIdentifier: String?
-        let primaryButton = message?.elements?.buttons?.first
-        if let primaryButtonAction = primaryButton?.action {
-            buttonIdentifier = primaryButton?.id
+        if let buttonData = message?.elements?.buttons?.first,
+           let actionData = buttonData.action?.data,
+           !actionData.isEmpty {
             
-            if let clickedUrl = primaryButtonAction.data?.isEmpty == false ? primaryButtonAction.data : primaryButtonAction.type {
-                IterableAPI.track(embeddedMessageClick: message!, buttonIdentifier: buttonIdentifier, clickedUrl: clickedUrl)
-                IterableAPI.embeddedManager.handleEmbeddedClick(message: message!, buttonIdentifier: buttonIdentifier, clickedUrl: clickedUrl)
+            if !buttonData.id.isEmpty {
+                buttonIdentifier = buttonData.id
             }
+            
+            let clickedUrl = actionData
+            IterableAPI.track(embeddedMessageClick: message!, buttonIdentifier: buttonIdentifier, clickedUrl: clickedUrl)
+            IterableAPI.embeddedManager.handleEmbeddedClick(message: message!, buttonIdentifier: buttonIdentifier, clickedUrl: clickedUrl)
         }
+
+        //TODO: Delegate handling
+//        if (iterableEmbeddedViewDelegate != nil) {
+//            iterableEmbeddedViewDelegate.didPressPrimaryButton(button: sender, viewTag: self.tag, message: message)
+//        }
+        else { }
     }
     
     // MARK: Second Button
@@ -531,15 +569,24 @@ public class IterableEmbeddedView:UIView {
     /// Secondary button on press event
     @IBAction func secondaryButtonPressed(_ sender: UIButton) {
         var buttonIdentifier: String?
-        let secondaryButton = message?.elements?.buttons?[1]
-        if let secondaryButtonAction = secondaryButton?.action {
-            buttonIdentifier = secondaryButton?.id
+        if let buttonData = message?.elements?.buttons?.dropFirst().first,
+           let actionData = buttonData.action?.data,
+           !actionData.isEmpty {
             
-            if let clickedUrl = secondaryButtonAction.data?.isEmpty == false ? secondaryButtonAction.data : secondaryButtonAction.type {
-                IterableAPI.track(embeddedMessageClick: message!, buttonIdentifier: buttonIdentifier, clickedUrl: clickedUrl)
-                IterableAPI.embeddedManager.handleEmbeddedClick(message: message!, buttonIdentifier: buttonIdentifier, clickedUrl: clickedUrl)
+            if !buttonData.id.isEmpty {
+                buttonIdentifier = buttonData.id
             }
+            
+            let clickedUrl = actionData
+            IterableAPI.track(embeddedMessageClick: message!, buttonIdentifier: buttonIdentifier, clickedUrl: clickedUrl)
+            IterableAPI.embeddedManager.handleEmbeddedClick(message: message!, buttonIdentifier: buttonIdentifier, clickedUrl: clickedUrl)
         }
+        //TODO: Delegate handling
+//        if (iterableEmbeddedViewDelegate != nil) {
+//            iterableEmbeddedViewDelegate.didPressSecondaryButton(button: sender, viewTag: self.tag, message: message)
+//        }
+//        else  { }
+        
     }
     
     // MARK: Image
