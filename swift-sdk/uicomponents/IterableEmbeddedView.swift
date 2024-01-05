@@ -68,7 +68,7 @@ public class IterableEmbeddedView:UIView {
     public var EMimage: UIImage? = nil
     
     /// Description
-    private var EMdescription: String? = "Placeholding Description" {
+    var EMdescription: String? = "Placeholding Description" {
         didSet {
             if let description = EMdescription {
                 labelDescription.text = description
@@ -80,7 +80,7 @@ public class IterableEmbeddedView:UIView {
     }
     
     /// Primary Button Text
-    private var EMbuttonText: String? = "Placeholding BTN 1" {
+    var EMbuttonText: String? = "Placeholding BTN 1" {
         didSet {
             if let btn = EMbuttonText {
                 primaryBtn.titleText = btn
@@ -92,7 +92,7 @@ public class IterableEmbeddedView:UIView {
     }
     
     /// Secondary Button Text
-    private var EMbuttonTwoText: String? = "Placeholding BTN 2" {
+    var EMbuttonTwoText: String? = "Placeholding BTN 2" {
         didSet {
             if let btn = EMbuttonTwoText {
                 secondaryBtn.titleText = btn
