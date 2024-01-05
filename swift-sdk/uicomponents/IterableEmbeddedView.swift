@@ -104,7 +104,7 @@ public class IterableEmbeddedView:UIView {
     }
     
     /// Associated Embedded Message
-    private var message: IterableEmbeddedMessage? = nil
+    public var message: IterableEmbeddedMessage? = nil
     
     // MARK: IterableEmbeddedView init method
      /// IterableEmbeddedView init method
