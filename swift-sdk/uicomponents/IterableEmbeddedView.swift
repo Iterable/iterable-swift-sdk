@@ -253,7 +253,7 @@ public class IterableEmbeddedView:UIView {
                 }
             case .banner:
                 imgView.isHidden = EMimage == nil
-                bannerBorderColor = cardBorderColor
+                //bannerBorderColor = cardBorderColor
                 imgView.isHidden = self.EMimage == nil
                 imgView.image = EMimage
                 cardImageView.isHidden = true
