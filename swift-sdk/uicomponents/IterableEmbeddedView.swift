@@ -10,17 +10,17 @@ import UIKit
 
 
 //TODO: Featuring in D6
-//public protocol IterableEmbeddedViewDelegate: NSObject {
-//    func didPressPrimaryButton(button: UIButton, viewTag: Int, message: IterableEmbeddedMessage?)
-//    func didPressSecondaryButton(button: UIButton, viewTag: Int, message: IterableEmbeddedMessage?)
-//    func didPressBanner(banner: IterableEmbeddedView, viewTag: Int, message: IterableEmbeddedMessage?)
-//}
+public protocol IterableEmbeddedViewDelegate: NSObject {
+    func didPressPrimaryButton(button: UIButton, viewTag: Int, message: IterableEmbeddedMessage?)
+    func didPressSecondaryButton(button: UIButton, viewTag: Int, message: IterableEmbeddedMessage?)
+    func didPressBanner(banner: IterableEmbeddedView, viewTag: Int, message: IterableEmbeddedMessage?)
+}
 
 @IBDesignable
 public class IterableEmbeddedView:UIView {
     
     // Delegate Methods
-//    weak public var iterableEmbeddedViewDelegate: IterableEmbeddedViewDelegate!
+    weak public var iterableEmbeddedViewDelegate: IterableEmbeddedViewDelegate!
     
     /// Set background color of view in container view.
     @IBOutlet weak public var contentView: UIView!
@@ -54,7 +54,7 @@ public class IterableEmbeddedView:UIView {
 
     // MARK: Embedded Message Content
     /// Title
-    var EMtitle: String? = "Placeholding Title" {
+    private var EMtitle: String? = "Placeholding Title" {
         didSet {
             if let title = EMtitle {
                 labelTitle.text = title
@@ -64,6 +64,8 @@ public class IterableEmbeddedView:UIView {
             }
         }
     }
+    
+    public var EMimage: UIImage? = nil
     
     /// Description
     var EMdescription: String? = "Placeholding Description" {
@@ -77,21 +79,8 @@ public class IterableEmbeddedView:UIView {
         }
     }
     
-    /// Image
-    public var EMimage: UIImage? = nil {
-        didSet {
-            if let image = EMimage {
-                imgView.image = image
-                cardImageView.image = image
-            } else {
-                imgView.isHidden = true
-                cardImageView.isHidden = true
-            }
-        }
-    }
-
     /// Primary Button Text
-    public var EMbuttonText: String? = "Placeholding BTN 1" {
+    var EMbuttonText: String? = "Placeholding BTN 1" {
         didSet {
             if let btn = EMbuttonText {
                 primaryBtn.titleText = btn
@@ -103,7 +92,7 @@ public class IterableEmbeddedView:UIView {
     }
     
     /// Secondary Button Text
-    public var EMbuttonTwoText: String? = "Placeholding BTN 2" {
+    var EMbuttonTwoText: String? = "Placeholding BTN 2" {
         didSet {
             if let btn = EMbuttonTwoText {
                 secondaryBtn.titleText = btn
@@ -116,54 +105,6 @@ public class IterableEmbeddedView:UIView {
     
     /// Associated Embedded Message
     public var message: IterableEmbeddedMessage? = nil
-    
-    /// Layout style of Embedded Message
-    public var EMstyle: IterableEmbeddedViewType = IterableEmbeddedViewType.banner {
-        didSet {
-            switch EMstyle {
-            case .card:
-                imgView.isHidden = true
-                let shouldShowCardImageView = EMimage != nil
-                bannerBorderColor = UIColor(red: 0.88, green: 0.87, blue: 0.87, alpha: 1.00)
-                if shouldShowCardImageView {
-                    // Show cardImageView
-                    cardImageView.isHidden = false
-                    cardImageTopConstraint.isActive = true
-                    titleToTopConstraint.isActive = false
-                } else {
-                    // Hide cardImageView and deactivate its constraints
-                    cardImageView.isHidden = true
-                    cardImageTopConstraint.isActive = false
-                    titleToTopConstraint.isActive = true
-
-                    // Remove cardImageView from its superview and release it
-                    cardImageView.removeFromSuperview()
-                    cardImageView = nil
-                }
-            case .banner:
-                imgView.isHidden = EMimage == nil
-                bannerBorderColor = UIColor(red: 0.88, green: 0.87, blue: 0.87, alpha: 1.00)
-                cardImageView.isHidden = true
-                cardImageTopConstraint.isActive = false
-                titleToTopConstraint.isActive = true
-            case .notification:
-                imgView.isHidden = true
-                cardImageView.isHidden = true
-                cardImageTopConstraint.isActive = false
-                titleToTopConstraint.isActive = true
-                bannerBackgroundColor = UIColor(red: 0.90, green: 0.98, blue: 1.00, alpha: 1.00)
-                bannerBorderColor = UIColor(red: 0.76, green: 0.94, blue: 0.99, alpha: 1.00)
-                titleTextColor = UIColor(red: 0.14, green: 0.54, blue: 0.66, alpha: 1.00)
-                descriptionTextColor = UIColor(red: 0.14, green: 0.54, blue: 0.66, alpha: 1.00)
-                primaryBtnColor = UIColor.white
-                primaryBtnTextColor = UIColor(red: 0.14, green: 0.54, blue: 0.66, alpha: 1.00)
-                secondaryBtnColor = UIColor(red: 0.90, green: 0.98, blue: 1.00, alpha: 1.00)
-                secondaryBtnTextColor = UIColor(red: 0.14, green: 0.54, blue: 0.66, alpha: 1.00)
-            }
-        }
-    }
-    
-
     
     // MARK: IterableEmbeddedView init method
      /// IterableEmbeddedView init method
@@ -188,8 +129,7 @@ public class IterableEmbeddedView:UIView {
     }
 
     func loadViewFromNib() -> UIView? {
-        let bundle = Bundle(for: type(of: self))
-        let nib = UINib(nibName: "IterableEmbeddedView", bundle: bundle)
+        let nib = UINib(nibName: "IterableEmbeddedView", bundle: Bundle.module)
         let view = nib.instantiate(withOwner: self, options: nil).first as? UIView
         view?.backgroundColor = UIColor.clear
         self.clipsToBounds = false
@@ -235,7 +175,27 @@ public class IterableEmbeddedView:UIView {
         imgViewHeight = 100
     }
     
-    public func configure(viewType: IterableEmbeddedViewType, config: IterableEmbeddedViewConfig?) {
+    public func configure(message: IterableEmbeddedMessage, viewType: IterableEmbeddedViewType, config: IterableEmbeddedViewConfig?) {
+        
+        self.message = message
+        
+        let buttonText = message.elements?.buttons?.first?.title
+        let buttonTwoText = message.elements?.buttons?.count ?? 0 > 1 ? message.elements?.buttons?[1].title : nil
+        self.EMbuttonText = buttonText
+        self.EMbuttonTwoText = buttonTwoText
+        self.EMtitle = message.elements?.title
+        self.EMdescription = message.elements?.body
+        
+        if let _ = self.EMimage {
+            self.loadViewType(viewType: viewType)
+        } else {
+            if let imageUrl = message.elements?.mediaUrl {
+                if let url = URL(string: imageUrl) {
+                    loadImage(from: url, withViewType: viewType)
+                }
+            }
+        }
+        
         
         let cardBorderColor = UIColor(red: 0.88, green: 0.87, blue: 0.87, alpha: 1.00)
         let cardTitleTextColor = UIColor(red: 0.24, green: 0.23, blue: 0.23, alpha: 1.00)
@@ -254,38 +214,6 @@ public class IterableEmbeddedView:UIView {
         let defaultSecondaryBtnTextColor = (cardOrBanner) ? UIColor.purple : notificationTextColor
         let defaultTitleTextColor = (cardOrBanner) ? cardTitleTextColor : notificationTextColor
         let defaultBodyTextColor = (cardOrBanner) ? cardBodyTextColor : notificationTextColor
-
-        switch viewType {
-            case .card:
-                imgView.isHidden = true
-                let shouldShowCardImageView = EMimage != nil
-                if shouldShowCardImageView {
-                    // Show cardImageView
-                    cardImageView.isHidden = false
-                    cardImageTopConstraint.isActive = true
-                    titleToTopConstraint.isActive = false
-                } else {
-                    // Hide cardImageView and deactivate its constraints
-                    cardImageView.isHidden = true
-                    cardImageTopConstraint.isActive = false
-                    titleToTopConstraint.isActive = true
-
-                    // Remove cardImageView from its superview and release it
-                    cardImageView.removeFromSuperview()
-                    cardImageView = nil
-                }
-            case .banner:
-                imgView.isHidden = EMimage == nil
-                bannerBorderColor = cardBorderColor
-                cardImageView.isHidden = true
-                cardImageTopConstraint.isActive = false
-                titleToTopConstraint.isActive = true
-            case .notification:
-                imgView.isHidden = true
-                cardImageView.isHidden = true
-                cardImageTopConstraint.isActive = false
-                titleToTopConstraint.isActive = true
-        }
         
         bannerBackgroundColor = config?.backgroundColor ?? defaultBackgroundColor
         bannerBorderColor = config?.borderColor ?? defaultBorderColor
@@ -297,6 +225,63 @@ public class IterableEmbeddedView:UIView {
         secondaryBtnTextColor = config?.secondaryBtnTextColor ?? defaultSecondaryBtnTextColor
         titleTextColor = config?.titleTextColor ?? defaultTitleTextColor
         descriptionTextColor = config?.bodyTextColor ?? defaultBodyTextColor
+    }
+    
+    private func loadViewType(viewType: IterableEmbeddedViewType) {
+        switch viewType {
+            case .card:
+                imgView.isHidden = true
+                let shouldShowCardImageView = EMimage != nil
+                if shouldShowCardImageView {
+                    // Show cardImageView
+                    cardImageView.image = EMimage
+                    cardImageView.isHidden = false
+                    cardImageTopConstraint.isActive = true
+                    titleToTopConstraint?.isActive = false
+                } else {
+                    // Hide cardImageView and deactivate its constraints
+                    cardImageView.isHidden = true
+                    cardImageTopConstraint.isActive = false
+                    titleToTopConstraint?.isActive = true
+
+                    // Remove cardImageView from its superview and release it
+                    cardImageView.removeFromSuperview()
+                    cardImageView = nil
+                }
+            case .banner:
+                imgView.isHidden = self.EMimage == nil
+                imgView.image = EMimage
+                cardImageView.isHidden = true
+                cardImageTopConstraint?.isActive = false
+                titleToTopConstraint?.isActive = true
+            case .notification:
+                imgView.isHidden = true
+                cardImageView.isHidden = true
+                cardImageTopConstraint?.isActive = false
+                titleToTopConstraint?.isActive = true
+        }
+    }
+    
+    private func loadImage(from url: URL, withViewType viewType: IterableEmbeddedViewType) {
+        var request = URLRequest(url: url)
+        request.setValue("Mozilla/5.0 (iPhone; CPU iPhone OS 16_5_1 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/16.5 Mobile/15E148 Safari/604.1", forHTTPHeaderField: "User-Agent")
+
+        let config = URLSessionConfiguration.default
+        config.httpAdditionalHeaders = request.allHTTPHeaderFields
+
+        let session = URLSession(configuration: config)
+
+        session.dataTask(with: request) { [weak self] (data, _, _) in
+            
+            if let imageData = data {
+                self?.EMimage = UIImage(data: imageData)
+            }
+            
+            DispatchQueue.main.async {
+                self?.loadViewType(viewType: viewType)
+            }
+
+        }.resume()
     }
 
     
@@ -314,10 +299,9 @@ public class IterableEmbeddedView:UIView {
         }
         
         //TODO: Delegate method
-//        if (iterableEmbeddedViewDelegate != nil) {
-//            iterableEmbeddedViewDelegate.didPressBanner(banner: self, viewTag: self.tag, message: message)
-//        }
-//        else { }
+        if (iterableEmbeddedViewDelegate != nil) {
+            iterableEmbeddedViewDelegate.didPressBanner(banner: self, viewTag: self.tag, message: message)
+        }
     }
     
     public var viewConfig: IterableEmbeddedViewConfig?

@@ -89,7 +89,7 @@ class IterableEmbeddedManager: NSObject, IterableEmbeddedManagerProtocol {
                     config.httpAdditionalHeaders = request.allHTTPHeaderFields
 
                     let session = URLSession(configuration: config)
-                    
+
                     session.dataTask(with: request) { (data, _, _) in
                         defer { group.leave() }
 
