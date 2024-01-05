@@ -48,6 +48,9 @@ jobs:
       - name: create xcframeworks and zip
         run: bundle exec fastlane ios build_xcframework output_dir:./output_dir
 
+      - name: create and push git tag
+        run: bundle exec fastlane ios create_git_tag version:$VERSION
+
       - name: create github release and upload assets
         run: |
           bundle exec fastlane ios create_release version:$VERSION branch:$BRANCH changelog_section:$CHANGELOG_SECTION output_dir:$OUTPUT_DIR github_token:$GITHUB_TOKEN set_prerelease:$SET_PRERELEASE
