@@ -5,7 +5,7 @@
 import Foundation
 import UIKit
 
-public struct ResolvedMessage {
+public struct ResolvedMessage: Equatable {
     public let title: String?
     public let description: String?
     public var image: UIImage?
@@ -29,6 +29,15 @@ public struct ResolvedMessage {
         self.buttonTwoText = buttonTwoText
         self.message = message
     }
+    
+    public static func ==(lhs: ResolvedMessage, rhs: ResolvedMessage) -> Bool {
+            return lhs.title == rhs.title &&
+                   lhs.description == rhs.description &&
+                   lhs.image == rhs.image &&
+                   lhs.buttonText == rhs.buttonText &&
+                   lhs.buttonTwoText == rhs.buttonTwoText &&
+                   lhs.message == rhs.message
+        }
 }
 
 class IterableEmbeddedManager: NSObject, IterableEmbeddedManagerProtocol {

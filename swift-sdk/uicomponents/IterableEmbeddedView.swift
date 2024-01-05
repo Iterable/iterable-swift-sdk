@@ -56,7 +56,7 @@ public class IterableEmbeddedView:UIView {
     /// Title
     private var EMtitle: String? = "Placeholding Title" {
         didSet {
-            if let title = EMtitle {
+            if let title = embeddedMessageTitle {
                 labelTitle.text = title
                 labelTitle.isHidden = false
             } else {
@@ -68,10 +68,10 @@ public class IterableEmbeddedView:UIView {
     public var EMimage: UIImage? = nil
     
     /// Description
-    var EMdescription: String? = "Placeholding Description" {
+    var embeddedMessageBody: String? = "Placeholding Description" {
         didSet {
-            if let description = EMdescription {
-                labelDescription.text = description
+            if let body = embeddedMessageBody {
+                labelDescription.text = body
                 labelDescription.isHidden = false
             } else {
                 labelDescription.isHidden = true
@@ -82,7 +82,7 @@ public class IterableEmbeddedView:UIView {
     /// Primary Button Text
     var EMbuttonText: String? = "Placeholding BTN 1" {
         didSet {
-            if let btn = EMbuttonText {
+            if let btn = embeddedMessagePrimaryBtnTitle {
                 primaryBtn.titleText = btn
                 primaryBtn.isHidden = false
             } else {
@@ -94,7 +94,7 @@ public class IterableEmbeddedView:UIView {
     /// Secondary Button Text
     var EMbuttonTwoText: String? = "Placeholding BTN 2" {
         didSet {
-            if let btn = EMbuttonTwoText {
+            if let btn = embeddedMessageSecondaryBtnTitle {
                 secondaryBtn.titleText = btn
                 secondaryBtn.isHidden = false
             } else {
@@ -226,6 +226,11 @@ public class IterableEmbeddedView:UIView {
         titleTextColor = config?.titleTextColor ?? defaultTitleTextColor
         descriptionTextColor = config?.bodyTextColor ?? defaultBodyTextColor
     }
+        
+        embeddedMessageTitle = message.elements?.title
+        embeddedMessageBody = message.elements?.body
+        embeddedMessagePrimaryBtnTitle = message.elements?.buttons?.first?.title
+        embeddedMessageSecondaryBtnTitle = message.elements?.buttons?[1].title
     
     private func loadViewType(viewType: IterableEmbeddedViewType) {
         switch viewType {
@@ -237,11 +242,13 @@ public class IterableEmbeddedView:UIView {
                     cardImageView.image = EMimage
                     cardImageView.isHidden = false
                     cardImageTopConstraint.isActive = true
+                    titleToTopConstraint.isActive = false
                     titleToTopConstraint?.isActive = false
                 } else {
                     // Hide cardImageView and deactivate its constraints
                     cardImageView.isHidden = true
                     cardImageTopConstraint.isActive = false
+                    titleToTopConstraint.isActive = true
                     titleToTopConstraint?.isActive = true
 
                     // Remove cardImageView from its superview and release it
@@ -249,17 +256,39 @@ public class IterableEmbeddedView:UIView {
                     cardImageView = nil
                 }
             case .banner:
+                imgView.isHidden = EMimage == nil
+                bannerBorderColor = cardBorderColor
                 imgView.isHidden = self.EMimage == nil
                 imgView.image = EMimage
                 cardImageView.isHidden = true
+                cardImageTopConstraint.isActive = false
+                titleToTopConstraint.isActive = true
                 cardImageTopConstraint?.isActive = false
                 titleToTopConstraint?.isActive = true
             case .notification:
                 imgView.isHidden = true
                 cardImageView.isHidden = true
+                cardImageTopConstraint.isActive = false
+                titleToTopConstraint.isActive = true
                 cardImageTopConstraint?.isActive = false
                 titleToTopConstraint?.isActive = true
         }
+        
+        bannerBackgroundColor = config?.backgroundColor ?? defaultBackgroundColor
+        bannerBorderColor = config?.borderColor ?? defaultBorderColor
+        bannerBorderWidth = config?.borderWidth ?? 1.0
+        bannerCornerRadius = config?.borderCornerRadius ?? 8.0
+        primaryBtnColor = config?.primaryBtnBackgroundColor ?? defaultPrimaryBtnColor
+        primaryBtnTextColor = config?.primaryBtnTextColor ?? defaultPrimaryBtnTextColor
+        secondaryBtnColor = config?.secondaryBtnBackgroundColor ?? defaultSecondaryBtnColor
+        secondaryBtnTextColor = config?.secondaryBtnTextColor ?? defaultSecondaryBtnTextColor
+        titleTextColor = config?.titleTextColor ?? defaultTitleTextColor
+        descriptionTextColor = config?.bodyTextColor ?? defaultBodyTextColor
+        
+        embeddedMessageTitle = message.elements?.title
+        embeddedMessageBody = message.elements?.body
+        embeddedMessagePrimaryBtnTitle = message.elements?.buttons?.first?.title
+        embeddedMessageSecondaryBtnTitle = message.elements?.buttons?[1].title
     }
     
     private func loadImage(from url: URL, withViewType viewType: IterableEmbeddedViewType) {
@@ -475,12 +504,6 @@ public class IterableEmbeddedView:UIView {
                 IterableAPI.embeddedManager.handleEmbeddedClick(message: message!, buttonIdentifier: buttonIdentifier, clickedUrl: clickedUrl)
             }
         }
-
-        //TODO: Delegate handling
-//        if (iterableEmbeddedViewDelegate != nil) {
-//            iterableEmbeddedViewDelegate.didPressPrimaryButton(button: sender, viewTag: self.tag, message: message)
-//        }
-        else { }
     }
     
     // MARK: Second Button
@@ -546,13 +569,6 @@ public class IterableEmbeddedView:UIView {
                 IterableAPI.embeddedManager.handleEmbeddedClick(message: message!, buttonIdentifier: buttonIdentifier, clickedUrl: clickedUrl)
             }
         }
-        
-        //TODO: Delegate handling
-//        if (iterableEmbeddedViewDelegate != nil) {
-//            iterableEmbeddedViewDelegate.didPressSecondaryButton(button: sender, viewTag: self.tag, message: message)
-//        }
-//        else  { }
-        
     }
     
     // MARK: Image
