@@ -44,6 +44,7 @@ extension IterableEmbeddedMessage {
         public let title: String?
         public let body: String?
         public let mediaUrl: String?
+        public let mediaUrlCaption: String?
         
         public let buttons: [EmbeddedMessageElementsButton]?
         public let text: [EmbeddedMessageElementsText]?

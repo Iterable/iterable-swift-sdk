@@ -192,10 +192,10 @@ public class IterableEmbeddedView:UIView {
             if let imageUrl = message.elements?.mediaUrl {
                 if let url = URL(string: imageUrl) {
                     loadImage(from: url, withViewType: viewType)
+                    self.EMimage?.accessibilityLabel = message.elements?.mediaUrlCaption
                 }
             }
         }
-        
         
         let cardBorderColor = UIColor(red: 0.88, green: 0.87, blue: 0.87, alpha: 1.00)
         let cardTitleTextColor = UIColor(red: 0.24, green: 0.23, blue: 0.23, alpha: 1.00)
