@@ -9,6 +9,7 @@ public struct ResolvedMessage: Equatable {
     public let title: String?
     public let description: String?
     public var image: UIImage?
+    public var imageAccessibilityLabel: String?
     public let buttonText: String?
     public let buttonTwoText: String?
     public let message: IterableEmbeddedMessage
@@ -16,12 +17,14 @@ public struct ResolvedMessage: Equatable {
     init(title: String?,
          description: String?,
          image: UIImage?,
+         imageAccessibilityLabel: String?,
          buttonText: String?,
          buttonTwoText: String?,
          message: IterableEmbeddedMessage) {
         self.title = title
         self.description = description
         self.image = image
+        self.imageAccessibilityLabel = imageAccessibilityLabel
         self.buttonText = buttonText
         self.buttonTwoText = buttonTwoText
         self.message = message
@@ -82,6 +85,7 @@ class IterableEmbeddedManager: NSObject, IterableEmbeddedManagerProtocol {
             let title = message.elements?.title
             let description = message.elements?.body
             let imageUrl = message.elements?.mediaUrl
+            let imageAccessiblityLabel = message.elements?.mediaUrlCaption
             let buttonText = message.elements?.buttons?.first?.title
             let buttonTwoText = message.elements?.buttons?.count ?? 0 > 1 ? message.elements?.buttons?[1].title : nil
 
@@ -94,7 +98,7 @@ class IterableEmbeddedManager: NSObject, IterableEmbeddedManagerProtocol {
                     config.httpAdditionalHeaders = request.allHTTPHeaderFields
 
                     let session = URLSession(configuration: config)
-                    
+
                     session.dataTask(with: request) { (data, _, _) in
                         defer { group.leave() }
 
@@ -106,6 +110,7 @@ class IterableEmbeddedManager: NSObject, IterableEmbeddedManagerProtocol {
                         let resolvedMessage = ResolvedMessage(title: title,
                                                               description: description,
                                                               image: UIImage(data: imageData),
+                                                              imageAccessibilityLabel: imageAccessiblityLabel,
                                                               buttonText: buttonText,
                                                               buttonTwoText: buttonTwoText,
                                                               message: message)
@@ -119,6 +124,7 @@ class IterableEmbeddedManager: NSObject, IterableEmbeddedManagerProtocol {
                     let resolvedMessage = ResolvedMessage(title: title,
                                                           description: description,
                                                           image: nil,
+                                                          imageAccessibilityLabel: nil,
                                                           buttonText: buttonText,
                                                           buttonTwoText: buttonTwoText,
                                                           message: message)
