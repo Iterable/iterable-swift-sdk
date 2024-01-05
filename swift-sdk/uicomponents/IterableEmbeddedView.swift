@@ -136,6 +136,12 @@ public class IterableEmbeddedView:UIView {
         return view
     }
     
+    public init(frame: CGRect, message: IterableEmbeddedMessage, viewType: IterableEmbeddedViewType, config: IterableEmbeddedViewConfig) {
+        super.init(frame: frame)
+        xibSetup()
+        self.configure(message: message, viewType: viewType, config: config)
+    }
+    
     // MARK: Assign Default Value
     ///setDefaultValue assign default values to IterableEmbeddedView
     func setDefaultValue() {
