@@ -54,7 +54,7 @@ public class IterableEmbeddedView:UIView {
 
     // MARK: Embedded Message Content
     /// Title
-    private var EMtitle: String? = "Placeholding Title" {
+    private var embeddedMessageTitle: String? = "Placeholding Title" {
         didSet {
             if let title = embeddedMessageTitle {
                 labelTitle.text = title
@@ -80,7 +80,7 @@ public class IterableEmbeddedView:UIView {
     }
     
     /// Primary Button Text
-    var EMbuttonText: String? = "Placeholding BTN 1" {
+    var embeddedMessagePrimaryBtnTitle: String? = "Placeholding BTN 1" {
         didSet {
             if let btn = embeddedMessagePrimaryBtnTitle {
                 primaryBtn.titleText = btn
@@ -92,7 +92,7 @@ public class IterableEmbeddedView:UIView {
     }
     
     /// Secondary Button Text
-    var EMbuttonTwoText: String? = "Placeholding BTN 2" {
+    var embeddedMessageSecondaryBtnTitle: String? = "Placeholding BTN 2" {
         didSet {
             if let btn = embeddedMessageSecondaryBtnTitle {
                 secondaryBtn.titleText = btn
@@ -179,12 +179,13 @@ public class IterableEmbeddedView:UIView {
         
         self.message = message
         
-        let buttonText = message.elements?.buttons?.first?.title
-        let buttonTwoText = message.elements?.buttons?.count ?? 0 > 1 ? message.elements?.buttons?[1].title : nil
-        self.EMbuttonText = buttonText
-        self.EMbuttonTwoText = buttonTwoText
-        self.EMtitle = message.elements?.title
-        self.EMdescription = message.elements?.body
+        let primaryBtnText = message.elements?.buttons?.first?.title
+        let secondaryBtnText = message.elements?.buttons?.count ?? 0 > 1 ? message.elements?.buttons?[1].title : nil
+        
+        self.embeddedMessagePrimaryBtnTitle = primaryBtnText
+        self.embeddedMessageSecondaryBtnTitle = secondaryBtnText
+        self.embeddedMessageTitle = message.elements?.title
+        self.embeddedMessageBody = message.elements?.body
         
         if let _ = self.EMimage {
             self.loadViewType(viewType: viewType)
@@ -227,11 +228,6 @@ public class IterableEmbeddedView:UIView {
         descriptionTextColor = config?.bodyTextColor ?? defaultBodyTextColor
     }
         
-        embeddedMessageTitle = message.elements?.title
-        embeddedMessageBody = message.elements?.body
-        embeddedMessagePrimaryBtnTitle = message.elements?.buttons?.first?.title
-        embeddedMessageSecondaryBtnTitle = message.elements?.buttons?[1].title
-    
     private func loadViewType(viewType: IterableEmbeddedViewType) {
         switch viewType {
             case .card:
@@ -273,22 +269,6 @@ public class IterableEmbeddedView:UIView {
                 cardImageTopConstraint?.isActive = false
                 titleToTopConstraint?.isActive = true
         }
-        
-        bannerBackgroundColor = config?.backgroundColor ?? defaultBackgroundColor
-        bannerBorderColor = config?.borderColor ?? defaultBorderColor
-        bannerBorderWidth = config?.borderWidth ?? 1.0
-        bannerCornerRadius = config?.borderCornerRadius ?? 8.0
-        primaryBtnColor = config?.primaryBtnBackgroundColor ?? defaultPrimaryBtnColor
-        primaryBtnTextColor = config?.primaryBtnTextColor ?? defaultPrimaryBtnTextColor
-        secondaryBtnColor = config?.secondaryBtnBackgroundColor ?? defaultSecondaryBtnColor
-        secondaryBtnTextColor = config?.secondaryBtnTextColor ?? defaultSecondaryBtnTextColor
-        titleTextColor = config?.titleTextColor ?? defaultTitleTextColor
-        descriptionTextColor = config?.bodyTextColor ?? defaultBodyTextColor
-        
-        embeddedMessageTitle = message.elements?.title
-        embeddedMessageBody = message.elements?.body
-        embeddedMessagePrimaryBtnTitle = message.elements?.buttons?.first?.title
-        embeddedMessageSecondaryBtnTitle = message.elements?.buttons?[1].title
     }
     
     private func loadImage(from url: URL, withViewType viewType: IterableEmbeddedViewType) {
