@@ -92,4 +92,17 @@ class BlankApiClient: ApiClientProtocol {
     func getRemoteConfiguration() -> Pending<RemoteConfiguration, SendRequestError> {
         Pending()
     }
+    
+    func getUserByUserID(userId: String) -> IterableSDK.Pending<SendRequestValue, SendRequestError> {
+        Pending()
+    }
+    
+    func getUserByEmail(email: String) -> IterableSDK.Pending<SendRequestValue, SendRequestError> {
+        Pending()
+    }
+    
+    func mergeUser(sourceEmail: String, sourceUserId: String, destinationEmail: String, destinationUserId: String) -> IterableSDK.Pending<SendRequestValue, SendRequestError> {
+        Pending()
+    }
+    
 }
