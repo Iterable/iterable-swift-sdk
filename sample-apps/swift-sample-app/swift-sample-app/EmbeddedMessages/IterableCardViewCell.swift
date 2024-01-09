@@ -10,5 +10,5 @@ import UIKit
 import IterableSDK
 
 class IterableEmbeddedCardViewCell: UICollectionViewCell {
-    @IBOutlet weak var embeddedCardView: UIView!
+    @IBOutlet weak var embeddedCardView: IterableEmbeddedView!
 }

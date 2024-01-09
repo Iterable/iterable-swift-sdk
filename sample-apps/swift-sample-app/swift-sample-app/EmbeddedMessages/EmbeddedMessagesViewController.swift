@@ -79,23 +79,20 @@ class EmbeddedMessagesViewController: UIViewController {
         carouselCollectionView.reloadData()
     }
     
-    func loadCardView(_ embeddedView: UIView, _ embeddedMessage: IterableEmbeddedMessage) {
-        DispatchQueue.main.async { [self] in
-            loadEmbeddedView(embeddedView, embeddedMessage: embeddedMessage, type: IterableEmbeddedViewType.card)
-        }
-        
+    func loadCardView(_ embeddedView: IterableEmbeddedView, _ embeddedMessage: IterableEmbeddedMessage) {
+        embeddedView.iterableEmbeddedViewDelegate = self
+        embeddedView.primaryBtn.isRoundedSides = true
+        embeddedView.secondaryBtn.isRoundedSides = true
+        // We are setting the width of buttons as 140 as per our embedded messages width. You can change as per your need
+        embeddedView.primaryBtn.widthAnchor.constraint(equalToConstant: 140).isActive = true
+        embeddedView.secondaryBtn.widthAnchor.constraint(equalToConstant: 140).isActive = true
+        let config = IterableEmbeddedViewConfig(borderCornerRadius: 10)
+        embeddedView.configure(message: embeddedMessage, viewType: .card, config: config)
     }
     
     func loadBannerView(_ embeddedMessage: IterableEmbeddedMessage) {
-        DispatchQueue.main.async { [self] in
-            loadEmbeddedView(embeddedBannerView, embeddedMessage: embeddedMessage, type: IterableEmbeddedViewType.banner)
-        }
-        
-    }
-    
-    func loadEmbeddedView(_ customView: UIView, embeddedMessage: IterableEmbeddedMessage, type: IterableEmbeddedViewType) {
         let config = IterableEmbeddedViewConfig(borderCornerRadius: 10)
-        let embeddedView = IterableEmbeddedView(message: embeddedMessage, viewType: type, config: config)
+        let embeddedView = IterableEmbeddedView(message: embeddedMessage, viewType: .banner, config: config)
         embeddedView.iterableEmbeddedViewDelegate = self
         embeddedView.primaryBtn.isRoundedSides = true
         embeddedView.secondaryBtn.isRoundedSides = true
@@ -104,8 +101,8 @@ class EmbeddedMessagesViewController: UIViewController {
         embeddedView.secondaryBtn.widthAnchor.constraint(equalToConstant: 140).isActive = true
         
         // You must initialize frame here for the embeddedView
-        embeddedView.frame = CGRect(x: 0, y: 0, width: customView.frame.width, height: customView.frame.height)
-        customView.addSubview(embeddedView)
+        embeddedView.frame = CGRect(x: 0, y: 0, width: embeddedBannerView.frame.width, height: embeddedBannerView.frame.height)
+        embeddedBannerView.addSubview(embeddedView)
     }
     
     @IBAction func doneButtonTapped(_: UIButton) {

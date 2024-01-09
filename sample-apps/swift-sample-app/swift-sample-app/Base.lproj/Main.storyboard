@@ -298,7 +298,7 @@
                                             <rect key="frame" x="0.0" y="0.0" width="350" height="400"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                             <subviews>
-                                                <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="BMQ-6N-x3e">
+                                                <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="BMQ-6N-x3e" customClass="IterableEmbeddedView" customModule="IterableSDK">
                                                     <rect key="frame" x="0.0" y="0.0" width="350" height="400"/>
                                                     <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                 </view>
