@@ -103,7 +103,7 @@ class EmbeddedMessagesViewController: UIViewController {
         embeddedView.primaryBtn.widthAnchor.constraint(equalToConstant: 140).isActive = true
         embeddedView.secondaryBtn.widthAnchor.constraint(equalToConstant: 140).isActive = true
         
-        // You must call this method which sets the type for this view which helps render the particular layout of cardview/bannerview
+        // You must initialize frame here for the embeddedView
         embeddedView.frame = CGRect(x: 0, y: 0, width: customView.frame.width, height: customView.frame.height)
         customView.addSubview(embeddedView)
     }
