@@ -45,8 +45,8 @@ public class IterableEmbeddedView:UIView {
     /// IterableEmbeddedView Image View.
     @IBOutlet weak public var imgView: UIImageView!
     @IBOutlet weak public var cardImageView: UIImageView!
-    @IBOutlet weak var cardImageTopConstraint: NSLayoutConstraint!
-    @IBOutlet weak var titleToTopConstraint: NSLayoutConstraint!
+    @IBOutlet var cardImageTopConstraint: NSLayoutConstraint!
+    @IBOutlet var titleToTopConstraint: NSLayoutConstraint!
     
     @IBOutlet weak public var imageViewWidthConstraint:NSLayoutConstraint!
     @IBOutlet weak public var imageViewHeightConstraint:NSLayoutConstraint!
@@ -108,10 +108,16 @@ public class IterableEmbeddedView:UIView {
     
     // MARK: IterableEmbeddedView init method
      /// IterableEmbeddedView init method
-     required init?(coder aDecoder: NSCoder) {
-         super.init(coder: aDecoder)
-         xibSetup()
-     }
+    required init?(coder aDecoder: NSCoder) {
+        super.init(coder: aDecoder)
+        xibSetup()
+    }
+    
+    public init(message: IterableEmbeddedMessage, viewType: IterableEmbeddedViewType, config: IterableEmbeddedViewConfig?) {
+        super.init(frame: CGRectZero)
+        xibSetup()
+        configure(message: message, viewType: viewType, config: config)
+    }
 
     func xibSetup() {
         self.contentView = self.loadViewFromNib()
@@ -187,14 +193,10 @@ public class IterableEmbeddedView:UIView {
         self.embeddedMessageTitle = message.elements?.title
         self.embeddedMessageBody = message.elements?.body
         
-        if let _ = self.EMimage {
-            self.loadViewType(viewType: viewType)
-        } else {
-            if let imageUrl = message.elements?.mediaUrl {
-                if let url = URL(string: imageUrl) {
-                    loadImage(from: url, withViewType: viewType)
-                    self.EMimage?.accessibilityLabel = message.elements?.mediaUrlCaption
-                }
+        if let imageUrl = message.elements?.mediaUrl {
+            if let url = URL(string: imageUrl) {
+                loadImage(from: url, withViewType: viewType)
+                self.EMimage?.accessibilityLabel = message.elements?.mediaUrlCaption
             }
         }
         

@@ -22,7 +22,7 @@ class EmbeddedMessagesViewController: UIViewController {
 
     @IBOutlet weak var doneButton: UIButton!
     @IBOutlet weak var syncButton: UIButton!
-    @IBOutlet weak var embeddedBannerView: IterableEmbeddedView!
+    @IBOutlet weak var embeddedBannerView: UIView!
     @IBOutlet weak var carouselCollectionView: UICollectionView!
     var cardViews: [IterableEmbeddedMessage] = []
     
@@ -79,7 +79,7 @@ class EmbeddedMessagesViewController: UIViewController {
         carouselCollectionView.reloadData()
     }
     
-    func loadCardView(_ embeddedView: IterableEmbeddedView, _ embeddedMessage: IterableEmbeddedMessage) {
+    func loadCardView(_ embeddedView: UIView, _ embeddedMessage: IterableEmbeddedMessage) {
         DispatchQueue.main.async { [self] in
             loadEmbeddedView(embeddedView, embeddedMessage: embeddedMessage, type: IterableEmbeddedViewType.card)
         }
@@ -93,20 +93,19 @@ class EmbeddedMessagesViewController: UIViewController {
         
     }
     
-    func loadEmbeddedView(_ embeddedView: IterableEmbeddedView, embeddedMessage: IterableEmbeddedMessage, type: IterableEmbeddedViewType) {
-        
+    func loadEmbeddedView(_ customView: UIView, embeddedMessage: IterableEmbeddedMessage, type: IterableEmbeddedViewType) {
+        let config = IterableEmbeddedViewConfig(borderCornerRadius: 10)
+        let embeddedView = IterableEmbeddedView(message: embeddedMessage, viewType: type, config: config)
         embeddedView.iterableEmbeddedViewDelegate = self
         embeddedView.primaryBtn.isRoundedSides = true
         embeddedView.secondaryBtn.isRoundedSides = true
         // We are setting the width of buttons as 140 as per our embedded messages width. You can change as per your need
         embeddedView.primaryBtn.widthAnchor.constraint(equalToConstant: 140).isActive = true
         embeddedView.secondaryBtn.widthAnchor.constraint(equalToConstant: 140).isActive = true
-
-        let config = IterableEmbeddedViewConfig(borderCornerRadius: 10)
+        
         // You must call this method which sets the type for this view which helps render the particular layout of cardview/bannerview
-        embeddedView.configure(message: embeddedMessage, viewType: type, config: config)
-        
-        
+        embeddedView.frame = CGRect(x: 0, y: 0, width: customView.frame.width, height: customView.frame.height)
+        customView.addSubview(embeddedView)
     }
     
     @IBAction func doneButtonTapped(_: UIButton) {
@@ -156,11 +155,8 @@ extension EmbeddedMessagesViewController: UICollectionViewDelegate, UICollection
                         cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
 
         let cell  = collectionView.dequeueReusableCell(withReuseIdentifier: "IterableEmbeddedCardViewCell", for: indexPath) as! IterableEmbeddedCardViewCell
-        if indexPath.row < cardViews.count {
-            let cardView = cardViews[indexPath.row]
-            loadCardView(cell.embeddedCardView, cardView)
-        }
-            
+        let cardView = cardViews[indexPath.row]
+        loadCardView(cell.embeddedCardView, cardView)
         return cell
     }
     
