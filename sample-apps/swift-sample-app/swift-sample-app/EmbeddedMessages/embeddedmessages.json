@@ -1,0 +1,123 @@
+{
+    "placements": [
+        {
+            "placementId": 0,
+            "embeddedMessages": [
+                {
+                    "metadata": {
+                        "messageId": "ZGEzNmMyZTQtNWFiMy00YzUyLWFmZjktZDhhMDZlYjg3ZjA4LzIwNTY3LzgxNjI5MzAvMTA4NDUxNzAvdHJ1ZQ==",
+                        "placementId": 0,
+                        "campaignId": 8162930,
+                        "isProof": true
+                    },
+                    "elements": {
+                        "title": "Join our partner gyms at 40% off",
+                        "body": "Choose from one of our partners and subscribe for 1 year at 40% off",
+                        "mediaUrl": "https://images.pexels.com/photos/1954524/pexels-photo-1954524.jpeg?auto=compress&cs=tinysrgb&w=800",
+                        "buttons": [
+                            {
+                                "id": "gym1",
+                                "title": "Gold's Gym",
+                                "action": {
+                                    "type": "openUrl",
+                                    "data": "https://goldsgym.in/"
+                                }
+                            },
+                            {
+                                "id": "gym2",
+                                "title": "23 Fitness",
+                                "action": {
+                                    "type": "openUrl",
+                                    "data": "https://www.23fitnessguam.com/"
+                                }
+                            }
+                        ]
+                    }
+                },
+                {
+                    "metadata": {
+                        "messageId": "ZGEzNmMyZTQtNWFiMy00YzUyLWFmZjktZDhhMDZlYjg3ZjA4LzIwNTY3LzgxNjI4NDMvMTA4NDUwNjAvdHJ1ZQ==",
+                        "placementId": 0,
+                        "campaignId": 8162843,
+                        "isProof": true
+                    },
+                    "elements": {
+                        "title": "Last chance to grab the deal",
+                        "body": "Visit out website to get the festive deals",
+                        "mediaUrl": "https://athflex.com/cdn/shop/files/pc-banner-for-bag-4_1_1905x.jpg?v=1698474351",
+                        "defaultAction": {
+                            "type": "openUrl",
+                            "data": "https://athflex.com/"
+                        }
+                    }
+                },
+                {
+                    "metadata": {
+                        "messageId": "ZGEzNmMyZTQtNWFiMy00YzUyLWFmZjktZDhhMDZlYjg3ZjA4LzIwNTY3LzgxNjI4NjMvMTA4NDUwOTMvdHJ1ZQ==",
+                        "placementId": 0,
+                        "campaignId": 8162863,
+                        "isProof": true
+                    },
+                    "elements": {
+                        "title": "Buy fitness products at huge discounts",
+                        "body": "Visit our website to buy the products",
+                        "mediaUrl": "https://m.media-amazon.com/images/I/71AyxR0yeeL.jpg",
+                        "buttons": [
+                            {
+                                "id": "",
+                                "title": "70% off",
+                                "action": {
+                                    "type": "openUrl",
+                                    "data": "https://www.vivafitness.net/product_category/commercial-equipment/water-rowers/"
+                                }
+                            }
+                        ],
+                        "defaultAction": {
+                            "type": "openUrl",
+                            "data": "https://www.vivafitness.net/product_category/commercial-equipment/commercial-treadmills/"
+                        }
+                    }
+                },
+                {
+                    "metadata": {
+                        "messageId": "ZGEzNmMyZTQtNWFiMy00YzUyLWFmZjktZDhhMDZlYjg3ZjA4LzIwNTY3LzgxNjI3NzEvMTA4NDQ5NjIvdHJ1ZQ==",
+                        "placementId": 0,
+                        "campaignId": 8162771,
+                        "isProof": true
+                    },
+                    "elements": {
+                        "title": "Spring Collection",
+                        "body": "Check out our new athleisure collection at 30% off this month!",
+                        "mediaUrl": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSHVMF2KkRm5eWS6LhjQGvxe4KFqzkRbUdAEsAEKvBSy_uU23tRxXH0Ws6HuBjfzf_EsSU&usqp=CAU",
+                        "buttons": [
+                            {
+                                "id": "button1",
+                                "title": "Clearance Sale",
+                                "action": {
+                                    "type": "openUrl",
+                                    "data": "https://athflex.com/collections/last-chance"
+                                }
+                            }
+                        ],
+                        "defaultAction": {
+                            "type": "openUrl",
+                            "data": "https://athflex.com/"
+                        }
+                    }
+                },
+                {
+                    "metadata": {
+                        "messageId": "ZGEzNmMyZTQtNWFiMy00YzUyLWFmZjktZDhhMDZlYjg3ZjA4LzIwNTY3LzgxNjc4OTAvMTA4NTEyMzEvdHJ1ZQ==",
+                        "placementId": 0,
+                        "campaignId": 8167890,
+                        "isProof": true
+                    },
+                    "elements": {
+                        "title": "Let's hit the target by running 10kms",
+                        "mediaUrl": "https://media.istockphoto.com/id/1125038961/photo/young-man-running-outdoors-in-morning.jpg?s=612x612&w=0&k=20&c=LVAlQIforg7ZRAF-bOvdvoD_k3ejEeimrWbGq2IA5ak="
+                    }
+                }
+            ]
+        }
+    ]
+}
