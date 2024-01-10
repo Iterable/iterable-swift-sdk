@@ -422,7 +422,7 @@ struct RequestCreator {
     
     // MARK: - Embedded Messaging Request Calls
     
-    func createGetEmbeddedMessagesRequest() -> Result<IterableRequest, IterableError> {
+    func createGetEmbeddedMessagesRequest(messages: [String]?) -> Result<IterableRequest, IterableError> {
         if case .none = auth.emailOrUserId {
             ITBError(Self.authMissingMessage)
             return .failure(IterableError.general(description: Self.authMissingMessage))
@@ -438,7 +438,18 @@ struct RequestCreator {
         
         setCurrentUser(inDict: &args)
         
-        return .success(.get(createGetRequest(forPath: Const.Path.getEmbeddedMessages, withArgs: args as! [String: String])))
+        var urlComponents = URLComponents(string: Const.Path.getEmbeddedMessages)
+        let messagesArray = messages ?? []
+        let allQueryItems = args.map { URLQueryItem(name: "\($0.key)", value: "\($0.value)") }
+        let messagesQueryItems = messagesArray.map { URLQueryItem(name: JsonKey.Embedded.currentMessageIds, value: $0) }
+
+        urlComponents?.queryItems = allQueryItems + messagesQueryItems
+
+        guard let urlString = urlComponents?.url?.absoluteString else {
+            return .failure(IterableError.general(description: "Failed to create URL"))
+        }
+        
+        return .success(.get(createGetRequest(forPath: urlString, withArgs: args as! [String: String])))
     }
     
     func createEmbeddedMessageReceivedRequest(_ message: IterableEmbeddedMessage) -> Result<IterableRequest, IterableError> {

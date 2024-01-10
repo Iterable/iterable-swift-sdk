@@ -7,6 +7,8 @@ import Foundation
 @testable import IterableSDK
 
 class MockLocalStorage: LocalStorageProtocol {
+    var embeddedCurrentMessageIds: [String] = []
+    
     var userId: String? = nil
     
     var email: String? = nil
