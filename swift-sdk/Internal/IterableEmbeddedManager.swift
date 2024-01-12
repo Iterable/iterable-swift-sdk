@@ -46,7 +46,7 @@ class IterableEmbeddedManager: NSObject, IterableEmbeddedManagerProtocol {
          customActionDelegate: IterableCustomActionDelegate?,
          urlOpener: UrlOpenerProtocol,
          allowedProtocols: [String],
-         localStorage: LocalStorageProtocol) {
+         localStorage: LocalStorageProtocol){
          ITBInfo()
         
         self.apiClient = apiClient
@@ -234,7 +234,7 @@ class IterableEmbeddedManager: NSObject, IterableEmbeddedManagerProtocol {
     private let customActionDelegate: IterableCustomActionDelegate?
     private let urlOpener: UrlOpenerProtocol
     private let allowedProtocols: [String]
-    private var currentMessageIds: [String]
+    private var currentMessageIds: [String] = []
     private var messages: [Int: [IterableEmbeddedMessage]] = [:]
     private var listeners: NSHashTable<IterableEmbeddedUpdateDelegate> = NSHashTable(options: [.weakMemory])
     private var trackedMessageIds: Set<String> = Set()
@@ -259,9 +259,9 @@ class IterableEmbeddedManager: NSObject, IterableEmbeddedManagerProtocol {
     }
     
     private func retrieveEmbeddedMessages(completion: @escaping () -> Void) {
-        apiClient.getEmbeddedMessages(messages: currentMessageIds)
+        apiClient.getEmbeddedMessages(messages: self.currentMessageIds)
             .onCompletion(
-                receiveValue: { embeddedMessagesPayload in
+                receiveValue: { [self] embeddedMessagesPayload in
                     let placements = embeddedMessagesPayload.placements
                     //var embeddedCurrentMessageIds: [String] = []
                     var fetchedMessagesDict: [Int: [IterableEmbeddedMessage]] = [:]
