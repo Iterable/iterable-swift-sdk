@@ -234,6 +234,7 @@ class IterableEmbeddedManager: NSObject, IterableEmbeddedManagerProtocol {
     private let customActionDelegate: IterableCustomActionDelegate?
     private let urlOpener: UrlOpenerProtocol
     private let allowedProtocols: [String]
+    private var currentMessageIds: [String]
     private var messages: [Int: [IterableEmbeddedMessage]] = [:]
     private var listeners: NSHashTable<IterableEmbeddedUpdateDelegate> = NSHashTable(options: [.weakMemory])
     private var trackedMessageIds: Set<String> = Set()
@@ -258,11 +259,11 @@ class IterableEmbeddedManager: NSObject, IterableEmbeddedManagerProtocol {
     }
     
     private func retrieveEmbeddedMessages(completion: @escaping () -> Void) {
-        apiClient.getEmbeddedMessages(messages: localStorage.embeddedCurrentMessageIds)
+        apiClient.getEmbeddedMessages(messages: currentMessageIds)
             .onCompletion(
                 receiveValue: { embeddedMessagesPayload in
                     let placements = embeddedMessagesPayload.placements
-                    var embeddedCurrentMessageIds: [String] = []
+                    //var embeddedCurrentMessageIds: [String] = []
                     var fetchedMessagesDict: [Int: [IterableEmbeddedMessage]] = [:]
                     for placement in placements {
                         fetchedMessagesDict[placement.placementId!] = placement.embeddedMessages
@@ -272,12 +273,15 @@ class IterableEmbeddedManager: NSObject, IterableEmbeddedManagerProtocol {
                         if let placementId = placement.placementId {
                             fetchedMessagesDict[placementId] = placement.embeddedMessages
                             for embeddedMessage in placement.embeddedMessages {
-                                embeddedCurrentMessageIds.append(embeddedMessage.metadata.messageId)
+                                let messageId = embeddedMessage.metadata.messageId
+                                if !self.currentMessageIds.contains(messageId) {
+                                    self.currentMessageIds.append(messageId)
+                                }
                             }
                         }
                     }
                     
-                    self.localStorage.embeddedCurrentMessageIds = embeddedCurrentMessageIds
+                    //self.localStorage.embeddedCurrentMessageIds = embeddedCurrentMessageIds
                     let processor = EmbeddedMessagingProcessor(currentMessages: self.messages,
                                                                fetchedMessages: fetchedMessagesDict)
                     
