@@ -58,6 +58,7 @@ public class IterableEmbeddedView:UIView {
         didSet {
             if let title = embeddedMessageTitle {
                 labelTitle.text = title
+                labelTitle.font = UIFont.boldSystemFont(ofSize: 16.0)
                 labelTitle.isHidden = false
             } else {
                 labelTitle.isHidden = true
@@ -72,6 +73,7 @@ public class IterableEmbeddedView:UIView {
         didSet {
             if let body = embeddedMessageBody {
                 labelDescription.text = body
+                labelDescription.font = UIFont.systemFont(ofSize: 14.0)
                 labelDescription.isHidden = false
             } else {
                 labelDescription.isHidden = true
@@ -106,91 +108,81 @@ public class IterableEmbeddedView:UIView {
     /// Associated Embedded Message
     public var message: IterableEmbeddedMessage? = nil
     
-    //    // MARK: OOTB View IBInspectables
-    //    /// OOTB View Background Color
-          public var bannerBackgroundColor: UIColor = UIColor.white
-    //    @IBInspectable public var bannerBackgroundColor: UIColor? = UIColor.white {
-    //        didSet {
-    //            self.backgroundColor = UIColor.clear
-    //            self.innerContentView.backgroundColor = backgroundColor!
-    //        }
-    //    }
-    //
-    //    /// Banner Border Color
-          public var bannerBorderColor: UIColor = UIColor.clear
-    //    @IBInspectable public var bannerBorderColor: UIColor = UIColor.clear {
-    //        didSet {
-    //            self.layer.borderColor = bannerBorderColor.cgColor
-    //        }
-    //    }
-    //
-    //    /// Banner Border Width
-          public var bannerBorderWidth: CGFloat = 1.0
-    //    @IBInspectable public var bannerBorderWidth: CGFloat = 1.0 {
-    //        didSet {
-    //            self.layer.borderWidth = bannerBorderWidth
-    //        }
-    //    }
-    //
-    //    /// Banner Corner Radius
-          public var bannerCornerRadius: CGFloat = 8.0
-    //    @IBInspectable public var bannerCornerRadius: CGFloat = 8.0 {
-    //        didSet {
-    //            self.layer.cornerRadius = bannerCornerRadius
-    //            contentView.layer.cornerRadius = bannerCornerRadius
-    //            innerContentView.layer.cornerRadius = bannerCornerRadius
-    //        }
-    //    }
-    //
-    //    // MARK: Primary Button
-    //    /// Primary button background color.
-          public var primaryBtnColor: UIColor = UIColor.purple
-    //    @IBInspectable public var primaryBtnColor: UIColor = UIColor.purple {
-    //        didSet {
-    //            primaryBtn.backgroundColor = primaryBtnColor
-    //        }
-    //    }
-    //
-    //    /// Primary button text color.
-          public var primaryBtnTextColor: UIColor = UIColor.white
-    //    @IBInspectable public var primaryBtnTextColor: UIColor = UIColor.white {
-    //        didSet {
-    //            primaryBtn.titleColor = primaryBtnTextColor
-    //        }
-    //    }
-    //
-    //    // MARK: Second Button
-    //    /// Secondary button background color.
-          public var secondaryBtnColor: UIColor = UIColor.clear
-    //    @IBInspectable public var secondaryBtnColor: UIColor = UIColor.clear {
-    //        didSet {
-    //            secondaryBtn.backgroundColor = secondaryBtnColor
-    //        }
-    //    }
-    //
-    //    /// Secondary button text color.
-          public var secondaryBtnTextColor: UIColor = UIColor.black
-    //    @IBInspectable public var secondaryBtnTextColor: UIColor = UIColor.black {
-    //        didSet {
-    //            secondaryBtn.titleColor = secondaryBtnTextColor
-    //        }
-    //    }
-    //
-    //    /// Title Text Color
-          public var titleTextColor: UIColor = UIColor.black
-    //    @IBInspectable public var titleTextColor: UIColor = UIColor.black {
-    //        didSet {
-    //            labelTitle.textColor = titleTextColor
-    //        }
-    //    }
-    //
-    //    /// Description Text Color
-          public var bodyTextColor: UIColor = UIColor.darkGray
-    //    @IBInspectable public var bodyTextColor: UIColor = UIColor.darkGray {
-    //        didSet {
-    //            labelDescription.textColor = bodyTextColor
-    //        }
-    //    }
+    // MARK: OOTB View IBInspectables
+    /// OOTB View Background Color
+    public var ootbViewBackgroundColor: UIColor = UIColor.white {
+        didSet {
+            self.backgroundColor = UIColor.clear
+            self.innerContentView.backgroundColor = ootbViewBackgroundColor
+        }
+    }
+
+    /// Banner Border Color
+    public var ootbViewBorderColor: UIColor = UIColor(red: 0.88, green: 0.87, blue: 0.87, alpha: 1.00) {
+        didSet {
+            self.layer.borderColor = ootbViewBorderColor.cgColor
+        }
+    }
+    
+    /// Banner Border Width
+    public var ootbViewBorderWidth: CGFloat = 1.0 {
+        didSet {
+            self.layer.borderWidth = ootbViewBorderWidth
+        }
+    }
+
+    /// Banner Corner Radius
+    public var ootbViewCornerRadius: CGFloat = 8.0 {
+        didSet {
+            self.layer.cornerRadius = ootbViewCornerRadius
+            contentView.layer.cornerRadius = ootbViewCornerRadius
+            innerContentView.layer.cornerRadius = ootbViewCornerRadius
+        }
+    }
+
+    // MARK: Primary Button
+    /// Primary button background color.
+    public var primaryBtnColor: UIColor = UIColor.purple {
+        didSet {
+           primaryBtn.backgroundColor = primaryBtnColor
+        }
+    }
+    
+    /// Primary button text color.
+    public var primaryBtnTextColor: UIColor = UIColor.white {
+        didSet {
+            primaryBtn.titleColor = primaryBtnTextColor
+        }
+    }
+
+    // MARK: Second Button
+    /// Secondary button background color.
+    public var secondaryBtnColor: UIColor = UIColor.clear {
+        didSet {
+            secondaryBtn.backgroundColor = secondaryBtnColor
+        }
+    }
+
+    /// Secondary button text color.
+    public var secondaryBtnTextColor: UIColor = UIColor.black {
+        didSet {
+            secondaryBtn.titleColor = secondaryBtnTextColor
+        }
+    }
+
+    /// Title Text Color
+    public var titleTextColor: UIColor = UIColor.black {
+        didSet {
+            labelTitle.textColor = titleTextColor
+        }
+    }
+
+    /// Description Text Color
+    public var bodyTextColor: UIColor = UIColor.darkGray {
+        didSet {
+            labelDescription.textColor = bodyTextColor
+        }
+    }
     
     // MARK: IterableEmbeddedView init method
      /// IterableEmbeddedView init method
@@ -209,7 +201,6 @@ public class IterableEmbeddedView:UIView {
         self.contentView = self.loadViewFromNib()
         self.contentView.translatesAutoresizingMaskIntoConstraints = false
         self.innerContentView.clipsToBounds = true
-        //self.setDefaultValue()
         self.addSubview(self.contentView)
             
         NSLayoutConstraint.activate([
@@ -223,25 +214,9 @@ public class IterableEmbeddedView:UIView {
     func loadViewFromNib() -> UIView? {
         let nib = UINib(nibName: "IterableEmbeddedView", bundle: Bundle.module)
         let view = nib.instantiate(withOwner: self, options: nil).first as? UIView
-        //view?.backgroundColor = UIColor.clear
         self.clipsToBounds = false
         return view
     }
-    
-    // MARK: Assign Default Value
-    ///setDefaultValue assign default values to IterableEmbeddedView
-//    func setDefaultValue() {
-//        bannerBackgroundColor = UIColor.white
-//        bannerBorderColor = UIColor(red: 0.88, green: 0.87, blue: 0.87, alpha: 1.00)
-//        bannerBorderWidth = 1.0
-//        bannerCornerRadius = 8.0
-//        primaryBtnColor = UIColor.purple
-//        primaryBtnTextColor = UIColor.white
-//        secondaryBtnColor = UIColor.clear
-//        secondaryBtnTextColor = UIColor.black
-//        titleTextColor = UIColor.black
-//        bodyTextColor = UIColor.darkGray
-//    }
     
     public func configure(message: IterableEmbeddedMessage, viewType: IterableEmbeddedViewType, config: IterableEmbeddedViewConfig?) {
         
@@ -280,10 +255,10 @@ public class IterableEmbeddedView:UIView {
         let defaultTitleTextColor = (cardOrBanner) ? cardTitleTextColor : notificationTextColor
         let defaultBodyTextColor = (cardOrBanner) ? cardBodyTextColor : notificationTextColor
         
-        bannerBackgroundColor = config?.backgroundColor ?? defaultBackgroundColor
-        bannerBorderColor = config?.borderColor ?? defaultBorderColor
-        bannerBorderWidth = config?.borderWidth ?? 1.0
-        bannerCornerRadius = config?.borderCornerRadius ?? 8.0
+        ootbViewBackgroundColor = config?.backgroundColor ?? defaultBackgroundColor
+        ootbViewBorderColor = config?.borderColor ?? defaultBorderColor
+        ootbViewBorderWidth = config?.borderWidth ?? 1.0
+        ootbViewCornerRadius = config?.borderCornerRadius ?? 8.0
         primaryBtnColor = config?.primaryBtnBackgroundColor ?? defaultPrimaryBtnColor
         primaryBtnTextColor = config?.primaryBtnTextColor ?? defaultPrimaryBtnTextColor
         secondaryBtnColor = config?.secondaryBtnBackgroundColor ?? defaultSecondaryBtnColor
