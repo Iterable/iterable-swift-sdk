@@ -293,81 +293,91 @@ public class IterableEmbeddedView:UIView {
     
     public var viewConfig: IterableEmbeddedViewConfig?
     
-    // MARK: OOTB View IBInspectables
-    /// OOTB View Background Color
-    @IBInspectable public var bannerBackgroundColor: UIColor? = UIColor.white {
-        didSet {
-            self.backgroundColor = UIColor.clear
-            self.innerContentView.backgroundColor = backgroundColor!
-        }
-    }
-    
-    /// Banner Border Color
-    @IBInspectable public var bannerBorderColor: UIColor = UIColor.clear {
-        didSet {
-            self.layer.borderColor = bannerBorderColor.cgColor
-        }
-    }
-
-    /// Banner Border Width
-    @IBInspectable public var bannerBorderWidth: CGFloat = 1.0 {
-        didSet {
-            self.layer.borderWidth = bannerBorderWidth
-        }
-    }
-    
-    /// Banner Corner Radius
-    @IBInspectable public var bannerCornerRadius: CGFloat = 8.0 {
-        didSet {
-            self.layer.cornerRadius = bannerCornerRadius
-            contentView.layer.cornerRadius = bannerCornerRadius
-            innerContentView.layer.cornerRadius = bannerCornerRadius
-        }
-    }
-    
-    // MARK: Primary Button
-    /// Primary button background color.
-    @IBInspectable public var primaryBtnColor: UIColor = UIColor.purple {
-        didSet {
-            primaryBtn.backgroundColor = primaryBtnColor
-        }
-    }
-    
-    /// Primary button text color.
-    @IBInspectable public var primaryBtnTextColor: UIColor = UIColor.white {
-        didSet {
-            primaryBtn.titleColor = primaryBtnTextColor
-        }
-    }
-    
-    // MARK: Second Button
-    /// Secondary button background color.
-    @IBInspectable public var secondaryBtnColor: UIColor = UIColor.clear {
-        didSet {
-            secondaryBtn.backgroundColor = secondaryBtnColor
-        }
-    }
-    
-    /// Secondary button text color.
-    @IBInspectable public var secondaryBtnTextColor: UIColor = UIColor.black {
-        didSet {
-            secondaryBtn.titleColor = secondaryBtnTextColor
-        }
-    }
-    
-    /// Title Text Color
-    @IBInspectable public var titleTextColor: UIColor = UIColor.black {
-        didSet {
-            labelTitle.textColor = titleTextColor
-        }
-    }
-    
-    /// Description Text Color
-    @IBInspectable public var bodyTextColor: UIColor = UIColor.darkGray {
-        didSet {
-            labelDescription.textColor = bodyTextColor
-        }
-    }
+//    // MARK: OOTB View IBInspectables
+//    /// OOTB View Background Color
+      public var bannerBackgroundColor: UIColor?
+//    @IBInspectable public var bannerBackgroundColor: UIColor? = UIColor.white {
+//        didSet {
+//            self.backgroundColor = UIColor.clear
+//            self.innerContentView.backgroundColor = backgroundColor!
+//        }
+//    }
+//    
+//    /// Banner Border Color
+      public var bannerBorderColor: UIColor
+//    @IBInspectable public var bannerBorderColor: UIColor = UIColor.clear {
+//        didSet {
+//            self.layer.borderColor = bannerBorderColor.cgColor
+//        }
+//    }
+//
+//    /// Banner Border Width
+      public var bannerBorderWidth: CGFloat
+//    @IBInspectable public var bannerBorderWidth: CGFloat = 1.0 {
+//        didSet {
+//            self.layer.borderWidth = bannerBorderWidth
+//        }
+//    }
+//    
+//    /// Banner Corner Radius
+      public var bannerCornerRadius: CGFloat
+//    @IBInspectable public var bannerCornerRadius: CGFloat = 8.0 {
+//        didSet {
+//            self.layer.cornerRadius = bannerCornerRadius
+//            contentView.layer.cornerRadius = bannerCornerRadius
+//            innerContentView.layer.cornerRadius = bannerCornerRadius
+//        }
+//    }
+//    
+//    // MARK: Primary Button
+//    /// Primary button background color.
+      public var primaryBtnColor: UIColor
+//    @IBInspectable public var primaryBtnColor: UIColor = UIColor.purple {
+//        didSet {
+//            primaryBtn.backgroundColor = primaryBtnColor
+//        }
+//    }
+//    
+//    /// Primary button text color.
+      public var primaryBtnTextColor: UIColor
+//    @IBInspectable public var primaryBtnTextColor: UIColor = UIColor.white {
+//        didSet {
+//            primaryBtn.titleColor = primaryBtnTextColor
+//        }
+//    }
+//    
+//    // MARK: Second Button
+//    /// Secondary button background color.
+      public var secondaryBtnColor: UIColor
+//    @IBInspectable public var secondaryBtnColor: UIColor = UIColor.clear {
+//        didSet {
+//            secondaryBtn.backgroundColor = secondaryBtnColor
+//        }
+//    }
+//    
+//    /// Secondary button text color.
+      public var secondaryBtnTextColor: UIColor
+//    @IBInspectable public var secondaryBtnTextColor: UIColor = UIColor.black {
+//        didSet {
+//            secondaryBtn.titleColor = secondaryBtnTextColor
+//        }
+//    }
+//    
+//    /// Title Text Color
+      public var titleTextColor: UIColor
+//    @IBInspectable public var titleTextColor: UIColor = UIColor.black {
+//        didSet {
+//            labelTitle.textColor = titleTextColor
+//        }
+//    }
+//    
+//    /// Description Text Color
+      public var bodyTextColor: UIColor
+//    @IBInspectable public var bodyTextColor: UIColor = UIColor.darkGray {
+//        didSet {
+//            labelDescription.textColor = bodyTextColor
+//        }
+//    }
     
     /// Primary button on touchup inside event.
     @IBAction public func primaryButtonPressed(_ sender: UIButton) {
@@ -453,7 +463,7 @@ public class IterableEMButton: UIButton {
         super.init(coder: coder)
     }
 
-    @IBInspectable public var isRoundedSides: Bool = false {
+    @IBInspectable public var isRoundedSides: Bool = true {
         didSet {
             layoutSubviews()
         }
