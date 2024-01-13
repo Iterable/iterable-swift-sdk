@@ -123,7 +123,7 @@ public class IterableEmbeddedView:UIView {
         self.contentView = self.loadViewFromNib()
         self.contentView.translatesAutoresizingMaskIntoConstraints = false
         self.innerContentView.clipsToBounds = true
-        self.setDefaultValue()
+        //self.setDefaultValue()
         self.addSubview(self.contentView)
             
         NSLayoutConstraint.activate([
@@ -137,25 +137,25 @@ public class IterableEmbeddedView:UIView {
     func loadViewFromNib() -> UIView? {
         let nib = UINib(nibName: "IterableEmbeddedView", bundle: Bundle.module)
         let view = nib.instantiate(withOwner: self, options: nil).first as? UIView
-        view?.backgroundColor = UIColor.clear
+        //view?.backgroundColor = UIColor.clear
         self.clipsToBounds = false
         return view
     }
     
     // MARK: Assign Default Value
     ///setDefaultValue assign default values to IterableEmbeddedView
-    func setDefaultValue() {
-        bannerBackgroundColor = UIColor.white
-        bannerBorderColor = UIColor(red: 0.88, green: 0.87, blue: 0.87, alpha: 1.00)
-        bannerBorderWidth = 1.0
-        bannerCornerRadius = 8.0
-        primaryBtnColor = UIColor.purple
-        primaryBtnTextColor = UIColor.white
-        secondaryBtnColor = UIColor.clear
-        secondaryBtnTextColor = UIColor.black
-        titleTextColor = UIColor.black
-        bodyTextColor = UIColor.darkGray
-    }
+//    func setDefaultValue() {
+//        bannerBackgroundColor = UIColor.white
+//        bannerBorderColor = UIColor(red: 0.88, green: 0.87, blue: 0.87, alpha: 1.00)
+//        bannerBorderWidth = 1.0
+//        bannerCornerRadius = 8.0
+//        primaryBtnColor = UIColor.purple
+//        primaryBtnTextColor = UIColor.white
+//        secondaryBtnColor = UIColor.clear
+//        secondaryBtnTextColor = UIColor.black
+//        titleTextColor = UIColor.black
+//        bodyTextColor = UIColor.darkGray
+//    }
     
     public func configure(message: IterableEmbeddedMessage, viewType: IterableEmbeddedViewType, config: IterableEmbeddedViewConfig?) {
         
