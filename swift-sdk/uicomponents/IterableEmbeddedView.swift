@@ -295,7 +295,7 @@ public class IterableEmbeddedView:UIView {
     
 //    // MARK: OOTB View IBInspectables
 //    /// OOTB View Background Color
-      public var bannerBackgroundColor: UIColor?
+      public var bannerBackgroundColor: UIColor = UIColor.white
 //    @IBInspectable public var bannerBackgroundColor: UIColor? = UIColor.white {
 //        didSet {
 //            self.backgroundColor = UIColor.clear
@@ -304,7 +304,7 @@ public class IterableEmbeddedView:UIView {
 //    }
 //    
 //    /// Banner Border Color
-      public var bannerBorderColor: UIColor
+      public var bannerBorderColor: UIColor = UIColor.clear
 //    @IBInspectable public var bannerBorderColor: UIColor = UIColor.clear {
 //        didSet {
 //            self.layer.borderColor = bannerBorderColor.cgColor
@@ -312,7 +312,7 @@ public class IterableEmbeddedView:UIView {
 //    }
 //
 //    /// Banner Border Width
-      public var bannerBorderWidth: CGFloat
+      public var bannerBorderWidth: CGFloat = 1.0
 //    @IBInspectable public var bannerBorderWidth: CGFloat = 1.0 {
 //        didSet {
 //            self.layer.borderWidth = bannerBorderWidth
@@ -320,7 +320,7 @@ public class IterableEmbeddedView:UIView {
 //    }
 //    
 //    /// Banner Corner Radius
-      public var bannerCornerRadius: CGFloat
+      public var bannerCornerRadius: CGFloat = 8.0
 //    @IBInspectable public var bannerCornerRadius: CGFloat = 8.0 {
 //        didSet {
 //            self.layer.cornerRadius = bannerCornerRadius
@@ -331,7 +331,7 @@ public class IterableEmbeddedView:UIView {
 //    
 //    // MARK: Primary Button
 //    /// Primary button background color.
-      public var primaryBtnColor: UIColor
+      public var primaryBtnColor: UIColor = UIColor.purple
 //    @IBInspectable public var primaryBtnColor: UIColor = UIColor.purple {
 //        didSet {
 //            primaryBtn.backgroundColor = primaryBtnColor
@@ -339,7 +339,7 @@ public class IterableEmbeddedView:UIView {
 //    }
 //    
 //    /// Primary button text color.
-      public var primaryBtnTextColor: UIColor
+      public var primaryBtnTextColor: UIColor = UIColor.white
 //    @IBInspectable public var primaryBtnTextColor: UIColor = UIColor.white {
 //        didSet {
 //            primaryBtn.titleColor = primaryBtnTextColor
@@ -348,7 +348,7 @@ public class IterableEmbeddedView:UIView {
 //    
 //    // MARK: Second Button
 //    /// Secondary button background color.
-      public var secondaryBtnColor: UIColor
+      public var secondaryBtnColor: UIColor = UIColor.clear
 //    @IBInspectable public var secondaryBtnColor: UIColor = UIColor.clear {
 //        didSet {
 //            secondaryBtn.backgroundColor = secondaryBtnColor
@@ -356,7 +356,7 @@ public class IterableEmbeddedView:UIView {
 //    }
 //    
 //    /// Secondary button text color.
-      public var secondaryBtnTextColor: UIColor
+      public var secondaryBtnTextColor: UIColor = UIColor.black
 //    @IBInspectable public var secondaryBtnTextColor: UIColor = UIColor.black {
 //        didSet {
 //            secondaryBtn.titleColor = secondaryBtnTextColor
@@ -364,7 +364,7 @@ public class IterableEmbeddedView:UIView {
 //    }
 //    
 //    /// Title Text Color
-      public var titleTextColor: UIColor
+      public var titleTextColor: UIColor = UIColor.black
 //    @IBInspectable public var titleTextColor: UIColor = UIColor.black {
 //        didSet {
 //            labelTitle.textColor = titleTextColor
@@ -372,7 +372,7 @@ public class IterableEmbeddedView:UIView {
 //    }
 //    
 //    /// Description Text Color
-      public var bodyTextColor: UIColor
+      public var bodyTextColor: UIColor = UIColor.darkGray
 //    @IBInspectable public var bodyTextColor: UIColor = UIColor.darkGray {
 //        didSet {
 //            labelDescription.textColor = bodyTextColor
