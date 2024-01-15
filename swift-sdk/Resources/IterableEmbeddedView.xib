@@ -34,10 +34,7 @@
                     <rect key="frame" x="0.0" y="0.0" width="400" height="416"/>
                     <subviews>
                         <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="WQD-hj-6fI">
-                            <rect key="frame" x="0.0" y="-250" width="400" height="250"/>
-                            <constraints>
-                                <constraint firstAttribute="height" constant="250" id="ngM-lG-nWv"/>
-                            </constraints>
+                            <rect key="frame" x="0.0" y="0.0" width="400" height="0.0"/>
                         </imageView>
                         <stackView opaque="NO" contentMode="scaleToFill" alignment="center" spacing="8" translatesAutoresizingMaskIntoConstraints="NO" id="0Q3-lN-ixZ">
                             <rect key="frame" x="16" y="16" width="368" height="333.66666666666669"/>
