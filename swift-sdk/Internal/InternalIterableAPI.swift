@@ -174,7 +174,13 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
         logoutPreviousUser()
         
         _email = nil
-        _userId = userId
+        if _userId == nil {
+            _userId = userId
+            localStorage.userId = userId
+            anonymousUserManager.syncNonSyncedEvents()
+        } else {
+            _userId = userId
+        }
         _successCallback = successHandler
         _failureCallback = failureHandler
         
