@@ -529,6 +529,11 @@ struct RequestCreator {
         return .success(.post(createPostRequest(path: Const.Path.mergeUser, body: body)))
     }
     
+    func createGetCriteriaRequest() -> Result<IterableRequest, IterableError> {
+        let body: [AnyHashable: Any] = [:]
+        return .success(.get(createGetRequest(forPath: Const.Path.getCriteria, withArgs: body as! [String: String])))
+    }
+    
     // MARK: - PRIVATE
     
     private static let authMissingMessage = "Both email and userId are nil"

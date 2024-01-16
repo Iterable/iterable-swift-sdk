@@ -87,7 +87,7 @@ public class AnonymousUserManager: AnonymousUserManagerProtocol {
     }
     
     // Creates a user after criterias met and login the user and then sync the data through track APIs
-    private func createKnownUserIfCriteriaMatched(criteriaId: Int?) {
+    private func createKnownUserIfCriteriaMatched(criteriaId: String?) {
         if (criteriaId != nil) {
             let userId = IterableUtil.generateUUID()
             IterableAPI.setUserId(userId)
@@ -174,7 +174,7 @@ public class AnonymousUserManager: AnonymousUserManagerProtocol {
     }
     
     // Checks if criterias are being met and returns criteriaId if it matches the criteria.
-    private func evaluateCriteriaAndReturnID() -> Int? {
+    private func evaluateCriteriaAndReturnID() -> String? {
         guard let events = localStorage.anonymousUserEvents, let criteriaData = localStorage.criteriaData  else {
             return nil
         }
@@ -183,19 +183,9 @@ public class AnonymousUserManager: AnonymousUserManagerProtocol {
     }
     // Gets the anonymous criteria
     public func getAnonCriteria() {
-        // call API when it is available and save data in userdefaults, until then just save the data in userdefaults using static data from anoncriteria_response.json
-        if let path = Bundle.module.path(forResource: "anoncriteria_response", ofType: "json") {
-            let fileURL = URL(fileURLWithPath: path)
-            do {
-                let data = try Data(contentsOf: fileURL)
-                // Process your data here
-                localStorage.criteriaData = data
-            } catch {
-                print("Error reading file: \(error)")
-            }
-        } else {
-            print("File not found in the package")
-        }
+        IterableAPI.implementation?.getCriteriaData { returnedData in
+            self.localStorage.criteriaData = returnedData
+        };
     }
     
     // Stores event data locally
