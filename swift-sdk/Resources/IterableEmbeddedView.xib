@@ -118,7 +118,7 @@ Description text</string>
                     </constraints>
                 </view>
             </subviews>
-            <color key="backgroundColor" systemColor="systemGreenColor"/>
+            <color key="backgroundColor" systemColor="systemBackgroundColor"/>
             <gestureRecognizers/>
             <constraints>
                 <constraint firstAttribute="trailing" secondItem="W3z-UY-cBI" secondAttribute="trailing" id="Qj0-ZR-myT"/>
@@ -144,9 +144,6 @@ Description text</string>
         </namedColor>
         <systemColor name="systemBackgroundColor">
             <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-        </systemColor>
-        <systemColor name="systemGreenColor">
-            <color red="0.20392156859999999" green="0.78039215689999997" blue="0.34901960780000002" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </systemColor>
     </resources>
 </document>

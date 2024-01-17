@@ -525,8 +525,8 @@ public enum IterableEmbeddedViewType: String {
 public class IterableEmbeddedViewConfig: NSObject {
     var backgroundColor: UIColor?
     var borderColor: UIColor?
-    var borderWidth: CGFloat? = 1.0
-    var borderCornerRadius: CGFloat? = 8.0
+    var borderWidth: CGFloat?
+    var borderCornerRadius: CGFloat?
     var primaryBtnBackgroundColor: UIColor?
     var primaryBtnTextColor: UIColor?
     var secondaryBtnBackgroundColor: UIColor?
