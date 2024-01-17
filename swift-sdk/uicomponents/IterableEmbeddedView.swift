@@ -117,21 +117,21 @@ public class IterableEmbeddedView:UIView {
         }
     }
 
-    /// Banner Border Color
+    /// OOTB View Border Color
     public var ootbViewBorderColor: UIColor = UIColor(red: 0.88, green: 0.87, blue: 0.87, alpha: 1.00) {
         didSet {
             self.layer.borderColor = ootbViewBorderColor.cgColor
         }
     }
     
-    /// Banner Border Width
+    /// OOTB View Border Width
     public var ootbViewBorderWidth: CGFloat = 1.0 {
         didSet {
             self.layer.borderWidth = ootbViewBorderWidth
         }
     }
 
-    /// Banner Corner Radius
+    /// OOTB View Corner Radius
     public var ootbViewCornerRadius: CGFloat = 8.0 {
         didSet {
             self.layer.cornerRadius = ootbViewCornerRadius
@@ -177,7 +177,7 @@ public class IterableEmbeddedView:UIView {
         }
     }
 
-    /// Description Text Color
+    /// Body Text Color
     public var bodyTextColor: UIColor = UIColor.darkGray {
         didSet {
             labelDescription.textColor = bodyTextColor
@@ -292,7 +292,6 @@ public class IterableEmbeddedView:UIView {
                 }
             case .banner:
                 imgView.isHidden = EMimage == nil
-                //bannerBorderColor = cardBorderColor
                 imgView.isHidden = self.EMimage == nil
                 imgView.image = EMimage
                 cardImageView.isHidden = true
