@@ -166,7 +166,6 @@ class IterableUserDefaults {
     private func save(string: String?, withKey key: UserDefaultsKey) {
         userDefaults.set(string, forKey: key.value)
     }
-
     private func save(bool: Bool, withKey key: UserDefaultsKey) {
         userDefaults.set(bool, forKey: key.value)
     }

@@ -81,7 +81,6 @@ class IterableEmbeddedManager: NSObject, IterableInternalEmbeddedManagerProtocol
         let processor = EmbeddedMessagingProcessor(currentMessages: self.messages, fetchedMessages: [:])
         self.setMessages(processor)
         self.notifyUpdateDelegates(processor)
-        self.localStorage.embeddedCurrentMessageIds = []
     }
     
     private func handleIterableCustomAction(name: String, forMessage message: IterableEmbeddedMessage) {
