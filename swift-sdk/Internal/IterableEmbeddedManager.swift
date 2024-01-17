@@ -14,8 +14,7 @@ class IterableEmbeddedManager: NSObject, IterableInternalEmbeddedManagerProtocol
          urlDelegate: IterableURLDelegate?,
          customActionDelegate: IterableCustomActionDelegate?,
          urlOpener: UrlOpenerProtocol,
-         allowedProtocols: [String],
-         localStorage: LocalStorageProtocol) {
+         allowedProtocols: [String]) {
          ITBInfo()
         
         self.apiClient = apiClient
@@ -23,7 +22,6 @@ class IterableEmbeddedManager: NSObject, IterableInternalEmbeddedManagerProtocol
         self.customActionDelegate = customActionDelegate
         self.urlOpener = urlOpener
         self.allowedProtocols = allowedProtocols
-        self.localStorage = localStorage
         
         super.init()
         addForegroundObservers()
@@ -133,7 +131,6 @@ class IterableEmbeddedManager: NSObject, IterableInternalEmbeddedManagerProtocol
     private var messages: [Int: [IterableEmbeddedMessage]] = [:]
     private var listeners: NSHashTable<IterableEmbeddedUpdateDelegate> = NSHashTable(options: [.weakMemory])
     private var trackedMessageIds: Set<String> = Set()
-    private var localStorage: LocalStorageProtocol
     
     private func addForegroundObservers() {
         NotificationCenter.default.addObserver(self,
@@ -154,26 +151,16 @@ class IterableEmbeddedManager: NSObject, IterableInternalEmbeddedManagerProtocol
     }
     
     private func retrieveEmbeddedMessages(completion: @escaping () -> Void) {
-        apiClient.getEmbeddedMessages(messages: localStorage.embeddedCurrentMessageIds)
+        apiClient.getEmbeddedMessages()
             .onCompletion(
                 receiveValue: { embeddedMessagesPayload in
                     let placements = embeddedMessagesPayload.placements
-                    var embeddedCurrentMessageIds: [String] = []
+                    
                     var fetchedMessagesDict: [Int: [IterableEmbeddedMessage]] = [:]
                     for placement in placements {
                         fetchedMessagesDict[placement.placementId!] = placement.embeddedMessages
                     }
                     
-                    for placement in placements {
-                        if let placementId = placement.placementId {
-                            fetchedMessagesDict[placementId] = placement.embeddedMessages
-                            for embeddedMessage in placement.embeddedMessages {
-                                embeddedCurrentMessageIds.append(embeddedMessage.metadata.messageId)
-                            }
-                        }
-                    }
-                    
-                    self.localStorage.embeddedCurrentMessageIds = embeddedCurrentMessageIds
                     let processor = EmbeddedMessagingProcessor(currentMessages: self.messages,
                                                                fetchedMessages: fetchedMessagesDict)
                     

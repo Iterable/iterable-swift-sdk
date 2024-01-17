@@ -24,8 +24,6 @@ protocol LocalStorageProtocol {
     func save(attributionInfo: IterableAttributionInfo?, withExpiration expiration: Date?)
     
     func upgrade()
-    
-    var embeddedCurrentMessageIds: [String] { get set }
 }
 
 extension LocalStorageProtocol {

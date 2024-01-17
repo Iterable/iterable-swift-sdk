@@ -70,14 +70,6 @@ class IterableUserDefaults {
         }
     }
     
-    var embeddedCurrentMessageIds: [String]? {
-        get {
-            return userDefaults.stringArray(forKey: UserDefaultsKey.embeddedCurrentMessageIds.value)
-        } set {
-            save(strings: newValue, withKey: .embeddedCurrentMessageIds)
-        }
-    }
-    
     func getAttributionInfo(currentDate: Date) -> IterableAttributionInfo? {
         (try? codable(withKey: .attributionInfo, currentDate: currentDate)) ?? nil
     }
@@ -174,11 +166,7 @@ class IterableUserDefaults {
     private func save(string: String?, withKey key: UserDefaultsKey) {
         userDefaults.set(string, forKey: key.value)
     }
-    
-    private func save(strings: [String]?, withKey key: UserDefaultsKey) {
-        userDefaults.set(strings, forKey: key.value)
-    }
-    
+
     private func save(bool: Bool, withKey key: UserDefaultsKey) {
         userDefaults.set(bool, forKey: key.value)
     }
@@ -208,7 +196,6 @@ class IterableUserDefaults {
         static let deviceId = UserDefaultsKey(value: Const.UserDefault.deviceId)
         static let sdkVersion = UserDefaultsKey(value: Const.UserDefault.sdkVersion)
         static let offlineMode = UserDefaultsKey(value: Const.UserDefault.offlineMode)
-        static let embeddedCurrentMessageIds = UserDefaultsKey(value: Const.UserDefault.embeddedCurrentMessageIds)
     }
     
     private struct Envelope: Codable {

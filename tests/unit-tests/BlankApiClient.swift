@@ -79,7 +79,7 @@ class BlankApiClient: ApiClientProtocol {
         Pending()
     }
     
-    func getEmbeddedMessages(messages: [String]) -> Pending<PlacementsPayload, SendRequestError> {
+    func getEmbeddedMessages() -> Pending<PlacementsPayload, SendRequestError> {
         Pending()
     }
     
