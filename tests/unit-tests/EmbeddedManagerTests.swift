@@ -240,9 +240,10 @@ final class EmbeddedManagerTests: XCTestCase {
 
         let mockApiClient = MockApiClient()
         let manager = IterableEmbeddedManager(apiClient: mockApiClient,
-                                                                        urlDelegate: nil,
-                                                                        urlOpener: MockUrlOpener(),
-                                                                        allowedProtocols: [])
+                                              urlDelegate: nil,
+                                              customActionDelegate: nil,
+                                              urlOpener: MockUrlOpener(),
+                                              allowedProtocols: [])
 
         let updateDelegate = ViewWithUpdateDelegate(
             onMessagesUpdatedCallback: {
