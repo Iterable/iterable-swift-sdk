@@ -5,42 +5,11 @@
 import Foundation
 import UIKit
 
-public struct ResolvedMessage: Equatable {
-    public let title: String?
-    public let description: String?
-    public var image: UIImage?
-    public var imageAccessibilityLabel: String?
-    public let buttonText: String?
-    public let buttonTwoText: String?
-    public let message: IterableEmbeddedMessage
-
-    init(title: String?,
-         description: String?,
-         image: UIImage?,
-         imageAccessibilityLabel: String?,
-         buttonText: String?,
-         buttonTwoText: String?,
-         message: IterableEmbeddedMessage) {
-        self.title = title
-        self.description = description
-        self.image = image
-        self.imageAccessibilityLabel = imageAccessibilityLabel
-        self.buttonText = buttonText
-        self.buttonTwoText = buttonTwoText
-        self.message = message
-    }
-    
-    public static func ==(lhs: ResolvedMessage, rhs: ResolvedMessage) -> Bool {
-            return lhs.title == rhs.title &&
-                   lhs.description == rhs.description &&
-                   lhs.image == rhs.image &&
-                   lhs.buttonText == rhs.buttonText &&
-                   lhs.buttonTwoText == rhs.buttonTwoText &&
-                   lhs.message == rhs.message
-        }
+protocol IterableInternalEmbeddedManagerProtocol: IterableEmbeddedManagerProtocol, EmbeddedNotifiable {
+    // we can add the internal delegate methods here
 }
 
-class IterableEmbeddedManager: NSObject, IterableEmbeddedManagerProtocol {
+class IterableEmbeddedManager: NSObject, IterableInternalEmbeddedManagerProtocol {
     init(apiClient: ApiClientProtocol,
          urlDelegate: IterableURLDelegate?,
          customActionDelegate: IterableCustomActionDelegate?,
@@ -76,85 +45,12 @@ class IterableEmbeddedManager: NSObject, IterableEmbeddedManagerProtocol {
         return messages[placementId] ?? []
     }
     
-    public func resolveMessages(_ messages: [IterableEmbeddedMessage], completion: @escaping ([ResolvedMessage]) -> Void) {
-        var resolvedMessages: [Int: ResolvedMessage] = [:]
-
-        let group = DispatchGroup()
-
-        for (index, message) in messages.enumerated() {
-            group.enter()
-
-            let title = message.elements?.title
-            let description = message.elements?.body
-            let imageUrl = message.elements?.mediaUrl
-            let imageAccessiblityLabel = message.elements?.mediaUrlCaption
-            let buttonText = message.elements?.buttons?.first?.title
-            let buttonTwoText = message.elements?.buttons?.count ?? 0 > 1 ? message.elements?.buttons?[1].title : nil
-
-            DispatchQueue.global().async {
-                if let imageUrl = imageUrl, let url = URL(string: imageUrl) {
-                    var request = URLRequest(url: url)
-                    request.setValue("Mozilla/5.0 (iPhone; CPU iPhone OS 16_5_1 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/16.5 Mobile/15E148 Safari/604.1", forHTTPHeaderField: "User-Agent")
-
-                    let config = URLSessionConfiguration.default
-                    config.httpAdditionalHeaders = request.allHTTPHeaderFields
-
-                    let session = URLSession(configuration: config)
-
-                    session.dataTask(with: request) { (data, _, _) in
-                        defer { group.leave() }
-
-                        guard let imageData = data else {
-                            print("Unable to load image data")
-                            return
-                        }
-
-                        let resolvedMessage = ResolvedMessage(title: title,
-                                                              description: description,
-                                                              image: UIImage(data: imageData),
-                                                              imageAccessibilityLabel: imageAccessiblityLabel,
-                                                              buttonText: buttonText,
-                                                              buttonTwoText: buttonTwoText,
-                                                              message: message)
-
-                        DispatchQueue.main.async {
-                            resolvedMessages[index] = resolvedMessage
-                        }
-
-                    }.resume()
-                } else {
-                    let resolvedMessage = ResolvedMessage(title: title,
-                                                          description: description,
-                                                          image: nil,
-                                                          imageAccessibilityLabel: nil,
-                                                          buttonText: buttonText,
-                                                          buttonTwoText: buttonTwoText,
-                                                          message: message)
-                    DispatchQueue.main.async {
-                        resolvedMessages[index] = resolvedMessage
-                        group.leave()
-                    }
-                }
-            }
-
-        }
-
-        group.notify(queue: .main) {
-            let sortedResolvedMessages = resolvedMessages.sorted { $0.key < $1.key }.map { $0.value }
-            completion(sortedResolvedMessages)
-        }
-    }
-    
     public func addUpdateListener(_ listener: IterableEmbeddedUpdateDelegate) {
         listeners.add(listener)
     }
     
     public func removeUpdateListener(_ listener: IterableEmbeddedUpdateDelegate) {
         listeners.remove(listener)
-    }
-
-    public func syncMessages(completion: @escaping () -> Void) {
-        retrieveEmbeddedMessages(completion: completion)
     }
     
     public func handleEmbeddedClick(message: IterableEmbeddedMessage, buttonIdentifier: String?, clickedUrl: String) {
@@ -339,5 +235,11 @@ class IterableEmbeddedManager: NSObject, IterableEmbeddedManagerProtocol {
         for listener in listeners.allObjects {
             listener.onEmbeddedMessagingDisabled()
         }
+    }
+}
+
+extension IterableEmbeddedManager: EmbeddedNotifiable {
+    public func syncMessages(completion: @escaping () -> Void) {
+        retrieveEmbeddedMessages(completion: completion)
     }
 }

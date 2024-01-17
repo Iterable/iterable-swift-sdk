@@ -5,10 +5,6 @@
 import Foundation
 
 class EmptyEmbeddedManager: IterableEmbeddedManagerProtocol {
-    func resolveMessages(_ messages: [IterableEmbeddedMessage], completion: @escaping ([ResolvedMessage]) -> Void) {
-
-    }
-    
     func addUpdateListener(_ listener: IterableEmbeddedUpdateDelegate) {
         
     }

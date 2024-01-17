@@ -234,6 +234,43 @@ final class EmbeddedManagerTests: XCTestCase {
         
         XCTAssertFalse(delegateCalled, "Delegate should not have been notified after being removed.")
     }
+    
+    func testUpdateMessagesIsCalled() {
+        let expectation = XCTestExpectation(description: "onMessagesUpdated called")
+
+        let notification = """
+        {
+            "itbl": {
+                "messageId": "background_notification",
+                "isGhostPush": true
+            },
+            "notificationType": "UpdateEmbedded",
+            "messageId": "messageId"
+        }
+        """.toJsonDict()
+
+        let mockApiClient = MockApiClient()
+        let manager = IterableEmbeddedManager(apiClient: mockApiClient,
+                                                                        urlDelegate: nil,
+                                                                        urlOpener: MockUrlOpener(),
+                                                                        allowedProtocols: [])
+
+        let updateDelegate = ViewWithUpdateDelegate(
+            onMessagesUpdatedCallback: {
+                expectation.fulfill()
+            },
+            onEmbeddedMessagingDisabledCallback: nil
+        )
+
+        manager.addUpdateListener(updateDelegate)
+        mockApiClient.haveNewEmbeddedMessages()
+
+        let appIntegration = InternalIterableAppIntegration(tracker: MockPushTracker(), inAppNotifiable: EmptyInAppManager(), embeddedNotifiable: manager)
+
+        appIntegration.application(MockApplicationStateProvider(applicationState: .background), didReceiveRemoteNotification: notification, fetchCompletionHandler: nil)
+
+        wait(for: [expectation], timeout: 5.0)
+    }
 
     // init/deinit
     func testManagerInitializationAndDeinitialization() {
