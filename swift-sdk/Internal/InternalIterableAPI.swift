@@ -174,7 +174,13 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
         logoutPreviousUser()
         
         _email = nil
-        _userId = userId
+        if _userId == nil {
+            _userId = userId
+            localStorage.userId = userId
+            anonymousUserManager.syncNonSyncedEvents()
+        } else {
+            _userId = userId
+        }
         _successCallback = successHandler
         _failureCallback = failureHandler
         
@@ -772,6 +778,17 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
         }.onError { error in
             let offlineMode = self.requestHandler.offlineMode
             ITBError("Could not get remote configuration: \(error.localizedDescription), using saved value: \(offlineMode)")
+        }
+    }
+    
+    func getCriteriaData(completion: @escaping (Data) -> Void) {
+        apiClient.getCriteria().onSuccess { data in
+            do {
+                let jsonData = try JSONSerialization.data(withJSONObject: data, options: [])
+                completion(jsonData)
+            } catch {
+                print("Error converting dictionary to data: \(error)")
+            }
         }
     }
     

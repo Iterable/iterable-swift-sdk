@@ -293,4 +293,9 @@ extension ApiClient: ApiClientProtocol {
         let result = createRequestCreator().flatMap { $0.createMergeUserRequest(sourceEmail, sourceUserId, destinationEmail, destinationUserId: destinationUserId) }
         return send(iterableRequestResult: result)
     }
+    
+    func getCriteria()  -> Pending<SendRequestValue, SendRequestError> {
+        let result = createRequestCreator().flatMap { $0.createGetCriteriaRequest() }
+        return send(iterableRequestResult: result)
+    }
 }

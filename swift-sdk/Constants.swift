@@ -51,6 +51,7 @@ enum Const {
         static let userByUserId = "users/byUserId";
         static let userByEmail = "users/getByEmail";
         static let mergeUser = "users/merge";
+        static let getCriteria = "anonymoususer/list";
     }
     
     public enum UserDefault {
