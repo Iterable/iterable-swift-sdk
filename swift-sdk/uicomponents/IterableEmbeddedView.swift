@@ -8,19 +8,8 @@
 import Foundation
 import UIKit
 
-
-//TODO: Featuring in D6
-public protocol IterableEmbeddedViewDelegate: NSObject {
-    func didPressPrimaryButton(button: UIButton, viewTag: Int, message: IterableEmbeddedMessage?)
-    func didPressSecondaryButton(button: UIButton, viewTag: Int, message: IterableEmbeddedMessage?)
-    func didPressBanner(banner: IterableEmbeddedView, viewTag: Int, message: IterableEmbeddedMessage?)
-}
-
 @IBDesignable
 public class IterableEmbeddedView:UIView {
-    
-    // Delegate Methods
-    weak public var iterableEmbeddedViewDelegate: IterableEmbeddedViewDelegate!
     
     /// Set background color of view in container view.
     @IBOutlet weak public var contentView: UIView!
@@ -343,11 +332,6 @@ public class IterableEmbeddedView:UIView {
                 IterableAPI.track(embeddedMessageClick: message!, buttonIdentifier: nil, clickedUrl: clickedUrl)
                 IterableAPI.embeddedManager.handleEmbeddedClick(message: EMmessage, buttonIdentifier: nil, clickedUrl: clickedUrl)
             }
-        }
-        
-        //TODO: Delegate method
-        if (iterableEmbeddedViewDelegate != nil) {
-            iterableEmbeddedViewDelegate.didPressBanner(banner: self, viewTag: self.tag, message: message)
         }
     }
     
