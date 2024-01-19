@@ -210,10 +210,8 @@ class IterableEmbeddedManager: NSObject, IterableInternalEmbeddedManagerProtocol
     }
     
     private func notifyUpdateDelegates(_ processor: EmbeddedMessagingProcessor) {
-        if (processor.newlyRemovedMessageIds().count > 0 || processor.newlyRetrievedMessages().count > 0) {
-            for listener in listeners.allObjects {
-                listener.onMessagesUpdated()
-            }
+        for listener in listeners.allObjects {
+            listener.onMessagesUpdated()
         }
     }
     
