@@ -7,9 +7,6 @@ import XCTest
 @testable import IterableSDK
 
 final class EmbeddedManagerTests: XCTestCase {
-    
-    var localStorage = MockLocalStorage()
-    
     func testManagerSingleDelegateUpdated() throws {
         throw XCTSkip("skipping this test - manager logic updated, needs to be revisited")
             
@@ -21,8 +18,7 @@ final class EmbeddedManagerTests: XCTestCase {
                                                   urlDelegate: nil,
                                                   customActionDelegate: nil,
                                                   urlOpener: MockUrlOpener(),
-                                                  allowedProtocols: [],
-                                                  localStorage: localStorage)
+                                                  allowedProtocols: [])
             
             let view1 = ViewWithUpdateDelegate(
                 onMessagesUpdatedCallback: {
@@ -46,8 +42,7 @@ final class EmbeddedManagerTests: XCTestCase {
                                               urlDelegate: nil,
                                               customActionDelegate: nil,
                                               urlOpener: MockUrlOpener(),
-                                              allowedProtocols: [],
-                                              localStorage: localStorage)
+                                              allowedProtocols: [])
         XCTAssertEqual(manager.getMessages().count, 0)
     }
     func testGetMessagesForPlacement() {
@@ -62,8 +57,7 @@ final class EmbeddedManagerTests: XCTestCase {
                                               urlDelegate: nil,
                                               customActionDelegate: nil,
                                               urlOpener: MockUrlOpener(),
-                                              allowedProtocols: [],
-                                              localStorage: localStorage)
+                                              allowedProtocols: [])
         
         manager.syncMessages { }
         
@@ -91,8 +85,7 @@ final class EmbeddedManagerTests: XCTestCase {
                                               urlDelegate: nil,
                                               customActionDelegate: nil,
                                               urlOpener: MockUrlOpener(),
-                                              allowedProtocols: [],
-                                              localStorage: localStorage)
+                                              allowedProtocols: [])
         
         let view = ViewWithUpdateDelegate(
             onMessagesUpdatedCallback: {
@@ -124,8 +117,7 @@ final class EmbeddedManagerTests: XCTestCase {
                                               urlDelegate: nil,
                                               customActionDelegate: nil,
                                               urlOpener: MockUrlOpener(),
-                                              allowedProtocols: [],
-                                              localStorage: localStorage)
+                                              allowedProtocols: [])
         
         manager.syncMessages {
             syncMessagesExpectation.fulfill()
@@ -147,8 +139,7 @@ final class EmbeddedManagerTests: XCTestCase {
                                               urlDelegate: nil,
                                               customActionDelegate: nil,
                                               urlOpener: MockUrlOpener(),
-                                              allowedProtocols: [],
-                                              localStorage: localStorage)
+                                              allowedProtocols: [])
         
         let view = ViewWithUpdateDelegate(
             onMessagesUpdatedCallback: nil,
@@ -171,8 +162,7 @@ final class EmbeddedManagerTests: XCTestCase {
                                               urlDelegate: nil,
                                               customActionDelegate: nil,
                                               urlOpener: MockUrlOpener(),
-                                              allowedProtocols: [],
-                                              localStorage: localStorage)
+                                              allowedProtocols: [])
 
         var delegate1Called = false
         var delegate2Called = false
@@ -205,8 +195,7 @@ final class EmbeddedManagerTests: XCTestCase {
                                               urlDelegate: nil,
                                               customActionDelegate: nil,
                                               urlOpener: MockUrlOpener(),
-                                              allowedProtocols: [],
-                                              localStorage: localStorage)
+                                              allowedProtocols: [])
 
         var delegateCalled = false
 
@@ -234,6 +223,44 @@ final class EmbeddedManagerTests: XCTestCase {
         
         XCTAssertFalse(delegateCalled, "Delegate should not have been notified after being removed.")
     }
+    
+    func testUpdateMessagesIsCalled() {
+        let expectation = XCTestExpectation(description: "onMessagesUpdated called")
+
+        let notification = """
+        {
+            "itbl": {
+                "messageId": "background_notification",
+                "isGhostPush": true
+            },
+            "notificationType": "UpdateEmbedded",
+            "messageId": "messageId"
+        }
+        """.toJsonDict()
+
+        let mockApiClient = MockApiClient()
+        let manager = IterableEmbeddedManager(apiClient: mockApiClient,
+                                              urlDelegate: nil,
+                                              customActionDelegate: nil,
+                                              urlOpener: MockUrlOpener(),
+                                              allowedProtocols: [])
+
+        let updateDelegate = ViewWithUpdateDelegate(
+            onMessagesUpdatedCallback: {
+                expectation.fulfill()
+            },
+            onEmbeddedMessagingDisabledCallback: nil
+        )
+
+        manager.addUpdateListener(updateDelegate)
+        mockApiClient.haveNewEmbeddedMessages()
+
+        let appIntegration = InternalIterableAppIntegration(tracker: MockPushTracker(), inAppNotifiable: EmptyInAppManager(), embeddedNotifiable: manager)
+
+        appIntegration.application(MockApplicationStateProvider(applicationState: .background), didReceiveRemoteNotification: notification, fetchCompletionHandler: nil)
+
+        wait(for: [expectation], timeout: 5.0)
+    }
 
     // init/deinit
     func testManagerInitializationAndDeinitialization() {
@@ -243,8 +270,7 @@ final class EmbeddedManagerTests: XCTestCase {
                                                                         urlDelegate: nil,
                                                                         customActionDelegate: nil,
                                                                         urlOpener: MockUrlOpener(),
-                                                                        allowedProtocols: [],
-                                                                        localStorage: localStorage)
+                                                                        allowedProtocols: [])
         manager?.onDeinit = {
             deinitExpectation.fulfill()
         }
@@ -263,8 +289,7 @@ final class EmbeddedManagerTests: XCTestCase {
                                               urlDelegate: nil,
                                               customActionDelegate: nil,
                                               urlOpener: MockUrlOpener(),
-                                              allowedProtocols: [],
-                                              localStorage: localStorage)
+                                              allowedProtocols: [])
         
         let mockDelegate = ViewWithUpdateDelegate(
             onMessagesUpdatedCallback: {
@@ -318,7 +343,6 @@ final class EmbeddedManagerTests: XCTestCase {
         private var newMessages = false
         private var invalidApiKey = false
         private var mockMessages: [Int: [IterableEmbeddedMessage]] = [:]
-        var currentMessages: [String] = []
 
         func haveNewEmbeddedMessages() {
             newMessages = true
@@ -333,7 +357,7 @@ final class EmbeddedManagerTests: XCTestCase {
             invalidApiKey = true
         }
         
-        override func getEmbeddedMessages(messages: [String]) -> IterableSDK.Pending<IterableSDK.PlacementsPayload, IterableSDK.SendRequestError> {
+        override func getEmbeddedMessages() -> IterableSDK.Pending<IterableSDK.PlacementsPayload, IterableSDK.SendRequestError> {
             if invalidApiKey {
                 return FailPending(error: IterableSDK.SendRequestError(reason: "Invalid API Key"))
             }
@@ -343,10 +367,6 @@ final class EmbeddedManagerTests: XCTestCase {
                 for (placementId, messages) in mockMessages {
                     let placement = Placement(placementId: placementId, embeddedMessages: messages)
                     placements.append(placement)
-                    
-                    for (message) in messages {
-                        currentMessages.append(message.metadata.messageId)
-                    }
                 }
                 
                 let payload = PlacementsPayload(placements: placements)

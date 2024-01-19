@@ -82,7 +82,7 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
         self.dependencyContainer.createAuthManager(config: self.config)
     }()
     
-    lazy var embeddedManager: IterableEmbeddedManagerProtocol = {
+    lazy var embeddedManager: IterableInternalEmbeddedManagerProtocol = {
         self.dependencyContainer.createEmbeddedManager(config: self.config,
                                                                 apiClient: self.apiClient)
     }()
@@ -685,7 +685,8 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
                                                                                customActionDelegate: config.customActionDelegate,
                                                                                urlOpener: urlOpener,
                                                                                allowedProtocols: config.allowedProtocols,
-                                                                               inAppNotifiable: inAppManager)
+                                                                               inAppNotifiable: inAppManager,
+                                                                               embeddedNotifiable: embeddedManager)
         
         handle(launchOptions: launchOptions)
         

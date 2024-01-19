@@ -8,19 +8,8 @@
 import Foundation
 import UIKit
 
-
-//TODO: Featuring in D6
-public protocol IterableEmbeddedViewDelegate: NSObject {
-    func didPressPrimaryButton(button: UIButton, viewTag: Int, message: IterableEmbeddedMessage?)
-    func didPressSecondaryButton(button: UIButton, viewTag: Int, message: IterableEmbeddedMessage?)
-    func didPressBanner(banner: IterableEmbeddedView, viewTag: Int, message: IterableEmbeddedMessage?)
-}
-
 @IBDesignable
 public class IterableEmbeddedView:UIView {
-    
-    // Delegate Methods
-    weak public var iterableEmbeddedViewDelegate: IterableEmbeddedViewDelegate!
     
     /// Set background color of view in container view.
     @IBOutlet weak public var contentView: UIView!
@@ -58,6 +47,7 @@ public class IterableEmbeddedView:UIView {
         didSet {
             if let title = embeddedMessageTitle {
                 labelTitle.text = title
+                labelTitle.font = UIFont.boldSystemFont(ofSize: 16.0)
                 labelTitle.isHidden = false
             } else {
                 labelTitle.isHidden = true
@@ -72,6 +62,7 @@ public class IterableEmbeddedView:UIView {
         didSet {
             if let body = embeddedMessageBody {
                 labelDescription.text = body
+                labelDescription.font = UIFont.systemFont(ofSize: 14.0)
                 labelDescription.isHidden = false
             } else {
                 labelDescription.isHidden = true
@@ -106,6 +97,82 @@ public class IterableEmbeddedView:UIView {
     /// Associated Embedded Message
     public var message: IterableEmbeddedMessage? = nil
     
+    // MARK: OOTB View IBInspectables
+    /// OOTB View Background Color
+    public var ootbViewBackgroundColor: UIColor = UIColor.white {
+        didSet {
+            self.backgroundColor = UIColor.clear
+            self.innerContentView.backgroundColor = ootbViewBackgroundColor
+        }
+    }
+
+    /// OOTB View Border Color
+    public var ootbViewBorderColor: UIColor = UIColor(red: 0.88, green: 0.87, blue: 0.87, alpha: 1.00) {
+        didSet {
+            self.layer.borderColor = ootbViewBorderColor.cgColor
+        }
+    }
+    
+    /// OOTB View Border Width
+    public var ootbViewBorderWidth: CGFloat = 1.0 {
+        didSet {
+            self.layer.borderWidth = ootbViewBorderWidth
+        }
+    }
+
+    /// OOTB View Corner Radius
+    public var ootbViewCornerRadius: CGFloat = 8.0 {
+        didSet {
+            self.layer.cornerRadius = ootbViewCornerRadius
+            contentView.layer.cornerRadius = ootbViewCornerRadius
+            innerContentView.layer.cornerRadius = ootbViewCornerRadius
+        }
+    }
+
+    // MARK: Primary Button
+    /// Primary button background color.
+    public var primaryBtnColor: UIColor = UIColor.purple {
+        didSet {
+           primaryBtn.backgroundColor = primaryBtnColor
+        }
+    }
+    
+    /// Primary button text color.
+    public var primaryBtnTextColor: UIColor = UIColor.white {
+        didSet {
+            primaryBtn.titleColor = primaryBtnTextColor
+        }
+    }
+
+    // MARK: Second Button
+    /// Secondary button background color.
+    public var secondaryBtnColor: UIColor = UIColor.clear {
+        didSet {
+            secondaryBtn.backgroundColor = secondaryBtnColor
+        }
+    }
+
+    /// Secondary button text color.
+    public var secondaryBtnTextColor: UIColor = UIColor.black {
+        didSet {
+            secondaryBtn.titleColor = secondaryBtnTextColor
+        }
+    }
+
+    /// Title Text Color
+    public var titleTextColor: UIColor = UIColor.black {
+        didSet {
+            labelTitle.textColor = titleTextColor
+        }
+    }
+
+    /// Body Text Color
+    public var bodyTextColor: UIColor = UIColor.darkGray {
+        didSet {
+            labelDescription.textColor = bodyTextColor
+        }
+    }
+    
     // MARK: IterableEmbeddedView init method
      /// IterableEmbeddedView init method
     required init?(coder aDecoder: NSCoder) {
@@ -123,7 +190,6 @@ public class IterableEmbeddedView:UIView {
         self.contentView = self.loadViewFromNib()
         self.contentView.translatesAutoresizingMaskIntoConstraints = false
         self.innerContentView.clipsToBounds = true
-        self.setDefaultValue()
         self.addSubview(self.contentView)
             
         NSLayoutConstraint.activate([
@@ -143,48 +209,8 @@ public class IterableEmbeddedView:UIView {
         #endif
 
         let view = nib.instantiate(withOwner: self, options: nil).first as? UIView
-        view?.backgroundColor = UIColor.clear
         self.clipsToBounds = false
         return view
-    }
-    
-    // MARK: Assign Default Value
-    ///setDefaultValue assign default values to IterableEmbeddedView
-    func setDefaultValue() {
-        bannerBackgroundColor = UIColor.white
-        bannerBorderWidth = 1.0
-        bannerBorderColor = UIColor(red: 0.88, green: 0.87, blue: 0.87, alpha: 1.00)
-        bannerCornerRadius = 8.0
-        bannerShadowColor = UIColor.lightGray
-        bannerShadowWidth = 1
-        bannerShadowHeight = 1
-        bannerShadowRadius = 3
-        titleFontSize = 20
-        titleFontName = "HelveticaNeue-Bold"
-        titleTextColor = UIColor.black
-        descriptionFontSize = 18
-        descriptionFontName = "HelveticaNeue"
-        descriptionTextColor = UIColor.darkGray
-        primaryBtnColor = UIColor.purple
-        primaryButtonRoundedSides = false
-        primaryBtnBorderRadius = 0
-        primaryBtnTextFontSize = 16
-        primaryBtnTextFontName = "HelveticaNeue"
-        primaryBtnTextColor = UIColor.white
-        primaryBtnTextAlignment = "center"
-        secondaryBtnColor = UIColor.clear
-        secondaryButtonRoundedSides = true
-        secondaryBtnBorderRadius = 0
-        secondaryBtnTextFontSize = 16
-        secondaryBtnTextFontName = "HelveticaNeue"
-        secondaryBtnTextColor = UIColor.black
-        secondaryBtnTextAlignment = "left"
-        imgViewBackgroundColor = UIColor.white
-        imgViewCornerRadius = 10
-        imgViewBorderWidth = 0
-        imgViewBorderColor = UIColor.gray
-        imgViewWidth = 100
-        imgViewHeight = 100
     }
     
     public func configure(message: IterableEmbeddedMessage, viewType: IterableEmbeddedViewType, config: IterableEmbeddedViewConfig?) {
@@ -224,16 +250,16 @@ public class IterableEmbeddedView:UIView {
         let defaultTitleTextColor = (cardOrBanner) ? cardTitleTextColor : notificationTextColor
         let defaultBodyTextColor = (cardOrBanner) ? cardBodyTextColor : notificationTextColor
         
-        bannerBackgroundColor = config?.backgroundColor ?? defaultBackgroundColor
-        bannerBorderColor = config?.borderColor ?? defaultBorderColor
-        bannerBorderWidth = config?.borderWidth ?? 1.0
-        bannerCornerRadius = config?.borderCornerRadius ?? 8.0
+        ootbViewBackgroundColor = config?.backgroundColor ?? defaultBackgroundColor
+        ootbViewBorderColor = config?.borderColor ?? defaultBorderColor
+        ootbViewBorderWidth = config?.borderWidth ?? 1.0
+        ootbViewCornerRadius = config?.borderCornerRadius ?? 8.0
         primaryBtnColor = config?.primaryBtnBackgroundColor ?? defaultPrimaryBtnColor
         primaryBtnTextColor = config?.primaryBtnTextColor ?? defaultPrimaryBtnTextColor
         secondaryBtnColor = config?.secondaryBtnBackgroundColor ?? defaultSecondaryBtnColor
         secondaryBtnTextColor = config?.secondaryBtnTextColor ?? defaultSecondaryBtnTextColor
         titleTextColor = config?.titleTextColor ?? defaultTitleTextColor
-        descriptionTextColor = config?.bodyTextColor ?? defaultBodyTextColor
+        bodyTextColor = config?.bodyTextColor ?? defaultBodyTextColor
     }
         
     private func loadViewType(viewType: IterableEmbeddedViewType) {
@@ -261,7 +287,6 @@ public class IterableEmbeddedView:UIView {
                 }
             case .banner:
                 imgView.isHidden = EMimage == nil
-                //bannerBorderColor = cardBorderColor
                 imgView.isHidden = self.EMimage == nil
                 imgView.image = EMimage
                 cardImageView.isHidden = true
@@ -314,171 +339,9 @@ public class IterableEmbeddedView:UIView {
                 IterableAPI.embeddedManager.handleEmbeddedClick(message: EMmessage, buttonIdentifier: nil, clickedUrl: clickedUrl)
             }
         }
-        
-        //TODO: Delegate method
-        if (iterableEmbeddedViewDelegate != nil) {
-            iterableEmbeddedViewDelegate.didPressBanner(banner: self, viewTag: self.tag, message: message)
-        }
     }
     
     public var viewConfig: IterableEmbeddedViewConfig?
-    
-    // MARK: Banner
-    /// Banner Background Color
-    @IBInspectable public var bannerBackgroundColor: UIColor? = UIColor.white {
-        didSet {
-            self.backgroundColor = UIColor.clear
-            self.innerContentView.backgroundColor = bannerBackgroundColor!
-        }
-    }
-
-    /// Banner Border Width
-    @IBInspectable public var bannerBorderWidth: CGFloat = 1.0 {
-        didSet {
-            self.layer.borderWidth = bannerBorderWidth
-        }
-    }
-    
-    /// Banner Border Color
-    @IBInspectable public var bannerBorderColor: UIColor = UIColor.clear {
-        didSet {
-            self.layer.borderColor = bannerBorderColor.cgColor
-        }
-    }
-    
-    /// Banner Corner Radius
-    @IBInspectable public var bannerCornerRadius: CGFloat = 8.0 {
-        didSet {
-            self.layer.cornerRadius = bannerCornerRadius
-            contentView.layer.cornerRadius = bannerCornerRadius
-            innerContentView.layer.cornerRadius = bannerCornerRadius
-        }
-    }
-    
-    /// Banner Shadow Color
-    @IBInspectable public var bannerShadowColor: UIColor = UIColor.lightGray {
-        didSet {
-            contentView.layer.shadowColor = bannerShadowColor.cgColor
-            contentView.layer.shadowRadius = 3
-            contentView.layer.shadowOffset = CGSize(width: 5, height: 5)
-            contentView.layer.shadowOpacity = 1
-        }
-    }
-    
-    /// Banner Shadow Width
-    @IBInspectable public var bannerShadowWidth: Double = 1 {
-        didSet {
-            layer.shadowOffset = CGSize(width: bannerShadowWidth, height: bannerShadowHeight)
-        }
-    }
-    
-    /// Banner Shadow Height
-    @IBInspectable public var bannerShadowHeight: Double = 1 {
-        didSet {
-            layer.shadowOffset = CGSize(width: bannerShadowWidth, height: bannerShadowHeight)
-        }
-    }
-    
-    /// Banner Shadow Radius
-    @IBInspectable public var bannerShadowRadius: Double = 3 {
-        didSet {
-            layer.shadowRadius = bannerShadowRadius
-        }
-    }
-    
-    // MARK: Title
-    /// Title Font Size
-    @IBInspectable public var titleFontSize: CGFloat = 20 {
-        didSet {
-            labelTitle.font = UIFont.init(name: "HelveticaNeue-Bold", size: titleFontSize)
-        }
-    }
-    
-    /// Title Font Name
-    @IBInspectable public var titleFontName: String = "HelveticaNeue-Bold" {
-        didSet {
-            labelTitle.font = UIFont.init(name: titleFontName, size: titleFontSize)
-        }
-    }
-    
-    /// Title Text Color
-    @IBInspectable public var titleTextColor: UIColor = UIColor.black {
-        didSet {
-            labelTitle.textColor = titleTextColor
-        }
-    }
-    
-    // MARK: Description
-    /// Description Font Size
-    @IBInspectable public var descriptionFontSize: CGFloat = 18 {
-        didSet {
-            labelDescription.font = UIFont.init(name: "HelveticaNeue", size: descriptionFontSize)
-        }
-    }
-    
-    /// Description Font Name
-    @IBInspectable public var descriptionFontName: String = "HelveticaNeue" {
-        didSet {
-            labelDescription.font = UIFont.init(name: descriptionFontName, size: descriptionFontSize)
-        }
-    }
-    
-    /// Description Text Color
-    @IBInspectable public var descriptionTextColor: UIColor = UIColor.darkGray {
-        didSet {
-            labelDescription.textColor = descriptionTextColor
-        }
-    }
-    
-    // MARK: Primary Button
-    /// Primary button background color.
-    @IBInspectable public var primaryBtnColor: UIColor = UIColor.purple {
-        didSet {
-            primaryBtn.backgroundColor = primaryBtnColor
-        }
-    }
-    
-    /// Primary button border radius.
-    @IBInspectable public var primaryButtonRoundedSides: Bool = false {
-        didSet {
-            primaryBtn?.isRoundedSides = primaryButtonRoundedSides
-        }
-    }
-    
-    /// Primary button border radius.
-    @IBInspectable public var primaryBtnBorderRadius: Double = 0 {
-        didSet {
-            primaryBtn.layer.cornerRadius = primaryBtnBorderRadius
-        }
-    }
-    
-    /// Primary button font size.
-    @IBInspectable public var primaryBtnTextFontSize: CGFloat = 16 {
-        didSet {
-            primaryBtn.fontSize = primaryBtnTextFontSize
-        }
-    }
-    
-    /// Primary button font name.
-    @IBInspectable public var primaryBtnTextFontName: String = "HelveticaNeue" {
-        didSet {
-            primaryBtn.fontName = primaryBtnTextFontName
-        }
-    }
-    
-    /// Primary button text color.
-    @IBInspectable public var primaryBtnTextColor: UIColor = UIColor.white {
-        didSet {
-            primaryBtn.titleColor = primaryBtnTextColor
-        }
-    }
-    
-    /// Primary button text alignment.
-    @IBInspectable public var primaryBtnTextAlignment: String = "center" {
-        didSet {
-            primaryBtn.titleAlignment = primaryBtnTextAlignment
-        }
-    }
     
     /// Primary button on touchup inside event.
     @IBAction public func primaryButtonPressed(_ sender: UIButton) {
@@ -494,57 +357,6 @@ public class IterableEmbeddedView:UIView {
         }
     }
     
-    // MARK: Second Button
-    /// Secondary button background color.
-    @IBInspectable public var secondaryBtnColor: UIColor = UIColor.clear {
-        didSet {
-            secondaryBtn.backgroundColor = secondaryBtnColor
-        }
-    }
-    
-    /// Secondary button border radius.
-    @IBInspectable public var secondaryButtonRoundedSides: Bool = false {
-        didSet {
-            secondaryBtn?.isRoundedSides = secondaryButtonRoundedSides
-        }
-    }
-    
-    /// Secondary button border radius.
-    @IBInspectable public var secondaryBtnBorderRadius: Double = 0 {
-        didSet {
-            secondaryBtn.layer.cornerRadius = secondaryBtnBorderRadius
-        }
-    }
-    
-    
-    /// Secondary button font size.
-    @IBInspectable public var secondaryBtnTextFontSize: CGFloat = 16 {
-        didSet {
-            secondaryBtn.fontSize = secondaryBtnTextFontSize
-        }
-    }
-    
-    /// Secondary button font name.
-    @IBInspectable public var secondaryBtnTextFontName: String = "HelveticaNeue" {
-        didSet {
-            secondaryBtn.fontName = secondaryBtnTextFontName
-        }
-    }
-    
-    /// Secondary button text color.
-    @IBInspectable public var secondaryBtnTextColor: UIColor = UIColor.black {
-        didSet {
-            secondaryBtn.titleColor = secondaryBtnTextColor
-        }
-    }
-    
-    /// Secondary button text alignment.
-    @IBInspectable public var secondaryBtnTextAlignment: String = "left" {
-        didSet {
-            secondaryBtn.titleAlignment = secondaryBtnTextAlignment
-        }
-    }
-    
     /// Secondary button on press event
     @IBAction func secondaryButtonPressed(_ sender: UIButton) {
         var buttonIdentifier: String?
@@ -556,53 +368,6 @@ public class IterableEmbeddedView:UIView {
                 IterableAPI.track(embeddedMessageClick: message!, buttonIdentifier: buttonIdentifier, clickedUrl: clickedUrl)
                 IterableAPI.embeddedManager.handleEmbeddedClick(message: message!, buttonIdentifier: buttonIdentifier, clickedUrl: clickedUrl)
             }
-        }
-    }
-    
-    // MARK: Image
-    /// Image Background Color
-    @IBInspectable public var imgViewBackgroundColor: UIColor = UIColor.white {
-        didSet {
-            imgView.backgroundColor = imgViewBackgroundColor
-        }
-    }
-    
-    /// Image Corner Radius
-    @IBInspectable public var imgViewCornerRadius: Double = 10 {
-        didSet {
-            imgView.layer.cornerRadius = imgViewCornerRadius
-        }
-    }
-    
-    /// Image Border Width
-    @IBInspectable public var imgViewBorderWidth: Double = 0 {
-        didSet {
-            imgView.layer.borderWidth = imgViewBorderWidth
-        }
-    }
-    
-    /// Image Border Color
-    @IBInspectable public var imgViewBorderColor: UIColor = UIColor.gray {
-        didSet {
-            imgView.layer.borderColor = imgViewBorderColor.cgColor
-        }
-    }
-    
-    /// Image Width
-    @IBInspectable public var imgViewWidth:Double = 100 {
-        didSet {
-            imageViewWidthConstraint.constant = imgViewWidth
-            self.updateConstraintsIfNeeded()
-            self.layoutIfNeeded()
-        }
-    }
-    
-    /// Image Height
-    @IBInspectable public var imgViewHeight: Double = 100 {
-        didSet {
-            imageViewHeightConstraint.constant = imgViewHeight
-            self.updateConstraintsIfNeeded()
-            self.layoutIfNeeded()
         }
     }
     
@@ -662,7 +427,7 @@ public class IterableEMButton: UIButton {
         super.init(coder: coder)
     }
 
-    @IBInspectable public var isRoundedSides: Bool = false {
+    @IBInspectable public var isRoundedSides: Bool = true {
         didSet {
             layoutSubviews()
         }
@@ -750,13 +515,11 @@ public enum IterableEmbeddedViewType: String {
 public class IterableEmbeddedViewConfig: NSObject {
     var backgroundColor: UIColor?
     var borderColor: UIColor?
-    var borderWidth: CGFloat? = 1.0
-    var borderCornerRadius: CGFloat? = 8.0
+    var borderWidth: CGFloat?
+    var borderCornerRadius: CGFloat?
     var primaryBtnBackgroundColor: UIColor?
-    var primaryBtnBorderColor: UIColor?
     var primaryBtnTextColor: UIColor?
     var secondaryBtnBackgroundColor: UIColor?
-    var secondaryBtnBorderColor: UIColor?
     var secondaryBtnTextColor: UIColor?
     var titleTextColor: UIColor?
     var bodyTextColor: UIColor?
@@ -767,10 +530,8 @@ public class IterableEmbeddedViewConfig: NSObject {
          borderWidth: CGFloat? = 1.0,
          borderCornerRadius: CGFloat? = 8.0,
          primaryBtnBackgroundColor: UIColor? = nil,
-         primaryBtnBorderColor: UIColor? = nil,
          primaryBtnTextColor: UIColor? = nil,
          secondaryBtnBackgroundColor: UIColor? = nil,
-         secondaryBtnBorderColor: UIColor? = nil,
          secondaryBtnTextColor: UIColor? = nil,
          titleTextColor: UIColor? = nil,
          bodyTextColor: UIColor? = nil) {
@@ -780,10 +541,8 @@ public class IterableEmbeddedViewConfig: NSObject {
         self.borderWidth = borderWidth
         self.borderCornerRadius = borderCornerRadius
         self.primaryBtnBackgroundColor = primaryBtnBackgroundColor
-        self.primaryBtnBorderColor = primaryBtnBorderColor
         self.primaryBtnTextColor = primaryBtnTextColor
         self.secondaryBtnBackgroundColor = secondaryBtnBackgroundColor
-        self.secondaryBtnBorderColor = secondaryBtnBorderColor
         self.secondaryBtnTextColor = secondaryBtnTextColor
         self.titleTextColor = titleTextColor
         self.bodyTextColor = bodyTextColor

@@ -120,12 +120,4 @@ struct LocalStorage: LocalStorageProtocol {
             ITBInfo("UPDATED: migrated authToken from UserDefaults to IterableKeychain")
         }
     }
-    
-    var embeddedCurrentMessageIds: [String] {
-        get {
-            iterableUserDefaults.embeddedCurrentMessageIds ?? []
-        } set {
-            iterableUserDefaults.embeddedCurrentMessageIds = newValue
-        }
-    }
 }

@@ -32,6 +32,10 @@ public class IterableEmbeddedImpression: NSObject, Codable {
     }
 }
 
+protocol EmbeddedNotifiable: AnyObject {
+    func syncMessages(completion: @escaping () -> Void)
+}
+
 /// Encapsulates an Embedded Session
 final public class IterableEmbeddedSession: NSObject, Codable {
     /// UUID of the session

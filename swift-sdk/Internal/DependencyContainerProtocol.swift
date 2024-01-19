@@ -57,13 +57,12 @@ extension DependencyContainerProtocol {
     }
 
     func createEmbeddedManager(config: IterableConfig,
-                                        apiClient: ApiClientProtocol) -> IterableEmbeddedManagerProtocol {
+                                        apiClient: ApiClientProtocol) -> IterableInternalEmbeddedManagerProtocol {
         IterableEmbeddedManager(apiClient: apiClient,
                                 urlDelegate: config.urlDelegate,
                                 customActionDelegate: config.customActionDelegate,
                                 urlOpener: urlOpener,
-                                allowedProtocols: config.allowedProtocols,
-                                localStorage: localStorage)
+                                allowedProtocols: config.allowedProtocols)
     }
     
     func createRequestHandler(apiKey: String,
