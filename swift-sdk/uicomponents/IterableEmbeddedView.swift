@@ -200,6 +200,13 @@ public class IterableEmbeddedView:UIView {
         ])
     }
 
+//    func loadViewFromNib() -> UIView? {
+//        let nib = UINib(nibName: "IterableEmbeddedView", bundle: Bundle.module)
+//        let view = nib.instantiate(withOwner: self, options: nil).first as? UIView
+//        self.clipsToBounds = false
+//        return view
+//    }
+    
     func loadViewFromNib() -> UIView? {
         var nib: UINib
         #if COCOAPODS
@@ -217,6 +224,7 @@ public class IterableEmbeddedView:UIView {
         self.clipsToBounds = false
         return view
     }
+
     
     public func configure(message: IterableEmbeddedMessage, viewType: IterableEmbeddedViewType, config: IterableEmbeddedViewConfig?) {
         
