@@ -181,7 +181,7 @@ public class IterableEmbeddedView:UIView {
     }
     
     public init(message: IterableEmbeddedMessage, viewType: IterableEmbeddedViewType, config: IterableEmbeddedViewConfig?) {
-        super.init(frame: CGRectZero)
+        super.init(frame: CGRect.zero)
         xibSetup()
         configure(message: message, viewType: viewType, config: config)
     }
@@ -203,7 +203,8 @@ public class IterableEmbeddedView:UIView {
     func loadViewFromNib() -> UIView? {
         var nib: UINib
         #if COCOAPODS
-            nib = UINib(nibName: "IterableEmbeddedView", bundle: Bundle.main)
+            let bundle = Bundle(path: Bundle(for: IterableEmbeddedView.self).path(forResource: "Resources", ofType: "bundle")!)
+            nib = UINib(nibName: "IterableEmbeddedView", bundle: bundle)
         #else
             #if SWIFT_PACKAGE
                 nib = UINib(nibName: "IterableEmbeddedView", bundle: Bundle.module)
