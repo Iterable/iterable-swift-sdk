@@ -205,7 +205,11 @@ public class IterableEmbeddedView:UIView {
         #if COCOAPODS
             nib = UINib(nibName: "IterableEmbeddedView", bundle: Bundle.main)
         #else
-            nib = UINib(nibName: "IterableEmbeddedView", bundle: Bundle.module)
+            #if SWIFT_PACKAGE
+                nib = UINib(nibName: "IterableEmbeddedView", bundle: Bundle.module)
+            #else
+                nib = UINib(nibName: "IterableEmbeddedView", bundle: Bundle.main)
+            #endif
         #endif
 
         let view = nib.instantiate(withOwner: self, options: nil).first as? UIView
