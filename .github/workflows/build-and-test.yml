@@ -13,6 +13,10 @@ jobs:
       with:
         xcode-version: latest
 
+    - name: Pre-start simulator
+      run: |
+        command: xcrun instruments -w "iPhone 13 Pro Max" || sleep 15
+
     - name: Build and test
       run: |
         xcodebuild test -project swift-sdk.xcodeproj -scheme swift-sdk -sdk iphonesimulator -destination 'platform=iOS Simulator,name=iPhone 13 Pro Max' -enableCodeCoverage YES CODE_SIGNING_REQUIRED=NO | xcpretty && exit ${PIPESTATUS[0]}
