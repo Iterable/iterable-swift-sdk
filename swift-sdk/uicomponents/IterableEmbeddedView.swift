@@ -390,41 +390,8 @@ public class IterableEmbeddedView:UIView {
         return size.width
     }
     
-    public func updateButtonConstraints() {
-        let bothButtonsVisible = !primaryBtn.isHidden && !secondaryBtn.isHidden
-
-        if !bothButtonsVisible {
-            buttonStackView.axis = .horizontal
-            horizontalButtonStackViewSpacer.isHidden = false
-            return
-        }
-
-        let doesTextWrapInPrimary = doesTextWrapInButton(primaryBtn)
-        let doesTextWrapInSecondary = doesTextWrapInButton(secondaryBtn)
-        
-        let shouldStackVertically = doesTextWrapInPrimary || doesTextWrapInSecondary
-
-        buttonStackView.axis = shouldStackVertically ? .vertical : .horizontal
-        horizontalButtonStackViewSpacer.isHidden = shouldStackVertically
-    }
-
-    private func doesTextWrapInButton(_ button: UIButton) -> Bool {
-        guard let text = button.titleLabel?.text, let font = button.titleLabel?.font else {
-            return false
-        }
-
-        let maxSize = CGSize(width: CGFloat.greatestFiniteMagnitude, height: button.bounds.height)
-        let textRect = text.boundingRect(with: maxSize, options: .usesLineFragmentOrigin, attributes: [.font: font], context: nil)
-
-        return textRect.width > button.bounds.width
-    }
-
-    
     public override func layoutSubviews() {
         super.layoutSubviews()
-        DispatchQueue.main.async {
-            self.updateButtonConstraints()
-        }
     }
 }
 
@@ -515,6 +482,9 @@ public class IterableEMButton: UIButton {
                                     cornerRadii: CGSize(width: bounds.height / 2, height: bounds.height / 2))
             maskLayer.path = path.cgPath
         }
+        
+        titleLabel?.numberOfLines = 1
+        titleLabel?.lineBreakMode = .byTruncatingTail
     }
 }
 
