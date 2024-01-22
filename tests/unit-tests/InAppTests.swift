@@ -1054,7 +1054,8 @@ class InAppTests: XCTestCase {
         
         let mockInAppManager = MockInAppManager(expectation: expectation1)
         
-        let appIntegration = InternalIterableAppIntegration(tracker: MockPushTracker(), inAppNotifiable: mockInAppManager, embeddedNotifiable: EmptyEmbeddedManager())
+        let appIntegration = InternalIterableAppIntegration(tracker: MockPushTracker(), inAppNotifiable: mockInAppManager, embeddedNotifiable: EmptyEmbeddedManager() as! EmbeddedNotifiable)
+        
         appIntegration.application(MockApplicationStateProvider(applicationState: .background), didReceiveRemoteNotification: notification, fetchCompletionHandler: nil)
         
         wait(for: [expectation1], timeout: testExpectationTimeout)

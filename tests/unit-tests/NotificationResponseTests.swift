@@ -47,7 +47,7 @@ class NotificationResponseTests: XCTestCase {
                                                             customActionDelegate: customActionDelegate,
                                                             urlOpener: MockUrlOpener(),
                                                             inAppNotifiable: EmptyInAppManager(),
-                                                            embeddedNotifiable: EmptyEmbeddedManager())
+                                                            embeddedNotifiable: EmptyEmbeddedManager() as! EmbeddedNotifiable)
         appIntegration.userNotificationCenter(nil, didReceive: response, withCompletionHandler: nil)
         
         wait(for: [expection], timeout: testExpectationTimeout)
@@ -92,7 +92,7 @@ class NotificationResponseTests: XCTestCase {
                                                             customActionDelegate: customActionDelegate,
                                                             urlOpener: MockUrlOpener(),
                                                             inAppNotifiable: EmptyInAppManager(),
-                                                            embeddedNotifiable: EmptyEmbeddedManager())
+                                                            embeddedNotifiable: EmptyEmbeddedManager() as! EmbeddedNotifiable)
         appIntegration.userNotificationCenter(nil, didReceive: response, withCompletionHandler: nil)
         
         wait(for: [expection], timeout: testExpectationTimeout)
@@ -159,7 +159,7 @@ class NotificationResponseTests: XCTestCase {
         let appIntegration = InternalIterableAppIntegration(tracker: pushTracker,
                                                             urlOpener: urlOpener,
                                                             inAppNotifiable: EmptyInAppManager(),
-                                                            embeddedNotifiable: EmptyEmbeddedManager())
+                                                            embeddedNotifiable: EmptyEmbeddedManager() as! EmbeddedNotifiable)
         appIntegration.userNotificationCenter(nil, didReceive: response, withCompletionHandler: nil)
         
         XCTAssertEqual(pushTracker.campaignId, 1234)
