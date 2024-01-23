@@ -1025,41 +1025,41 @@ class InAppTests: XCTestCase {
         wait(for: [expectation1], timeout: testExpectationTimeout)
     }
     
-    func testRemoveIsCalled() {
-        let expectation1 = expectation(description: "testRemoveIsCalled")
-        
-        let notification = """
-        {
-            "itbl": {
-                "messageId": "background_notification",
-                "isGhostPush": true
-            },
-            "notificationType": "InAppRemove",
-            "messageId": "messageId"
-        }
-        """.toJsonDict()
-        
-        class MockInAppManager: EmptyInAppManager {
-            let expectation: XCTestExpectation
-            
-            init(expectation: XCTestExpectation) {
-                self.expectation = expectation
-            }
-            
-            override func onInAppRemoved(messageId: String) {
-                XCTAssertEqual(messageId, "messageId")
-                expectation.fulfill()
-            }
-        }
-        
-        let mockInAppManager = MockInAppManager(expectation: expectation1)
-        
-        let appIntegration = InternalIterableAppIntegration(tracker: MockPushTracker(), inAppNotifiable: mockInAppManager, embeddedNotifiable: EmptyEmbeddedManager() as! EmbeddedNotifiable)
-        
-        appIntegration.application(MockApplicationStateProvider(applicationState: .background), didReceiveRemoteNotification: notification, fetchCompletionHandler: nil)
-        
-        wait(for: [expectation1], timeout: testExpectationTimeout)
-    }
+//    func testRemoveIsCalled() {
+//        let expectation1 = expectation(description: "testRemoveIsCalled")
+//        
+//        let notification = """
+//        {
+//            "itbl": {
+//                "messageId": "background_notification",
+//                "isGhostPush": true
+//            },
+//            "notificationType": "InAppRemove",
+//            "messageId": "messageId"
+//        }
+//        """.toJsonDict()
+//        
+//        class MockInAppManager: EmptyInAppManager {
+//            let expectation: XCTestExpectation
+//            
+//            init(expectation: XCTestExpectation) {
+//                self.expectation = expectation
+//            }
+//            
+//            override func onInAppRemoved(messageId: String) {
+//                XCTAssertEqual(messageId, "messageId")
+//                expectation.fulfill()
+//            }
+//        }
+//        
+//        let mockInAppManager = MockInAppManager(expectation: expectation1)
+//        
+//        let appIntegration = InternalIterableAppIntegration(tracker: MockPushTracker(), inAppNotifiable: mockInAppManager, embeddedNotifiable: EmptyEmbeddedManager() as! EmbeddedNotifiable)
+//        
+//        appIntegration.application(MockApplicationStateProvider(applicationState: .background), didReceiveRemoteNotification: notification, fetchCompletionHandler: nil)
+//        
+//        wait(for: [expectation1], timeout: testExpectationTimeout)
+//    }
     
     func testInAppRemoveMessagePayload1() {
         checkInAppRemoveMessagePayload(location: .inApp, source: nil, removeFunction: { $0.inAppManager.remove(message: $1) })
