@@ -80,7 +80,6 @@ class EmbeddedMessagesViewController: UIViewController {
     }
     
     func loadCardView(_ embeddedView: IterableEmbeddedView, _ embeddedMessage: IterableEmbeddedMessage) {
-        embeddedView.iterableEmbeddedViewDelegate = self
         embeddedView.primaryBtn.isRoundedSides = true
         embeddedView.secondaryBtn.isRoundedSides = true
         // We are setting the width of buttons as 140 as per our embedded messages width. You can change as per your need
@@ -93,7 +92,6 @@ class EmbeddedMessagesViewController: UIViewController {
     func loadBannerView(_ embeddedMessage: IterableEmbeddedMessage) {
         let config = IterableEmbeddedViewConfig(borderCornerRadius: 10)
         let embeddedView = IterableEmbeddedView(message: embeddedMessage, viewType: .banner, config: config)
-        embeddedView.iterableEmbeddedViewDelegate = self
         embeddedView.primaryBtn.isRoundedSides = true
         embeddedView.secondaryBtn.isRoundedSides = true
         // We are setting the width of buttons as 140 as per our embedded messages width. You can change as per your need
@@ -120,24 +118,6 @@ class EmbeddedMessagesViewController: UIViewController {
                 UIApplication.shared.open(url)
             }
         }
-    }
-}
-
-extension EmbeddedMessagesViewController: IterableEmbeddedViewDelegate {
-    func didPressPrimaryButton(button: UIButton, viewTag: Int, message: IterableSDK.IterableEmbeddedMessage?) {
-        let buttonData =  message?.elements?.buttons?.first
-        let url = buttonData?.action?.data
-        openUrl(url)
-    }
-    
-    func didPressSecondaryButton(button: UIButton, viewTag: Int, message: IterableSDK.IterableEmbeddedMessage?) {
-        let buttonData =  message?.elements?.buttons?[1]
-        let url = buttonData?.action?.data
-        openUrl(url)
-    }
-    
-    func didPressBanner(banner: IterableSDK.IterableEmbeddedView, viewTag: Int, message: IterableSDK.IterableEmbeddedMessage?) {
-        openUrl(message?.elements?.defaultAction?.data)
     }
 }
 
