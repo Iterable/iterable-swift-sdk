@@ -200,6 +200,7 @@ public class IterableEmbeddedView:UIView {
         ])
         
         buttonStackView.heightAnchor.constraint(equalToConstant: primaryBtn.frame.height).isActive = true
+        labelTitle.heightAnchor.constraint(equalToConstant: labelTitle.frame.height * 2).isActive = true
     }
     
     func loadViewFromNib() -> UIView? {
