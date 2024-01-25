@@ -14,7 +14,8 @@ class IterableEmbeddedManager: NSObject, IterableInternalEmbeddedManagerProtocol
          urlDelegate: IterableURLDelegate?,
          customActionDelegate: IterableCustomActionDelegate?,
          urlOpener: UrlOpenerProtocol,
-         allowedProtocols: [String]) {
+         allowedProtocols: [String],
+         enableEmbeddedMessaging: Bool) {
          ITBInfo()
         
         self.apiClient = apiClient
@@ -22,6 +23,7 @@ class IterableEmbeddedManager: NSObject, IterableInternalEmbeddedManagerProtocol
         self.customActionDelegate = customActionDelegate
         self.urlOpener = urlOpener
         self.allowedProtocols = allowedProtocols
+        self.enableEmbeddedMessaging = enableEmbeddedMessaging
         
         super.init()
         addForegroundObservers()
@@ -130,6 +132,7 @@ class IterableEmbeddedManager: NSObject, IterableInternalEmbeddedManagerProtocol
     private var messages: [Int: [IterableEmbeddedMessage]] = [:]
     private var listeners: NSHashTable<IterableEmbeddedUpdateDelegate> = NSHashTable(options: [.weakMemory])
     private var trackedMessageIds: Set<String> = Set()
+    private var enableEmbeddedMessaging: Bool
     
     private func addForegroundObservers() {
         NotificationCenter.default.addObserver(self,
@@ -224,6 +227,8 @@ class IterableEmbeddedManager: NSObject, IterableInternalEmbeddedManagerProtocol
 
 extension IterableEmbeddedManager: EmbeddedNotifiable {
     public func syncMessages(completion: @escaping () -> Void) {
-        retrieveEmbeddedMessages(completion: completion)
+        if (enableEmbeddedMessaging) {
+            retrieveEmbeddedMessages(completion: completion)
+        }
     }
 }
