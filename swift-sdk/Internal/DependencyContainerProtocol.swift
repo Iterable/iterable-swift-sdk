@@ -62,7 +62,8 @@ extension DependencyContainerProtocol {
                                 urlDelegate: config.urlDelegate,
                                 customActionDelegate: config.customActionDelegate,
                                 urlOpener: urlOpener,
-                                allowedProtocols: config.allowedProtocols)
+                                allowedProtocols: config.allowedProtocols,
+                                enableEmbeddedMessaging: config.enableEmbeddedMessaging)
     }
     
     func createRequestHandler(apiKey: String,

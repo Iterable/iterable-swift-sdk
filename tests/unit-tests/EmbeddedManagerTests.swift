@@ -18,7 +18,8 @@ final class EmbeddedManagerTests: XCTestCase {
                                                   urlDelegate: nil,
                                                   customActionDelegate: nil,
                                                   urlOpener: MockUrlOpener(),
-                                                  allowedProtocols: [])
+                                                  allowedProtocols: [],
+                                                  enableEmbeddedMessaging: true)
             
             let view1 = ViewWithUpdateDelegate(
                 onMessagesUpdatedCallback: {
@@ -42,7 +43,8 @@ final class EmbeddedManagerTests: XCTestCase {
                                               urlDelegate: nil,
                                               customActionDelegate: nil,
                                               urlOpener: MockUrlOpener(),
-                                              allowedProtocols: [])
+                                              allowedProtocols: [],
+                                              enableEmbeddedMessaging: true)
         XCTAssertEqual(manager.getMessages().count, 0)
     }
     func testGetMessagesForPlacement() {
@@ -57,7 +59,8 @@ final class EmbeddedManagerTests: XCTestCase {
                                               urlDelegate: nil,
                                               customActionDelegate: nil,
                                               urlOpener: MockUrlOpener(),
-                                              allowedProtocols: [])
+                                              allowedProtocols: [],
+                                              enableEmbeddedMessaging: true)
         
         manager.syncMessages { }
         
@@ -85,7 +88,8 @@ final class EmbeddedManagerTests: XCTestCase {
                                               urlDelegate: nil,
                                               customActionDelegate: nil,
                                               urlOpener: MockUrlOpener(),
-                                              allowedProtocols: [])
+                                              allowedProtocols: [],
+                                              enableEmbeddedMessaging: true)
         
         let view = ViewWithUpdateDelegate(
             onMessagesUpdatedCallback: {
@@ -117,7 +121,8 @@ final class EmbeddedManagerTests: XCTestCase {
                                               urlDelegate: nil,
                                               customActionDelegate: nil,
                                               urlOpener: MockUrlOpener(),
-                                              allowedProtocols: [])
+                                              allowedProtocols: [],
+                                              enableEmbeddedMessaging: true)
         
         manager.syncMessages {
             syncMessagesExpectation.fulfill()
@@ -139,7 +144,8 @@ final class EmbeddedManagerTests: XCTestCase {
                                               urlDelegate: nil,
                                               customActionDelegate: nil,
                                               urlOpener: MockUrlOpener(),
-                                              allowedProtocols: [])
+                                              allowedProtocols: [],
+                                              enableEmbeddedMessaging: true)
         
         let view = ViewWithUpdateDelegate(
             onMessagesUpdatedCallback: nil,
@@ -162,7 +168,8 @@ final class EmbeddedManagerTests: XCTestCase {
                                               urlDelegate: nil,
                                               customActionDelegate: nil,
                                               urlOpener: MockUrlOpener(),
-                                              allowedProtocols: [])
+                                              allowedProtocols: [],
+                                              enableEmbeddedMessaging: true)
 
         var delegate1Called = false
         var delegate2Called = false
@@ -195,7 +202,8 @@ final class EmbeddedManagerTests: XCTestCase {
                                               urlDelegate: nil,
                                               customActionDelegate: nil,
                                               urlOpener: MockUrlOpener(),
-                                              allowedProtocols: [])
+                                              allowedProtocols: [],
+                                              enableEmbeddedMessaging: true)
 
         var delegateCalled = false
 
@@ -243,7 +251,8 @@ final class EmbeddedManagerTests: XCTestCase {
                                               urlDelegate: nil,
                                               customActionDelegate: nil,
                                               urlOpener: MockUrlOpener(),
-                                              allowedProtocols: [])
+                                              allowedProtocols: [],
+                                              enableEmbeddedMessaging: true)
 
         let updateDelegate = ViewWithUpdateDelegate(
             onMessagesUpdatedCallback: {
@@ -270,7 +279,8 @@ final class EmbeddedManagerTests: XCTestCase {
                                                                         urlDelegate: nil,
                                                                         customActionDelegate: nil,
                                                                         urlOpener: MockUrlOpener(),
-                                                                        allowedProtocols: [])
+                                                                        allowedProtocols: [],
+                                                                        enableEmbeddedMessaging: true)
         manager?.onDeinit = {
             deinitExpectation.fulfill()
         }
@@ -289,7 +299,8 @@ final class EmbeddedManagerTests: XCTestCase {
                                               urlDelegate: nil,
                                               customActionDelegate: nil,
                                               urlOpener: MockUrlOpener(),
-                                              allowedProtocols: [])
+                                              allowedProtocols: [],
+                                              enableEmbeddedMessaging: true)
         
         let mockDelegate = ViewWithUpdateDelegate(
             onMessagesUpdatedCallback: {
