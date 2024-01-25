@@ -57,6 +57,10 @@ Description text</string>
                                             <nil key="highlightedColor"/>
                                         </label>
                                     </subviews>
+                                    <constraints>
+                                        <constraint firstAttribute="trailing" relation="lessThanOrEqual" secondItem="YhJ-Xr-beZ" secondAttribute="trailing" constant="170.33333333333331" id="0dY-bW-PIW"/>
+                                        <constraint firstAttribute="trailing" relation="lessThanOrEqual" secondItem="jZp-8m-qQK" secondAttribute="trailing" constant="139.66666666666669" id="XHy-qF-kvs"/>
+                                    </constraints>
                                 </stackView>
                                 <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="k84-x3-9VM">
                                     <rect key="frame" x="268" y="0.0" width="100" height="100"/>
