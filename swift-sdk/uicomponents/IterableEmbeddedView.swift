@@ -198,14 +198,11 @@ public class IterableEmbeddedView:UIView {
             contentView.leadingAnchor.constraint(equalTo: self.leadingAnchor),
             contentView.trailingAnchor.constraint(equalTo: self.trailingAnchor)
         ])
+        
+        buttonStackView.heightAnchor.constraint(equalToConstant: primaryBtn.frame.height).isActive = true
+        labelTitle.heightAnchor.constraint(equalToConstant: labelTitle.frame.height * 2).isActive = true
+        labelDescription.heightAnchor.constraint(equalToConstant: labelDescription.frame.height).isActive = true
     }
-
-//    func loadViewFromNib() -> UIView? {
-//        let nib = UINib(nibName: "IterableEmbeddedView", bundle: Bundle.module)
-//        let view = nib.instantiate(withOwner: self, options: nil).first as? UIView
-//        self.clipsToBounds = false
-//        return view
-//    }
     
     func loadViewFromNib() -> UIView? {
         var nib: UINib
