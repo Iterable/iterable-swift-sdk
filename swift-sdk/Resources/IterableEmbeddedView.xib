@@ -34,13 +34,13 @@
                     <rect key="frame" x="0.0" y="0.0" width="400" height="416"/>
                     <subviews>
                         <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="WQD-hj-6fI">
-                            <rect key="frame" x="0.0" y="0.0" width="400" height="0.0"/>
+                            <rect key="frame" x="0.0" y="0.0" width="400" height="12"/>
                         </imageView>
                         <stackView opaque="NO" contentMode="scaleToFill" alignment="top" spacing="8" translatesAutoresizingMaskIntoConstraints="NO" id="0Q3-lN-ixZ">
                             <rect key="frame" x="16" y="16" width="368" height="333.66666666666669"/>
                             <subviews>
-                                <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" alignment="top" spacing="4" translatesAutoresizingMaskIntoConstraints="NO" id="fVi-s9-EJr">
-                                    <rect key="frame" x="0.0" y="0.0" width="260" height="70"/>
+                                <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" alignment="top" spacing="-4" translatesAutoresizingMaskIntoConstraints="NO" id="fVi-s9-EJr">
+                                    <rect key="frame" x="0.0" y="0.0" width="260" height="62"/>
                                     <subviews>
                                         <label opaque="NO" userInteractionEnabled="NO" contentMode="left" verticalHuggingPriority="750" verticalCompressionResistancePriority="1000" text="Title Text" textAlignment="natural" lineBreakMode="tailTruncation" numberOfLines="2" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="YhJ-Xr-beZ">
                                             <rect key="frame" x="0.0" y="0.0" width="89.666666666666671" height="25.333333333333332"/>
@@ -49,7 +49,7 @@
                                             <nil key="highlightedColor"/>
                                         </label>
                                         <label opaque="NO" userInteractionEnabled="NO" contentMode="left" verticalCompressionResistancePriority="1000" textAlignment="natural" lineBreakMode="tailTruncation" numberOfLines="2" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="jZp-8m-qQK">
-                                            <rect key="frame" x="0.0" y="29.333333333333339" width="120.33333333333333" height="40.666666666666657"/>
+                                            <rect key="frame" x="0.0" y="21.333333333333339" width="120.33333333333333" height="40.666666666666657"/>
                                             <string key="text">Description text
 Description text</string>
                                             <fontDescription key="fontDescription" type="system" pointSize="17"/>
@@ -106,7 +106,7 @@ Description text</string>
                         <constraint firstItem="0Q3-lN-ixZ" firstAttribute="leading" secondItem="W3z-UY-cBI" secondAttribute="leading" constant="16" id="CYI-wT-5Bu"/>
                         <constraint firstItem="0Q3-lN-ixZ" firstAttribute="top" secondItem="W3z-UY-cBI" secondAttribute="top" constant="16" id="GlZ-AF-Kcz"/>
                         <constraint firstItem="bou-qy-tfe" firstAttribute="top" secondItem="0Q3-lN-ixZ" secondAttribute="bottom" constant="16" id="Jws-n4-1t0"/>
-                        <constraint firstItem="0Q3-lN-ixZ" firstAttribute="top" secondItem="WQD-hj-6fI" secondAttribute="bottom" constant="16" id="QPV-u9-oRb"/>
+                        <constraint firstItem="0Q3-lN-ixZ" firstAttribute="top" secondItem="WQD-hj-6fI" secondAttribute="bottom" constant="4" id="QPV-u9-oRb"/>
                         <constraint firstItem="WQD-hj-6fI" firstAttribute="leading" secondItem="W3z-UY-cBI" secondAttribute="leading" id="SFv-hm-aAU"/>
                         <constraint firstAttribute="trailing" secondItem="bou-qy-tfe" secondAttribute="trailing" constant="16" id="ZOK-GY-gwh"/>
                         <constraint firstItem="bou-qy-tfe" firstAttribute="leading" secondItem="W3z-UY-cBI" secondAttribute="leading" constant="16" id="bfg-f5-ujR"/>
