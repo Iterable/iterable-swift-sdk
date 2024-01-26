@@ -1,0 +1,131 @@
+default_platform(:ios)
+ios_app_extensions_podspec = "Iterable-iOS-AppExtensions.podspec"
+ios_sdk_podspec = "Iterable-iOS-SDK.podspec"
+
+platform :ios do
+
+  desc "locally execute full automated iOS SDK release on your terminal"
+  lane :release_sdk do
+    set_version = prompt(text: "Please set the release version number")
+    set_changelog_section = prompt(text: "Please provide changelog section header") 
+    set_output_dir = prompt(text: "Please specify an output directory")
+    set_github_token = prompt(text: "Please provide github token") 
+   
+    bump_release_version(version:set_version)
+    clean_and_lint
+    build_xcframework(output_dir:set_output_dir)
+    create_release(version:set_version, output_dir:set_output_dir, changelog_section:set_changelog_section, github_token:set_github_token)
+    pod_trunk_push
+  end 
+
+  desc "bump release version with specified version and push"
+  lane :bump_release_version do |options|
+    version = options[:version]
+
+    # set new version number
+    version_bump_podspec(path: ios_app_extensions_podspec,
+                         version_number: version)
+    version_bump_podspec(path: ios_sdk_podspec,
+                         version_number: version)
+    
+    # commit new version podspecs and push to git remote
+    git_add(path: ios_app_extensions_podspec)
+    git_add(path: ios_sdk_podspec)
+    git_commit(path: [ios_app_extensions_podspec, ios_sdk_podspec],
+               message: "#{version} release")
+    push_to_git_remote
+  end
+
+  desc "clean cocaopods cache and pod lib lint"
+  lane :clean_and_lint do
+    clean_cocoapods_cache
+    pod_lib_lint
+  end
+
+  desc "create xcframeworks and zip"
+  lane :build_xcframework do |options|
+    output_dir = options[:output_dir]
+    
+    # create xcframework IterableSDK
+    # creates destinations: "generic/platform=iOS" and "generic/platform=iOS Simulator"
+    create_xcframework(
+      workspace: "swift-sdk.xcodeproj/project.xcworkspace",
+      scheme: "swift-sdk",
+      product_name: "IterableSDK",
+      destinations: ['iOS', 'maccatalyst'],
+      xcframework_output_directory: output_dir,
+    )
+
+    # create xcframework IterableAppExtensions
+    # creates destination: "generic/platform=macOS,variant=Mac Catalyst"
+    create_xcframework(
+      workspace: "swift-sdk.xcodeproj/project.xcworkspace",
+      scheme: "swift-sdk",
+      product_name: "IterableAppExtensions",
+      destinations: ['iOS', 'maccatalyst'],
+      xcframework_output_directory: output_dir,
+    )
+
+    # zip xcframework
+    zip(
+      path: "./#{output_dir}/IterableSDK.xcframework",
+      output_path: "./#{output_dir}/IterableSDK.xcframework.zip"
+    )
+    zip(
+      path: "./#{output_dir}/IterableAppExtensions.xcframework",
+      output_path: "./#{output_dir}/IterableAppExtensions.xcframework.zip"
+    )
+  end
+
+  desc "create github release and upload assets"
+  lane :create_release do |options|
+    version = options[:version]
+    branch = options[:branch]
+    changelog_section = options[:changelog_section]
+    output_dir = options[:output_dir]
+    github_token = options[:github_token]
+    set_prerelease = options[:set_prerelease]
+
+    add_git_tag(tag: "#{version}") 
+
+    version_changelog = read_changelog(
+      changelog_path: 'CHANGELOG.md',
+      section_identifier: "[#{changelog_section}]",	
+    )
+
+    github_release = set_github_release(
+      repository_name: "Iterable/swift-sdk",
+      api_token: github_token,
+      name: "#{version}",
+      tag_name: "#{version}",
+      description: version_changelog,
+      commitish: "#{branch}",
+      upload_assets: ["./#{output_dir}/IterableSDK.xcframework.zip", "./#{output_dir}/IterableAppExtensions.xcframework.zip"],
+      is_prerelease: set_prerelease
+    )
+  end
+
+  desc "push pod trunk"
+  lane :pod_trunk_push do
+    pod_push(path: "Iterable-iOS-AppExtensions.podspec", allow_warnings: true)
+    pod_push(path: "Iterable-iOS-SDK.podspec", allow_warnings: true)
+  end
+
+  desc "slack message"
+  lane :slack_message do |options|
+    version = options[:version]
+    changelog_section = options[:changelog_section]
+    slack_webhook = options[:slack_webhook]
+    
+    read_changelog(
+      changelog_path: 'CHANGELOG.md',
+      section_identifier: "[#{changelog_section}]",	
+    )
+    emojified_changelog = emojify_changelog # Emojify the output of `read_changelog` action
+    
+    slack(
+      message: ":appleinc: *iOS SDK #{version}* has been released, which includes the following: #{emojified_changelog}",
+      slack_url: slack_webhook,
+    )
+  end 
+end
