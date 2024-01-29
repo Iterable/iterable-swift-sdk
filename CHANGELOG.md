@@ -7,7 +7,13 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Added
 
-- Support for Embedded Messages
+- introduces support for embedded messaging: an eligibility–based, personalized messages sent from Iterable to your mobile and web apps, which can display them inline, using native interface components
+- To display embedded messages, you can use customizable, out-of-the-box components provided by the SDK (cards, notifications, banners), or you can build fully custom components of your own design.
+- To learn more, read [Embedded Messages with Iterable's iOS SDK](https://support.iterable.com/hc/articles/23061840746900).
+
+### Changed
+
+- `IterableConfig` is updated with an `enableEmbeddedMessaging` flag that needs to be set to true to allow use of embedded messaging functionality
 
 ## [6.4.16]
 
