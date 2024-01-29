@@ -299,6 +299,9 @@ public class IterableEmbeddedView:UIView {
                 imgView.isHidden = EMimage == nil
                 imgView.isHidden = self.EMimage == nil
                 imgView.image = EMimage
+                if !imgView.isHidden {
+                    imgView.widthAnchor.constraint(equalToConstant: 100).isActive = true
+                }
                 cardImageView.isHidden = true
                 cardImageTopConstraint.isActive = false
                 titleToTopConstraint.isActive = true
