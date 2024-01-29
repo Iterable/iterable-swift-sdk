@@ -3,9 +3,11 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
-## [6.5.0-beta2]
+## [6.5.0]
 
-## [6.5.0-beta1]
+### Added
+
+- Support for Embedded Messages
 
 ## [6.4.16]
 
