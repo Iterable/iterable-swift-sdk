@@ -14,6 +14,7 @@ platform :ios do
     bump_release_version(version:set_version)
     clean_and_lint
     build_xcframework(output_dir:set_output_dir)
+    create_git_tag(version:set_version)
     create_release(version:set_version, output_dir:set_output_dir, changelog_section:set_changelog_section, github_token:set_github_token)
     pod_trunk_push
   end 
@@ -77,6 +78,14 @@ platform :ios do
     )
   end
 
+  desc "create git tag and push tag"
+  lane :create_git_tag do |options|
+    version = options[:version]
+
+    add_git_tag(tag: "#{version}")
+    push_git_tags
+  end
+
   desc "create github release and upload assets"
   lane :create_release do |options|
     version = options[:version]
@@ -85,8 +94,6 @@ platform :ios do
     output_dir = options[:output_dir]
     github_token = options[:github_token]
     set_prerelease = options[:set_prerelease]
-
-    add_git_tag(tag: "#{version}") 
 
     version_changelog = read_changelog(
       changelog_path: 'CHANGELOG.md',
