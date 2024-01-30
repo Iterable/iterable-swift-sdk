@@ -78,4 +78,28 @@ class BlankApiClient: ApiClientProtocol {
     func getRemoteConfiguration() -> Pending<RemoteConfiguration, SendRequestError> {
         Pending()
     }
+    
+    func getEmbeddedMessages() -> Pending<PlacementsPayload, SendRequestError> {
+        Pending()
+    }
+    
+    func track(embeddedMessageReceived message: IterableEmbeddedMessage) -> Pending<SendRequestValue, SendRequestError> {
+        Pending()
+    }
+    
+    func track(embeddedMessageClick message: IterableEmbeddedMessage, buttonIdentifier: String?, clickedUrl: String) -> Pending<SendRequestValue, SendRequestError> {
+        Pending()
+    }
+    
+    func track(embeddedMessageDismiss message: IterableEmbeddedMessage) -> Pending<SendRequestValue, SendRequestError> {
+        Pending()
+    }
+    
+    func track(embeddedMessageImpression message: IterableEmbeddedMessage) -> Pending<SendRequestValue, SendRequestError> {
+        Pending()
+    }
+    
+    func track(embeddedSession: IterableEmbeddedSession) -> Pending<IterableSDK.SendRequestValue, SendRequestError> {
+        Pending()
+    }
 }

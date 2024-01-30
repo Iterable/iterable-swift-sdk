@@ -12,6 +12,7 @@ import IterableSDK
 
 class CoffeeListTableViewController: UITableViewController {
     @IBOutlet weak var loginOutBarButton: UIBarButtonItem!
+    @IBOutlet weak var embeddedMessagesBarButton: UIBarButtonItem!
     
     // Set this value to show search.
     var searchTerm: String? {
@@ -80,6 +81,12 @@ class CoffeeListTableViewController: UITableViewController {
     @IBAction func loginOutBarButtonTapped(_: UIBarButtonItem) {
         let storyboard = UIStoryboard(name: "Main", bundle: nil)
         let vc = storyboard.instantiateViewController(withIdentifier: "LoginNavController")
+        present(vc, animated: true)
+    }
+    
+    @IBAction func embeddedMessagesBarButtonTapped(_: UIBarButtonItem) {
+        let storyboard = UIStoryboard(name: "Main", bundle: nil)
+        let vc = storyboard.instantiateViewController(withIdentifier: "EmbeddedMessagesViewController")
         present(vc, animated: true)
     }
     
