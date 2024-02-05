@@ -16,7 +16,7 @@ class AuthManager: IterableAuthManagerProtocol {
         self.dateProvider = dateProvider
         self.expirationRefreshPeriod = expirationRefreshPeriod
         
-        if self.delegate != nil {
+        if self.delegate != nil && IterableAPI.email != nil && IterableAPI.userId != nil {
             retrieveAuthToken()
         }
     }
