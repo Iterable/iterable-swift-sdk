@@ -21,6 +21,9 @@
 		ACA3A15120E2F83E00FEF74F /* NotificationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACA3A15020E2F83E00FEF74F /* NotificationService.swift */; };
 		ACA3A15520E2F83E00FEF74F /* swift-sample-app-notification-extension.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = ACA3A14E20E2F83D00FEF74F /* swift-sample-app-notification-extension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		ACE7624B20FEB2C20040A002 /* LoginViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACE7624A20FEB2C20040A002 /* LoginViewController.swift */; };
+		E9C60B7B2B3C2061005C4462 /* embeddedmessages.json in Resources */ = {isa = PBXBuildFile; fileRef = E9C60B792B3C2061005C4462 /* embeddedmessages.json */; };
+		E9C60B7C2B3C2061005C4462 /* EmbeddedMessagesViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E9C60B7A2B3C2061005C4462 /* EmbeddedMessagesViewController.swift */; };
+		E9C60B7E2B3C2072005C4462 /* IterableCardViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = E9C60B7D2B3C2072005C4462 /* IterableCardViewCell.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -65,6 +68,9 @@
 		ACA3A16420E2FC7500FEF74F /* swift-sample-app.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = "swift-sample-app.entitlements"; sourceTree = "<group>"; };
 		ACE7624A20FEB2C20040A002 /* LoginViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginViewController.swift; sourceTree = "<group>"; };
 		ACFA148520E3033700AF4A5A /* CoffeeType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoffeeType.swift; sourceTree = "<group>"; };
+		E9C60B792B3C2061005C4462 /* embeddedmessages.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = embeddedmessages.json; sourceTree = "<group>"; };
+		E9C60B7A2B3C2061005C4462 /* EmbeddedMessagesViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EmbeddedMessagesViewController.swift; sourceTree = "<group>"; };
+		E9C60B7D2B3C2072005C4462 /* IterableCardViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = IterableCardViewCell.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -128,6 +134,7 @@
 		ACA3A13720E2F6AF00FEF74F /* swift-sample-app */ = {
 			isa = PBXGroup;
 			children = (
+				E9C60B782B3C2061005C4462 /* EmbeddedMessages */,
 				AC5ECD9D20E303F50081E1DA /* ViewControllers */,
 				AC5ECD9B20E3038B0081E1DA /* Deep Link Handling */,
 				ACFA148620E3034800AF4A5A /* Assets */,
@@ -180,6 +187,16 @@
 				ACA3A14120E2F6B100FEF74F /* LaunchScreen.storyboard */,
 			);
 			name = Storyboards;
+			sourceTree = "<group>";
+		};
+		E9C60B782B3C2061005C4462 /* EmbeddedMessages */ = {
+			isa = PBXGroup;
+			children = (
+				E9C60B7D2B3C2072005C4462 /* IterableCardViewCell.swift */,
+				E9C60B792B3C2061005C4462 /* embeddedmessages.json */,
+				E9C60B7A2B3C2061005C4462 /* EmbeddedMessagesViewController.swift */,
+			);
+			path = EmbeddedMessages;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -282,6 +299,7 @@
 				ACA3A14320E2F6B100FEF74F /* LaunchScreen.storyboard in Resources */,
 				ACA3A14020E2F6B100FEF74F /* Assets.xcassets in Resources */,
 				ACA3A13E20E2F6AF00FEF74F /* Main.storyboard in Resources */,
+				E9C60B7B2B3C2061005C4462 /* embeddedmessages.json in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -299,6 +317,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				E9C60B7C2B3C2061005C4462 /* EmbeddedMessagesViewController.swift in Sources */,
+				E9C60B7E2B3C2072005C4462 /* IterableCardViewCell.swift in Sources */,
 				AC1BDF5A20E304CC000010CA /* CoffeeViewController.swift in Sources */,
 				ACA3A13920E2F6AF00FEF74F /* AppDelegate.swift in Sources */,
 				AC1BDF5920E304BF000010CA /* DeepLinkHandler.swift in Sources */,

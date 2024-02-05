@@ -45,4 +45,16 @@ protocol ApiClientProtocol: AnyObject {
     func disableDevice(forAllUsers allUsers: Bool, hexToken: String) -> Pending<SendRequestValue, SendRequestError>
 
     func getRemoteConfiguration() -> Pending<RemoteConfiguration, SendRequestError>
+    
+    func getEmbeddedMessages() -> Pending<PlacementsPayload, SendRequestError>
+    
+    @discardableResult func track(embeddedMessageReceived message: IterableEmbeddedMessage) -> Pending<SendRequestValue, SendRequestError>
+    
+    @discardableResult func track(embeddedMessageClick message: IterableEmbeddedMessage, buttonIdentifier: String?, clickedUrl: String) -> Pending<SendRequestValue, SendRequestError>
+    
+    func track(embeddedMessageDismiss message: IterableEmbeddedMessage) -> Pending<SendRequestValue, SendRequestError>
+    
+    func track(embeddedMessageImpression message: IterableEmbeddedMessage) -> Pending<SendRequestValue, SendRequestError>
+    
+    @discardableResult func track(embeddedSession: IterableEmbeddedSession) -> Pending<SendRequestValue, SendRequestError>
 }
