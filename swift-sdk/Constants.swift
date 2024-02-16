@@ -52,6 +52,7 @@ enum Const {
         static let userByEmail = "users/getByEmail";
         static let mergeUser = "users/merge";
         static let getCriteria = "anonymoususer/list";
+        static let trackAnonSession = "anonymoususer/events/session";
     }
     
     public enum UserDefault {
@@ -179,6 +180,7 @@ enum JsonKey {
     static let actionIdentifier = "actionIdentifier"
     static let userText = "userText"
     static let appAlreadyRunning = "appAlreadyRunning"
+    static let anonSessionContext = "anonSessionContext"
     
     static let html = "html"
     

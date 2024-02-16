@@ -75,12 +75,12 @@ public class AnonymousUserManager: AnonymousUserManagerProtocol {
     // Stores an anonymous sessions locally. Updates the last session time each time when new session is created
     public func updateAnonSession() {
         if var sessions = localStorage.anonymousSessions {
-            sessions.itbl_anon_sessions.number_of_sessions += 1
-            sessions.itbl_anon_sessions.last_session = getUTCDateTime()
+            sessions.itbl_anon_sessions.totalAnonSessionCount += 1
+            sessions.itbl_anon_sessions.lastAnonSession = (Int(self.dateProvider.currentDate.timeIntervalSince1970) * 1000)
             localStorage.anonymousSessions = sessions
         } else {
             // create session object for the first time
-            let initialAnonSessions = IterableAnonSessions(number_of_sessions: 1, last_session: getUTCDateTime(), first_session: getUTCDateTime())
+            let initialAnonSessions = IterableAnonSessions(totalAnonSessionCount: 1, lastAnonSession: (Int(self.dateProvider.currentDate.timeIntervalSince1970) * 1000), firstAnonSession: (Int(self.dateProvider.currentDate.timeIntervalSince1970) * 1000))
             let anonSessionWrapper = IterableAnonSessionsWrapper(itbl_anon_sessions: initialAnonSessions)
             localStorage.anonymousSessions = anonSessionWrapper
         }
@@ -92,10 +92,16 @@ public class AnonymousUserManager: AnonymousUserManagerProtocol {
             var anonSessions = convertToDictionary(data: localStorage.anonymousSessions?.itbl_anon_sessions)
             let userId = IterableUtil.generateUUID()
             IterableAPI.setUserId(userId)
-            anonSessions["anon_criteria_id"] = criteriaId
+            anonSessions["matchedCriteriaId"] = criteriaId
+            var appName = ""
             notificationStateProvider.isNotificationsEnabled { isEnabled in
-                anonSessions["pushOptIn"] = isEnabled
-                IterableAPI.track(event: "itbl_anon_sessions", dataFields: anonSessions)
+                if (isEnabled) {
+                    appName = Bundle.main.appPackageName ?? ""
+                }
+                if (!appName.isEmpty) {
+                    anonSessions["mobilePushOptIn"] = appName
+                }
+                IterableAPI.implementation?.apiClient.trackAnonSession(createdAt: (Int(self.dateProvider.currentDate.timeIntervalSince1970) * 1000), requestJson: anonSessions)
                 self.syncEvents()
             }
         }

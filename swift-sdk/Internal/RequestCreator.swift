@@ -533,6 +533,21 @@ struct RequestCreator {
         let body: [AnyHashable: Any] = [:]
         return .success(.get(createGetRequest(forPath: Const.Path.getCriteria, withArgs: body as! [String: String])))
     }
+
+    func createTrackAnonSessionRequest(createdAt: Int, requestJson: [AnyHashable: Any]) -> Result<IterableRequest, IterableError> {
+        if case .none = auth.emailOrUserId {
+            ITBError(Self.authMissingMessage)
+            return .failure(IterableError.general(description: Self.authMissingMessage))
+        }
+        
+        var body = [AnyHashable: Any]()
+        
+        setCurrentUser(inDict: &body)
+        body.setValue(for: JsonKey.Body.createdAt, value: createdAt)
+        body.setValue(for: JsonKey.deviceInfo, value: deviceMetadata.asDictionary())
+        body.setValue(for: JsonKey.anonSessionContext, value: requestJson)
+        return .success(.post(createPostRequest(path: Const.Path.trackAnonSession, body: body)))
+    }
     
     // MARK: - PRIVATE
     

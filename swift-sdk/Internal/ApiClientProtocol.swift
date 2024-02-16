@@ -59,4 +59,6 @@ protocol ApiClientProtocol: AnyObject {
     func mergeUser(sourceEmail: String, sourceUserId: String, destinationEmail: String, destinationUserId: String) -> Pending<SendRequestValue, SendRequestError>
     
     func getCriteria() -> Pending<SendRequestValue, SendRequestError>
+
+    func trackAnonSession(createdAt: Int, requestJson: [AnyHashable: Any])  -> Pending<SendRequestValue, SendRequestError>
 }
