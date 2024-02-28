@@ -216,4 +216,38 @@ extension ApiClient: ApiClientProtocol {
         let result = createRequestCreator().flatMap { $0.createGetRemoteConfigurationRequest() }
         return send(iterableRequestResult: result)
     }
+    
+    // MARK: - Embedded Messaging
+    
+    func getEmbeddedMessages() -> Pending<PlacementsPayload, SendRequestError> {
+        let result = createRequestCreator().flatMap { $0.createGetEmbeddedMessagesRequest() }
+        return send(iterableRequestResult: result)
+    }
+    
+    @discardableResult
+    func track(embeddedMessageReceived message: IterableEmbeddedMessage) -> Pending<SendRequestValue, SendRequestError> {
+        let result = createRequestCreator().flatMap { $0.createEmbeddedMessageReceivedRequest(message) }
+        return send(iterableRequestResult: result)
+    }
+    
+    @discardableResult
+    func track(embeddedMessageClick message: IterableEmbeddedMessage, buttonIdentifier: String?, clickedUrl: String) -> Pending<SendRequestValue, SendRequestError> {
+        let result = createRequestCreator().flatMap { $0.createEmbeddedMessageClickRequest(message, buttonIdentifier, clickedUrl) }
+        return send(iterableRequestResult: result)
+    }
+    
+    func track(embeddedMessageDismiss message: IterableEmbeddedMessage) -> Pending<SendRequestValue, SendRequestError> {
+        let result = createRequestCreator().flatMap { $0.createEmbeddedMessageDismissRequest(message) }
+        return send(iterableRequestResult: result)
+    }
+    
+    func track(embeddedMessageImpression message: IterableEmbeddedMessage) -> Pending<SendRequestValue, SendRequestError> {
+        let result = createRequestCreator().flatMap { $0.createEmbeddedMessageImpressionRequest(message) }
+        return send(iterableRequestResult: result)
+    }
+    
+    func track(embeddedSession: IterableEmbeddedSession) -> Pending<SendRequestValue, SendRequestError> {
+        let result = createRequestCreator().flatMap { $0.createTrackEmbeddedSessionRequest(embeddedSession: embeddedSession) }
+        return send(iterableRequestResult:  result)
+    }
 }

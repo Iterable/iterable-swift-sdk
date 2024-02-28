@@ -52,6 +52,7 @@ class IterableTaskRunner: NSObject {
         ITBInfo()
         persistenceContext.perform { [weak self] in
             self?.paused = true
+            self?.running = false
             self?.connectivityManager.stop()
         }
     }

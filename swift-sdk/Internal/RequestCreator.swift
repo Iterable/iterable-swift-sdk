@@ -233,6 +233,8 @@ struct RequestCreator {
         return .success(.post(createPostRequest(path: Const.Path.updateSubscriptions, body: body)))
     }
     
+    // MARK: - In-App Messaging Request Calls
+    
     func createGetInAppMessagesRequest(_ count: NSNumber) -> Result<IterableRequest, IterableError> {
         if case .none = auth.emailOrUserId {
             ITBError(Self.authMissingMessage)
@@ -418,6 +420,141 @@ struct RequestCreator {
         return .success(.post(createPostRequest(path: Const.Path.trackInboxSession, body: body)))
     }
     
+    // MARK: - Embedded Messaging Request Calls
+    
+    func createGetEmbeddedMessagesRequest() -> Result<IterableRequest, IterableError> {
+        if case .none = auth.emailOrUserId {
+            ITBError(Self.authMissingMessage)
+            return .failure(IterableError.general(description: Self.authMissingMessage))
+        }
+        
+        var args: [AnyHashable: Any] = [JsonKey.platform: JsonValue.iOS,
+                                        JsonKey.systemVersion: UIDevice.current.systemVersion,
+                                        JsonKey.Embedded.sdkVersion: IterableAPI.sdkVersion]
+        
+        if let packageName = Bundle.main.appPackageName {
+            args[JsonKey.Embedded.packageName] = packageName
+        }
+        
+        setCurrentUser(inDict: &args)
+        
+        return .success(.get(createGetRequest(forPath: Const.Path.getEmbeddedMessages, withArgs: args as! [String: String])))
+    }
+    
+    func createEmbeddedMessageReceivedRequest(_ message: IterableEmbeddedMessage) -> Result<IterableRequest, IterableError> {
+        if case .none = auth.emailOrUserId {
+            ITBError(Self.authMissingMessage)
+            return .failure(IterableError.general(description: Self.authMissingMessage))
+        }
+        
+        var body = [AnyHashable: Any]()
+        
+        setCurrentUser(inDict: &body)
+        
+        body.setValue(for: JsonKey.messageId, value: message.metadata.messageId)
+        body.setValue(for: JsonKey.deviceInfo, value: deviceMetadata.asDictionary())
+        
+        return .success(.post(createPostRequest(path: Const.Path.embeddedMessageReceived, body: body)))
+    }
+    
+    func createEmbeddedMessageClickRequest(_ message: IterableEmbeddedMessage, _ buttonIdentifier: String?, _ clickedUrl: String) -> Result<IterableRequest, IterableError> {
+        if case .none = auth.emailOrUserId {
+            ITBError(Self.authMissingMessage)
+            return .failure(IterableError.general(description: Self.authMissingMessage))
+        }
+        
+        var body = [AnyHashable: Any]()
+        setCurrentUser(inDict: &body)
+        
+        if let buttonIdentifier = buttonIdentifier, !buttonIdentifier.isEmpty {
+            body.setValue(for: JsonKey.embeddedButtonId, value: buttonIdentifier)
+        }
+        
+        body.setValue(for: JsonKey.embeddedTargetUrl, value: clickedUrl)
+        
+        body.setValue(for: JsonKey.messageId, value: message.metadata.messageId)
+
+        body.setValue(for: JsonKey.deviceInfo, value: deviceMetadata.asDictionary())
+        
+        return .success(.post(createPostRequest(path: Const.Path.embeddedMessageClick, body: body)))
+    }
+    
+    func createEmbeddedMessageDismissRequest(_ message: IterableEmbeddedMessage) -> Result<IterableRequest, IterableError> {
+        if case .none = auth.emailOrUserId {
+            ITBError(Self.authMissingMessage)
+            return .failure(IterableError.general(description: Self.authMissingMessage))
+        }
+        
+        var body: [AnyHashable: Any] = [JsonKey.platform: JsonValue.iOS,
+                                        JsonKey.systemVersion: UIDevice.current.systemVersion,
+                                        JsonKey.Embedded.sdkVersion: IterableAPI.sdkVersion]
+        
+        if let packageName = Bundle.main.appPackageName {
+            body[JsonKey.Embedded.packageName] = packageName
+        }
+        
+        setCurrentUser(inDict: &body)
+        
+        // TODO: find/create proper key for the value of the embedded message ID
+        
+        return .success(.post(createPostRequest(path: Const.Path.embeddedMessageDismiss, body: body as! [String: String])))
+    }
+    
+    func createEmbeddedMessageImpressionRequest(_ message: IterableEmbeddedMessage) -> Result<IterableRequest, IterableError> {
+        if case .none = auth.emailOrUserId {
+            ITBError(Self.authMissingMessage)
+            return .failure(IterableError.general(description: Self.authMissingMessage))
+        }
+
+        
+        var body = [AnyHashable: Any]()
+        
+        setCurrentUser(inDict: &body)
+        
+        body.setValue(for: JsonKey.messageId, value: message.metadata.messageId)
+        body.setValue(for: JsonKey.deviceInfo, value: deviceMetadata.asDictionary())
+        
+        return .success(.post(createPostRequest(path: Const.Path.embeddedMessageImpression, body: body)))
+    }
+    
+    func createTrackEmbeddedSessionRequest(embeddedSession: IterableEmbeddedSession) -> Result<IterableRequest, IterableError> {
+        if case .none = auth.emailOrUserId {
+            ITBError(Self.authMissingMessage)
+            return .failure(IterableError.general(description: Self.authMissingMessage))
+        }
+
+        guard !embeddedSession.embeddedSessionId.isEmpty else {
+            return .failure(IterableError.general(description: "expecting session id"))
+        }
+        let embeddedSessionId = embeddedSession.embeddedSessionId
+
+        guard let sessionStartTime = embeddedSession.embeddedSessionStart else {
+            return .failure(IterableError.general(description: "expecting session start time"))
+        }
+
+        guard let sessionEndTime = embeddedSession.embeddedSessionEnd else {
+            return .failure(IterableError.general(description: "expecting session end time"))
+        }
+
+        var body = [AnyHashable: Any]()
+        
+        setCurrentUser(inDict: &body)
+
+        body.setValue(for: JsonKey.embeddedSessionId, value: [
+            "id": embeddedSessionId,
+            "start": IterableUtil.int(fromDate: sessionStartTime),
+            "end": IterableUtil.int(fromDate: sessionEndTime)
+        ])
+
+        body.setValue(for: JsonKey.impressions, value: embeddedSession.impressions.compactMap { $0.asDictionary() })
+        body.setValue(for: JsonKey.deviceInfo, value: deviceMetadata.asDictionary())        
+        return .success(.post(createPostRequest(path: Const.Path.trackEmbeddedSession, body: body)))
+    }
+
+
+    
+    // MARK: - Misc Request Calls
+    
     func createDisableDeviceRequest(forAllUsers allUsers: Bool, hexToken: String) -> Result<IterableRequest, IterableError> {
         var body = [AnyHashable: Any]()
         
@@ -474,6 +611,17 @@ struct RequestCreator {
             dict.setValue(for: JsonKey.email, value: email)
         case let .userId(userId):
             dict.setValue(for: JsonKey.userId, value: userId)
+        case .none:
+            ITBInfo("Current user is unavailable")
+        }
+    }
+    
+    private func addUserKey(intoDict dict: inout [AnyHashable: Any]) {
+        switch auth.emailOrUserId {
+        case let .email(email):
+            dict.setValue(for: JsonKey.userKey, value: email)
+        case let .userId(userId):
+            dict.setValue(for: JsonKey.userKey, value: userId)
         case .none:
             ITBInfo("Current user is unavailable")
         }

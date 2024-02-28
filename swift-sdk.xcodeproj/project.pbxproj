@@ -11,11 +11,24 @@
 		00B6FACE210E88ED007535CF /* prod-1.mobileprovision in Resources */ = {isa = PBXBuildFile; fileRef = 00B6FACD210E874D007535CF /* prod-1.mobileprovision */; };
 		00B6FAD1210E8D90007535CF /* dev-1.mobileprovision in Resources */ = {isa = PBXBuildFile; fileRef = 00B6FAD0210E8D90007535CF /* dev-1.mobileprovision */; };
 		00CB31B621096129004ACDEC /* TestUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 00CB31B4210960C4004ACDEC /* TestUtils.swift */; };
+		1CBFFE1A2A97AEEF00ED57EE /* EmbeddedManagerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1CBFFE162A97AEEE00ED57EE /* EmbeddedManagerTests.swift */; };
+		1CBFFE1B2A97AEEF00ED57EE /* EmbeddedMessagingProcessorTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1CBFFE172A97AEEE00ED57EE /* EmbeddedMessagingProcessorTests.swift */; };
+		1CBFFE1C2A97AEEF00ED57EE /* EmbeddedSessionManagerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1CBFFE182A97AEEE00ED57EE /* EmbeddedSessionManagerTests.swift */; };
+		1CBFFE1D2A97AEEF00ED57EE /* EmbeddedMessagingSerializationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1CBFFE192A97AEEF00ED57EE /* EmbeddedMessagingSerializationTests.swift */; };
+		1CCA91202A27FA8700AEA213 /* MiscEmbeddedClasses.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1CCA911F2A27FA8700AEA213 /* MiscEmbeddedClasses.swift */; };
+		1CCA91222A28075A00AEA213 /* EmbeddedSessionManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1CCA91212A28075A00AEA213 /* EmbeddedSessionManager.swift */; };
+		55023E9C29132881003F69DC /* IterableEmbeddedMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55023E9B29132881003F69DC /* IterableEmbeddedMessage.swift */; };
+		5511FF5529BBE698005D42AB /* IterableEmbeddedUpdateDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5511FF5429BBE698005D42AB /* IterableEmbeddedUpdateDelegate.swift */; };
+		551FA7582988A8FC0072D0A9 /* IterableEmbeddedManagerProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 551FA7572988A8FC0072D0A9 /* IterableEmbeddedManagerProtocol.swift */; };
+		551FA75E2988AC930072D0A9 /* EmptyEmbeddedManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 551FA75D2988AC930072D0A9 /* EmptyEmbeddedManager.swift */; };
+		551FA7612988AC990072D0A9 /* IterableEmbeddedManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 551FA75F2988AC990072D0A9 /* IterableEmbeddedManager.swift */; };
 		552A0AA7280E1FDA00A80963 /* DeepLinkManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 552A0AA6280E1FDA00A80963 /* DeepLinkManager.swift */; };
 		5531CDAC22A997A4000D05E2 /* IterableInboxViewControllerUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5585DF9022A877E6000A32B9 /* IterableInboxViewControllerUITests.swift */; };
 		5531CDAE22A9C992000D05E2 /* ClassExtensionsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5531CDAD22A9C992000D05E2 /* ClassExtensionsTests.swift */; };
+		553449A129C2621E002E4599 /* EmbeddedMessagingProcessor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 553449A029C2621E002E4599 /* EmbeddedMessagingProcessor.swift */; };
 		5536781F2576FF9000DB3652 /* IterableUtilTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5536781E2576FF9000DB3652 /* IterableUtilTests.swift */; };
 		5555425028BED1B400DB5D20 /* KeychainWrapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5555424F28BED1B400DB5D20 /* KeychainWrapper.swift */; };
+		55684312298C6A9F006A5EB4 /* EmbeddedMessagingSerialization.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55684311298C6A9F006A5EB4 /* EmbeddedMessagingSerialization.swift */; };
 		556FB1EA244FAF6A00EDF6BD /* InAppPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 556FB1E9244FAF6A00EDF6BD /* InAppPresenter.swift */; };
 		557AE6BF24A56E5E00B57750 /* Auth.swift in Sources */ = {isa = PBXBuildFile; fileRef = 557AE6BE24A56E5E00B57750 /* Auth.swift */; };
 		5585DF8F22A73390000A32B9 /* IterableInboxViewControllerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5585DF8E22A73390000A32B9 /* IterableInboxViewControllerTests.swift */; };
@@ -172,6 +185,14 @@
 		5B5AA717284F1A6D0093FED4 /* MockNetworkSession.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5B5AA710284F1A6D0093FED4 /* MockNetworkSession.swift */; };
 		5B6C3C1127CE871F00B9A753 /* NavInboxSessionUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5B6C3C1027CE871F00B9A753 /* NavInboxSessionUITests.swift */; };
 		5B88BC482805D09D004016E5 /* NetworkSession.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5B88BC472805D09D004016E5 /* NetworkSession.swift */; };
+		9F76FFFF2B17884900962526 /* EmbeddedHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F76FFFE2B17884900962526 /* EmbeddedHelper.swift */; };
+		9FF05EAC2AFEA5FA005311F7 /* MockAuthManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FF05EAB2AFEA5FA005311F7 /* MockAuthManager.swift */; };
+		9FF05EAD2AFEA5FA005311F7 /* MockAuthManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FF05EAB2AFEA5FA005311F7 /* MockAuthManager.swift */; };
+		9FF05EAE2AFEA5FA005311F7 /* MockAuthManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FF05EAB2AFEA5FA005311F7 /* MockAuthManager.swift */; };
+		9FF05EAF2AFEA5FA005311F7 /* MockAuthManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FF05EAB2AFEA5FA005311F7 /* MockAuthManager.swift */; };
+		9FF05EB02AFEA5FA005311F7 /* MockAuthManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FF05EAB2AFEA5FA005311F7 /* MockAuthManager.swift */; };
+		9FF05EB12AFEA5FA005311F7 /* MockAuthManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FF05EAB2AFEA5FA005311F7 /* MockAuthManager.swift */; };
+		9FF05EB22AFEA5FA005311F7 /* MockAuthManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FF05EAB2AFEA5FA005311F7 /* MockAuthManager.swift */; };
 		AC02480822791E2100495FB9 /* IterableInboxNavigationViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC02480722791E2100495FB9 /* IterableInboxNavigationViewController.swift */; };
 		AC02CAA6234E50B5006617E0 /* RegistrationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC02CAA5234E50B5006617E0 /* RegistrationTests.swift */; };
 		AC03094B21E532470003A288 /* InAppPersistence.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC03094A21E532470003A288 /* InAppPersistence.swift */; };
@@ -378,6 +399,8 @@
 		ACFF42A924656DA500FDF10D /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = ACFF42A824656D8E00FDF10D /* Assets.xcassets */; };
 		ACFF42AC24656DD100FDF10D /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = ACFF42AA24656DC800FDF10D /* LaunchScreen.storyboard */; };
 		ACFF42B02465B4AE00FDF10D /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACFF42AF2465B4AE00FDF10D /* AppDelegate.swift */; };
+		E9BF47962B46D5DC0033DB69 /* IterableEmbeddedView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E9BF47952B46D5DC0033DB69 /* IterableEmbeddedView.swift */; };
+		E9BF47982B46DEB30033DB69 /* IterableEmbeddedView.xib in Resources */ = {isa = PBXBuildFile; fileRef = E9BF47972B46DEB30033DB69 /* IterableEmbeddedView.xib */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -515,11 +538,24 @@
 		00B6FACD210E874D007535CF /* prod-1.mobileprovision */ = {isa = PBXFileReference; lastKnownFileType = file; path = "prod-1.mobileprovision"; sourceTree = "<group>"; };
 		00B6FAD0210E8D90007535CF /* dev-1.mobileprovision */ = {isa = PBXFileReference; lastKnownFileType = file; path = "dev-1.mobileprovision"; sourceTree = "<group>"; };
 		00CB31B4210960C4004ACDEC /* TestUtils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestUtils.swift; sourceTree = "<group>"; };
+		1CBFFE162A97AEEE00ED57EE /* EmbeddedManagerTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EmbeddedManagerTests.swift; sourceTree = "<group>"; };
+		1CBFFE172A97AEEE00ED57EE /* EmbeddedMessagingProcessorTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EmbeddedMessagingProcessorTests.swift; sourceTree = "<group>"; };
+		1CBFFE182A97AEEE00ED57EE /* EmbeddedSessionManagerTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EmbeddedSessionManagerTests.swift; sourceTree = "<group>"; };
+		1CBFFE192A97AEEF00ED57EE /* EmbeddedMessagingSerializationTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EmbeddedMessagingSerializationTests.swift; sourceTree = "<group>"; };
+		1CCA911F2A27FA8700AEA213 /* MiscEmbeddedClasses.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MiscEmbeddedClasses.swift; sourceTree = "<group>"; };
+		1CCA91212A28075A00AEA213 /* EmbeddedSessionManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmbeddedSessionManager.swift; sourceTree = "<group>"; };
+		55023E9B29132881003F69DC /* IterableEmbeddedMessage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IterableEmbeddedMessage.swift; sourceTree = "<group>"; };
+		5511FF5429BBE698005D42AB /* IterableEmbeddedUpdateDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IterableEmbeddedUpdateDelegate.swift; sourceTree = "<group>"; };
+		551FA7572988A8FC0072D0A9 /* IterableEmbeddedManagerProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IterableEmbeddedManagerProtocol.swift; sourceTree = "<group>"; };
+		551FA75D2988AC930072D0A9 /* EmptyEmbeddedManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EmptyEmbeddedManager.swift; sourceTree = "<group>"; };
+		551FA75F2988AC990072D0A9 /* IterableEmbeddedManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = IterableEmbeddedManager.swift; sourceTree = "<group>"; };
 		55298B222501A5AB00190BAE /* AuthManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthManager.swift; sourceTree = "<group>"; };
 		552A0AA6280E1FDA00A80963 /* DeepLinkManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DeepLinkManager.swift; sourceTree = "<group>"; };
 		5531CDAD22A9C992000D05E2 /* ClassExtensionsTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClassExtensionsTests.swift; sourceTree = "<group>"; };
+		553449A029C2621E002E4599 /* EmbeddedMessagingProcessor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmbeddedMessagingProcessor.swift; sourceTree = "<group>"; };
 		5536781E2576FF9000DB3652 /* IterableUtilTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IterableUtilTests.swift; sourceTree = "<group>"; };
 		5555424F28BED1B400DB5D20 /* KeychainWrapper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeychainWrapper.swift; sourceTree = "<group>"; };
+		55684311298C6A9F006A5EB4 /* EmbeddedMessagingSerialization.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmbeddedMessagingSerialization.swift; sourceTree = "<group>"; };
 		556FB1E9244FAF6A00EDF6BD /* InAppPresenter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InAppPresenter.swift; sourceTree = "<group>"; };
 		557AE6BE24A56E5E00B57750 /* Auth.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Auth.swift; sourceTree = "<group>"; };
 		5585DF8E22A73390000A32B9 /* IterableInboxViewControllerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IterableInboxViewControllerTests.swift; sourceTree = "<group>"; };
@@ -568,6 +604,8 @@
 		5B6C3C1027CE871F00B9A753 /* NavInboxSessionUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NavInboxSessionUITests.swift; sourceTree = "<group>"; };
 		5B88BC472805D09D004016E5 /* NetworkSession.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkSession.swift; sourceTree = "<group>"; };
 		5BFC7CED27FC9AF300E77479 /* inbox-ui-tests-app.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = "inbox-ui-tests-app.entitlements"; sourceTree = "<group>"; };
+		9F76FFFE2B17884900962526 /* EmbeddedHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmbeddedHelper.swift; sourceTree = "<group>"; };
+		9FF05EAB2AFEA5FA005311F7 /* MockAuthManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockAuthManager.swift; sourceTree = "<group>"; };
 		AC02480722791E2100495FB9 /* IterableInboxNavigationViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IterableInboxNavigationViewController.swift; sourceTree = "<group>"; };
 		AC02CAA5234E50B5006617E0 /* RegistrationTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegistrationTests.swift; sourceTree = "<group>"; };
 		AC03094A21E532470003A288 /* InAppPersistence.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InAppPersistence.swift; sourceTree = "<group>"; };
@@ -764,6 +802,8 @@
 		ACFF42AD24656E7800FDF10D /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		ACFF42AE24656ECF00FDF10D /* ui-tests-app.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = "ui-tests-app.entitlements"; sourceTree = "<group>"; };
 		ACFF42AF2465B4AE00FDF10D /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
+		E9BF47952B46D5DC0033DB69 /* IterableEmbeddedView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = IterableEmbeddedView.swift; sourceTree = "<group>"; };
+		E9BF47972B46DEB30033DB69 /* IterableEmbeddedView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = IterableEmbeddedView.xib; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -865,6 +905,31 @@
 			name = "Test Files";
 			sourceTree = "<group>";
 		};
+		1CBFFE152A97AEDC00ED57EE /* embedded-messaging-tests */ = {
+			isa = PBXGroup;
+			children = (
+				1CBFFE162A97AEEE00ED57EE /* EmbeddedManagerTests.swift */,
+				1CBFFE172A97AEEE00ED57EE /* EmbeddedMessagingProcessorTests.swift */,
+				1CBFFE192A97AEEF00ED57EE /* EmbeddedMessagingSerializationTests.swift */,
+				1CBFFE182A97AEEE00ED57EE /* EmbeddedSessionManagerTests.swift */,
+			);
+			name = "embedded-messaging-tests";
+			sourceTree = "<group>";
+		};
+		551FA75C2988AC800072D0A9 /* Embedded Messaging */ = {
+			isa = PBXGroup;
+			children = (
+				9F76FFFE2B17884900962526 /* EmbeddedHelper.swift */,
+				1CCA911F2A27FA8700AEA213 /* MiscEmbeddedClasses.swift */,
+				1CCA91212A28075A00AEA213 /* EmbeddedSessionManager.swift */,
+				551FA75D2988AC930072D0A9 /* EmptyEmbeddedManager.swift */,
+				551FA75F2988AC990072D0A9 /* IterableEmbeddedManager.swift */,
+				553449A029C2621E002E4599 /* EmbeddedMessagingProcessor.swift */,
+				55684311298C6A9F006A5EB4 /* EmbeddedMessagingSerialization.swift */,
+			);
+			name = "Embedded Messaging";
+			sourceTree = "<group>";
+		};
 		552A0AA8280E22B100A80963 /* device-token-tests */ = {
 			isa = PBXGroup;
 			children = (
@@ -900,6 +965,14 @@
 			);
 			name = misc;
 			path = "swift-sdk/misc";
+			sourceTree = "<group>";
+		};
+		560ACF442A308C8A007F9503 /* uicomponents */ = {
+			isa = PBXGroup;
+			children = (
+				E9BF47952B46D5DC0033DB69 /* IterableEmbeddedView.swift */,
+			);
+			path = uicomponents;
 			sourceTree = "<group>";
 		};
 		AC0248062279132400495FB9 /* Dwifft */ = {
@@ -961,9 +1034,10 @@
 		AC2263E120CF49B8009800EB /* swift-sdk */ = {
 			isa = PBXGroup;
 			children = (
+				AC44C0EB22615F8100E0641D /* Resources */,
+				560ACF442A308C8A007F9503 /* uicomponents */,
 				AC5C467E2756AEA4000762B6 /* swiftui */,
 				AC72A0BB20CF4C8C004D7997 /* Internal */,
-				AC44C0EB22615F8100E0641D /* Resources */,
 				AC2263F920CF4B63009800EB /* Supporting Files */,
 				AC72A0C120CF4CB8004D7997 /* CommerceItem.swift */,
 				AC72A0BE20CF4CB8004D7997 /* Constants.swift */,
@@ -974,6 +1048,9 @@
 				AC72A0C020CF4CB8004D7997 /* IterableAttributionInfo.swift */,
 				55DD207E26A0D83800773CC7 /* IterableAuthManagerProtocol.swift */,
 				AC7125EE20D4579E0043BBC1 /* IterableConfig.swift */,
+				55023E9B29132881003F69DC /* IterableEmbeddedMessage.swift */,
+				551FA7572988A8FC0072D0A9 /* IterableEmbeddedManagerProtocol.swift */,
+				5511FF5429BBE698005D42AB /* IterableEmbeddedUpdateDelegate.swift */,
 				55DD2052269FA28200773CC7 /* IterableInAppManagerProtocol.swift */,
 				55DD2040269FA24400773CC7 /* IterableInAppMessage.swift */,
 				AC219C4E225FEDBD00B98631 /* IterableInboxCell.swift */,
@@ -1121,6 +1198,7 @@
 		AC44C0EB22615F8100E0641D /* Resources */ = {
 			isa = PBXGroup;
 			children = (
+				E9BF47972B46DEB30033DB69 /* IterableEmbeddedView.xib */,
 				AC219C522260006600B98631 /* Assets.xcassets */,
 				AC50865224C60172001DC132 /* IterableDataModel.xcdatamodeld */,
 				AC219C4F225FEDBD00B98631 /* SampleInboxCell.xib */,
@@ -1199,6 +1277,7 @@
 			children = (
 				AC845105228DF5360052BB8F /* API Client */,
 				AC0248062279132400495FB9 /* Dwifft */,
+				551FA75C2988AC800072D0A9 /* Embedded Messaging */,
 				AC2263FA20CF4B84009800EB /* In-App */,
 				AC31B03D232AB37C00BE25EB /* Inbox */,
 				AC7A525F227BB9B80064D67E /* Initialization */,
@@ -1237,16 +1316,17 @@
 		AC7B142C20D02CE200877BFE /* unit-tests */ = {
 			isa = PBXGroup;
 			children = (
-				AC87172421A4E3FF00FEA369 /* Helper Classes */,
-				00B6FACF210E8B10007535CF /* Test Files */,
+				1CBFFE152A97AEDC00ED57EE /* embedded-messaging-tests */,
 				552A0AAA280E24E400A80963 /* api-tests */,
 				AC3A3029262EE04400425435 /* deep-linking-tests */,
 				552A0AA8280E22B100A80963 /* device-token-tests */,
 				AC3A3032262EE15C00425435 /* foundational-tests */,
+				AC87172421A4E3FF00FEA369 /* Helper Classes */,
 				AC3A3053262EE1B500425435 /* in-app-tests */,
 				AC3A305C262EE24100425435 /* inbox-tests */,
 				552A0AA9280E249C00A80963 /* notification-tests */,
 				AC3A3075262EE26D00425435 /* request-tests */,
+				00B6FACF210E8B10007535CF /* Test Files */,
 				AC2C668620D3435700D46CC9 /* ActionRunnerTests.swift */,
 				55B9F15024B3D33700E8198A /* AuthTests.swift */,
 				ACB37AAF240268A60093A8EA /* SampleInboxViewDelegateImplementations.swift */,
@@ -1360,6 +1440,7 @@
 				5588DF7D28C04494000697D7 /* MockUrlDelegate.swift */,
 				5588DF8D28C044DE000697D7 /* MockUrlOpener.swift */,
 				5588DFD528C04683000697D7 /* MockWebView.swift */,
+				9FF05EAB2AFEA5FA005311F7 /* MockAuthManager.swift */,
 			);
 			path = common;
 			sourceTree = "<group>";
@@ -1473,13 +1554,13 @@
 			isa = PBXGroup;
 			children = (
 				AC995F932166EC310099A184 /* common */,
+				AC28480824AA44C600C1FC7F /* endpoint-tests */,
 				ACFBEA15262DC68C000935DD /* hosting-apps */,
-				AC7B142C20D02CE200877BFE /* unit-tests */,
+				ACDA976F23159C39004C412E /* inbox-ui-tests */,
+				AC90C4D220D8632E00EECA5D /* notification-extension-tests */,
 				ACFD5AB924C8200C008E497A /* offline-events-tests */,
 				ACC87764215C20B50097E29B /* ui-tests */,
-				ACDA976F23159C39004C412E /* inbox-ui-tests */,
-				AC28480824AA44C600C1FC7F /* endpoint-tests */,
-				AC90C4D220D8632E00EECA5D /* notification-extension-tests */,
+				AC7B142C20D02CE200877BFE /* unit-tests */,
 			);
 			path = tests;
 			sourceTree = "<group>";
@@ -1762,7 +1843,7 @@
 			isa = PBXProject;
 			attributes = {
 				LastSwiftUpdateCheck = 1150;
-				LastUpgradeCheck = 1200;
+				LastUpgradeCheck = 1420;
 				ORGANIZATIONNAME = Iterable;
 				TargetAttributes = {
 					AC2263DE20CF49B8009800EB = {
@@ -1851,6 +1932,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				AC219C532260006600B98631 /* Assets.xcassets in Resources */,
+				E9BF47982B46DEB30033DB69 /* IterableEmbeddedView.xib in Resources */,
 				AC219C51225FEDBD00B98631 /* SampleInboxCell.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1949,11 +2031,15 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				1CCA91222A28075A00AEA213 /* EmbeddedSessionManager.swift in Sources */,
+				9F76FFFF2B17884900962526 /* EmbeddedHelper.swift in Sources */,
+				1CCA91202A27FA8700AEA213 /* MiscEmbeddedClasses.swift in Sources */,
 				AC31B042232AB53500BE25EB /* InboxImpressionTracker.swift in Sources */,
 				55D54656239AE5750093ED1E /* IterableLogUtil.swift in Sources */,
 				55DD2065269FB1FC00773CC7 /* InboxViewControllerViewModelProtocol.swift in Sources */,
 				ACF32BDB24E3EA7C0072E2CC /* RequestProcessorProtocol.swift in Sources */,
 				AC219C49225FD7EB00B98631 /* IterableInboxViewController.swift in Sources */,
+				551FA7612988AC990072D0A9 /* IterableEmbeddedManager.swift in Sources */,
 				AC3DD9C82142F3650046F886 /* ClassExtensions.swift in Sources */,
 				AC219C50225FEDBD00B98631 /* IterableInboxCell.swift in Sources */,
 				AC84256226D6167E0066C627 /* AppExtensionHelper.swift in Sources */,
@@ -1962,6 +2048,7 @@
 				AC1AA1C924EBB3C300F29C6B /* IterableNotifications.swift in Sources */,
 				ACFD5AB324C8179D008E497A /* PersistenceHelper.swift in Sources */,
 				AC72A0CD20CF4CE2004D7997 /* IterableAppIntegration.swift in Sources */,
+				55023E9C29132881003F69DC /* IterableEmbeddedMessage.swift in Sources */,
 				AC72A0CE20CF4CE2004D7997 /* IterableAttributionInfo.swift in Sources */,
 				AC50865424C60172001DC132 /* IterableDataModel.xcdatamodeld in Sources */,
 				ACA8D1A321910C66001B1332 /* IterableMessaging.swift in Sources */,
@@ -1969,6 +2056,7 @@
 				AC942BC62539DEDA002988C9 /* ResourceHelper.swift in Sources */,
 				AC4B039622A8743F0043185B /* InAppManager+Functions.swift in Sources */,
 				ACA95D2F2754AA6800AF4666 /* IterableInboxView.swift in Sources */,
+				5511FF5529BBE698005D42AB /* IterableEmbeddedUpdateDelegate.swift in Sources */,
 				ACC51A6B22A879070095E81F /* EmptyInAppManager.swift in Sources */,
 				AC52C5B62729CE44000DCDCF /* IterableUserDefaults.swift in Sources */,
 				ACC362BF24D21192002C67BA /* IterableTaskProcessor.swift in Sources */,
@@ -1984,6 +2072,7 @@
 				55E9BE3429F9F5E6000C9FF2 /* DependencyContainerProtocol.swift in Sources */,
 				AC06E4D327948C32007A6F20 /* InboxState.swift in Sources */,
 				ACC362BD24D21172002C67BA /* IterableAPICallTaskProcessor.swift in Sources */,
+				55684312298C6A9F006A5EB4 /* EmbeddedMessagingSerialization.swift in Sources */,
 				AC84510922910A0C0052BB8F /* RequestCreator.swift in Sources */,
 				ACB8273F22372A5C00DB17D3 /* IterableHtmlMessageViewController.swift in Sources */,
 				AC5812F624F3A90F007E6D36 /* OfflineRequestProcessor.swift in Sources */,
@@ -2007,6 +2096,7 @@
 				ACD2B83D25B0A74A005D7A90 /* Models.swift in Sources */,
 				55DD2027269E5EA300773CC7 /* InboxViewControllerViewModelView.swift in Sources */,
 				AC1BED9523F1D4C700FDD75F /* MiscInboxClasses.swift in Sources */,
+				553449A129C2621E002E4599 /* EmbeddedMessagingProcessor.swift in Sources */,
 				556FB1EA244FAF6A00EDF6BD /* InAppPresenter.swift in Sources */,
 				AC2AED4424EBC905000EE5F3 /* IterableTaskScheduler.swift in Sources */,
 				55B9F15324B6625D00E8198A /* ApiClientProtocol.swift in Sources */,
@@ -2018,10 +2108,12 @@
 				AC2B79F721E6A38900A59080 /* NotificationHelper.swift in Sources */,
 				AC4095A422B18B9D006EF67C /* InboxViewControllerViewModel.swift in Sources */,
 				AC7A5261227BB9D10064D67E /* DependencyContainer.swift in Sources */,
+				551FA7582988A8FC0072D0A9 /* IterableEmbeddedManagerProtocol.swift in Sources */,
 				AC776DA6211A1B8A00C27C27 /* IterableRequestUtil.swift in Sources */,
 				55DD2053269FA28200773CC7 /* IterableInAppManagerProtocol.swift in Sources */,
 				ACEDF41D2183C2EC000B9BFE /* Pending.swift in Sources */,
 				552A0AA7280E1FDA00A80963 /* DeepLinkManager.swift in Sources */,
+				E9BF47962B46D5DC0033DB69 /* IterableEmbeddedView.swift in Sources */,
 				AC78F0E7253D7F09006378A5 /* IterablePushNotificationMetadata.swift in Sources */,
 				AC7125EF20D4579E0043BBC1 /* IterableConfig.swift in Sources */,
 				AC03094B21E532470003A288 /* InAppPersistence.swift in Sources */,
@@ -2038,6 +2130,7 @@
 				AC72A0C720CF4CE2004D7997 /* CommerceItem.swift in Sources */,
 				AC31B040232AB42100BE25EB /* InboxSessionManager.swift in Sources */,
 				ACE34AB321376B1000691224 /* LocalStorage.swift in Sources */,
+				551FA75E2988AC930072D0A9 /* EmptyEmbeddedManager.swift in Sources */,
 				AC8E9268246284F800BEB68E /* DataFieldsHelper.swift in Sources */,
 				AC5E888924E1B7CE00752321 /* OnlineRequestProcessor.swift in Sources */,
 				AC978D3E24FF953C00372B8C /* NetworkConnectivityChecker.swift in Sources */,
@@ -2089,6 +2182,7 @@
 				ACA2A91A24AB266F001DFD17 /* Mocks.swift in Sources */,
 				5588DFAB28C045AE000697D7 /* MockInAppFetcher.swift in Sources */,
 				AC29D05C24B5A7E000A9E019 /* CI.swift in Sources */,
+				9FF05EB12AFEA5FA005311F7 /* MockAuthManager.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2102,6 +2196,7 @@
 				AC2C668720D3435700D46CC9 /* ActionRunnerTests.swift in Sources */,
 				00CB31B621096129004ACDEC /* TestUtils.swift in Sources */,
 				AC89661E2124FBCE0051A6CD /* AutoRegistrationTests.swift in Sources */,
+				9FF05EAF2AFEA5FA005311F7 /* MockAuthManager.swift in Sources */,
 				ACA8D1A921965B7D001B1332 /* InAppTests.swift in Sources */,
 				5588DFB928C045E3000697D7 /* MockInAppDelegate.swift in Sources */,
 				5588DFD128C0465E000697D7 /* MockAPNSTypeChecker.swift in Sources */,
@@ -2109,6 +2204,7 @@
 				AC8F35A2239806B500302994 /* InboxViewControllerViewModelTests.swift in Sources */,
 				AC995F9A2166EEB50099A184 /* CommonMocks.swift in Sources */,
 				5588DFE128C046B7000697D7 /* MockLocalStorage.swift in Sources */,
+				1CBFFE1B2A97AEEF00ED57EE /* EmbeddedMessagingProcessorTests.swift in Sources */,
 				5588DF8128C04494000697D7 /* MockUrlDelegate.swift in Sources */,
 				5585DF8F22A73390000A32B9 /* IterableInboxViewControllerTests.swift in Sources */,
 				55B9F15124B3D33700E8198A /* AuthTests.swift in Sources */,
@@ -2144,8 +2240,10 @@
 				AC2C668420D3370600D46CC9 /* Mocks.swift in Sources */,
 				5588DF9928C04519000697D7 /* MockPushTracker.swift in Sources */,
 				AC64626B2140AACF0046E1BD /* IterableAPIResponseTests.swift in Sources */,
+				1CBFFE1D2A97AEEF00ED57EE /* EmbeddedMessagingSerializationTests.swift in Sources */,
 				5588DFB128C045C9000697D7 /* MockInAppDisplayer.swift in Sources */,
 				55B37FC6229752DD0042F13A /* OrderedDictionaryTests.swift in Sources */,
+				1CBFFE1C2A97AEEF00ED57EE /* EmbeddedSessionManagerTests.swift in Sources */,
 				5588DFD928C04683000697D7 /* MockWebView.swift in Sources */,
 				55B5498423973B5C00243E87 /* InboxSessionManagerTests.swift in Sources */,
 				ACB37AB0240268A60093A8EA /* SampleInboxViewDelegateImplementations.swift in Sources */,
@@ -2159,6 +2257,7 @@
 				ACEDF41F2183C436000B9BFE /* PendingTests.swift in Sources */,
 				AC1B29002742579000AD2BE3 /* InAppNavigationTests.swift in Sources */,
 				5588DF7128C0442D000697D7 /* MockDateProvider.swift in Sources */,
+				1CBFFE1A2A97AEEF00ED57EE /* EmbeddedManagerTests.swift in Sources */,
 				5588DF9128C044DE000697D7 /* MockUrlOpener.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -2198,6 +2297,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				5588DFB828C045E3000697D7 /* MockInAppDelegate.swift in Sources */,
+				9FF05EAE2AFEA5FA005311F7 /* MockAuthManager.swift in Sources */,
 				5588DF7028C0442D000697D7 /* MockDateProvider.swift in Sources */,
 				5588DFF028C046FF000697D7 /* MockMessageViewControllerEventTracker.swift in Sources */,
 				ACB37AB124026C1E0093A8EA /* SampleInboxViewDelegateImplementations.swift in Sources */,
@@ -2261,6 +2361,7 @@
 				ACC6A8502323910D003CC4BE /* UITestsHelper.swift in Sources */,
 				5588DFAA28C045AE000697D7 /* MockInAppFetcher.swift in Sources */,
 				ACFF4287246569D300FDF10D /* CommonExtensions.swift in Sources */,
+				9FF05EB02AFEA5FA005311F7 /* MockAuthManager.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2287,6 +2388,7 @@
 				5588DFCE28C0465E000697D7 /* MockAPNSTypeChecker.swift in Sources */,
 				5588DFDE28C046B7000697D7 /* MockLocalStorage.swift in Sources */,
 				ACA8D1A52196309C001B1332 /* Common.swift in Sources */,
+				9FF05EAC2AFEA5FA005311F7 /* MockAuthManager.swift in Sources */,
 				5588DFB628C045E3000697D7 /* MockInAppDelegate.swift in Sources */,
 				5588DF8628C044BE000697D7 /* MockCustomActionDelegate.swift in Sources */,
 				AC995F992166EE490099A184 /* CommonMocks.swift in Sources */,
@@ -2325,6 +2427,7 @@
 				5588DF7C28C04463000697D7 /* MockNotificationResponse.swift in Sources */,
 				5588DFD428C0465E000697D7 /* MockAPNSTypeChecker.swift in Sources */,
 				5588DFE428C046B7000697D7 /* MockLocalStorage.swift in Sources */,
+				9FF05EB22AFEA5FA005311F7 /* MockAuthManager.swift in Sources */,
 				ACC362C924D2CA8C002C67BA /* Common.swift in Sources */,
 				ACC362C524D2C190002C67BA /* TaskProcessorTests.swift in Sources */,
 				AC2AED4224EBC60C000EE5F3 /* TaskRunnerTests.swift in Sources */,
@@ -2343,6 +2446,7 @@
 				5588DFE728C046D7000697D7 /* MockInboxState.swift in Sources */,
 				ACFF42A424656CCE00FDF10D /* ViewController.swift in Sources */,
 				5588DF7F28C04494000697D7 /* MockUrlDelegate.swift in Sources */,
+				9FF05EAD2AFEA5FA005311F7 /* MockAuthManager.swift in Sources */,
 				5588DF8728C044BE000697D7 /* MockCustomActionDelegate.swift in Sources */,
 				5588DFD728C04683000697D7 /* MockWebView.swift in Sources */,
 				5588DFEF28C046FF000697D7 /* MockMessageViewControllerEventTracker.swift in Sources */,
@@ -2537,9 +2641,10 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.2;
 				MTL_ENABLE_DEBUG_INFO = YES;
 				ONLY_ACTIVE_ARCH = YES;
+				"OTHER_SWIFT_FLAGS[arch=*]" = "-DCOCOAPODS -DSPM";
 				PRODUCT_NAME = IterableSDK;
 				SDKROOT = iphoneos;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
@@ -2598,8 +2703,9 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.2;
 				MTL_ENABLE_DEBUG_INFO = NO;
+				"OTHER_SWIFT_FLAGS[arch=*]" = "-DSPM -DCOCOAPODS";
 				PRODUCT_NAME = IterableSDK;
 				SDKROOT = iphoneos;
 				SWIFT_COMPILATION_MODE = wholemodule;
@@ -2623,7 +2729,7 @@
 				DYLIB_INSTALL_NAME_BASE = "@rpath";
 				INFOPLIST_FILE = "swift-sdk/Info.plist";
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -2654,7 +2760,7 @@
 				ENABLE_TESTABILITY = YES;
 				INFOPLIST_FILE = "swift-sdk/Info.plist";
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -2723,7 +2829,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = BP98Z28R86;
 				INFOPLIST_FILE = "Tests/unit-tests/Info.plist";
-				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 13.6;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -2743,7 +2849,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = BP98Z28R86;
 				INFOPLIST_FILE = "Tests/unit-tests/Info.plist";
-				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 13.6;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -2771,7 +2877,7 @@
 				ENABLE_TESTABILITY = YES;
 				INFOPLIST_FILE = "notification-extension/Info.plist";
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -2803,7 +2909,7 @@
 				ENABLE_TESTABILITY = YES;
 				INFOPLIST_FILE = "notification-extension/Info.plist";
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",

@@ -39,6 +39,12 @@ enum Const {
         static let updateEmail = "users/updateEmail"
         static let updateSubscriptions = "users/updateSubscriptions"
         static let getRemoteConfiguration = "mobile/getRemoteConfiguration"
+        static let getEmbeddedMessages = "embedded-messaging/messages"
+        static let embeddedMessageReceived = "embedded-messaging/events/received"
+        static let embeddedMessageClick = "embedded-messaging/events/click"
+        static let embeddedMessageDismiss = "embedded-messaging/events/dismiss"
+        static let embeddedMessageImpression = "embedded-messaging/events/impression"
+        static let trackEmbeddedSession = "embedded-messaging/events/session"
     }
     
     public enum UserDefault {
@@ -93,6 +99,7 @@ enum Const {
 enum JsonKey {
     static let email = "email"
     static let userId = "userId"
+    static let userKey = "userKey"
     static let currentEmail = "currentEmail"
     static let currentUserId = "currentUserId"
     static let newEmail = "newEmail"
@@ -167,6 +174,16 @@ enum JsonKey {
     
     static let contentType = "Content-Type"
     
+    
+//    embedded
+    static let embeddedSessionId = "session"
+    static let placementId = "placementId"
+    static let embeddedSessionStart = "embeddedSessionStart"
+    static let embeddedSessionEnd = "embeddedSessionEnd"
+    static let embeddedButtonId = "buttonIdentifier"
+    static let embeddedTargetUrl = "targetUrl"
+    
+    
     enum ActionButton {
         static let identifier = "identifier"
         static let action = "action"
@@ -198,6 +215,11 @@ enum JsonKey {
         static let systemName = "systemName"
         static let systemVersion = "systemVersion"
         static let userInterfaceIdiom = "userInterfaceIdiom"
+    }
+    
+    enum Embedded {
+        static let packageName = "packageName"
+        static let sdkVersion = "SDKVersion"
     }
     
     enum Header {
@@ -357,6 +379,7 @@ enum MobileDeviceType: String, Codable {
     case push
     case universalLink
     case inApp
+    case embedded
 }
 
 // Lowest level that will be logged. By default the LogLevel is set to LogLevel.info.
