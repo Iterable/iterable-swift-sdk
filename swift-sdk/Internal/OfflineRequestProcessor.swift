@@ -8,7 +8,7 @@ struct OfflineRequestProcessor: RequestProcessorProtocol {
     init(apiKey: String,
          authProvider: AuthProvider?,
          authManager: IterableAuthManagerProtocol?,
-         endPoint: String,
+         endpoint: String,
          deviceMetadata: DeviceMetadata,
          taskScheduler: IterableTaskScheduler,
          taskRunner: IterableTaskRunner,
@@ -18,7 +18,7 @@ struct OfflineRequestProcessor: RequestProcessorProtocol {
         self.apiKey = apiKey
         self.authProvider = authProvider
         self.authManager = authManager
-        self.endPoint = endPoint
+        self.endpoint = endpoint
         self.deviceMetadata = deviceMetadata
         self.taskScheduler = taskScheduler
         self.taskRunner = taskRunner
@@ -231,6 +231,76 @@ struct OfflineRequestProcessor: RequestProcessorProtocol {
                                    identifier: #function)
     }
     
+    @discardableResult
+    func track(embeddedMessageReceived message: IterableEmbeddedMessage,
+               onSuccess: OnSuccessHandler? = nil,
+               onFailure: OnFailureHandler? = nil) -> Pending<SendRequestValue, SendRequestError> {
+        let requestGenerator = { (requestCreator: RequestCreator) in
+            requestCreator.createEmbeddedMessageReceivedRequest(message)
+        }
+        
+        return sendIterableRequest(requestGenerator: requestGenerator,
+                                   successHandler: onSuccess,
+                                   failureHandler: onFailure,
+                                   identifier: #function)
+    }
+    
+    @discardableResult
+    func track(embeddedMessageClick message: IterableEmbeddedMessage, buttonIdentifier: String?, clickedUrl: String,
+               onSuccess: OnSuccessHandler? = nil,
+               onFailure: OnFailureHandler? = nil) -> Pending<SendRequestValue, SendRequestError> {
+        let requestGenerator = { (requestCreator: RequestCreator) in
+            requestCreator.createEmbeddedMessageClickRequest(message, buttonIdentifier, clickedUrl)
+        }
+        
+        return sendIterableRequest(requestGenerator: requestGenerator,
+                                   successHandler: onSuccess,
+                                   failureHandler: onFailure,
+                                   identifier: #function)
+    }
+    
+    @discardableResult
+    func track(embeddedMessageDismiss message: IterableEmbeddedMessage,
+               onSuccess: OnSuccessHandler? = nil,
+               onFailure: OnFailureHandler? = nil) -> Pending<SendRequestValue, SendRequestError> {
+        let requestGenerator = { (requestCreator: RequestCreator) in
+            requestCreator.createEmbeddedMessageDismissRequest(message)
+        }
+        
+        return sendIterableRequest(requestGenerator: requestGenerator,
+                                   successHandler: onSuccess,
+                                   failureHandler: onFailure,
+                                   identifier: #function)
+    }
+    
+    @discardableResult
+    func track(embeddedMessageImpression message: IterableEmbeddedMessage,
+               onSuccess: OnSuccessHandler?,
+               onFailure: OnFailureHandler?) -> Pending<SendRequestValue, SendRequestError> {
+        let requestGenerator = { (requestCreator: RequestCreator) in
+            requestCreator.createEmbeddedMessageImpressionRequest(message)
+        }
+        
+        return sendIterableRequest(requestGenerator: requestGenerator,
+                                   successHandler: onSuccess,
+                                   failureHandler: onFailure,
+                                   identifier: #function)
+    }
+    
+    @discardableResult
+    func track(embeddedSession: IterableEmbeddedSession,
+               onSuccess: OnSuccessHandler?,
+               onFailure: OnFailureHandler?) -> Pending<SendRequestValue, SendRequestError> {
+        let requestGenerator = { (requestCreator: RequestCreator) in
+            requestCreator.createTrackEmbeddedSessionRequest(embeddedSession: embeddedSession)
+        }
+
+        return sendIterableRequest(requestGenerator: requestGenerator,
+                                   successHandler: onSuccess,
+                                   failureHandler: onFailure,
+                                   identifier: #function)
+    }
+    
     func deleteAllTasks() {
         ITBInfo()
         taskScheduler.deleteAllTasks()
@@ -239,7 +309,7 @@ struct OfflineRequestProcessor: RequestProcessorProtocol {
     private let apiKey: String
     private weak var authProvider: AuthProvider?
     private weak var authManager: IterableAuthManagerProtocol?
-    private let endPoint: String
+    private let endpoint: String
     private let deviceMetadata: DeviceMetadata
     private let notificationListener: NotificationListener
     private let taskScheduler: IterableTaskScheduler
@@ -263,8 +333,8 @@ struct OfflineRequestProcessor: RequestProcessorProtocol {
         }
         
         let apiCallRequest = IterableAPICallRequest(apiKey: apiKey,
-                                                    endPoint: endPoint,
-                                                    auth: authProvider.auth,
+                                                    endpoint: endpoint,
+                                                    authToken: authManager?.getAuthToken(),
                                                     deviceMetadata: deviceMetadata,
                                                     iterableRequest: iterableRequest)
         

@@ -23,7 +23,7 @@ class IterableRequestUtilTests: XCTestCase {
                     "systemVersion": "is",
                     "model": "awesome",
                 ],
-            ],
+            ] as [String : Any],
         ]
         
         let data = IterableRequestUtil.dictToJsonData(args)!

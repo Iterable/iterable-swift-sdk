@@ -181,7 +181,7 @@ class InAppParsingTests: XCTestCase {
         let inAppSettings = [
             "bgColor": [
                 "hexXXX": "007788",
-                "alpha": 0.5],
+                "alpha": 0.5] as [String : Any],
         ]
         
         let color = HtmlContentParser.parseBackgroundColor(fromInAppSettings: inAppSettings)
@@ -192,7 +192,7 @@ class InAppParsingTests: XCTestCase {
         let inAppSettings = [
             "bgColor": [
                 "hex": "xyz",
-                "alpha": 0.5],
+                "alpha": 0.5] as [String : Any],
         ]
         
         let color = HtmlContentParser.parseBackgroundColor(fromInAppSettings: inAppSettings)
@@ -203,7 +203,7 @@ class InAppParsingTests: XCTestCase {
         let inAppSettings = [
             "bgColor": [
                 "hex": "007788",
-                "alpha": 0.4],
+                "alpha": 0.4] as [String : Any],
         ]
         
         let color = HtmlContentParser.parseBackgroundColor(fromInAppSettings: inAppSettings)!
@@ -218,7 +218,7 @@ class InAppParsingTests: XCTestCase {
         let inAppSettings = [
             "bgColor": [
                 "hex": "007788",
-                "alphaXXX": 0.4],
+                "alphaXXX": 0.4] as [String : Any],
         ]
         
         let color = HtmlContentParser.parseBackgroundColor(fromInAppSettings: inAppSettings)!
@@ -233,7 +233,7 @@ class InAppParsingTests: XCTestCase {
         let inAppSettings = [
             "bgColor": [
                 "hex": "#007788",
-                "alpha": 0.4],
+                "alpha": 0.4] as [String : Any],
         ]
         
         let color = HtmlContentParser.parseBackgroundColor(fromInAppSettings: inAppSettings)!
@@ -802,12 +802,12 @@ class InAppParsingTests: XCTestCase {
             "inAppMessages": [[
                 "content": [
                     "html": "<a href='href1'>Click Here</a>",
-                    "inAppDisplaySettings": ["backgroundAlpha": 0.5, "left": ["percentage": 60], "right": ["percentage": 60], "bottom": ["displayOption": "AutoExpand"], "top": ["displayOption": "AutoExpand"]],
-                ],
+                    "inAppDisplaySettings": ["backgroundAlpha": 0.5, "left": ["percentage": 60], "right": ["percentage": 60], "bottom": ["displayOption": "AutoExpand"], "top": ["displayOption": "AutoExpand"]] as [String : Any],
+                ] as [String : Any],
                 "messageId": "messageId-\(id)",
                 "campaignId": id,
                 "customPayload": customPayload,
-            ]],
+            ] as [String : Any]],
         ]
     }
     

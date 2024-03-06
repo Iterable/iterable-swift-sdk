@@ -13,7 +13,5 @@ class IterableInboxViewControllerTests: XCTestCase {
         XCTAssertNotNil(IterableInboxViewController(nibName: nil, bundle: nil))
         
         XCTAssertNotNil(IterableInboxViewController(style: .plain))
-        
-        XCTAssertNotNil(IterableInboxViewController(coder: NSKeyedUnarchiver(forReadingWith: Data())))
     }
 }

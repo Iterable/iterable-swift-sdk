@@ -8,7 +8,7 @@ class RequestHandler: RequestHandlerProtocol {
     init(onlineProcessor: OnlineRequestProcessor,
          offlineProcessor: OfflineRequestProcessor?,
          healthMonitor: HealthMonitor?,
-         offlineMode: Bool = true) {
+         offlineMode: Bool = false) {
         ITBInfo()
         self.onlineProcessor = onlineProcessor
         self.offlineProcessor = offlineProcessor
@@ -254,6 +254,63 @@ class RequestHandler: RequestHandlerProtocol {
                                    inboxSessionId: inboxSessionId,
                                    onSuccess: onSuccess,
                                    onFailure: onFailure)
+        }
+    }
+    
+    @discardableResult
+    func track(embeddedMessageReceived message: IterableEmbeddedMessage,
+               onSuccess: OnSuccessHandler?,
+               onFailure: OnFailureHandler?) -> Pending<SendRequestValue, SendRequestError> {
+        sendUsingRequestProcessor { processor in
+            processor.track(embeddedMessageReceived: message,
+                            onSuccess: onSuccess,
+                            onFailure: onFailure)
+        }
+    }
+    
+    @discardableResult
+    func track(embeddedMessageClick message: IterableEmbeddedMessage, buttonIdentifier: String?, clickedUrl: String,
+               onSuccess: OnSuccessHandler?,
+               onFailure: OnFailureHandler?) -> Pending<SendRequestValue, SendRequestError> {
+        sendUsingRequestProcessor { processor in
+            processor.track(embeddedMessageClick: message,
+                            buttonIdentifier: buttonIdentifier,
+                            clickedUrl: clickedUrl,
+                            onSuccess: onSuccess,
+                            onFailure: onFailure)
+        }
+    }
+    
+    @discardableResult
+    func track(embeddedMessageDismiss message: IterableEmbeddedMessage,
+               onSuccess: OnSuccessHandler?,
+               onFailure: OnFailureHandler?) -> Pending<SendRequestValue, SendRequestError> {
+        sendUsingRequestProcessor { processor in
+            processor.track(embeddedMessageDismiss: message,
+                            onSuccess: onSuccess,
+                            onFailure: onFailure)
+        }
+    }
+    
+    @discardableResult
+    func track(embeddedMessageImpression message: IterableEmbeddedMessage,
+               onSuccess: OnSuccessHandler?,
+               onFailure: OnFailureHandler?) -> Pending<SendRequestValue, SendRequestError> {
+        sendUsingRequestProcessor { processor in
+            processor.track(embeddedMessageImpression: message,
+                            onSuccess: onSuccess,
+                            onFailure: onFailure)
+        }
+    }
+    
+    @discardableResult
+    func track(embeddedSession: IterableEmbeddedSession,
+               onSuccess: OnSuccessHandler?,
+               onFailure: OnFailureHandler?) -> Pending<SendRequestValue, SendRequestError> {
+        sendUsingRequestProcessor { processor in
+            processor.track(embeddedSession: embeddedSession,
+                            onSuccess: onSuccess,
+                            onFailure: onFailure)
         }
     }
     

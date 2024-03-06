@@ -9,14 +9,14 @@ struct OnlineRequestProcessor: RequestProcessorProtocol {
     init(apiKey: String,
          authProvider: AuthProvider?,
          authManager: IterableAuthManagerProtocol?,
-         endPoint: String,
+         endpoint: String,
          networkSession: NetworkSessionProtocol,
          deviceMetadata: DeviceMetadata,
          dateProvider: DateProviderProtocol) {
         self.authManager = authManager
         apiClient = ApiClient(apiKey: apiKey,
                               authProvider: authProvider,
-                              endPoint: endPoint,
+                              endpoint: endpoint,
                               networkSession: networkSession,
                               deviceMetadata: deviceMetadata,
                               dateProvider: dateProvider)
@@ -231,6 +231,56 @@ struct OnlineRequestProcessor: RequestProcessorProtocol {
                     successHandler: onSuccess,
                     failureHandler: onFailure,
                     requestIdentifier: "inAppConsumeWithSource")
+    }
+    
+    @discardableResult
+    func track(embeddedMessageReceived message: IterableEmbeddedMessage,
+               onSuccess: OnSuccessHandler? = nil,
+               onFailure: OnFailureHandler? = nil) -> Pending<SendRequestValue, SendRequestError> {
+        sendRequest(requestProvider: { apiClient.track(embeddedMessageReceived: message) },
+                    successHandler: onSuccess,
+                    failureHandler: onFailure,
+                    requestIdentifier: "trackEmbeddedMessageReceived")
+    }
+    
+    @discardableResult
+    func track(embeddedMessageClick message: IterableEmbeddedMessage, buttonIdentifier: String?, clickedUrl: String,
+               onSuccess: OnSuccessHandler? = nil,
+               onFailure: OnFailureHandler? = nil) -> Pending<SendRequestValue, SendRequestError> {
+        sendRequest(requestProvider: { apiClient.track(embeddedMessageClick: message, buttonIdentifier: buttonIdentifier, clickedUrl: clickedUrl) },
+                    successHandler: onSuccess,
+                    failureHandler: onFailure,
+                    requestIdentifier: "trackEmbeddedMessageClick")
+    }
+    
+    @discardableResult
+    func track(embeddedMessageDismiss message: IterableEmbeddedMessage,
+               onSuccess: OnSuccessHandler? = nil,
+               onFailure: OnFailureHandler? = nil) -> Pending<SendRequestValue, SendRequestError> {
+        sendRequest(requestProvider: { apiClient.track(embeddedMessageDismiss: message) },
+                    successHandler: onSuccess,
+                    failureHandler: onFailure,
+                    requestIdentifier: "trackEmbeddedMessageDismiss")
+    }
+    
+    @discardableResult
+    func track(embeddedMessageImpression message: IterableEmbeddedMessage,
+               onSuccess: OnSuccessHandler?,
+               onFailure: OnFailureHandler?) -> Pending<SendRequestValue, SendRequestError> {
+        sendRequest(requestProvider: { apiClient.track(embeddedMessageImpression: message) },
+                    successHandler: onSuccess,
+                    failureHandler: onFailure,
+                    requestIdentifier: "trackEmbeddedMessageImpression")
+    }
+    
+    @discardableResult
+    func track(embeddedSession: IterableEmbeddedSession,
+               onSuccess: OnSuccessHandler? = nil,
+               onFailure: OnFailureHandler? = nil) -> Pending<SendRequestValue, SendRequestError> {
+        sendRequest(requestProvider: { apiClient.track(embeddedSession: embeddedSession) },
+                    successHandler: onSuccess,
+                    failureHandler: onFailure,
+                    requestIdentifier: "trackEmbeddedSession")
     }
     
     func getRemoteConfiguration() -> Pending<RemoteConfiguration, SendRequestError> {

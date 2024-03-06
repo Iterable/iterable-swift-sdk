@@ -11,6 +11,8 @@ class IterableAPITests: XCTestCase {
     private static let apiKey = "zeeApiKey"
     private static let email = "user@example.com"
     private static let userId = "testUserId"
+    private static let apiEndPointUS = "https://api.iterable.com/api/"
+    private static let apiEndPointEU = "https://api.eu.iterable.com/api/"
     
     override func setUp() {
         super.setUp()
@@ -32,6 +34,32 @@ class IterableAPITests: XCTestCase {
         let internalAPI = InternalIterableAPI.initializeForTesting(apiKey: IterableAPITests.apiKey, config: config)
         
         XCTAssertEqual(internalAPI.apiKey, IterableAPITests.apiKey)
+    }
+    
+    func testInitializeWithDefaultDataRegion() {
+        let prodIntegrationName = "the-best-app-ever"
+
+        let config = IterableConfig()
+        config.pushIntegrationName = prodIntegrationName
+        config.inAppDisplayInterval = 1.0
+        config.dataRegion = IterableDataRegion.US
+
+        let internalAPI = InternalIterableAPI.initializeForTesting(apiKey: IterableAPITests.apiKey, config: config)
+
+        XCTAssertEqual(internalAPI.apiEndPointForTest, IterableAPITests.apiEndPointUS)
+    }
+    
+    func testInitializeWithEUDataRegion() {
+        let prodIntegrationName = "the-best-app-ever"
+
+        let config = IterableConfig()
+        config.pushIntegrationName = prodIntegrationName
+        config.inAppDisplayInterval = 1.0
+        config.dataRegion = IterableDataRegion.EU
+
+        let internalAPI = InternalIterableAPI.initializeForTesting(apiKey: IterableAPITests.apiKey, config: config)
+
+        XCTAssertEqual(internalAPI.apiEndPointForTest, IterableAPITests.apiEndPointEU)
     }
     
     func testInitializeCheckEndpoint() {
@@ -163,6 +191,78 @@ class IterableAPITests: XCTestCase {
             onFailure: { _, _ in expectation.fulfill() }
         )
         
+        wait(for: [expectation], timeout: testExpectationTimeout)
+    }
+
+    func testSetEmailWithCallbackSuccess() {
+        let expectation = XCTestExpectation(description: "Set email with callback success")
+
+        let config = IterableConfig()
+        let networkSession = MockNetworkSession(statusCode: 200)
+        let internalAPI = InternalIterableAPI.initializeForTesting(apiKey: IterableAPITests.apiKey, config: config, networkSession: networkSession)
+                
+        internalAPI.setEmail("test@example.com", successHandler: { success in
+            XCTAssertNotNil(success)
+            expectation.fulfill()
+        }, failureHandler: { _, _ in
+            XCTFail("Failed to set email")
+            expectation.fulfill()
+        })
+        internalAPI.register(token: "zeeToken".data(using: .utf8)!)
+        wait(for: [expectation], timeout: testExpectationTimeout)
+    }
+
+    func testSetEmailWithCallbackFailure() {
+        let expectation = XCTestExpectation(description: "Set email with callback failure")
+        
+        let config = IterableConfig()
+        let networkSession = MockNetworkSession(statusCode: 400)
+        let internalAPI = InternalIterableAPI.initializeForTesting(apiKey: IterableAPITests.apiKey, config: config, networkSession: networkSession)
+
+        internalAPI.setEmail("invalid_email", successHandler: { success in
+            XCTFail("Email should not be set successfully")
+            expectation.fulfill()
+        }, failureHandler: { _, error in
+            XCTAssertNotNil(error)
+            expectation.fulfill()
+        })
+        internalAPI.register(token: "zeeToken".data(using: .utf8)!)
+        wait(for: [expectation], timeout: testExpectationTimeout)
+    }
+
+    func testSetUserIdWithCallbackSuccess() {
+        let expectation = XCTestExpectation(description: "Set user ID with callback success")
+        
+        let config = IterableConfig()
+        let networkSession = MockNetworkSession(statusCode: 200)
+        let internalAPI = InternalIterableAPI.initializeForTesting(apiKey: IterableAPITests.apiKey, config: config, networkSession: networkSession)
+        
+        internalAPI.setUserId("user123", successHandler: { success in
+            XCTAssertNotNil(success)
+            expectation.fulfill()
+        }, failureHandler: { _, _ in
+            XCTFail("Failed to set user ID")
+            expectation.fulfill()
+        })
+        internalAPI.register(token: "zeeToken".data(using: .utf8)!)
+        wait(for: [expectation], timeout: testExpectationTimeout)
+    }
+
+    func testSetUserIdWithCallbackFailure() {
+        let expectation = XCTestExpectation(description: "Set user ID with callback failure")
+        
+        let config = IterableConfig()
+        let networkSession = MockNetworkSession(statusCode: 400)
+        let internalAPI = InternalIterableAPI.initializeForTesting(apiKey: IterableAPITests.apiKey, config: config, networkSession: networkSession)
+        
+        internalAPI.setUserId("user123", successHandler: { success in
+            XCTFail("User ID should not be set successfully")
+            expectation.fulfill()
+        }, failureHandler: { _, error in
+            XCTAssertNotNil(error)
+            expectation.fulfill()
+        })
+        internalAPI.register(token: "zeeToken".data(using: .utf8)!)
         wait(for: [expectation], timeout: testExpectationTimeout)
     }
     
@@ -954,7 +1054,7 @@ class IterableAPITests: XCTestCase {
                 "defaultAction": [
                     "type": "customAction",
                 ],
-            ],
+            ] as [String : Any],
         ]
         
         let launchOptions: [UIApplication.LaunchOptionsKey: Any] = [UIApplication.LaunchOptionsKey.remoteNotification: userInfo]
@@ -985,7 +1085,7 @@ class IterableAPITests: XCTestCase {
                     "type": "openUrl",
                     "data": "http://somewhere.com",
                 ],
-            ],
+            ] as [String : Any],
         ]
         let launchOptions: [UIApplication.LaunchOptionsKey: Any] = [UIApplication.LaunchOptionsKey.remoteNotification: userInfo]
         let urlDelegate = MockUrlDelegate(returnValue: true)
@@ -1015,7 +1115,7 @@ class IterableAPITests: XCTestCase {
                     "type": "openUrl",
                     "data": "http://somewhere.com",
                 ],
-            ],
+            ] as [String : Any],
         ]
         
         let networkSession = MockNetworkSession(statusCode: 200)
@@ -1053,7 +1153,7 @@ class IterableAPITests: XCTestCase {
                 "templateId": 4321,
                 "messageId": messageId,
                 "isGhostPush": false,
-            ],
+            ] as [String : Any],
         ]
         
         let networkSession = MockNetworkSession(statusCode: 200)
@@ -1091,7 +1191,7 @@ class IterableAPITests: XCTestCase {
                 "templateId": 4321,
                 "messageId": messageId,
                 "isGhostPush": false,
-            ],
+            ] as [String : Any],
         ]
         
         let networkSession = MockNetworkSession(statusCode: 200)

@@ -8,6 +8,14 @@ import UIKit
 final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
     var apiKey: String
     
+    var lastPushPayload: [AnyHashable: Any]? {
+        get {
+            _payloadData
+        } set {
+            setPayloadData(newValue)
+        }
+    }
+
     var email: String? {
         get {
             _email
@@ -21,6 +29,12 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
             _userId
         } set {
             setUserId(newValue)
+        }
+    }
+    
+    var authToken: String? {
+        get {
+            authManager.getAuthToken()
         }
     }
     
@@ -38,10 +52,6 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
         DeviceMetadata(deviceId: deviceId,
                        platform: JsonValue.iOS,
                        appPackageName: Bundle.main.appPackageName ?? "")
-    }
-    
-    var lastPushPayload: [AnyHashable: Any]? {
-        localStorage.getLastPushPayload(dateProvider.currentDate)
     }
     
     var attributionInfo: IterableAttributionInfo? {
@@ -72,6 +82,17 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
         self.dependencyContainer.createAuthManager(config: self.config)
     }()
     
+    lazy var embeddedManager: IterableInternalEmbeddedManagerProtocol = {
+        self.dependencyContainer.createEmbeddedManager(config: self.config,
+                                                                apiClient: self.apiClient)
+    }()
+    
+    var apiEndPointForTest: String {
+        get {
+            apiEndPoint
+        }
+    }
+    
     // MARK: - SDK Functions
     
     @discardableResult func handleUniversalLink(_ url: URL) -> Bool {
@@ -79,6 +100,7 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
                                                                    urlDelegate: config.urlDelegate,
                                                                    urlOpener: urlOpener,
                                                                    allowedProtocols: config.allowedProtocols)
+        
         pending.onSuccess { attributionInfo in
             if let attributionInfo = attributionInfo {
                 self.attributionInfo = attributionInfo
@@ -94,9 +116,19 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
     func removeDeviceAttribute(name: String) {
         deviceAttributes.removeValue(forKey: name)
     }
-    
-    func setEmail(_ email: String?, authToken: String? = nil) {
+
+    func setPayloadData(_ data: [AnyHashable: Any]?) {
         ITBInfo()
+        _payloadData = data
+    }
+    
+    func setEmail(_ email: String?, authToken: String? = nil, successHandler: OnSuccessHandler? = nil, failureHandler: OnFailureHandler? = nil) {
+        ITBInfo()
+        
+        if _email == email && email != nil && authToken != nil {
+            checkAndUpdateAuthToken(authToken)
+            return
+        }
         
         if _email == email {
             return
@@ -106,14 +138,21 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
         
         _email = email
         _userId = nil
+        _successCallback = successHandler
+        _failureCallback = failureHandler
         
         storeIdentifierData()
         
         onLogin(authToken)
     }
     
-    func setUserId(_ userId: String?, authToken: String? = nil) {
+    func setUserId(_ userId: String?, authToken: String? = nil, successHandler: OnSuccessHandler? = nil, failureHandler: OnFailureHandler? = nil) {
         ITBInfo()
+        
+        if _userId == userId && userId != nil && authToken != nil {
+            checkAndUpdateAuthToken(authToken)
+            return
+        }
         
         if _userId == userId {
             return
@@ -123,6 +162,8 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
         
         _email = nil
         _userId = userId
+        _successCallback = successHandler
+        _failureCallback = failureHandler
         
         storeIdentifierData()
         
@@ -141,6 +182,7 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
         guard let appName = pushIntegrationName else {
             let errorMessage = "Not registering device token - appName must not be nil"
             ITBError(errorMessage)
+            _failureCallback?(errorMessage, nil)
             onFailure?(errorMessage, nil)
             return
         }
@@ -155,8 +197,15 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
                                                   sdkVersion: localStorage.sdkVersion)
         requestHandler.register(registerTokenInfo: registerTokenInfo,
                                 notificationStateProvider: notificationStateProvider,
-                                onSuccess: onSuccess,
-                                onFailure: onFailure)
+                                onSuccess: { (_ data: [AnyHashable: Any]?) in
+                                                self._successCallback?(data)
+                                                onSuccess?(data)
+                                },
+                                onFailure: { (_ reason: String?, _ data: Data?) in
+                                                self._failureCallback?(reason, data)
+                                                onFailure?(reason, data)
+                                }
+        )
     }
     
     @discardableResult
@@ -381,6 +430,53 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
                                     onFailure: onFailure)
     }
     
+    @discardableResult
+    func track(embeddedMessageReceived message: IterableEmbeddedMessage,
+               onSuccess: OnSuccessHandler? = nil,
+               onFailure: OnFailureHandler? = nil) -> Pending<SendRequestValue, SendRequestError> {
+        requestHandler.track(embeddedMessageReceived: message,
+                             onSuccess: onSuccess,
+                             onFailure: onFailure)
+    }
+    
+    @discardableResult
+    func track(embeddedMessageClick message: IterableEmbeddedMessage,
+               buttonIdentifier: String?,
+               clickedUrl: String,
+               onSuccess: OnSuccessHandler? = nil,
+               onFailure: OnFailureHandler? = nil) -> Pending<SendRequestValue, SendRequestError> {
+        requestHandler.track(embeddedMessageClick: message,
+                             buttonIdentifier: buttonIdentifier,
+                             clickedUrl: clickedUrl,
+                             onSuccess: onSuccess,
+                             onFailure: onFailure)
+    }
+    
+    @discardableResult
+    func track(embeddedMessageDismiss message: IterableEmbeddedMessage,
+               onSuccess: OnSuccessHandler? = nil,
+               onFailure: OnFailureHandler? = nil) -> Pending<SendRequestValue, SendRequestError> {
+        requestHandler.track(embeddedMessageDismiss: message,
+                             onSuccess: onSuccess,
+                             onFailure: onFailure)
+    }
+    
+    @discardableResult
+    func track(embeddedMessageImpression message: IterableEmbeddedMessage,
+               onSuccess: OnSuccessHandler? = nil,
+               onFailure: OnFailureHandler? = nil) -> Pending<SendRequestValue, SendRequestError> {
+        requestHandler.track(embeddedMessageImpression: message,
+                             onSuccess: onSuccess,
+                             onFailure: onFailure)
+    }
+    
+    @discardableResult
+    func track(embeddedSession: IterableEmbeddedSession,
+               onSuccess: OnSuccessHandler? = nil,
+               onFailure: OnFailureHandler? = nil) -> Pending<SendRequestValue, SendRequestError> {
+        requestHandler.track(embeddedSession: embeddedSession, onSuccess: onSuccess, onFailure: onFailure)
+    }
+    
     // MARK: - Private/Internal
     
     private var config: IterableConfig
@@ -400,7 +496,11 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
     private var deepLinkManager: DeepLinkManager
     
     private var _email: String?
+    private var _payloadData: [AnyHashable: Any]?
     private var _userId: String?
+    private var _successCallback: OnSuccessHandler? = nil
+    private var _failureCallback: OnFailureHandler? = nil
+
     
     /// the hex representation of this device token
     private var hexToken: String?
@@ -410,7 +510,7 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
     lazy var apiClient: ApiClientProtocol = {
         ApiClient(apiKey: apiKey,
                   authProvider: self,
-                  endPoint: apiEndPoint,
+                  endpoint: apiEndPoint,
                   networkSession: networkSession,
                   deviceMetadata: deviceMetadata,
                   dateProvider: dateProvider)
@@ -420,7 +520,7 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
         let offlineMode = self.localStorage.offlineMode
         return dependencyContainer.createRequestHandler(apiKey: apiKey,
                                                         config: config,
-                                                        endPoint: apiEndPoint,
+                                                        endpoint: apiEndPoint,
                                                         authProvider: self,
                                                         authManager: authManager,
                                                         deviceMetadata: deviceMetadata,
@@ -467,8 +567,9 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
         storeIdentifierData()
         
         authManager.logoutUser()
-        
+                
         _ = inAppManager.reset()
+        _ = embeddedManager.reset()
         
         try? requestHandler.handleLogout()
     }
@@ -492,6 +593,8 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
     }
     
     private func requestNewAuthToken() {
+        ITBInfo()
+        
         authManager.requestNewAuthToken(hasFailedPriorAuth: false, onSuccess: { [weak self] token in
             if token != nil {
                 self?.completeUserLogin()
@@ -508,6 +611,8 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
         
         if config.autoPushRegistration {
             notificationStateProvider.registerForRemoteNotifications()
+        } else {
+            _successCallback?([:])
         }
         
         _ = inAppManager.scheduleSync()
@@ -519,16 +624,27 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
     }
     
     private func save(pushPayload payload: [AnyHashable: Any]) {
-        let expiration = Calendar.current.date(byAdding: .hour,
-                                               value: Const.UserDefault.payloadExpiration,
-                                               to: dateProvider.currentDate)
-        localStorage.saveLastPushPayload(payload, withExpiration: expiration)
         
         if let metadata = IterablePushNotificationMetadata.metadata(fromLaunchOptions: payload) {
             if let templateId = metadata.templateId {
                 attributionInfo = IterableAttributionInfo(campaignId: metadata.campaignId, templateId: templateId, messageId: metadata.messageId)
             }
+
+            if !metadata.isGhostPush {
+                lastPushPayload = payload
+            }
         }
+    }
+    
+    private func checkAndUpdateAuthToken(_ authToken: String? = nil) {
+        if config.authDelegate != nil && authToken != authManager.getAuthToken() {
+            onLogin(authToken)
+        }
+    }
+    
+    private static func setApiEndpoint(apiEndPointOverride: String?, config: IterableConfig) -> String {
+        let apiEndPoint = config.dataRegion
+        return apiEndPointOverride ?? apiEndPoint
     }
     
     init(apiKey: String,
@@ -541,7 +657,7 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
         self.apiKey = apiKey
         self.launchOptions = launchOptions
         self.config = config
-        apiEndPoint = apiEndPointOverride ?? Endpoint.api
+        apiEndPoint = InternalIterableAPI.setApiEndpoint(apiEndPointOverride: apiEndPointOverride, config: config)
         self.dependencyContainer = dependencyContainer
         dateProvider = dependencyContainer.dateProvider
         networkSession = dependencyContainer.networkSession
@@ -569,10 +685,10 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
                                                                                customActionDelegate: config.customActionDelegate,
                                                                                urlOpener: urlOpener,
                                                                                allowedProtocols: config.allowedProtocols,
-                                                                               inAppNotifiable: inAppManager)
+                                                                               inAppNotifiable: inAppManager,
+                                                                               embeddedNotifiable: embeddedManager)
         
         handle(launchOptions: launchOptions)
-        
         
         handlePendingNotification()
         
@@ -581,7 +697,7 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
         requestHandler.start()
         
         checkRemoteConfiguration()
-        
+                
         return inAppManager.start()
     }
     

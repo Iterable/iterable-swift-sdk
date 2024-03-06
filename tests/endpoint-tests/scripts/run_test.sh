@@ -14,6 +14,7 @@ fi
 
 echo Generating CI.swift
 sed -e "s/\(apiKey = \).*$/\1\"$api_key\"/" \
+-e "s/\(serverApiKey = \).*$/\1\"$server_api_key\"/" \
 -e "s/\(pushCampaignId = \).*$/\1\NSNumber($push_campaign_id)/" \
 -e "s/\(pushTemplateId = \).*$/\1\NSNumber($push_template_id)/" \
 -e "s/\(inAppCampaignId = \).*$/\1\NSNumber($in_app_campaign_id)/" \

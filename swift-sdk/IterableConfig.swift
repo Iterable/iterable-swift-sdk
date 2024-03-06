@@ -55,6 +55,7 @@ import Foundation
 /// The delegate for getting the authentication token
 @objc public protocol IterableAuthDelegate: AnyObject {
     @objc func onAuthTokenRequested(completion: @escaping AuthTokenRetrievalHandler)
+    @objc func onTokenRegistrationFailed(_ reason: String?)
 }
 
 /// Iterable Configuration Object. Use this when initializing the API.
@@ -123,4 +124,10 @@ public class IterableConfig: NSObject {
     
     /// Set whether the SDK should store in-apps only in memory, or in file storage
     public var useInMemoryStorageForInApps = false
+    
+    /// Sets data region which determines data center and endpoints used by the SDK
+    public var dataRegion: String = IterableDataRegion.US
+    
+    /// Allows for fetching embedded messages.
+    public var enableEmbeddedMessaging = false
 }

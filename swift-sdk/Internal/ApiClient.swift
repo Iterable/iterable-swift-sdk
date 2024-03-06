@@ -15,13 +15,13 @@ struct DeviceMetadata: Codable {
 class ApiClient {
     init(apiKey: String,
          authProvider: AuthProvider?,
-         endPoint: String,
+         endpoint: String,
          networkSession: NetworkSessionProtocol,
          deviceMetadata: DeviceMetadata,
          dateProvider: DateProviderProtocol) {
         self.apiKey = apiKey
         self.authProvider = authProvider
-        self.endPoint = endPoint
+        self.endpoint = endpoint
         self.networkSession = networkSession
         self.deviceMetadata = deviceMetadata
         self.dateProvider = dateProvider
@@ -34,8 +34,8 @@ class ApiClient {
         
         let currentDate = dateProvider.currentDate
         let apiCallRequest = IterableAPICallRequest(apiKey: apiKey,
-                                                    endPoint: endPoint,
-                                                    auth: authProvider.auth,
+                                                    endpoint: endpoint,
+                                                    authToken: authProvider.auth.authToken,
                                                     deviceMetadata: deviceMetadata,
                                                     iterableRequest: iterableRequest).addingCreatedAt(currentDate)
         return apiCallRequest.convertToURLRequest(sentAt: currentDate)
@@ -87,7 +87,7 @@ class ApiClient {
     
     private let apiKey: String
     private weak var authProvider: AuthProvider?
-    private let endPoint: String
+    private let endpoint: String
     private let networkSession: NetworkSessionProtocol
     private let deviceMetadata: DeviceMetadata
     private let dateProvider: DateProviderProtocol
@@ -215,5 +215,39 @@ extension ApiClient: ApiClientProtocol {
     func getRemoteConfiguration() -> Pending<RemoteConfiguration, SendRequestError> {
         let result = createRequestCreator().flatMap { $0.createGetRemoteConfigurationRequest() }
         return send(iterableRequestResult: result)
+    }
+    
+    // MARK: - Embedded Messaging
+    
+    func getEmbeddedMessages() -> Pending<PlacementsPayload, SendRequestError> {
+        let result = createRequestCreator().flatMap { $0.createGetEmbeddedMessagesRequest() }
+        return send(iterableRequestResult: result)
+    }
+    
+    @discardableResult
+    func track(embeddedMessageReceived message: IterableEmbeddedMessage) -> Pending<SendRequestValue, SendRequestError> {
+        let result = createRequestCreator().flatMap { $0.createEmbeddedMessageReceivedRequest(message) }
+        return send(iterableRequestResult: result)
+    }
+    
+    @discardableResult
+    func track(embeddedMessageClick message: IterableEmbeddedMessage, buttonIdentifier: String?, clickedUrl: String) -> Pending<SendRequestValue, SendRequestError> {
+        let result = createRequestCreator().flatMap { $0.createEmbeddedMessageClickRequest(message, buttonIdentifier, clickedUrl) }
+        return send(iterableRequestResult: result)
+    }
+    
+    func track(embeddedMessageDismiss message: IterableEmbeddedMessage) -> Pending<SendRequestValue, SendRequestError> {
+        let result = createRequestCreator().flatMap { $0.createEmbeddedMessageDismissRequest(message) }
+        return send(iterableRequestResult: result)
+    }
+    
+    func track(embeddedMessageImpression message: IterableEmbeddedMessage) -> Pending<SendRequestValue, SendRequestError> {
+        let result = createRequestCreator().flatMap { $0.createEmbeddedMessageImpressionRequest(message) }
+        return send(iterableRequestResult: result)
+    }
+    
+    func track(embeddedSession: IterableEmbeddedSession) -> Pending<SendRequestValue, SendRequestError> {
+        let result = createRequestCreator().flatMap { $0.createTrackEmbeddedSessionRequest(embeddedSession: embeddedSession) }
+        return send(iterableRequestResult:  result)
     }
 }

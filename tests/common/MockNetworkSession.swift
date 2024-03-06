@@ -73,7 +73,7 @@ class MockNetworkSession: NetworkSessionProtocol {
     
     convenience init(statusCode: Int = MockNetworkSession.defaultStatus, delay: TimeInterval = 0.0) {
         self.init(statusCode: statusCode,
-                  data: [:].toJsonData(),
+                  data: MockNetworkSession.defaultData,
                   delay: delay,
                   error: nil)
     }
@@ -192,7 +192,7 @@ class MockNetworkSession: NetworkSessionProtocol {
     }
     
     private static let defaultStatus = 200
-    private static let defaultData = [:].toJsonData()
+    private static let defaultData = Dictionary<AnyHashable, Any>().toJsonData()
     private static let defaultHttpVersion = "HTTP/1.1"
     private static let defaultHeaderFields: [String: String] = [:]
     
@@ -233,7 +233,7 @@ class NoNetworkNetworkSession: NetworkSessionProtocol {
         DispatchQueue.main.async {
             let response = HTTPURLResponse(url: request.url!, statusCode: 200, httpVersion: "HTTP/1.1", headerFields: [:])
             let error = NSError(domain: NSURLErrorDomain, code: -1009, userInfo: nil)
-            completionHandler(try! JSONSerialization.data(withJSONObject: [:], options: []), response, error)
+            completionHandler(try! JSONSerialization.data(withJSONObject: Dictionary<AnyHashable, Any>(), options: []), response, error)
         }
     }
     
@@ -241,7 +241,7 @@ class NoNetworkNetworkSession: NetworkSessionProtocol {
         DispatchQueue.main.async {
             let response = HTTPURLResponse(url: url, statusCode: 200, httpVersion: "HTTP/1.1", headerFields: [:])
             let error = NSError(domain: NSURLErrorDomain, code: -1009, userInfo: nil)
-            completionHandler(try! JSONSerialization.data(withJSONObject: [:], options: []), response, error)
+            completionHandler(try! JSONSerialization.data(withJSONObject: Dictionary<AnyHashable, Any>(), options: []), response, error)
         }
     }
     

@@ -110,7 +110,7 @@ class IterableHtmlMessageViewController: UIViewController {
     }
     
     static func create(parameters: Parameters,
-                       eventTracker: @escaping @autoclosure () -> MessageViewControllerEventTrackerProtocol? = MessageViewControllerEventTracker(requestHandler: IterableAPI.internalImplementation?.requestHandler),
+                       eventTracker: @escaping @autoclosure () -> MessageViewControllerEventTrackerProtocol? = MessageViewControllerEventTracker(requestHandler: IterableAPI.implementation?.requestHandler),
                        onClickCallback: ((URL) -> Void)?,
                        delegate: MessageViewControllerDelegate? = nil) -> IterableHtmlMessageViewController {
         IterableHtmlMessageViewController(parameters: parameters, eventTrackerProvider: eventTracker(), onClickCallback: onClickCallback, delegate: delegate)

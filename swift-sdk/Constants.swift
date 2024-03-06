@@ -39,10 +39,15 @@ enum Const {
         static let updateEmail = "users/updateEmail"
         static let updateSubscriptions = "users/updateSubscriptions"
         static let getRemoteConfiguration = "mobile/getRemoteConfiguration"
+        static let getEmbeddedMessages = "embedded-messaging/messages"
+        static let embeddedMessageReceived = "embedded-messaging/events/received"
+        static let embeddedMessageClick = "embedded-messaging/events/click"
+        static let embeddedMessageDismiss = "embedded-messaging/events/dismiss"
+        static let embeddedMessageImpression = "embedded-messaging/events/impression"
+        static let trackEmbeddedSession = "embedded-messaging/events/session"
     }
     
     public enum UserDefault {
-        static let payloadKey = "itbl_payload_key"
         static let attributionInfoKey = "itbl_attribution_info_key"
         static let emailKey = "itbl_email"
         static let userIdKey = "itbl_userid"
@@ -52,7 +57,6 @@ enum Const {
         static let sdkVersion = "itbl_sdk_version"
         static let offlineMode = "itbl_offline_mode"
         
-        static let payloadExpiration = 24
         static let attributionInfoExpiration = 24
     }
     
@@ -63,7 +67,6 @@ enum Const {
             static let email = "itbl_email"
             static let userId = "itbl_userid"
             static let authToken = "itbl_auth_token"
-            static let lastPushPayloadAndExpiration = "itbl_last_push_payload_and_expiration"
         }
     }
     
@@ -96,6 +99,7 @@ enum Const {
 enum JsonKey {
     static let email = "email"
     static let userId = "userId"
+    static let userKey = "userKey"
     static let currentEmail = "currentEmail"
     static let currentUserId = "currentUserId"
     static let newEmail = "newEmail"
@@ -170,6 +174,16 @@ enum JsonKey {
     
     static let contentType = "Content-Type"
     
+    
+//    embedded
+    static let embeddedSessionId = "session"
+    static let placementId = "placementId"
+    static let embeddedSessionStart = "embeddedSessionStart"
+    static let embeddedSessionEnd = "embeddedSessionEnd"
+    static let embeddedButtonId = "buttonIdentifier"
+    static let embeddedTargetUrl = "targetUrl"
+    
+    
     enum ActionButton {
         static let identifier = "identifier"
         static let action = "action"
@@ -201,6 +215,11 @@ enum JsonKey {
         static let systemName = "systemName"
         static let systemVersion = "systemVersion"
         static let userInterfaceIdiom = "userInterfaceIdiom"
+    }
+    
+    enum Embedded {
+        static let packageName = "packageName"
+        static let sdkVersion = "SDKVersion"
     }
     
     enum Header {
@@ -268,6 +287,11 @@ enum JsonValue {
         static let badApiKey = "BadApiKey"
         static let invalidJwtPayload = "InvalidJwtPayload"
     }
+}
+
+public enum IterableDataRegion {
+    public static let US = "https://api.iterable.com/api/"
+    public static let EU = "https://api.eu.iterable.com/api/"
 }
 
 public protocol JsonValueRepresentable {
@@ -355,6 +379,7 @@ enum MobileDeviceType: String, Codable {
     case push
     case universalLink
     case inApp
+    case embedded
 }
 
 // Lowest level that will be logged. By default the LogLevel is set to LogLevel.info.

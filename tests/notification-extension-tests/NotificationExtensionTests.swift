@@ -40,8 +40,8 @@ class NotificationExtensionTests: XCTestCase {
                     "identifier": "openAppButton",
                     "title": "Open App",
                     "action": [:],
-                ]],
-            ],
+                ] as [String : Any]],
+            ] as [String : Any],
         ]
         
         let request = UNNotificationRequest(identifier: "request", content: content, trigger: nil)
@@ -182,7 +182,7 @@ class NotificationExtensionTests: XCTestCase {
                         "action": [
                             "type": "customActionName",
                         ]
-                    ],
+                    ] as [String : Any],
                     [
                         "identifier": "textInputButton",
                         "title": "Text Input",
@@ -195,7 +195,7 @@ class NotificationExtensionTests: XCTestCase {
                         ]
                     ],
                 ]
-            ]
+            ] as [String : Any]
         ]
         
         let request = UNNotificationRequest(identifier: "request", content: content, trigger: nil)
@@ -244,9 +244,9 @@ class NotificationExtensionTests: XCTestCase {
                         "buttonType": "destructive",
                         "openApp": false,
                         "action": []
-                    ],
+                    ] as [String : Any],
                 ]
-            ]
+            ] as [String : Any]
         ]
         
         let request = UNNotificationRequest(identifier: "request", content: content, trigger: nil)
@@ -289,9 +289,9 @@ class NotificationExtensionTests: XCTestCase {
                         "buttonType": "textInput",
                         "openApp": false,
                         "action": []
-                    ],
+                    ] as [String : Any],
                 ]
-            ]
+            ] as [String : Any]
         ]
         
         let request = UNNotificationRequest(identifier: "request", content: content, trigger: nil)
@@ -335,9 +335,9 @@ class NotificationExtensionTests: XCTestCase {
                         "buttonType": "textInput",
                         "openApp": true,
                         "action": []
-                    ],
+                    ] as [String : Any],
                 ]
-            ]
+            ] as [String : Any]
         ]
         
         let request = UNNotificationRequest(identifier: "request", content: content, trigger: nil)
@@ -385,8 +385,8 @@ class NotificationExtensionTests: XCTestCase {
                         "type": "openUrl",
                         "data": "http://maps.apple.com/?ll=37.7828,-122.3984"
                     ],
-                ]],
-            ],
+                ] as [String : Any]],
+            ] as [String : Any],
         ]
         
         let request = UNNotificationRequest(identifier: "request", content: content, trigger: nil)
@@ -430,8 +430,8 @@ class NotificationExtensionTests: XCTestCase {
                         "iconType": "systemImage",
                         "imageName": "hand.thumbsup",
                     ],
-                ]],
-            ],
+                ] as [String : Any]],
+            ] as [String : Any],
         ]
         
         let request = UNNotificationRequest(identifier: "request", content: content, trigger: nil)
@@ -474,8 +474,8 @@ class NotificationExtensionTests: XCTestCase {
                         "iconType": "templateImage",
                         "imageName": "custom.thumbsup",
                     ],
-                ]],
-            ],
+                ] as [String : Any]],
+            ] as [String : Any],
         ]
         
         let request = UNNotificationRequest(identifier: "request", content: content, trigger: nil)
