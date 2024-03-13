@@ -36,7 +36,11 @@ import UIKit
     
     /// The `userInfo` dictionary which came with last push
     public static var lastPushPayload: [AnyHashable: Any]? {
-        implementation?.lastPushPayload
+        get {
+            implementation?.lastPushPayload
+        } set {
+            implementation?.lastPushPayload = newValue
+        }
     }
     
     /// Attribution info (`campaignId`, `messageId`, etc.) for last push open or app link click from an email
