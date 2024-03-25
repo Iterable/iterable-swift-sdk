@@ -438,15 +438,19 @@ struct RequestCreator {
         
         setCurrentUser(inDict: &args)
         
-        var path: String = Const.Path.getEmbeddedMessages
+        let basePath: String = Const.Path.getEmbeddedMessages
         
-        if let messageIds = currentMessageIds, !messageIds.isEmpty {
-            let messageQueryItems = messageIds.map { URLQueryItem(name: "currentMessageIds", value: $0) }
-            if var urlComponents = URLComponents(string: path) {
-                urlComponents.queryItems = (urlComponents.queryItems ?? []) + messageQueryItems
-                if let updatedPath = urlComponents.string {
-                    path = updatedPath
-                }
+        var path = basePath
+        
+        if !currentMessageIds!.isEmpty {
+            path += "?"
+        }
+        
+        for (index, messageId) in currentMessageIds!.enumerated() {
+            if index == 0 {
+                path += "currentMessageIds=" + messageId
+            } else {
+                path += "&currentMessageIds=" + messageId
             }
         }
         

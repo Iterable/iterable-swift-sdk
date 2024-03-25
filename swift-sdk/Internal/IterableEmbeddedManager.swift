@@ -154,7 +154,6 @@ class IterableEmbeddedManager: NSObject, IterableInternalEmbeddedManagerProtocol
     }
     
     private func retrieveEmbeddedMessages(completion: @escaping () -> Void) {
-        //let messageIds = ["messageId1", "messageId2"]
         
         apiClient.getEmbeddedMessages(currentMessageIds: messageIds)
             .onCompletion(
