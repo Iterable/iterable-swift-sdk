@@ -9,9 +9,9 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 - iOS SDK now includes a new privacy policy file indicating SDK's usage of user data
 
-### Changed
+### Fixed
 
-- Fix to allow auth token generation to occur only when the user is logged in
+- Fixed an issue where AuthManager's onTokenRequested would get called without user logged in
 - Updates logic for notificationsEnabled flag to be more inclusive in case of failures for fetching the current settings 
 
 ## [6.5.0]
