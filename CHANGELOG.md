@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## [6.5.1]
+
+### Added
+
+- Privacy manifest file which correctly declares how and which user data is tracked [source](https://developer.apple.com/videos/play/wwdc2023/10060/?time=139) 
+
+### Changed
+
+- Fix to allow auth token generation to occur only when the user is logged in
+- Updates logic for notificationsEnabled flag to be more inclusive in case of failures for fetching the current settings 
+
 ## [6.5.0]
 
 ### Added
