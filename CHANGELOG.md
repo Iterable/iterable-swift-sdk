@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## [6.5.1]
+
+### Added
+
+- iOS SDK now includes a new privacy policy file indicating SDK's usage of user data
+
+### Fixed
+
+- Fixed an issue where AuthManager's onTokenRequested would get called without user logged in
+- Updates logic for notificationsEnabled flag to be more inclusive in case of failures for fetching the current settings 
+
 ## [6.5.0]
 
 ### Added
