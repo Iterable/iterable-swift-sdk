@@ -101,7 +101,7 @@ public class AnonymousUserManager: AnonymousUserManagerProtocol {
                 if (!appName.isEmpty) {
                     anonSessions["mobilePushOptIn"] = appName
                 }
-                IterableAPI.implementation?.apiClient.trackAnonSession(createdAt: (Int(self.dateProvider.currentDate.timeIntervalSince1970) * 1000), requestJson: anonSessions)
+                let _ = IterableAPI.implementation?.apiClient.trackAnonSession(createdAt: (Int(self.dateProvider.currentDate.timeIntervalSince1970) * 1000), withUserId: userId, requestJson: anonSessions)
                 self.syncEvents()
             }
         }

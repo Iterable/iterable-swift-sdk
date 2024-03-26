@@ -291,7 +291,6 @@ extension InternalIterableAPI {
                                                          config: config,
                                                          apiEndPointOverride: apiEndPointOverride,
                                                          dependencyContainer: mockDependencyContainer)
-        
         internalImplementation.start().wait()
         
         return internalImplementation
