@@ -7,7 +7,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Added
 
-- Privacy manifest file which correctly declares how and which user data is tracked [source](https://developer.apple.com/videos/play/wwdc2023/10060/?time=139) 
+- iOS SDK now includes a new privacy policy file indicating SDK's usage of user data.
 
 ### Changed
 
