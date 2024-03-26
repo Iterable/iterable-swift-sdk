@@ -7,7 +7,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Added
 
-- iOS SDK now includes a new privacy policy file indicating SDK's usage of user data.
+- iOS SDK now includes a new privacy policy file indicating SDK's usage of user data
 
 ### Changed
 
