@@ -134,7 +134,14 @@ class MockAnonymousUserManager: AnonymousUserManagerProtocol {
                     anonSessions["mobilePushOptIn"] = appName
                 }
                 
-                let _ = self.mockApiClient.trackAnonSession(createdAt: (Int(self.dateProvider.currentDate.timeIntervalSince1970) * 1000), withUserId: userId, requestJson: anonSessions)
+                let response = self.mockApiClient.trackAnonSession(createdAt: (Int(self.dateProvider.currentDate.timeIntervalSince1970) * 1000), withUserId: userId, requestJson: anonSessions)
+                response.onError { error in
+                    print("response:: \(error.httpStatusCode)")
+                }
+                response.onSuccess {success in
+                    print("response:: success")
+
+                }
             }
         }
     }

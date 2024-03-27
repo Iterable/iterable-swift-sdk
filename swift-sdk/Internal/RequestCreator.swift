@@ -535,11 +535,6 @@ struct RequestCreator {
     }
 
     func createTrackAnonSessionRequest(createdAt: Int, withUserId userId: String, requestJson: [AnyHashable: Any]) -> Result<IterableRequest, IterableError> {
-        if case .none = auth.emailOrUserId {
-            ITBError(Self.authMissingMessage)
-            return .failure(IterableError.general(description: Self.authMissingMessage))
-        }
-        
         var body = [AnyHashable: Any]()
         
         var userDict = [AnyHashable: Any]()
