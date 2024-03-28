@@ -543,7 +543,7 @@ struct RequestCreator {
         userDict[JsonKey.mergeNestedObjects] = true
         userDict[JsonKey.createNewFields] = true
 
-        body.setValue(for: JsonKey.user, value: userDict)
+        body.setValue(for: JsonKey.Commerce.user, value: userDict)
         body.setValue(for: JsonKey.Body.createdAt, value: createdAt)
         body.setValue(for: JsonKey.deviceInfo, value: deviceMetadata.asDictionary())
         body.setValue(for: JsonKey.anonSessionContext, value: requestJson)
