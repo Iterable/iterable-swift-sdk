@@ -37,6 +37,7 @@ To learn more about various SDK features, read:
 - [Customizing Mobile Inbox on iOS](https://support.iterable.com/hc/articles/360039091471)
 - [iOS Universal Links](https://support.iterable.com/hc/articles/360035496511)
 - [Deep Links in Push Notifications](https://support.iterable.com/hc/articles/360035453971)
+- [Embedded Messages with Iterable's iOS SDK](https://support.iterable.com/hc/articles/23061840746900)
 
 ## Sample projects
 

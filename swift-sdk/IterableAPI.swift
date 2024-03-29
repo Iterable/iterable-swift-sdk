@@ -7,7 +7,7 @@ import UIKit
 
 @objcMembers public final class IterableAPI: NSObject {
     /// The current SDK version
-    public static let sdkVersion = "6.4.17"
+    public static let sdkVersion = "6.5.1"
     
     /// The email of the logged in user that this IterableAPI is using
     public static var email: String? {
@@ -208,6 +208,16 @@ import UIKit
         }
         
         return implementation.inAppManager
+    }
+    
+    public static var embeddedManager: IterableEmbeddedManagerProtocol {
+        guard let implementation = implementation else {
+            ITBError("The Iterable SDK is not initialized yet. Embedded Messaging will not function.")
+            assertionFailure("The Iterable SDK is not initialized yet. Embedded Messaging will not function.")
+            return EmptyEmbeddedManager()
+        }
+        
+        return implementation.embeddedManager
     }
     
     // MARK: - API Request Calls
@@ -601,6 +611,28 @@ import UIKit
                                             subscribedMessageTypeIds: subscribedMessageTypeIds,
                                             campaignId: campaignId,
                                             templateId: templateId)
+    }
+    
+    // MARK: Embedded Notifications
+    
+    /// Tracks analytics data from a session of using an inbox UI
+    /// NOTE: this is not normally used publicly, but is needed for our React Native SDK implementation
+    ///
+    /// - Parameters:
+    ///     - embeddedSession: the embedded session data type to track
+    @objc(embeddedSession:)
+    public static func track(embeddedSession: IterableEmbeddedSession) {
+        implementation?.track(embeddedSession: embeddedSession)
+    }
+    
+    @objc(embeddedMessageClick:buttonIdentifier:clickedUrl:)
+    public static func track(embeddedMessageClick: IterableEmbeddedMessage, buttonIdentifier: String?, clickedUrl: String) {
+        implementation?.track(embeddedMessageClick: embeddedMessageClick, buttonIdentifier: buttonIdentifier, clickedUrl: clickedUrl)
+    }
+    
+    @objc(embeddedMessageReceived:)
+    public static func track(embeddedMessageReceived: IterableEmbeddedMessage) {
+        implementation?.track(embeddedMessageReceived: embeddedMessageReceived)
     }
     
     // MARK: In-App Notifications

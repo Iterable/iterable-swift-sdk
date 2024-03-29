@@ -16,7 +16,7 @@ class AuthManager: IterableAuthManagerProtocol {
         self.dateProvider = dateProvider
         self.expirationRefreshPeriod = expirationRefreshPeriod
         
-        if self.delegate != nil {
+        if self.delegate != nil && (localStorage.email != nil || localStorage.userId != nil) {
             retrieveAuthToken()
         }
     }

@@ -42,17 +42,16 @@ jobs:
       - name: Install Cocoapods
         run: gem install cocoapods
 
-      - name: set version number and push podspecs to git
-        run: bundle exec fastlane ios bump_release_version version:$VERSION
-
       - name: clean cocaopods cache and lint
         run: bundle exec fastlane ios clean_and_lint
 
       - name: create xcframeworks and zip
         run: bundle exec fastlane ios build_xcframework output_dir:./output_dir
 
-      - name: create github release and upload assets
+      - name: create and push git tag
+        run: bundle exec fastlane ios create_git_tag version:$VERSION
 
+      - name: create github release and upload assets
         run: |
           bundle exec fastlane ios create_release version:$VERSION branch:$BRANCH changelog_section:$CHANGELOG_SECTION output_dir:$OUTPUT_DIR github_token:$GITHUB_TOKEN set_prerelease:$SET_PRERELEASE
 

@@ -127,4 +127,7 @@ public class IterableConfig: NSObject {
     
     /// Sets data region which determines data center and endpoints used by the SDK
     public var dataRegion: String = IterableDataRegion.US
+    
+    /// Allows for fetching embedded messages.
+    public var enableEmbeddedMessaging = false
 }
