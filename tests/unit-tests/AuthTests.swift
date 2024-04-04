@@ -431,6 +431,7 @@ class AuthTests: XCTestCase {
         let localStorage = MockLocalStorage()
         
         localStorage.authToken = mockEncodedPayload
+        localStorage.userId = AuthTests.userId
         
         let authManager = AuthManager(delegate: authDelegate,
                                       expirationRefreshPeriod: expirationRefreshPeriod,
@@ -457,6 +458,7 @@ class AuthTests: XCTestCase {
         
         let mockLocalStorage = MockLocalStorage()
         mockLocalStorage.authToken = mockEncodedPayload
+        mockLocalStorage.email = AuthTests.email
         
         let authManager = AuthManager(delegate: authDelegate,
                                       expirationRefreshPeriod: expirationRefreshPeriod,

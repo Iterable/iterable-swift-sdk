@@ -399,6 +399,8 @@
 		ACFF42A924656DA500FDF10D /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = ACFF42A824656D8E00FDF10D /* Assets.xcassets */; };
 		ACFF42AC24656DD100FDF10D /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = ACFF42AA24656DC800FDF10D /* LaunchScreen.storyboard */; };
 		ACFF42B02465B4AE00FDF10D /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACFF42AF2465B4AE00FDF10D /* AppDelegate.swift */; };
+		BA2BB8192BADD5A500EA0229 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = BA2BB8182BADD5A500EA0229 /* PrivacyInfo.xcprivacy */; };
+		BA2BB81A2BADD5A500EA0229 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = BA2BB8182BADD5A500EA0229 /* PrivacyInfo.xcprivacy */; };
 		E9BF47962B46D5DC0033DB69 /* IterableEmbeddedView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E9BF47952B46D5DC0033DB69 /* IterableEmbeddedView.swift */; };
 		E9BF47982B46DEB30033DB69 /* IterableEmbeddedView.xib in Resources */ = {isa = PBXBuildFile; fileRef = E9BF47972B46DEB30033DB69 /* IterableEmbeddedView.xib */; };
 /* End PBXBuildFile section */
@@ -802,6 +804,7 @@
 		ACFF42AD24656E7800FDF10D /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		ACFF42AE24656ECF00FDF10D /* ui-tests-app.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = "ui-tests-app.entitlements"; sourceTree = "<group>"; };
 		ACFF42AF2465B4AE00FDF10D /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
+		BA2BB8182BADD5A500EA0229 /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
 		E9BF47952B46D5DC0033DB69 /* IterableEmbeddedView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = IterableEmbeddedView.swift; sourceTree = "<group>"; };
 		E9BF47972B46DEB30033DB69 /* IterableEmbeddedView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = IterableEmbeddedView.xib; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -1198,6 +1201,7 @@
 		AC44C0EB22615F8100E0641D /* Resources */ = {
 			isa = PBXGroup;
 			children = (
+				BA2BB8182BADD5A500EA0229 /* PrivacyInfo.xcprivacy */,
 				E9BF47972B46DEB30033DB69 /* IterableEmbeddedView.xib */,
 				AC219C522260006600B98631 /* Assets.xcassets */,
 				AC50865224C60172001DC132 /* IterableDataModel.xcdatamodeld */,
@@ -1933,6 +1937,7 @@
 			files = (
 				AC219C532260006600B98631 /* Assets.xcassets in Resources */,
 				E9BF47982B46DEB30033DB69 /* IterableEmbeddedView.xib in Resources */,
+				BA2BB8192BADD5A500EA0229 /* PrivacyInfo.xcprivacy in Resources */,
 				AC219C51225FEDBD00B98631 /* SampleInboxCell.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1958,6 +1963,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				BA2BB81A2BADD5A500EA0229 /* PrivacyInfo.xcprivacy in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
