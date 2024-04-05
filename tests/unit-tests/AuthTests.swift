@@ -470,6 +470,35 @@ class AuthTests: XCTestCase {
         wait(for: [condition1], timeout: testExpectationTimeout)
     }
     
+    func testAuthTokenRefreshSkippedIfUserLoggedOutAfterReschedule() {
+        let callbackNotCalledExpectation = expectation(description: "\(#function) - Callback got called. Which it shouldn't when there is no userId or emailId in memory")
+        callbackNotCalledExpectation.isInverted = true
+        
+        let authDelegate = createAuthDelegate({
+            callbackNotCalledExpectation.fulfill()
+            return nil
+        })
+        
+        let expirationRefreshPeriod: TimeInterval = 0
+        let waitTime: TimeInterval = 1.0
+        let expirationTimeSinceEpoch = Date(timeIntervalSinceNow: expirationRefreshPeriod + waitTime).timeIntervalSince1970
+        let mockEncodedPayload = createMockEncodedPayload(exp: Int(expirationTimeSinceEpoch))
+        
+        let mockLocalStorage = MockLocalStorage()
+        mockLocalStorage.authToken = mockEncodedPayload
+        mockLocalStorage.email = nil
+        mockLocalStorage.userId = nil
+        
+        let authManager = AuthManager(delegate: authDelegate,
+                                      expirationRefreshPeriod: expirationRefreshPeriod,
+                                      localStorage: mockLocalStorage,
+                                      dateProvider: MockDateProvider())
+        
+        let _ = authManager
+        
+        wait(for: [callbackNotCalledExpectation], timeout: 2.0)
+    }
+    
     func testAuthTokenCallbackOnSetEmail() {
         let condition1 = expectation(description: "\(#function) - callback didn't get called after setEmail")
         
