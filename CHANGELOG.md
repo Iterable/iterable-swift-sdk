@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## [6.5.2]
+### Fixed
+- The Privacy Manifest has been relocated to the resources folder within the SDK. This adjustment facilitates the inclusion of the SDK's privacy manifest in the generation process.
+- Resolved a bug where a scheduled authentication token refresh would occur even if the user had logged out in the interim.
+
+### Changed
+- Improved the Out Of The Box (OOTB) Embedded CardView image content view by setting it to aspect fill. This change ensures a consistent appearance across web, iOS, and Android platforms.
+
 ## [6.5.1]
 
 ### Added
