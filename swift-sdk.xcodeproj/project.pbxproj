@@ -1063,7 +1063,6 @@
 				AC3C10F8213F46A900A9B839 /* IterableLogging.swift */,
 				ACA8D1A221910C66001B1332 /* IterableMessaging.swift */,
 				AC78F0E6253D7F09006378A5 /* IterablePushNotificationMetadata.swift */,
-				BA2BB8182BADD5A500EA0229 /* PrivacyInfo.xcprivacy */,
 			);
 			path = "swift-sdk";
 			sourceTree = "<group>";
@@ -1202,6 +1201,7 @@
 		AC44C0EB22615F8100E0641D /* Resources */ = {
 			isa = PBXGroup;
 			children = (
+				BA2BB8182BADD5A500EA0229 /* PrivacyInfo.xcprivacy */,
 				E9BF47972B46DEB30033DB69 /* IterableEmbeddedView.xib */,
 				AC219C522260006600B98631 /* Assets.xcassets */,
 				AC50865224C60172001DC132 /* IterableDataModel.xcdatamodeld */,
