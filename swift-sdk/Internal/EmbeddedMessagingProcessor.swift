@@ -11,6 +11,8 @@ struct EmbeddedMessagingProcessor {
     }
 
     func processedMessagesList() -> [Int: [IterableEmbeddedMessage]] {
+        //TODO: Merge the currentMessages with fetchedMessages.
+        //TODO: Also to remove the messages from currentMessges which are no more present in fetchedMessages
         return fetchedMessages
     }
 

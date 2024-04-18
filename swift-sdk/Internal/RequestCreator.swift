@@ -422,7 +422,8 @@ struct RequestCreator {
     
     // MARK: - Embedded Messaging Request Calls
     
-    func createGetEmbeddedMessagesRequest() -> Result<IterableRequest, IterableError> {
+    func createGetEmbeddedMessagesRequest(messageIds: [String]?, placementIds: [Double]?) -> Result<IterableRequest, IterableError> {
+
         if case .none = auth.emailOrUserId {
             ITBError(Self.authMissingMessage)
             return .failure(IterableError.general(description: Self.authMissingMessage))
@@ -438,7 +439,15 @@ struct RequestCreator {
         
         setCurrentUser(inDict: &args)
         
-        return .success(.get(createGetRequest(forPath: Const.Path.getEmbeddedMessages, withArgs: args as! [String: String])))
+        if let messageIds = messageIds, !messageIds.isEmpty {
+               var path = Const.Path.getEmbeddedMessages + "?currentMessageIds=" + messageIds[0]
+               for i in 1..<messageIds.count {
+                   path += "&currentMessageIds=" + messageIds[i]
+               }
+               return .success(.get(createGetRequest(forPath: path, withArgs: args as! [String: String])))
+           } else {
+               return .success(.get(createGetRequest(forPath: Const.Path.getEmbeddedMessages, withArgs: args as! [String: String])))
+           }
     }
     
     func createEmbeddedMessageReceivedRequest(_ message: IterableEmbeddedMessage) -> Result<IterableRequest, IterableError> {

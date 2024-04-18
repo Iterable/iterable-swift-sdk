@@ -153,7 +153,10 @@ class IterableEmbeddedManager: NSObject, IterableInternalEmbeddedManagerProtocol
     }
     
     private func retrieveEmbeddedMessages(completion: @escaping () -> Void) {
-        apiClient.getEmbeddedMessages()
+//      Get the list of messageId in memory and call sync messages with it to get the diff.
+//      This function is not ready to work with getting message for a particular placementId from server.
+        let messageIds = messages.values.flatMap{$0}.map{$0.metadata.messageId}
+        apiClient.getEmbeddedMessages(messageIds: messageIds, placementIds: nil)
             .onCompletion(
                 receiveValue: { embeddedMessagesPayload in
                     let placements = embeddedMessagesPayload.placements
