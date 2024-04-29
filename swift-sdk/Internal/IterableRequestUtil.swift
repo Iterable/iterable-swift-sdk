@@ -92,7 +92,11 @@ struct IterableRequestUtil {
         }
         
         if let args = args {
-            components.queryItems = args.map { URLQueryItem(name: $0.key, value: $0.value) }
+            let queryItems = args.map { URLQueryItem(name: $0.key, value: $0.value) }
+            if components.queryItems == nil {
+                    components.queryItems = []
+                }
+            components.queryItems! += queryItems
         }
         
         components.percentEncodedQuery = components.percentEncodedQuery?.replacingOccurrences(of: "+", with: "%2B")

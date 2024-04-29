@@ -11,7 +11,39 @@ struct EmbeddedMessagingProcessor {
     }
 
     func processedMessagesList() -> [Int: [IterableEmbeddedMessage]] {
-        return fetchedMessages
+        //TODO: Merge the currentMessages with fetchedMessages.
+        //TODO: Also to remove the messages from currentMessges which are no more present in fetchedMessages
+        var processedMessages: [Int: [IterableEmbeddedMessage]] = [:]
+        
+        // create a dictionary mapping message ids to current messages
+        var currentMessagesMap: [String: IterableEmbeddedMessage] = [:]
+        for (placementId, messages) in currentMessages {
+            for message in messages {
+                currentMessagesMap[message.metadata.messageId] = message
+            }
+        }
+        
+        for (placementId, fetchedMessagesList) in fetchedMessages {
+            if let currentMessagesForPlacement = currentMessages[placementId] {
+                var updatedMessagesForPlacement: [IterableEmbeddedMessage] = []
+                
+                for fetchedMessage in fetchedMessagesList {
+                    if let existingMessage = currentMessagesMap[fetchedMessage.metadata.messageId] {
+                        updatedMessagesForPlacement.append(existingMessage)
+                    } else {
+                        updatedMessagesForPlacement.append(fetchedMessage)
+                    }
+                }
+                
+                processedMessages[placementId] = updatedMessagesForPlacement
+                
+            } else {
+                processedMessages[placementId] = fetchedMessagesList
+            }
+            
+        }
+        
+        return processedMessages
     }
 
     func newlyRetrievedMessages() -> [Int: [IterableEmbeddedMessage]] {

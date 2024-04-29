@@ -37,7 +37,7 @@ extension IterableEmbeddedMessage {
                     self.campaignId = campaignId
                     self.isProof = isProof
                     self.placementId = placementId
-                }
+        }
     }
 
     public struct EmbeddedMessageElements: Codable {
@@ -69,6 +69,22 @@ extension IterableEmbeddedMessage {
         public struct EmbeddedMessageElementsDefaultAction: Codable {
             public let type: String
             public let data: String?
+        }
+        
+        init(title: String? = nil,
+             body: String? = nil,
+             mediaUrl: String? = nil,
+             mediaUrlCaption: String? = nil,
+             buttons: [EmbeddedMessageElementsButton]? = nil,
+             text: [EmbeddedMessageElementsText]? = nil,
+             defaultAction: EmbeddedMessageElementsDefaultAction? = nil) {
+            self.title = title
+            self.body = body
+            self.mediaUrl = mediaUrl
+            self.mediaUrlCaption = mediaUrlCaption
+            self.buttons = buttons
+            self.text = text
+            self.defaultAction = defaultAction
         }
     }
 }

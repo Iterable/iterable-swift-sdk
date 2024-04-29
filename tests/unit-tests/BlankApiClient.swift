@@ -7,6 +7,10 @@ import Foundation
 @testable import IterableSDK
 
 class BlankApiClient: ApiClientProtocol {
+    func getEmbeddedMessages(messageIds: [String]?, placementIds: [Double]?) -> IterableSDK.Pending<IterableSDK.PlacementsPayload, IterableSDK.SendRequestError> {
+        Pending()
+    }
+    
     func register(registerTokenInfo: RegisterTokenInfo, notificationsEnabled: Bool) -> Pending<SendRequestValue, SendRequestError> {
         Pending()
     }
