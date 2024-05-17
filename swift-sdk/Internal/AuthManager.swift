@@ -6,12 +6,14 @@ import Foundation
 
 class AuthManager: IterableAuthManagerProtocol {
     init(delegate: IterableAuthDelegate?,
+         authRetryPolicy: RetryPolicy,
          expirationRefreshPeriod: TimeInterval,
          localStorage: LocalStorageProtocol,
          dateProvider: DateProviderProtocol) {
         ITBInfo()
         
         self.delegate = delegate
+        self.authRetryPolicy = authRetryPolicy
         self.localStorage = localStorage
         self.dateProvider = dateProvider
         self.expirationRefreshPeriod = expirationRefreshPeriod
@@ -35,8 +37,13 @@ class AuthManager: IterableAuthManagerProtocol {
         hasFailedPriorAuth = false
     }
     
-    func requestNewAuthToken(hasFailedPriorAuth: Bool = false, onSuccess: AuthTokenRetrievalHandler? = nil) {
+    func requestNewAuthToken(hasFailedPriorAuth: Bool = false, 
+                             onSuccess: AuthTokenRetrievalHandler? = nil,
+                             shouldIgnoreRetryPolicy: Bool) {
         ITBInfo()
+        guard !((!shouldIgnoreRetryPolicy && pauseAuthRetry) || (retryCount >= authRetryPolicy.maxRetry && !shouldIgnoreRetryPolicy)) else {
+            return
+        }
         
         guard !pendingAuth else {
             return
@@ -50,7 +57,15 @@ class AuthManager: IterableAuthManagerProtocol {
         
         pendingAuth = true
         
+        guard !(isLastAuthTokenValid && !shouldIgnoreRetryPolicy) else {
+            // if some JWT retry had valid token it will not fetch the auth token again from developer function
+            onAuthTokenReceived(retrievedAuthToken: authToken, onSuccess: onSuccess)
+            return
+        }
+        
         delegate?.onAuthTokenRequested { [weak self] retrievedAuthToken in
+            self?.pendingAuth = false
+            self?.retryCount+=1
             self?.onAuthTokenReceived(retrievedAuthToken: retrievedAuthToken, onSuccess: onSuccess)
         }
     }
@@ -68,7 +83,7 @@ class AuthManager: IterableAuthManagerProtocol {
         
         storeAuthToken()
         
-        clearRefreshTimer()
+        reset()
     }
     
     // MARK: - Private/Internal
@@ -79,10 +94,43 @@ class AuthManager: IterableAuthManagerProtocol {
     private var pendingAuth: Bool = false
     private var hasFailedPriorAuth: Bool = false
     
+    private var authRetryPolicy: RetryPolicy
+    private var retryCount: Int = 0
+    private var isLastAuthTokenValid: Bool = false
+    private var pauseAuthRetry: Bool = false
+    private var isTimerScheduled: Bool = false
+    
     private weak var delegate: IterableAuthDelegate?
     private let expirationRefreshPeriod: TimeInterval
     private var localStorage: LocalStorageProtocol
     private let dateProvider: DateProviderProtocol
+    
+    func pauseAuthRetries(_ pauseAuthRetry: Bool) {
+        self.pauseAuthRetry = pauseAuthRetry
+        resetRetryCount()
+    }
+    
+    func reset() {
+        clearRefreshTimer()
+        isLastAuthTokenValid = false
+    }
+    
+    func setIsLastAuthTokenValid(_ isValid: Bool) {
+        isLastAuthTokenValid = isValid
+    }
+    
+    func getNextRetryInterval() -> Double {
+        var nextRetryInterval = Double(authRetryPolicy.retryInterval)
+        if authRetryPolicy.retryBackoff == .exponential {
+            nextRetryInterval = Double(nextRetryInterval) * pow(Const.exponentialFactor, Double(retryCount - 1))
+        }
+        
+        return nextRetryInterval
+    }
+    
+    private func resetRetryCount() {
+        retryCount = 0
+    }
     
     private func storeAuthToken() {
         localStorage.authToken = authToken
@@ -105,7 +153,7 @@ class AuthManager: IterableAuthManagerProtocol {
             delegate?.onTokenRegistrationFailed("auth token was nil, scheduling auth token retrieval in 10 seconds")
             
             /// by default, schedule a refresh for 10s
-            scheduleAuthTokenRefreshTimer(10)
+            scheduleAuthTokenRefreshTimer(interval: getNextRetryInterval())
             
             return
         }
@@ -128,26 +176,34 @@ class AuthManager: IterableAuthManagerProtocol {
             delegate?.onTokenRegistrationFailed("auth token was nil or could not decode an expiration date, scheduling auth token retrieval in 10 seconds")
             
             /// schedule a default timer of 10 seconds if we fall into this case
-            scheduleAuthTokenRefreshTimer(10)
+            scheduleAuthTokenRefreshTimer(interval: getNextRetryInterval())
             
             return
         }
         
         let timeIntervalToRefresh = TimeInterval(expirationDate) - dateProvider.currentDate.timeIntervalSince1970 - expirationRefreshPeriod
-        
-        scheduleAuthTokenRefreshTimer(timeIntervalToRefresh)
+        if (timeIntervalToRefresh > 0) {
+            print("timeIntervalToRefresh:: \(timeIntervalToRefresh)")
+            scheduleAuthTokenRefreshTimer(interval: timeIntervalToRefresh, isScheduledRefresh: true)
+        }
     }
     
-    private func scheduleAuthTokenRefreshTimer(_ interval: TimeInterval) {
+    func scheduleAuthTokenRefreshTimer(interval: TimeInterval, isScheduledRefresh: Bool = false, successCallback: AuthTokenRetrievalHandler? = nil) {
         ITBInfo()
+        guard !((pauseAuthRetry && !isScheduledRefresh) || isTimerScheduled) else {
+            // we only stop schedule token refresh if it is called from retry (in case of failure). The normal auth token refresh schedule would work
+            return
+        }
         
         expirationRefreshTimer = Timer.scheduledTimer(withTimeInterval: interval, repeats: false) { [weak self] _ in
             if self?.localStorage.email != nil || self?.localStorage.userId != nil {
-                self?.requestNewAuthToken(hasFailedPriorAuth: false)
+                self?.requestNewAuthToken(hasFailedPriorAuth: false, onSuccess: successCallback, shouldIgnoreRetryPolicy: isScheduledRefresh)
             } else {
                 ITBDebug("Email or userId is not available. Skipping token refresh")
             }
+            self?.isTimerScheduled = false
         }
+        isTimerScheduled = true
     }
     
     private func clearRefreshTimer() {

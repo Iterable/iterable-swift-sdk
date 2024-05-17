@@ -16,14 +16,14 @@ struct RequestProcessorUtil {
             reportSuccess(result: result, value: json, successHandler: onSuccess, identifier: identifier)
         }
         .onError { error in
-            if error.httpStatusCode == 401, error.iterableCode == JsonValue.Code.invalidJwtPayload {
+            if error.httpStatusCode == 401, matchesJWTErrorCode(error.iterableCode) {
                 ITBError("invalid JWT token, trying again: \(error.reason ?? "")")
-                authManager?.requestNewAuthToken(hasFailedPriorAuth: false) { _ in
-                    requestProvider().onSuccess { json in
-                        reportSuccess(result: result, value: json, successHandler: onSuccess, identifier: identifier)
-                    }.onError { error in
-                        reportFailure(result: result, error: error, failureHandler: onFailure, identifier: identifier)
-                    }
+                authManager?.setIsLastAuthTokenValid(false)
+                let retryInterval = authManager?.getNextRetryInterval() ?? 1
+                DispatchQueue.main.async {
+                    authManager?.scheduleAuthTokenRefreshTimer(interval: retryInterval, isScheduledRefresh: false, successCallback: { _ in
+                        sendRequest(requestProvider: requestProvider, successHandler: onSuccess, failureHandler: onFailure, authManager: authManager, requestIdentifier: identifier)
+                    })
                 }
             } else if error.httpStatusCode == 401, error.iterableCode == JsonValue.Code.badApiKey {
                 ITBError(error.reason)
@@ -49,9 +49,11 @@ struct RequestProcessorUtil {
                 defaultOnSuccess(identifier)(json)
             }
         }.onError { error in
-            if error.httpStatusCode == 401, error.iterableCode == JsonValue.Code.invalidJwtPayload {
+            if error.httpStatusCode == 401, matchesJWTErrorCode(error.iterableCode) {
                 ITBError(error.reason)
-                authManager?.requestNewAuthToken(hasFailedPriorAuth: true, onSuccess: nil)
+                authManager?.setIsLastAuthTokenValid(false)
+                let retryInterval = authManager?.getNextRetryInterval() ?? 1
+                authManager?.scheduleAuthTokenRefreshTimer(interval: retryInterval, isScheduledRefresh: false, successCallback: nil)
             } else if error.httpStatusCode == 401, error.iterableCode == JsonValue.Code.badApiKey {
                 ITBError(error.reason)
             }
@@ -69,6 +71,8 @@ struct RequestProcessorUtil {
                                       value: SendRequestValue,
                                       successHandler onSuccess: OnSuccessHandler?,
                                       identifier: String) {
+        print("value:: \(value)")
+        
         if let onSuccess = onSuccess {
             onSuccess(value)
         } else {
@@ -111,5 +115,14 @@ struct RequestProcessorUtil {
             }
             ITBError(toLog)
         }
+    }
+    
+    private static func resetAuthRetries(authManager: IterableAuthManagerProtocol?, value: SendRequestValue) {
+        authManager?.pauseAuthRetries(false)
+        authManager?.setIsLastAuthTokenValid(true)
+    }
+    
+    private static func matchesJWTErrorCode(_ errorCode: String?) -> Bool {
+        return errorCode == JsonValue.Code.invalidJwtPayload || errorCode == JsonValue.Code.badAuthorizationHeader || errorCode == JsonValue.Code.jwtUserIdentifiersMismatched
     }
 }

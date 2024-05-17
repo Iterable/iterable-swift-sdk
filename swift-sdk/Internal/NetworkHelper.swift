@@ -57,6 +57,10 @@ struct NetworkHelper {
                                usingSession networkSession: NetworkSessionProtocol) -> Pending<T, NetworkError> {
         
         let requestId = IterableUtil.generateUUID()
+        if let headers = request.allHTTPHeaderFields {
+            print("headers:")
+            print(headers)
+        }
         #if NETWORK_DEBUG
         print()
         print("====================================================>")

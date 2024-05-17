@@ -9,6 +9,26 @@ import Foundation
 @testable import IterableSDK
 
 class MockAuthManager: IterableAuthManagerProtocol {
+    func requestNewAuthToken(hasFailedPriorAuth: Bool, onSuccess: ((String?) -> Void)?, shouldIgnoreRetryPolicy: Bool) {
+        
+    }
+    
+    func scheduleAuthTokenRefreshTimer(interval: TimeInterval, isScheduledRefresh: Bool, successCallback: IterableSDK.AuthTokenRetrievalHandler?) {
+        
+    }
+    
+    func pauseAuthRetries(_ pauseAuthRetry: Bool) {
+        
+    }
+    
+    func setIsLastAuthTokenValid(_ isValid: Bool) {
+        
+    }
+    
+    func getNextRetryInterval() -> Double {
+        return 2
+    }
+    
     var shouldRetry = true
     var retryWasRequested = false
 

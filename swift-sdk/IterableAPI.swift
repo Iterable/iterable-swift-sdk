@@ -256,6 +256,14 @@ import UIKit
         implementation?.register(token: token, onSuccess: onSuccess, onFailure: onFailure)
     }
     
+    @objc(pauseAuthRetries:)
+    public static func pauseAuthRetries(_ pauseRetry: Bool) {
+        implementation?.authManager.pauseAuthRetries(pauseRetry)
+        if (!pauseRetry) { // request new auth token as soon as unpause
+            implementation?.authManager.requestNewAuthToken(hasFailedPriorAuth: false, onSuccess: nil, shouldIgnoreRetryPolicy: true)
+        }
+    }
+    
     /// Disable this device's token in Iterable, for the current user.
     ///
     /// - Remark: By default, the SDK calls this upon user logout automatically. If a different or manually controlled
