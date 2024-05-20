@@ -259,7 +259,7 @@ import UIKit
     @objc(pauseAuthRetries:)
     public static func pauseAuthRetries(_ pauseRetry: Bool) {
         implementation?.authManager.pauseAuthRetries(pauseRetry)
-        if (!pauseRetry) { // request new auth token as soon as unpause
+        if !pauseRetry { // request new auth token as soon as unpause
             implementation?.authManager.requestNewAuthToken(hasFailedPriorAuth: false, onSuccess: nil, shouldIgnoreRetryPolicy: true)
         }
     }
