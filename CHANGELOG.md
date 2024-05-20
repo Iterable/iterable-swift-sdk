@@ -3,6 +3,10 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## [6.5.3]
+### Changed
+- Deprecated support for iOS 10 and iOS 11.
+
 ## [6.5.2]
 ### Fixed
 - The Privacy Manifest has been relocated to the resources folder within the SDK. This adjustment facilitates the inclusion of the SDK's privacy manifest in the generation process.
