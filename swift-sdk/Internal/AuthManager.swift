@@ -195,15 +195,27 @@ class AuthManager: IterableAuthManagerProtocol {
             return
         }
         
-        expirationRefreshTimer = Timer.scheduledTimer(withTimeInterval: interval, repeats: false) { [weak self] _ in
-            if self?.localStorage.email != nil || self?.localStorage.userId != nil {
-                self?.requestNewAuthToken(hasFailedPriorAuth: false, onSuccess: successCallback, shouldIgnoreRetryPolicy: isScheduledRefresh)
-            } else {
-                ITBDebug("Email or userId is not available. Skipping token refresh")
+        if expirationRefreshTimer == nil {
+            expirationRefreshTimer = Timer.scheduledTimer(withTimeInterval: interval, repeats: false) { [weak self] _ in
+                self?.handleTimer(isScheduledRefresh: isScheduledRefresh, successCallback: successCallback)
             }
-            self?.isTimerScheduled = false
+        } else {
+            expirationRefreshTimer?.invalidate()
+            expirationRefreshTimer = Timer.scheduledTimer(withTimeInterval: interval, repeats: false) { [weak self] _ in
+                self?.handleTimer(isScheduledRefresh: isScheduledRefresh, successCallback: successCallback)
+            }
         }
+        
         isTimerScheduled = true
+    }
+    
+    private func handleTimer(isScheduledRefresh: Bool = false, successCallback: AuthTokenRetrievalHandler? = nil) {
+        if self.localStorage.email != nil || self.localStorage.userId != nil {
+            self.requestNewAuthToken(hasFailedPriorAuth: false, onSuccess: successCallback, shouldIgnoreRetryPolicy: isScheduledRefresh)
+        } else {
+            ITBDebug("Email or userId is not available. Skipping token refresh")
+        }
+        self.isTimerScheduled = false
     }
     
     private func clearRefreshTimer() {
