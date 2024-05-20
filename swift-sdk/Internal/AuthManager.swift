@@ -79,7 +79,7 @@ class AuthManager: IterableAuthManagerProtocol {
         ITBInfo()
         
         onAuthTokenReceived(retrievedAuthToken: newToken)
-    }   
+    }
     
     func logoutUser() {
         ITBInfo()
@@ -194,7 +194,7 @@ class AuthManager: IterableAuthManagerProtocol {
     
     func scheduleAuthTokenRefreshTimer(interval: TimeInterval, isScheduledRefresh: Bool = false, successCallback: AuthTokenRetrievalHandler? = nil) {
         ITBInfo()
-        guard !((pauseAuthRetry && !isScheduledRefresh) || isTimerScheduled) else {
+        if (pauseAuthRetry && !isScheduledRefresh) || isTimerScheduled {
             // we only stop schedule token refresh if it is called from retry (in case of failure). The normal auth token refresh schedule would work
             return
         }
