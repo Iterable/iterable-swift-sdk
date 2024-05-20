@@ -13,6 +13,7 @@ struct RequestProcessorUtil {
                             requestIdentifier identifier: String) -> Pending<SendRequestValue, SendRequestError> {
         let result = Fulfill<SendRequestValue, SendRequestError>()
         requestProvider().onSuccess { json in
+            resetAuthRetries(authManager: authManager, requestIdentifier: identifier)
             reportSuccess(result: result, value: json, successHandler: onSuccess, identifier: identifier)
         }
         .onError { error in
@@ -43,6 +44,7 @@ struct RequestProcessorUtil {
                       toResult result: Pending<SendRequestValue, SendRequestError>,
                       withIdentifier identifier: String) -> Pending<SendRequestValue, SendRequestError> {
         result.onSuccess { json in
+            resetAuthRetries(authManager: authManager, requestIdentifier: identifier)
             if let onSuccess = onSuccess {
                 onSuccess(json)
             } else {
@@ -71,7 +73,6 @@ struct RequestProcessorUtil {
                                       value: SendRequestValue,
                                       successHandler onSuccess: OnSuccessHandler?,
                                       identifier: String) {
-        print("value:: \(value)")
         
         if let onSuccess = onSuccess {
             onSuccess(value)
@@ -117,9 +118,12 @@ struct RequestProcessorUtil {
         }
     }
     
-    private static func resetAuthRetries(authManager: IterableAuthManagerProtocol?, value: SendRequestValue) {
-        authManager?.pauseAuthRetries(false)
-        authManager?.setIsLastAuthTokenValid(true)
+    private static func resetAuthRetries(authManager: IterableAuthManagerProtocol?, requestIdentifier: String) {
+        if (requestIdentifier != "disableDevice") {
+            authManager?.resetFailedAuthCount()
+            authManager?.pauseAuthRetries(false)
+            authManager?.setIsLastAuthTokenValid(true)
+        }
     }
     
     private static func matchesJWTErrorCode(_ errorCode: String?) -> Bool {
