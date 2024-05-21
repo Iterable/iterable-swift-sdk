@@ -194,7 +194,7 @@ class AuthManager: IterableAuthManagerProtocol {
     
     func scheduleAuthTokenRefreshTimer(interval: TimeInterval, isScheduledRefresh: Bool = false, successCallback: AuthTokenRetrievalHandler? = nil) {
         ITBInfo()
-        if (pauseAuthRetry && !isScheduledRefresh) || isTimerScheduled {
+        if shouldSkipTokenRefresh(isScheduledRefresh: isScheduledRefresh) {
             // we only stop schedule token refresh if it is called from retry (in case of failure). The normal auth token refresh schedule would work
             return
         }
@@ -209,6 +209,10 @@ class AuthManager: IterableAuthManagerProtocol {
         }
         
         isTimerScheduled = true
+    }
+    
+    private func shouldSkipTokenRefresh(isScheduledRefresh: Bool) -> Bool {
+        return (pauseAuthRetry && !isScheduledRefresh) || isTimerScheduled
     }
     
     private func clearRefreshTimer() {
