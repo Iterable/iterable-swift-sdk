@@ -88,7 +88,8 @@ class AuthManager: IterableAuthManagerProtocol {
         
         storeAuthToken()
         
-        reset()
+        clearRefreshTimer()
+        isLastAuthTokenValid = false
     }
     
     // MARK: - Private/Internal
@@ -113,11 +114,6 @@ class AuthManager: IterableAuthManagerProtocol {
     func pauseAuthRetries(_ pauseAuthRetry: Bool) {
         self.pauseAuthRetry = pauseAuthRetry
         resetRetryCount()
-    }
-    
-    func reset() {
-        clearRefreshTimer()
-        isLastAuthTokenValid = false
     }
     
     func setIsLastAuthTokenValid(_ isValid: Bool) {
