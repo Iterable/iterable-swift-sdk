@@ -142,7 +142,7 @@ class AuthManager: IterableAuthManagerProtocol {
         
         authToken = localStorage.authToken
         
-        queueAuthTokenExpirationRefresh(authToken)
+        _ = queueAuthTokenExpirationRefresh(authToken)
     }
     
     private func onAuthTokenReceived(retrievedAuthToken: String?, onSuccess: AuthTokenRetrievalHandler? = nil) {
@@ -154,7 +154,7 @@ class AuthManager: IterableAuthManagerProtocol {
             delegate?.onTokenRegistrationFailed("auth token was nil, scheduling auth token retrieval in 10 seconds")
             
             /// by default, schedule a refresh for 10s
-            scheduleAuthTokenRefreshTimer(interval: getNextRetryInterval())
+            scheduleAuthTokenRefreshTimer(interval: getNextRetryInterval(), successCallback: onSuccess)
             
             return
         }
@@ -163,12 +163,13 @@ class AuthManager: IterableAuthManagerProtocol {
         
         storeAuthToken()
         
-        queueAuthTokenExpirationRefresh(authToken)
-        
-        onSuccess?(authToken)
+        let isRefreshQueued = queueAuthTokenExpirationRefresh(authToken, onSuccess: onSuccess)
+        if !isRefreshQueued {
+            onSuccess?(authToken)
+        }
     }
     
-    private func queueAuthTokenExpirationRefresh(_ authToken: String?) {
+    private func queueAuthTokenExpirationRefresh(_ authToken: String?, onSuccess: AuthTokenRetrievalHandler? = nil) -> Bool) {
         ITBInfo()
         
         clearRefreshTimer()
@@ -177,15 +178,17 @@ class AuthManager: IterableAuthManagerProtocol {
             delegate?.onTokenRegistrationFailed("auth token was nil or could not decode an expiration date, scheduling auth token retrieval in 10 seconds")
             
             /// schedule a default timer of 10 seconds if we fall into this case
-            scheduleAuthTokenRefreshTimer(interval: getNextRetryInterval())
+            scheduleAuthTokenRefreshTimer(interval: getNextRetryInterval(), successCallback: onSuccess)
             
-            return
+            return true
         }
         
         let timeIntervalToRefresh = TimeInterval(expirationDate) - dateProvider.currentDate.timeIntervalSince1970 - expirationRefreshPeriod
         if timeIntervalToRefresh > 0 {
-            scheduleAuthTokenRefreshTimer(interval: timeIntervalToRefresh, isScheduledRefresh: true)
+            scheduleAuthTokenRefreshTimer(interval: timeIntervalToRefresh, isScheduledRefresh: true, successCallback: onSuccess)
+            return true
         }
+        return false
     }
     
     func scheduleAuthTokenRefreshTimer(interval: TimeInterval, isScheduledRefresh: Bool = false, successCallback: AuthTokenRetrievalHandler? = nil) {
