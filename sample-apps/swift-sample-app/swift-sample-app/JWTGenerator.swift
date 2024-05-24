@@ -10,7 +10,7 @@ import Foundation
 import CommonCrypto
 
 public class JWTGenerator {
-    static func getJWT(userId: String?, email: String?, expiration: Int?) -> String {
+    static func getJWT(userId: String?, email: String?, expirationSeconds: Int?) -> String {
         let encoding = String.Encoding.utf8
         let secret = "34992609011249b410db9e1a568db9b65063c73e618bdb0229a674aeed7db7fba1bdc06e9b42d021120b9c88f795a734c18ab88ff7b6ecbccc50a945899d3666".data(using: encoding)!
 
@@ -18,9 +18,9 @@ public class JWTGenerator {
         let iat = Int(Date().timeIntervalSince1970)
 
         // Generate exp (expiration) timestamp as 5 minutes from now
-        var exp = iat + 300  // 300 seconds = 5 minutes
-        if let _exp = expiration {
-            exp = iat + (60 * _exp)
+        var exp = iat + 10  // 300 seconds = 5 minutes
+        if let _exp = expirationSeconds {
+            exp = iat + _exp
         }
             
         let header = ["alg": "HS256", "typ": "JWT"]

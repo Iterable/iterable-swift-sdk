@@ -129,6 +129,14 @@ class AuthManager: IterableAuthManagerProtocol {
         return nextRetryInterval
     }
     
+    func getRetryCount() -> Int {
+        return retryCount
+    }
+    
+    func getPauseAuthRetry() -> Bool {
+        return pauseAuthRetry
+    }
+    
     private func resetRetryCount() {
         retryCount = 0
     }
@@ -196,12 +204,12 @@ class AuthManager: IterableAuthManagerProtocol {
         }
         
         expirationRefreshTimer = Timer.scheduledTimer(withTimeInterval: interval, repeats: false) { [weak self] _ in
+            self?.isTimerScheduled = false
             if self?.localStorage.email != nil || self?.localStorage.userId != nil {
                 self?.requestNewAuthToken(hasFailedPriorAuth: false, onSuccess: successCallback, shouldIgnoreRetryPolicy: isScheduledRefresh)
             } else {
                 ITBDebug("Email or userId is not available. Skipping token refresh")
             }
-            self?.isTimerScheduled = false
         }
         
         isTimerScheduled = true
@@ -215,6 +223,7 @@ class AuthManager: IterableAuthManagerProtocol {
         ITBInfo()
         
         expirationRefreshTimer?.invalidate()
+        isTimerScheduled = false
         expirationRefreshTimer = nil
     }
     

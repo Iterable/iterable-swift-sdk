@@ -25,12 +25,12 @@ public class RetryPolicy {
      */
     var retryBackoff: RetryPolicy.BackoffType
 
-    enum BackoffType {
+    public enum BackoffType {
         case linear
         case exponential
     }
 
-    init(maxRetry: Int, retryInterval: Double, retryBackoff: RetryPolicy.BackoffType) {
+    public init(maxRetry: Int, retryInterval: Double, retryBackoff: RetryPolicy.BackoffType) {
         self.maxRetry = maxRetry
         self.retryInterval = retryInterval
         self.retryBackoff = retryBackoff

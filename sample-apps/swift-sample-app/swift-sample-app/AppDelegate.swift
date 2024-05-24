@@ -15,11 +15,11 @@ import IterableSDK
 class AppDelegate: UIResponder, UIApplicationDelegate, IterableAuthDelegate {
     func onAuthTokenRequested(completion: @escaping IterableSDK.AuthTokenRetrievalHandler) {
         IterableAPIHelper.currentRetry = IterableAPIHelper.currentRetry + 1
-        
+        IterableAPIHelper.lastRetryTime = getCurrentTime()
         print("vvvvvvvv IterableAPIHelper.authType\(IterableAPIHelper.authType)")
         // radio button valid value
         if IterableAPIHelper.authType == IterableAPIHelper.AuthType.VALID {
-            completion(JWTGenerator.getJWT(userId: IterableAPI.userId, email: IterableAPI.email, expiration: nil))
+            completion(JWTGenerator.getJWT(userId: IterableAPI.userId, email: IterableAPI.email, expirationSeconds: nil))
         }
         // radio button invalid value
         if IterableAPIHelper.authType == IterableAPIHelper.AuthType.INVALID {
@@ -31,10 +31,19 @@ class AppDelegate: UIResponder, UIApplicationDelegate, IterableAuthDelegate {
             completion(nil)
         }
         
-        // radio button null value
+        // radio button expired value
         if IterableAPIHelper.authType == IterableAPIHelper.AuthType.EXPIRED {
-            completion(JWTGenerator.getJWT(userId: IterableAPI.userId, email: IterableAPI.email, expiration: -5))
+            completion(JWTGenerator.getJWT(userId: IterableAPI.userId, email: IterableAPI.email, expirationSeconds: -20))
         }
+    }
+    
+    func getCurrentTime() -> String {
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat = "hh:mm:ss"
+
+        let currentTime = Date()
+        let formattedTime = dateFormatter.string(from: currentTime)
+        return formattedTime
     }
     
     func onTokenRegistrationFailed(_ reason: String?) {
@@ -56,7 +65,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, IterableAuthDelegate {
         config.urlDelegate = self
         config.inAppDisplayInterval = 1
         config.authDelegate = self
-        config.retryPolicy = RetryPolicy(maxRetry: IterableAPIHelper.maxRetry, retryInterval: 10 , retryBackoff: .linear)
+        config.retryPolicy = RetryPolicy(maxRetry: IterableAPIHelper.maxRetry, retryInterval: 6 , retryBackoff: .linear)
         
         IterableAPI.initialize(apiKey: iterableApiKey,
                                launchOptions: launchOptions,

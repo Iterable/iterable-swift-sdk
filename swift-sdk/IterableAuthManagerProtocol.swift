@@ -14,4 +14,6 @@ import Foundation
     func pauseAuthRetries(_ pauseAuthRetry: Bool)
     func setIsLastAuthTokenValid(_ isValid: Bool)
     func getNextRetryInterval() -> Double
+    func getRetryCount() -> Int
+    func getPauseAuthRetry() -> Bool
 }

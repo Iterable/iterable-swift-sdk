@@ -14,7 +14,7 @@ class BugBashViewController: UIViewController {
     
     @IBOutlet weak var maxRetryCountLabel: UILabel!
     @IBOutlet weak var currentRetryCountLabel: UILabel!
-    @IBOutlet weak var lastRetryCountLabel: UILabel!
+    @IBOutlet weak var lastRetryTimeLabel: UILabel!
     @IBOutlet weak var lastErrorCodeLabel: UILabel!
     
     @IBOutlet weak var invalidButton: UIButton!
@@ -24,18 +24,19 @@ class BugBashViewController: UIViewController {
     @IBOutlet weak var mySwitch: UISwitch!
     @IBOutlet weak var saveButton: UIButton!
     
+    
     var authRetryPaused = false
 
     override func viewDidLoad() {
         super.viewDidLoad()
         
         Timer.scheduledTimer(withTimeInterval: 1, repeats: true) { timer in
-            self.currentRetryCountLabel.text = String(IterableAPIHelper.currentRetry)
+            self.lastRetryTimeLabel.text = IterableAPIHelper.lastRetryTime
+            self.currentRetryCountLabel.text = String(IterableAPI.getAuthManager()?.getRetryCount() ?? 0)
         }
         
-        mySwitch.isOn = false
+        mySwitch.isOn = IterableAPI.getAuthManager()?.getPauseAuthRetry() ?? false
         maxRetryCountLabel.text = String(IterableAPIHelper.maxRetry)
-        IterableAPI.pauseAuthRetries(authRetryPaused)
 
         if IterableAPIHelper.authType == .VALID {
             validButtonClicked()

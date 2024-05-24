@@ -137,6 +137,10 @@ import UIKit
         implementation?.setUserId(userId, authToken: authToken, successHandler: successHandler, failureHandler: failureHandler)
     }
     
+    public static func getAuthManager() -> IterableAuthManagerProtocol? {
+        return implementation?.authManager
+    }
+    
     /// Handle a Universal Link
     ///
     /// For Iterable links, it will track the click and retrieve the original URL,
