@@ -169,7 +169,7 @@ class AuthManager: IterableAuthManagerProtocol {
         }
     }
     
-    private func queueAuthTokenExpirationRefresh(_ authToken: String?, onSuccess: AuthTokenRetrievalHandler? = nil) -> Bool) {
+    private func queueAuthTokenExpirationRefresh(_ authToken: String?, onSuccess: AuthTokenRetrievalHandler? = nil) -> Bool {
         ITBInfo()
         
         clearRefreshTimer()
