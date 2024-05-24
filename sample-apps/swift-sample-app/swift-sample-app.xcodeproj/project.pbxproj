@@ -21,6 +21,9 @@
 		ACA3A15120E2F83E00FEF74F /* NotificationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACA3A15020E2F83E00FEF74F /* NotificationService.swift */; };
 		ACA3A15520E2F83E00FEF74F /* swift-sample-app-notification-extension.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = ACA3A14E20E2F83D00FEF74F /* swift-sample-app-notification-extension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		ACE7624B20FEB2C20040A002 /* LoginViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACE7624A20FEB2C20040A002 /* LoginViewController.swift */; };
+		DF59343D2BFF1A1B00C9BAC8 /* JWTGenerator.swift in Sources */ = {isa = PBXBuildFile; fileRef = DF59343C2BFF1A1B00C9BAC8 /* JWTGenerator.swift */; };
+		DF59343F2BFF264300C9BAC8 /* IterableAPIHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = DF59343E2BFF264300C9BAC8 /* IterableAPIHelper.swift */; };
+		DFC371E72BFDEA8B000B4ED4 /* BugBashViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DFC371E62BFDEA8B000B4ED4 /* BugBashViewController.swift */; };
 		E9C60B7B2B3C2061005C4462 /* embeddedmessages.json in Resources */ = {isa = PBXBuildFile; fileRef = E9C60B792B3C2061005C4462 /* embeddedmessages.json */; };
 		E9C60B7C2B3C2061005C4462 /* EmbeddedMessagesViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E9C60B7A2B3C2061005C4462 /* EmbeddedMessagesViewController.swift */; };
 		E9C60B7E2B3C2072005C4462 /* IterableCardViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = E9C60B7D2B3C2072005C4462 /* IterableCardViewCell.swift */; };
@@ -68,6 +71,9 @@
 		ACA3A16420E2FC7500FEF74F /* swift-sample-app.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = "swift-sample-app.entitlements"; sourceTree = "<group>"; };
 		ACE7624A20FEB2C20040A002 /* LoginViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginViewController.swift; sourceTree = "<group>"; };
 		ACFA148520E3033700AF4A5A /* CoffeeType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoffeeType.swift; sourceTree = "<group>"; };
+		DF59343C2BFF1A1B00C9BAC8 /* JWTGenerator.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = JWTGenerator.swift; sourceTree = "<group>"; };
+		DF59343E2BFF264300C9BAC8 /* IterableAPIHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IterableAPIHelper.swift; sourceTree = "<group>"; };
+		DFC371E62BFDEA8B000B4ED4 /* BugBashViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BugBashViewController.swift; sourceTree = "<group>"; };
 		E9C60B792B3C2061005C4462 /* embeddedmessages.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = embeddedmessages.json; sourceTree = "<group>"; };
 		E9C60B7A2B3C2061005C4462 /* EmbeddedMessagesViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EmbeddedMessagesViewController.swift; sourceTree = "<group>"; };
 		E9C60B7D2B3C2072005C4462 /* IterableCardViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = IterableCardViewCell.swift; sourceTree = "<group>"; };
@@ -108,6 +114,7 @@
 				AC5ECD9E20E304000081E1DA /* CoffeeListTableViewController.swift */,
 				AC5ECD9F20E304070081E1DA /* CoffeeViewController.swift */,
 				ACE7624A20FEB2C20040A002 /* LoginViewController.swift */,
+				DFC371E62BFDEA8B000B4ED4 /* BugBashViewController.swift */,
 			);
 			name = ViewControllers;
 			sourceTree = "<group>";
@@ -134,6 +141,7 @@
 		ACA3A13720E2F6AF00FEF74F /* swift-sample-app */ = {
 			isa = PBXGroup;
 			children = (
+				DF5934392BFF19E900C9BAC8 /* Util */,
 				E9C60B782B3C2061005C4462 /* EmbeddedMessages */,
 				AC5ECD9D20E303F50081E1DA /* ViewControllers */,
 				AC5ECD9B20E3038B0081E1DA /* Deep Link Handling */,
@@ -187,6 +195,15 @@
 				ACA3A14120E2F6B100FEF74F /* LaunchScreen.storyboard */,
 			);
 			name = Storyboards;
+			sourceTree = "<group>";
+		};
+		DF5934392BFF19E900C9BAC8 /* Util */ = {
+			isa = PBXGroup;
+			children = (
+				DF59343C2BFF1A1B00C9BAC8 /* JWTGenerator.swift */,
+				DF59343E2BFF264300C9BAC8 /* IterableAPIHelper.swift */,
+			);
+			name = Util;
 			sourceTree = "<group>";
 		};
 		E9C60B782B3C2061005C4462 /* EmbeddedMessages */ = {
@@ -317,11 +334,14 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				DF59343F2BFF264300C9BAC8 /* IterableAPIHelper.swift in Sources */,
 				E9C60B7C2B3C2061005C4462 /* EmbeddedMessagesViewController.swift in Sources */,
 				E9C60B7E2B3C2072005C4462 /* IterableCardViewCell.swift in Sources */,
 				AC1BDF5A20E304CC000010CA /* CoffeeViewController.swift in Sources */,
 				ACA3A13920E2F6AF00FEF74F /* AppDelegate.swift in Sources */,
 				AC1BDF5920E304BF000010CA /* DeepLinkHandler.swift in Sources */,
+				DF59343D2BFF1A1B00C9BAC8 /* JWTGenerator.swift in Sources */,
+				DFC371E72BFDEA8B000B4ED4 /* BugBashViewController.swift in Sources */,
 				ACE7624B20FEB2C20040A002 /* LoginViewController.swift in Sources */,
 				AC1BDF5C20E304D7000010CA /* CoffeeType.swift in Sources */,
 				AC1BDF5B20E304D1000010CA /* UIViewController+Extension.swift in Sources */,

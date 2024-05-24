@@ -12,11 +12,39 @@ import UserNotifications
 import IterableSDK
 
 @UIApplicationMain
-class AppDelegate: UIResponder, UIApplicationDelegate {
+class AppDelegate: UIResponder, UIApplicationDelegate, IterableAuthDelegate {
+    func onAuthTokenRequested(completion: @escaping IterableSDK.AuthTokenRetrievalHandler) {
+        IterableAPIHelper.currentRetry = IterableAPIHelper.currentRetry + 1
+        
+        print("vvvvvvvv IterableAPIHelper.authType\(IterableAPIHelper.authType)")
+        // radio button valid value
+        if IterableAPIHelper.authType == IterableAPIHelper.AuthType.VALID {
+            completion(JWTGenerator.getJWT(userId: IterableAPI.userId, email: IterableAPI.email, expiration: nil))
+        }
+        // radio button invalid value
+        if IterableAPIHelper.authType == IterableAPIHelper.AuthType.INVALID {
+            completion("invalid")
+        }
+        
+        // radio button null value
+        if IterableAPIHelper.authType == IterableAPIHelper.AuthType.NULL {
+            completion(nil)
+        }
+        
+        // radio button null value
+        if IterableAPIHelper.authType == IterableAPIHelper.AuthType.EXPIRED {
+            completion(JWTGenerator.getJWT(userId: IterableAPI.userId, email: IterableAPI.email, expiration: -5))
+        }
+    }
+    
+    func onTokenRegistrationFailed(_ reason: String?) {
+        
+    }
+    
     var window: UIWindow?
     
     // ITBL: Set your actual api key here.
-    let iterableApiKey = ""
+    let iterableApiKey = "4236278428294f04be8443007d3daf89"
     
     func application(_: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         // ITBL: Setup Notification
@@ -27,6 +55,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         config.customActionDelegate = self
         config.urlDelegate = self
         config.inAppDisplayInterval = 1
+        config.authDelegate = self
+        config.retryPolicy = RetryPolicy(maxRetry: IterableAPIHelper.maxRetry, retryInterval: 10 , retryBackoff: .linear)
         
         IterableAPI.initialize(apiKey: iterableApiKey,
                                launchOptions: launchOptions,

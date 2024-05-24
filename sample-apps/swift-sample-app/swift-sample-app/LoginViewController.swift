@@ -35,13 +35,37 @@ class LoginViewController: UIViewController {
             userIdTextField.isEnabled = true
             logInOutButton.setTitle("Login", for: .normal)
         }
+        
+        // Create a long press gesture recognizer
+        let longPressRecognizer = UILongPressGestureRecognizer(target: self, action: #selector(handleLongPress(_:)))
+               
+        // Optionally, set the minimum press duration (default is 0.5 seconds)
+        longPressRecognizer.minimumPressDuration = 1
+               
+        // Add the gesture recognizer to the view you want to detect the long press on
+        self.view.addGestureRecognizer(longPressRecognizer)
     }
+    
+    // The handler function for the long press gesture
+      @objc func handleLongPress(_ sender: UILongPressGestureRecognizer) {
+          if sender.state == .began {
+              // Handle the long press action
+              print("Long press detected")
+              
+              // You can add any additional logic here
+              let storyboard = UIStoryboard(name: "Main", bundle: nil)
+              let vc = storyboard.instantiateViewController(withIdentifier: "BugBashViewController")
+              present(vc, animated: true)
+          }
+      }
     
     @IBAction func loginInOutButtonTapped(_: UIButton) {
         switch LoginViewController.checkIterableEmailOrUserId() {
         case .email: // logout
+            IterableAPIHelper.currentRetry = 0;
             IterableAPI.email = nil
         case .userId: // logout
+            IterableAPIHelper.currentRetry = 0;
             IterableAPI.userId = nil
         case .none: // login
             if let text = emailAddressTextField.text, !text.isEmpty {
