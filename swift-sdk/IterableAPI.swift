@@ -126,13 +126,15 @@ import UIKit
             callback?(false)
         }
         
-        if let _implementation = implementation {
-            if _implementation.isEitherUserIdOrEmailSet() {
-                _implementation.anonymousUserManager.syncNonSyncedEvents()
-            } else {
-                // call this to fetch anon criteria from API and save it into userdefaults
-                _implementation.anonymousUserManager.getAnonCriteria()
-                _implementation.anonymousUserManager.updateAnonSession()
+        if(config.enableAnonTracking) {
+            if let _implementation = implementation {
+                if _implementation.isEitherUserIdOrEmailSet() {
+                    _implementation.anonymousUserManager.syncNonSyncedEvents()
+                } else {
+                    // call this to fetch anon criteria from API and save it into userdefaults
+                    _implementation.anonymousUserManager.getAnonCriteria()
+                    _implementation.anonymousUserManager.updateAnonSession()
+                }
             }
         }
     }
