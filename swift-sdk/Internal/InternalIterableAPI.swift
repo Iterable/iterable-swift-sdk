@@ -126,10 +126,13 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
     }
     
     func setEmail(_ email: String?, authToken: String? = nil, successHandler: OnSuccessHandler? = nil, failureHandler: OnFailureHandler? = nil) {
-        anonymousUserMerge.mergeUserUsingEmail(destinationUserId: _userId ?? "", destinationEmail: email ?? "", sourceEmail: _email ?? "")
+        
+        if config.enableAnonTracking {
+            anonymousUserMerge.mergeUserUsingEmail(destinationUserId: _userId ?? "", destinationEmail: email ?? "", sourceEmail: _email ?? "")
+        }
         ITBInfo()
         
-        if email == nil {
+        if email == nil && config.enableAnonTracking {
             anonymousUserManager.logout()
         }
         
@@ -155,10 +158,13 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
     }
     
     func setUserId(_ userId: String?, authToken: String? = nil, successHandler: OnSuccessHandler? = nil, failureHandler: OnFailureHandler? = nil) {
-        anonymousUserMerge.mergeUserUsingUserId(destinationUserId: userId ?? "", sourceUserId: _userId ?? "", destinationEmail: _email ?? "")
+        
+        if config.enableAnonTracking {
+            anonymousUserMerge.mergeUserUsingUserId(destinationUserId: userId ?? "", sourceUserId: _userId ?? "", destinationEmail: _email ?? "")
+        }
         ITBInfo()
         
-        if userId == nil {
+        if userId == nil && config.enableAnonTracking {
             anonymousUserManager.logout()
         }
         
@@ -206,7 +212,7 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
             return
         }
         
-        if !isEitherUserIdOrEmailSet() {
+        if !isEitherUserIdOrEmailSet() && config.enableAnonTracking {
             anonymousUserManager.trackAnonTokenRegistration(token: token.hexString())
         }
         
@@ -264,7 +270,7 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
                     mergeNestedObjects: Bool,
                     onSuccess: OnSuccessHandler? = nil,
                     onFailure: OnFailureHandler? = nil) -> Pending<SendRequestValue, SendRequestError> {
-        if !isEitherUserIdOrEmailSet() {
+        if !isEitherUserIdOrEmailSet() && config.enableAnonTracking {
             anonymousUserManager.trackAnonUpdateUser(dataFields)
         }
         return requestHandler.updateUser(dataFields, mergeNestedObjects: mergeNestedObjects, onSuccess: onSuccess, onFailure: onFailure)
@@ -292,7 +298,7 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
     func updateCart(items: [CommerceItem],
                     onSuccess: OnSuccessHandler? = nil,
                     onFailure: OnFailureHandler? = nil) -> Pending<SendRequestValue, SendRequestError> {
-        if !isEitherUserIdOrEmailSet() {
+        if !isEitherUserIdOrEmailSet() && config.enableAnonTracking {
             anonymousUserManager.trackAnonUpdateCart(items: items)
         }
         return requestHandler.updateCart(items: items, onSuccess: onSuccess, onFailure: onFailure)
@@ -315,7 +321,7 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
                        templateId: NSNumber? = nil,
                        onSuccess: OnSuccessHandler? = nil,
                        onFailure: OnFailureHandler? = nil) -> Pending<SendRequestValue, SendRequestError> {
-        if !isEitherUserIdOrEmailSet() {
+        if !isEitherUserIdOrEmailSet() && config.enableAnonTracking {
             anonymousUserManager.trackAnonPurchaseEvent(total: total, items: items, dataFields: dataFields)
         }
         return requestHandler.trackPurchase(total,
@@ -387,7 +393,7 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
                dataFields: [AnyHashable: Any]? = nil,
                onSuccess: OnSuccessHandler? = nil,
                onFailure: OnFailureHandler? = nil) -> Pending<SendRequestValue, SendRequestError> {
-        if !isEitherUserIdOrEmailSet() {
+        if !isEitherUserIdOrEmailSet() && config.enableAnonTracking {
             anonymousUserManager.trackAnonEvent(name: eventName, dataFields: dataFields)
         }
         return requestHandler.track(event: eventName, dataFields: dataFields, onSuccess: onSuccess, onFailure: onFailure)
