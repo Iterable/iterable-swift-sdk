@@ -26,7 +26,7 @@ class LoginViewController: UIViewController {
             logInOutButton.setTitle("Logout", for: .normal)
         case let .userId(userId):
             userIdTextField.text = userId
-            userIdTextField.isEnabled = false
+            userIdTextField.isEnabled = true
             logInOutButton.setTitle("Logout", for: .normal)
         case .none:
             emailAddressTextField.text = nil
@@ -51,6 +51,13 @@ class LoginViewController: UIViewController {
             }
         }
         
+        presentingViewController?.dismiss(animated: true)
+    }
+    
+    @IBAction func newLoginButtonTapped() {
+        if let text = userIdTextField.text, !text.isEmpty {
+            IterableAPI.setUserId(text)
+        }
         presentingViewController?.dismiss(animated: true)
     }
     

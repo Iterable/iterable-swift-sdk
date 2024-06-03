@@ -23,6 +23,7 @@
 		ACA3A15120E2F83E00FEF74F /* NotificationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACA3A15020E2F83E00FEF74F /* NotificationService.swift */; };
 		ACA3A15520E2F83E00FEF74F /* swift-sample-app-notification-extension.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = ACA3A14E20E2F83D00FEF74F /* swift-sample-app-notification-extension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		ACE7624B20FEB2C20040A002 /* LoginViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACE7624A20FEB2C20040A002 /* LoginViewController.swift */; };
+		DF1A2E532C09C2C100598D62 /* TrackingEventsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DF1A2E522C09C2C100598D62 /* TrackingEventsViewController.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -67,6 +68,7 @@
 		ACA3A16420E2FC7500FEF74F /* swift-sample-app.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = "swift-sample-app.entitlements"; sourceTree = "<group>"; };
 		ACE7624A20FEB2C20040A002 /* LoginViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginViewController.swift; sourceTree = "<group>"; };
 		ACFA148520E3033700AF4A5A /* CoffeeType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoffeeType.swift; sourceTree = "<group>"; };
+		DF1A2E522C09C2C100598D62 /* TrackingEventsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrackingEventsViewController.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -106,6 +108,7 @@
 				AC5ECD9E20E304000081E1DA /* CoffeeListTableViewController.swift */,
 				AC5ECD9F20E304070081E1DA /* CoffeeViewController.swift */,
 				ACE7624A20FEB2C20040A002 /* LoginViewController.swift */,
+				DF1A2E522C09C2C100598D62 /* TrackingEventsViewController.swift */,
 			);
 			name = ViewControllers;
 			sourceTree = "<group>";
@@ -311,6 +314,7 @@
 				ACA3A13920E2F6AF00FEF74F /* AppDelegate.swift in Sources */,
 				AC1BDF5920E304BF000010CA /* DeepLinkHandler.swift in Sources */,
 				ACE7624B20FEB2C20040A002 /* LoginViewController.swift in Sources */,
+				DF1A2E532C09C2C100598D62 /* TrackingEventsViewController.swift in Sources */,
 				AC1BDF5C20E304D7000010CA /* CoffeeType.swift in Sources */,
 				AC1BDF5B20E304D1000010CA /* UIViewController+Extension.swift in Sources */,
 				AC1BDF5820E304BC000010CA /* CoffeeListTableViewController.swift in Sources */,
