@@ -47,11 +47,14 @@ class TrackingEventsViewController: UIViewController {
                        print("eventName not found in JSON")
                        return
                    }
-
-            // Use the resulting dictionary
-            var dataFields = jsonDictionary
-            dataFields.removeValue(forKey: "eventName")
-            errorLabel.text = ""
+            
+            guard let dataFields = jsonDictionary["dataFields"] as? [String: Any] else {
+                       errorLabel.text = "dataFields not found in JSON"
+                       print("dataFields not found in JSON")
+                       return
+                   }
+          
+            print("vvvv dataFields \(dataFields)")
             IterableAPI.track(event: eventName, dataFields: dataFields)
         } else {
             errorLabel.text = "Failed to convert JSON to dictionary"
