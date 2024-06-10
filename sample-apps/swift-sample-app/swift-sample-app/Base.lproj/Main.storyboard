@@ -253,8 +253,8 @@
                         <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <textField opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="248" contentHorizontalAlignment="left" contentVerticalAlignment="center" text="{&quot;key1&quot;: &quot;value1&quot;}" borderStyle="roundedRect" placeholder="Track Event" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="go2-OF-Yc1">
-                                <rect key="frame" x="10" y="70" width="300" height="34"/>
+                            <textField opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="248" contentHorizontalAlignment="left" contentVerticalAlignment="center" text="{&quot;eventName&quot;:&quot;button-clicked&quot;, &quot;dataFields&quot;: {&quot;button-clicked.lastPageViewed&quot;:&quot;signup page&quot;}}" borderStyle="roundedRect" placeholder="Track Event" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="go2-OF-Yc1">
+                                <rect key="frame" x="10" y="72" width="300" height="34"/>
                                 <constraints>
                                     <constraint firstAttribute="width" constant="300" id="sRL-l6-zN1"/>
                                 </constraints>
@@ -262,33 +262,33 @@
                                 <textInputTraits key="textInputTraits"/>
                             </textField>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="S3Z-yz-awy">
-                                <rect key="frame" x="335" y="72" width="30" height="30"/>
+                                <rect key="frame" x="335" y="74" width="30" height="30"/>
                                 <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
                                 <state key="normal" title="Add"/>
                                 <connections>
                                     <action selector="trackEventBtnClicked" destination="dFV-10-h5Y" eventType="touchUpInside" id="EjV-RF-j2M"/>
                                 </connections>
                             </button>
-                            <textField opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="248" contentHorizontalAlignment="left" contentVerticalAlignment="center" text="{&quot;id&quot;: &quot;id1&quot;, &quot;url&quot;: &quot;url1&quot;, &quot;sku&quot;: &quot;sku1&quot;, &quot;name&quot;: &quot;name1&quot;, &quot;price&quot;: 22, &quot;quantity&quot;: 2}" borderStyle="roundedRect" placeholder="Track Purchase" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="Ao1-Zt-8ep">
-                                <rect key="frame" x="10" y="134" width="300" height="34"/>
+                            <textField opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="248" contentHorizontalAlignment="left" contentVerticalAlignment="center" text="{&quot;items&quot;:[{&quot;name&quot;:&quot;Black Coffee&quot;,&quot;id&quot;:&quot;fdsafds&quot;,&quot;price&quot;:100,&quot;quantity&quot;:2}], &quot;total&quot;: 100}" borderStyle="roundedRect" placeholder="Track Purchase" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="Ao1-Zt-8ep">
+                                <rect key="frame" x="10" y="162" width="300" height="34"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                 <textInputTraits key="textInputTraits"/>
                             </textField>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="ZQN-gh-Iq7">
-                                <rect key="frame" x="335" y="136" width="30" height="30"/>
+                                <rect key="frame" x="335" y="164" width="30" height="30"/>
                                 <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
                                 <state key="normal" title="Add"/>
                                 <connections>
                                     <action selector="trackPurchaseBtnClicked" destination="dFV-10-h5Y" eventType="touchUpInside" id="HKI-Xl-I1P"/>
                                 </connections>
                             </button>
-                            <textField opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="248" contentHorizontalAlignment="left" contentVerticalAlignment="center" text="{&quot;id&quot;: &quot;id2&quot;, &quot;url&quot;: &quot;url2&quot;, &quot;sku&quot;: &quot;sku2&quot;, &quot;name&quot;: &quot;name2&quot;, &quot;price&quot;: 33, &quot;quantity&quot;: 2}" borderStyle="roundedRect" placeholder="Update Cart" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="b4P-Z9-O01">
-                                <rect key="frame" x="10" y="198" width="300" height="34"/>
+                            <textField opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="248" contentHorizontalAlignment="left" contentVerticalAlignment="center" text="{&quot;items&quot;:[{&quot;name&quot;:&quot;piano&quot;,&quot;id&quot;:&quot;fdsafds&quot;,&quot;price&quot;:100,&quot;quantity&quot;:2}]}" borderStyle="roundedRect" placeholder="Update Cart" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="b4P-Z9-O01">
+                                <rect key="frame" x="10" y="252" width="300" height="34"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                 <textInputTraits key="textInputTraits"/>
                             </textField>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="PpA-FO-CkV">
-                                <rect key="frame" x="335" y="200" width="30" height="30"/>
+                                <rect key="frame" x="335" y="254" width="30" height="30"/>
                                 <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
                                 <state key="normal" title="Add"/>
                                 <connections>
@@ -296,44 +296,86 @@
                                 </connections>
                             </button>
                             <textField opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="248" contentHorizontalAlignment="left" contentVerticalAlignment="center" text="{&quot;phone_number&quot;: &quot;999999&quot;, &quot;city&quot;: &quot;New York&quot;}" borderStyle="roundedRect" placeholder="Update User" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="MTs-1W-w8n">
-                                <rect key="frame" x="10" y="262" width="300" height="34"/>
+                                <rect key="frame" x="10" y="342" width="300" height="34"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                 <textInputTraits key="textInputTraits"/>
                             </textField>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="ExR-a8-nOC">
-                                <rect key="frame" x="335" y="264" width="30" height="30"/>
+                                <rect key="frame" x="335" y="344" width="30" height="30"/>
                                 <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
                                 <state key="normal" title="Add"/>
                                 <connections>
                                     <action selector="updateUserBtnClicked" destination="dFV-10-h5Y" eventType="touchUpInside" id="LHz-7j-3oN"/>
                                 </connections>
                             </button>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Track Event" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="CVI-2i-VPJ">
+                                <rect key="frame" x="10" y="46" width="89" height="21"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                <nil key="textColor"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Track Purchase" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="7To-Py-pWo">
+                                <rect key="frame" x="10" y="136" width="117.5" height="21"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                <nil key="textColor"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Update Cart" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="mb0-xP-7IK">
+                                <rect key="frame" x="10" y="226" width="93" height="21"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                <nil key="textColor"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Update User" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="2ip-XV-2kI">
+                                <rect key="frame" x="10" y="316" width="97" height="21"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                <nil key="textColor"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="" textAlignment="natural" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="T0l-zH-87z">
+                                <rect key="frame" x="10" y="426" width="355" height="0.0"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                <color key="textColor" systemColor="systemRedColor"/>
+                                <nil key="highlightedColor"/>
+                            </label>
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="oDD-dY-vM8"/>
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                         <constraints>
+                            <constraint firstItem="2ip-XV-2kI" firstAttribute="leading" secondItem="go2-OF-Yc1" secondAttribute="leading" id="1rf-qP-qad"/>
+                            <constraint firstItem="mb0-xP-7IK" firstAttribute="top" secondItem="Ao1-Zt-8ep" secondAttribute="bottom" constant="30" id="39X-7N-7AN"/>
+                            <constraint firstItem="7To-Py-pWo" firstAttribute="top" secondItem="go2-OF-Yc1" secondAttribute="bottom" constant="30" id="3XW-Pz-VHO"/>
                             <constraint firstItem="PpA-FO-CkV" firstAttribute="centerY" secondItem="b4P-Z9-O01" secondAttribute="centerY" id="46l-Vo-GMc"/>
+                            <constraint firstItem="T0l-zH-87z" firstAttribute="top" secondItem="MTs-1W-w8n" secondAttribute="bottom" constant="50" id="6QE-SY-Xaf"/>
+                            <constraint firstItem="CVI-2i-VPJ" firstAttribute="top" secondItem="oDD-dY-vM8" secondAttribute="top" constant="26" id="6e0-b2-McN"/>
                             <constraint firstItem="ExR-a8-nOC" firstAttribute="trailing" secondItem="S3Z-yz-awy" secondAttribute="trailing" id="75t-ms-IRt"/>
+                            <constraint firstItem="T0l-zH-87z" firstAttribute="leading" secondItem="go2-OF-Yc1" secondAttribute="leading" id="7eq-b6-1nQ"/>
                             <constraint firstItem="MTs-1W-w8n" firstAttribute="leading" secondItem="go2-OF-Yc1" secondAttribute="leading" id="98R-kk-MYI"/>
                             <constraint firstItem="b4P-Z9-O01" firstAttribute="leading" secondItem="go2-OF-Yc1" secondAttribute="leading" id="CP2-cc-hxj"/>
+                            <constraint firstItem="go2-OF-Yc1" firstAttribute="top" secondItem="CVI-2i-VPJ" secondAttribute="bottom" constant="5" id="CrF-Vj-QTn"/>
+                            <constraint firstItem="2ip-XV-2kI" firstAttribute="top" secondItem="b4P-Z9-O01" secondAttribute="bottom" constant="30" id="G32-da-vRH"/>
                             <constraint firstItem="MTs-1W-w8n" firstAttribute="trailing" secondItem="go2-OF-Yc1" secondAttribute="trailing" id="GwR-Cx-HVA"/>
+                            <constraint firstItem="b4P-Z9-O01" firstAttribute="top" secondItem="mb0-xP-7IK" secondAttribute="bottom" constant="5" id="IPh-0l-DmA"/>
                             <constraint firstItem="ZQN-gh-Iq7" firstAttribute="trailing" secondItem="S3Z-yz-awy" secondAttribute="trailing" id="Ib1-RI-OtK"/>
-                            <constraint firstItem="MTs-1W-w8n" firstAttribute="top" secondItem="b4P-Z9-O01" secondAttribute="bottom" constant="30" id="NpM-GX-Lpf"/>
                             <constraint firstItem="ExR-a8-nOC" firstAttribute="centerY" secondItem="MTs-1W-w8n" secondAttribute="centerY" id="RFY-lf-HgW"/>
                             <constraint firstItem="Ao1-Zt-8ep" firstAttribute="leading" secondItem="go2-OF-Yc1" secondAttribute="leading" id="SsY-cK-NFo"/>
                             <constraint firstItem="Ao1-Zt-8ep" firstAttribute="trailing" secondItem="go2-OF-Yc1" secondAttribute="trailing" id="T07-Ub-iOW"/>
-                            <constraint firstItem="b4P-Z9-O01" firstAttribute="top" secondItem="Ao1-Zt-8ep" secondAttribute="bottom" constant="30" id="Xxd-QJ-5lY"/>
+                            <constraint firstItem="MTs-1W-w8n" firstAttribute="top" secondItem="2ip-XV-2kI" secondAttribute="bottom" constant="5" id="XcU-PK-clt"/>
                             <constraint firstItem="go2-OF-Yc1" firstAttribute="leading" secondItem="oDD-dY-vM8" secondAttribute="leading" constant="10" id="YDM-60-vkw"/>
                             <constraint firstItem="b4P-Z9-O01" firstAttribute="trailing" secondItem="go2-OF-Yc1" secondAttribute="trailing" id="YWm-nC-d1z"/>
+                            <constraint firstItem="T0l-zH-87z" firstAttribute="trailing" secondItem="S3Z-yz-awy" secondAttribute="trailing" id="YdE-Ec-hsx"/>
+                            <constraint firstItem="7To-Py-pWo" firstAttribute="leading" secondItem="go2-OF-Yc1" secondAttribute="leading" id="Z1G-3k-gmG"/>
                             <constraint firstItem="ZQN-gh-Iq7" firstAttribute="centerY" secondItem="Ao1-Zt-8ep" secondAttribute="centerY" id="aaa-YR-koT"/>
-                            <constraint firstItem="go2-OF-Yc1" firstAttribute="top" secondItem="oDD-dY-vM8" secondAttribute="top" constant="50" id="bIF-Ql-WGb"/>
                             <constraint firstItem="PpA-FO-CkV" firstAttribute="trailing" secondItem="S3Z-yz-awy" secondAttribute="trailing" id="e10-bi-7T0"/>
                             <constraint firstItem="S3Z-yz-awy" firstAttribute="centerY" secondItem="go2-OF-Yc1" secondAttribute="centerY" id="fj2-B1-Mir"/>
-                            <constraint firstItem="Ao1-Zt-8ep" firstAttribute="top" secondItem="go2-OF-Yc1" secondAttribute="bottom" constant="30" id="sgN-AI-9eb"/>
+                            <constraint firstItem="CVI-2i-VPJ" firstAttribute="leading" secondItem="go2-OF-Yc1" secondAttribute="leading" id="kqN-PZ-lve"/>
                             <constraint firstItem="oDD-dY-vM8" firstAttribute="trailing" secondItem="S3Z-yz-awy" secondAttribute="trailing" constant="10" id="uaj-4o-0Hm"/>
+                            <constraint firstItem="Ao1-Zt-8ep" firstAttribute="top" secondItem="7To-Py-pWo" secondAttribute="bottom" constant="5" id="wLT-Ao-av9"/>
+                            <constraint firstItem="mb0-xP-7IK" firstAttribute="leading" secondItem="go2-OF-Yc1" secondAttribute="leading" id="xZH-Aa-ILH"/>
                         </constraints>
                     </view>
                     <connections>
+                        <outlet property="errorLabel" destination="T0l-zH-87z" id="frM-yB-0pB"/>
                         <outlet property="trakEventTextField" destination="go2-OF-Yc1" id="K7P-Wm-H49"/>
                         <outlet property="trakPurchaseTextField" destination="Ao1-Zt-8ep" id="KMf-aB-yzV"/>
                         <outlet property="updateCartTextField" destination="b4P-Z9-O01" id="stB-AL-Nlt"/>
@@ -349,6 +391,9 @@
         <image name="iterableLogo" width="143" height="33"/>
         <systemColor name="systemBackgroundColor">
             <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+        </systemColor>
+        <systemColor name="systemRedColor">
+            <color red="1" green="0.23137254900000001" blue="0.18823529410000001" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </systemColor>
     </resources>
 </document>
