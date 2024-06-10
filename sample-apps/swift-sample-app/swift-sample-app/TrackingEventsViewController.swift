@@ -24,14 +24,21 @@ class TrackingEventsViewController: UIViewController {
         super.viewDidLoad()
     }
     
+    func replaceCurlyQuotes(in string: String) -> String {
+        return string
+            .replacingOccurrences(of: "“", with: "\"")
+            .replacingOccurrences(of: "”", with: "\"")
+    }
+    
     @IBAction func trackEventBtnClicked() {
 //        let jsonString = "{\"url\": \"vvv\", \"sku\": \"skuID\", \"name\": \"nnn\", \"price\": 22, \"quantity\": 22}"
         
-        guard let jsonString = trakEventTextField.text else {
+        guard var jsonString = trakEventTextField.text else {
             print("Invalid input")
             return
         }
 
+        jsonString = replaceCurlyQuotes(in: jsonString)
         if let jsonDictionary = convertJsonToDictionary(jsonString: jsonString) {
             // Use the resulting dictionary
                     var dictionary: [AnyHashable: Any] = [:]
@@ -45,11 +52,12 @@ class TrackingEventsViewController: UIViewController {
     }
     
     @IBAction func trackPurchaseBtnClicked() {
-        guard let jsonString = trakPurchaseTextField.text else {
+        guard var jsonString = trakPurchaseTextField.text else {
             print("Invalid input")
             return
         }
 
+        jsonString = replaceCurlyQuotes(in: jsonString)
         if let dictionary = convertJsonToDictionary(jsonString: jsonString) {
             if let commerceItem = createCommerceItem(from: dictionary) {
                 print("CommerceItem created: \(commerceItem)")
@@ -63,11 +71,12 @@ class TrackingEventsViewController: UIViewController {
     }
     
     @IBAction func updateCartBtnClicked() {
-        guard let jsonString = updateCartTextField.text else {
+        guard var jsonString = updateCartTextField.text else {
             print("Invalid input")
             return
         }
 
+        jsonString = replaceCurlyQuotes(in: jsonString)
         if let dictionary = convertJsonToDictionary(jsonString: jsonString) {
             if let commerceItem = createCommerceItem(from: dictionary) {
                 print("CommerceItem created: \(commerceItem)")
@@ -81,11 +90,12 @@ class TrackingEventsViewController: UIViewController {
     }
     
     @IBAction func updateUserBtnClicked() {
-        guard let jsonString = updateUserTextField.text else {
+        guard var jsonString = updateUserTextField.text else {
             print("Invalid input")
             return
         }
 
+        jsonString = replaceCurlyQuotes(in: jsonString)
         if let jsonDictionary = convertJsonToDictionary(jsonString: jsonString) {
             // Use the resulting dictionary
                     var dictionary: [AnyHashable: Any] = [:]
