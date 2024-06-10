@@ -269,7 +269,7 @@
                                     <action selector="trackEventBtnClicked" destination="dFV-10-h5Y" eventType="touchUpInside" id="EjV-RF-j2M"/>
                                 </connections>
                             </button>
-                            <textField opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="248" contentHorizontalAlignment="left" contentVerticalAlignment="center" text="{&quot;items&quot;:[{&quot;name&quot;:&quot;Black Coffee&quot;,&quot;id&quot;:&quot;fdsafds&quot;,&quot;price&quot;:100,&quot;quantity&quot;:2}], &quot;total&quot;: 100}" borderStyle="roundedRect" placeholder="Track Purchase" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="Ao1-Zt-8ep">
+                            <textField opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="248" contentHorizontalAlignment="left" contentVerticalAlignment="center" text="{&quot;items&quot;:[{&quot;name&quot;:&quot;keyboard&quot;,&quot;id&quot;:&quot;fdsafds&quot;,&quot;price&quot;:100,&quot;quantity&quot;:3}], &quot;total&quot;: 100}" borderStyle="roundedRect" placeholder="Track Purchase" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="Ao1-Zt-8ep">
                                 <rect key="frame" x="10" y="162" width="300" height="34"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                 <textInputTraits key="textInputTraits"/>
@@ -282,7 +282,7 @@
                                     <action selector="trackPurchaseBtnClicked" destination="dFV-10-h5Y" eventType="touchUpInside" id="HKI-Xl-I1P"/>
                                 </connections>
                             </button>
-                            <textField opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="248" contentHorizontalAlignment="left" contentVerticalAlignment="center" text="{&quot;items&quot;:[{&quot;name&quot;:&quot;piano&quot;,&quot;id&quot;:&quot;fdsafds&quot;,&quot;price&quot;:100,&quot;quantity&quot;:2}]}" borderStyle="roundedRect" placeholder="Update Cart" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="b4P-Z9-O01">
+                            <textField opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="248" contentHorizontalAlignment="left" contentVerticalAlignment="center" text="{&quot;items&quot;:[{&quot;name&quot;:&quot;piano&quot;,&quot;id&quot;:&quot;fdsafds&quot;,&quot;price&quot;:9,&quot;quantity&quot;:2}]}" borderStyle="roundedRect" placeholder="Update Cart" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="b4P-Z9-O01">
                                 <rect key="frame" x="10" y="252" width="300" height="34"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                 <textInputTraits key="textInputTraits"/>
@@ -295,7 +295,7 @@
                                     <action selector="updateCartBtnClicked" destination="dFV-10-h5Y" eventType="touchUpInside" id="vdG-eG-BOz"/>
                                 </connections>
                             </button>
-                            <textField opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="248" contentHorizontalAlignment="left" contentVerticalAlignment="center" text="{&quot;phone_number&quot;: &quot;999999&quot;, &quot;city&quot;: &quot;New York&quot;}" borderStyle="roundedRect" placeholder="Update User" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="MTs-1W-w8n">
+                            <textField opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="248" contentHorizontalAlignment="left" contentVerticalAlignment="center" text="{&quot;phone_number&quot;: &quot;999999&quot;, &quot;country&quot;: &quot;UK&quot;}" borderStyle="roundedRect" placeholder="Update User" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="MTs-1W-w8n">
                                 <rect key="frame" x="10" y="342" width="300" height="34"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                 <textInputTraits key="textInputTraits"/>
