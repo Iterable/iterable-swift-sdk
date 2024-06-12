@@ -27,11 +27,16 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         config.customActionDelegate = self
         config.urlDelegate = self
         config.inAppDisplayInterval = 1
-        
-        IterableAPI.initialize(apiKey: iterableApiKey,
-                               launchOptions: launchOptions,
-                               config: config)
-        
+        if let bundleIdentifier = Bundle.main.bundleIdentifier {
+            UserDefaults.standard.removePersistentDomain(forName: bundleIdentifier)
+        }
+        DispatchQueue.main.asyncAfter(deadline: .now() + 4) {
+            IterableAPI.initialize(apiKey: self.iterableApiKey,
+                                   launchOptions: launchOptions,
+                                   config: config)
+        }
+       
+       
         return true
     }
     
