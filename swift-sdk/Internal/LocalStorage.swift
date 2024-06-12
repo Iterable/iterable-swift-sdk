@@ -5,6 +5,7 @@
 import Foundation
 
 struct LocalStorage: LocalStorageProtocol {
+    
     init(userDefaults: UserDefaults = UserDefaults.standard,
          keychain: IterableKeychain = IterableKeychain()) {
         iterableUserDefaults = IterableUserDefaults(userDefaults: userDefaults)
@@ -16,6 +17,14 @@ struct LocalStorage: LocalStorageProtocol {
             keychain.userId
         } set {
             keychain.userId = newValue
+        }
+    }
+    
+    var userIdAnnon: String? {
+        get {
+            keychain.userIdAnnon
+        } set {
+            keychain.userIdAnnon = newValue
         }
     }
     

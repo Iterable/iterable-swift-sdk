@@ -7,6 +7,8 @@ import Foundation
 protocol LocalStorageProtocol {
     var userId: String? { get set }
     
+    var userIdAnnon: String? { get set }
+    
     var email: String? { get set }
     
     var authToken: String? { get set }

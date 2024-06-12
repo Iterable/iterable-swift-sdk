@@ -127,6 +127,7 @@ class ApiClient {
 // MARK: - API REQUEST CALLS
 
 extension ApiClient: ApiClientProtocol {
+   
     func register(registerTokenInfo: RegisterTokenInfo, notificationsEnabled: Bool) -> Pending<SendRequestValue, SendRequestError> {
         let result = createRequestCreator().flatMap { $0.createRegisterTokenRequest(registerTokenInfo: registerTokenInfo,
                                                                                     notificationsEnabled: notificationsEnabled) }
@@ -289,7 +290,7 @@ extension ApiClient: ApiClientProtocol {
         return send(iterableRequestResult: result)
     }
 
-    func mergeUser(sourceEmail: String, sourceUserId: String, destinationEmail: String, destinationUserId: String)  -> Pending<SendRequestValue, SendRequestError> {
+    func mergeUser(sourceEmail: String?, sourceUserId: String, destinationEmail: String?, destinationUserId: String?)  -> Pending<SendRequestValue, SendRequestError> {
         let result = createRequestCreator().flatMap { $0.createMergeUserRequest(sourceEmail, sourceUserId, destinationEmail, destinationUserId: destinationUserId) }
         return send(iterableRequestResult: result)
     }

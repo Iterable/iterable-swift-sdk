@@ -8,6 +8,5 @@
 
 import Foundation
 @objc public protocol AnonymousUserMergeProtocol {
-    func mergeUserUsingUserId(destinationUserId: String, sourceUserId: String, destinationEmail: String)
-    func mergeUserUsingEmail(destinationUserId: String, destinationEmail: String, sourceEmail: String)
+    func tryMergeUser(sourceUserId: String?, destinationUserIdOrEmail: String?, isEmail: Bool, onMergeResult: @escaping MergeActionHandler)
 }

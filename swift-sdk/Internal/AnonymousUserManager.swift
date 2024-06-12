@@ -40,9 +40,7 @@ public class AnonymousUserManager: AnonymousUserManagerProtocol {
     }
     
     public func trackAnonUpdateUser(_ dataFields: [AnyHashable: Any]) {
-        var body = [AnyHashable: Any]()
-        body[JsonKey.dataFields] = dataFields
-        storeEventData(type: EventType.updateUser, data: body, shouldOverWrite: true)
+        storeEventData(type: EventType.updateUser, data: dataFields, shouldOverWrite: true)
     }
     
     // Tracks an anonymous purchase event and store it locally
@@ -105,8 +103,8 @@ public class AnonymousUserManager: AnonymousUserManagerProtocol {
                         self.getAnonCriteria() // refetch the criteria
                     }
                 }.onSuccess { success in
-                    IterableAPI.setUserId(userId)
-                    self.syncEvents()
+                    self.localStorage.userIdAnnon = userId
+                    self.syncNonSyncedEvents()
                 }
             }
         }
@@ -114,7 +112,9 @@ public class AnonymousUserManager: AnonymousUserManagerProtocol {
     
     // Syncs unsynced data which might have failed to sync when calling syncEvents for the first time after criterias met
     public func syncNonSyncedEvents() {
-        syncEvents()
+        DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
+            self.syncEvents()
+        }
     }
     
     // Reset the locally saved data when user logs out to make sure no old data is left
@@ -163,7 +163,7 @@ public class AnonymousUserManager: AnonymousUserManagerProtocol {
                         })
                         break
                     case EventType.updateUser:
-                        IterableAPI.implementation?.updateUser(eventData[JsonKey.dataFields] as? [AnyHashable : Any] ?? [:], mergeNestedObjects: false)
+                        IterableAPI.implementation?.updateUser(eventData, mergeNestedObjects: false)
                         break
                     default:
                         break
@@ -202,7 +202,7 @@ public class AnonymousUserManager: AnonymousUserManagerProtocol {
     // Stores event data locally
     private func storeEventData(type: String, data: [AnyHashable: Any], shouldOverWrite: Bool? = false) {
         let storedData = localStorage.anonymousUserEvents
-        var eventsDataObjects: [[AnyHashable: Any]] = [[:]]
+        var eventsDataObjects: [[AnyHashable: Any]] = []
         
         if let _storedData = storedData {
             eventsDataObjects = _storedData
@@ -212,7 +212,13 @@ public class AnonymousUserManager: AnonymousUserManagerProtocol {
         appendData.setValue(for: JsonKey.eventTimeStamp, value: Int(dateProvider.currentDate.timeIntervalSince1970)) // this we use as unique idenfier too
 
         if shouldOverWrite == true {
-            eventsDataObjects = eventsDataObjects.map { var subDictionary = $0; subDictionary[type] = data; return subDictionary }
+            let trackingType = type
+                    if let indexToUpdate = eventsDataObjects.firstIndex(where: { $0[JsonKey.eventType] as? String == trackingType }) {
+                        let dataToUpdate = eventsDataObjects[indexToUpdate]
+                        eventsDataObjects[indexToUpdate] = dataToUpdate.merging(data) { (_, new) in new }
+                    } else {
+                        eventsDataObjects.append(appendData)
+                    }
         } else {
             eventsDataObjects.append(appendData)
         }
