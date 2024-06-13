@@ -13,7 +13,7 @@ enum Endpoint {
 enum EventType {
     static let customEvent = "customEvent"
     static let purchase = "purchase"
-    static let updateUser = "updateUser"
+    static let updateUser = "user"
     static let cartUpdate = "cartUpdate"
     static let anonSession = "anonSession"
     static let tokenRegistration = "tokenRegistration"
@@ -77,6 +77,7 @@ enum Const {
         enum Key {
             static let email = "itbl_email"
             static let userId = "itbl_userid"
+            static let userIdAnnon = "itbl_userid_annon"
             static let authToken = "itbl_auth_token"
         }
     }
@@ -418,3 +419,4 @@ public typealias OnFailureHandler = (_ reason: String?, _ data: Data?) -> Void
 public typealias UrlHandler = (URL) -> Bool
 public typealias CustomActionHandler = (String) -> Bool
 public typealias AuthTokenRetrievalHandler = (String?) -> Void
+public typealias MergeActionHandler = (Bool, String?) -> Void

@@ -508,7 +508,7 @@ struct RequestCreator {
         return .success(.get(createGetRequest(forPath: Const.Path.userByEmail, withArgs: body as! [String: String])))
     }
     
-    func createMergeUserRequest(_ sourceEmail: String, _ sourceUserId: String, _ destinationEmail: String, destinationUserId: String) -> Result<IterableRequest, IterableError> {
+    func createMergeUserRequest(_ sourceEmail: String?, _ sourceUserId: String, _ destinationEmail: String?, destinationUserId: String?) -> Result<IterableRequest, IterableError> {
         var body = [AnyHashable: Any]()
         
         if IterableUtil.isNotNullOrEmpty(string: sourceEmail) {
@@ -581,6 +581,8 @@ struct RequestCreator {
         case let .email(email):
             dict.setValue(for: JsonKey.email, value: email)
         case let .userId(userId):
+            dict.setValue(for: JsonKey.userId, value: userId)
+        case let .userIdAnon(userId):
             dict.setValue(for: JsonKey.userId, value: userId)
         case .none:
             ITBInfo("Current user is unavailable")

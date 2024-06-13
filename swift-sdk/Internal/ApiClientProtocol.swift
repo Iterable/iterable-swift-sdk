@@ -56,7 +56,7 @@ protocol ApiClientProtocol: AnyObject {
     
     func getUserByEmail(email: String) -> Pending<SendRequestValue, SendRequestError>
     
-    func mergeUser(sourceEmail: String, sourceUserId: String, destinationEmail: String, destinationUserId: String) -> Pending<SendRequestValue, SendRequestError>
+    func mergeUser(sourceEmail: String?, sourceUserId: String, destinationEmail: String?, destinationUserId: String?) -> Pending<SendRequestValue, SendRequestError>
     
     func getCriteria() -> Pending<SendRequestValue, SendRequestError>
 

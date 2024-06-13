@@ -122,8 +122,10 @@ struct CriteriaCompletionChecker {
     }
     
     func getEventsWithCartItems() -> [[AnyHashable: Any]] {
+        var dataTypeEvent: String = "";
         let purchaseEvents = anonymousEvents.filter { dictionary in
             if let dataType = dictionary[JsonKey.eventType] as? String {
+                dataTypeEvent = dataType;
                 return dataType == EventType.purchase || dataType == EventType.cartUpdate
             }
             return false
@@ -131,33 +133,73 @@ struct CriteriaCompletionChecker {
         
         var processedEvents: [[AnyHashable: Any]] = [[:]]
         for eventItem in purchaseEvents {
-            if let items = eventItem["items"] as? [[AnyHashable: Any]] {
-                let itemsWithOtherProps = items.map { item -> [AnyHashable: Any] in
-                    var updatedItem = [AnyHashable: Any]()
-                    
-                    for (key, value) in item {
-                        if let stringKey = key as? String {
-                            updatedItem["shoppingCartItems." + stringKey] = value
+            if dataTypeEvent == EventType.purchase {
+                if let items = eventItem["items"] as? [[AnyHashable: Any]] {
+                    let itemsWithOtherProps = items.map { item -> [AnyHashable: Any] in
+                        var updatedItem = [AnyHashable: Any]()
+                        
+                        for (key, value) in item {
+                            if let stringKey = key as? String {
+                                updatedItem["shoppingCartItems." + stringKey] = value
+                            }
                         }
-                    }
-                    
-                    // handle dataFields if any
-                    if let dataFields = eventItem["dataFields"] as? [AnyHashable: Any] {
-                        for (key, value) in dataFields {
-                            if key is String {
+                        
+                        // handle dataFields if any
+                        if let dataFields = eventItem["dataFields"] as? [AnyHashable: Any] {
+                            for (key, value) in dataFields {
+                                if key is String {
+                                    updatedItem[key] = value
+                                }
+                            }
+                        }
+                        
+                        for (key, value) in eventItem {
+                            if (key as! String != "items" && key as! String != "dataFields") {
                                 updatedItem[key] = value
                             }
                         }
+                        return updatedItem
                     }
-                    
-                    for (key, value) in eventItem {
-                        if (key as! String != "items" && key as! String != "dataFields") {
-                            updatedItem[key] = value
-                        }
-                    }
-                    return updatedItem
+                    processedEvents.append(contentsOf: itemsWithOtherProps)
                 }
-                processedEvents.append(contentsOf: itemsWithOtherProps)
+            } else {
+                let defaultEvent: [AnyHashable: Any] = [
+                    "dataType": EventType.customEvent,
+                    "eventName": "updateCart"
+                ]
+                processedEvents.append(defaultEvent)
+                if let items = eventItem["items"] as? [[AnyHashable: Any]] {
+                    let itemsWithOtherProps = items.map { item -> [AnyHashable: Any] in
+                        var updatedItem = [AnyHashable: Any]()
+                        
+                        for (key, value) in item {
+                            if let stringKey = key as? String {
+                                updatedItem["updateCart.updatedShoppingCartItems." + stringKey] = value
+                            }
+                        }
+                        
+                        // handle dataFields if any
+                        if let dataFields = eventItem["dataFields"] as? [AnyHashable: Any] {
+                            for (key, value) in dataFields {
+                                if key is String {
+                                    updatedItem[key] = value
+                                }
+                            }
+                        }
+                        
+                        for (key, value) in eventItem {
+                            if (key as! String != "items" && key as! String != "dataFields") {
+                                if (key as! String == JsonKey.eventType) {
+                                    updatedItem[key] = EventType.customEvent;
+                                } else {
+                                    updatedItem[key] = value
+                                }
+                            }
+                        }
+                        return updatedItem
+                    }
+                    processedEvents.append(contentsOf: itemsWithOtherProps)
+                }
             }
         }
         return processedEvents
@@ -245,6 +287,8 @@ struct CriteriaCompletionChecker {
                 return compareValueEquality(matchObj, stringValue)
             case "DoesNotEquals":
                 return !compareValueEquality(matchObj, stringValue)
+            case "IsSet":
+                return !(matchObj as! String).isEmpty;
             case "GreaterThan":
                 print("GreatherThan:: \(compareNumericValues(matchObj, stringValue, compareOperator: >))")
                 return compareNumericValues(matchObj, stringValue, compareOperator: >)
@@ -299,11 +343,16 @@ struct CriteriaCompletionChecker {
             return false // Handle the case where stringValue cannot be converted to a Double
         }
     }
-
-
+    
     func compareStringContains(_ sourceTo: Any, _ stringValue: String) -> Bool {
-        guard let stringTypeValue = sourceTo as? String else { return false }
-        return stringTypeValue.contains(stringValue)
+        if let stringTypeValue = sourceTo as? String {
+            // sourceTo is a String
+            return stringTypeValue.contains(stringValue)
+        } else if let arrayTypeValue = sourceTo as? [String] {
+            // sourceTo is an Array of String
+            return arrayTypeValue.contains(stringValue)
+        }
+        return false
     }
 
     func compareStringStartsWith(_ sourceTo: Any, _ stringValue: String) -> Bool {
