@@ -139,10 +139,6 @@ public class AnonymousUserManager: AnonymousUserManagerProtocol {
                         })
                         break
                     case EventType.purchase:
-                        var userDict = [AnyHashable: Any]()
-                        userDict[JsonKey.userId] = localStorage.userId
-                        userDict[JsonKey.preferUserId] = true
-                        userDict[JsonKey.createNewFields] = true
                         var total = NSNumber(value: 0)
                         if let _total = NumberFormatter().number(from: eventData[JsonKey.Commerce.total] as! String) {
                             total = _total
@@ -150,16 +146,14 @@ public class AnonymousUserManager: AnonymousUserManagerProtocol {
                             print("Conversion failed")
                         }
                         
-                        IterableAPI.implementation?.trackPurchase(total, items: convertCommerceItems(from: eventData[JsonKey.Commerce.items] as! [[AnyHashable: Any]]), dataFields: eventData[JsonKey.dataFields] as? [AnyHashable : Any], withUser: userDict, createdAt: eventData[JsonKey.Body.createdAt] as? Int ?? 0, onSuccess: {result in
+                        IterableAPI.implementation?.trackPurchase(total, items: convertCommerceItems(from: eventData[JsonKey.Commerce.items] as! [[AnyHashable: Any]]), dataFields: eventData[JsonKey.dataFields] as? [AnyHashable : Any], createdAt: eventData[JsonKey.Body.createdAt] as? Int ?? 0, onSuccess: {result in
                             successfulSyncedData.append(eventData[JsonKey.eventTimeStamp] as? Int ?? 0)
                         })
                         break
                     case EventType.cartUpdate:
-                        var userDict = [AnyHashable: Any]()
-                        userDict[JsonKey.userId] = localStorage.userId
-                        userDict[JsonKey.createNewFields] = true
-                        IterableAPI.implementation?.updateCart(items: convertCommerceItems(from: eventData[JsonKey.Commerce.items] as! [[AnyHashable: Any]]), withUser: userDict, createdAt: eventData[JsonKey.Body.createdAt] as? Int ?? 0, onSuccess: {result in
-                            successfulSyncedData.append(eventData[JsonKey.eventTimeStamp] as? Int ?? 0)
+                        IterableAPI.implementation?.updateCart(items: convertCommerceItems(from: eventData[JsonKey.Commerce.items] as! [[AnyHashable: Any]]), createdAt: eventData[JsonKey.Body.createdAt] as? Int ?? 0,
+                                               onSuccess: {result in
+                                                  successfulSyncedData.append(eventData[JsonKey.eventTimeStamp] as? Int ?? 0)
                         })
                         break
                     case EventType.updateUser:

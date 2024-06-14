@@ -162,8 +162,8 @@ extension ApiClient: ApiClientProtocol {
         return send(iterableRequestResult: result)
     }
     
-    func updateCart(items: [CommerceItem], withUser user: [AnyHashable:Any], createdAt: Int) -> Pending<SendRequestValue, SendRequestError> {
-        let result = createRequestCreator().flatMap { $0.createUpdateCartRequest(items: items, withUser: user, createdAt: createdAt) }
+    func updateCart(items: [CommerceItem], createdAt: Int) -> Pending<SendRequestValue, SendRequestError> {
+        let result = createRequestCreator().flatMap { $0.createUpdateCartRequest(items: items, createdAt: createdAt) }
 
         return sendWithoutCreatedAt(iterableRequestResult: result)
     }
@@ -184,12 +184,10 @@ extension ApiClient: ApiClientProtocol {
     func track(purchase total: NSNumber,
                items: [CommerceItem],
                dataFields: [AnyHashable: Any]?,
-               withUser user: [AnyHashable: Any],
                createdAt: Int) -> Pending<SendRequestValue, SendRequestError> {
         let result = createRequestCreator().flatMap { $0.createTrackPurchaseRequest(total,
                                                                                     items: items,
                                                                                     dataFields: dataFields,
-                                                                                    withUser: user,
                                                                                     createdAt: createdAt) }
         return send(iterableRequestResult: result)
     }

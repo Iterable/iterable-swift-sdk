@@ -98,13 +98,11 @@ class RequestHandler: RequestHandlerProtocol {
     
     @discardableResult
     func updateCart(items: [CommerceItem],
-                    withUser user: [AnyHashable:Any],
                     createdAt: Int,
                     onSuccess: OnSuccessHandler?,
                     onFailure: OnFailureHandler?) -> Pending<SendRequestValue, SendRequestError> {
         sendUsingRequestProcessor { processor in
             processor.updateCart(items: items,
-                                 withUser: user,
                                  createdAt: createdAt,
                                  onSuccess: onSuccess,
                                  onFailure: onFailure)
@@ -134,7 +132,6 @@ class RequestHandler: RequestHandlerProtocol {
     func trackPurchase(_ total: NSNumber,
                        items: [CommerceItem],
                        dataFields: [AnyHashable: Any]?,
-                       withUser user: [AnyHashable: Any],
                        createdAt: Int,
                        onSuccess: OnSuccessHandler?,
                        onFailure: OnFailureHandler?) -> Pending<SendRequestValue, SendRequestError> {
@@ -142,7 +139,6 @@ class RequestHandler: RequestHandlerProtocol {
             processor.trackPurchase(total,
                                     items: items,
                                     dataFields: dataFields,
-                                    withUser: user,
                                     createdAt: createdAt,
                                     onSuccess: onSuccess,
                                     onFailure: onFailure)

@@ -61,7 +61,7 @@ struct RequestCreator {
         
         setCurrentUser(inDict: &body)
         
-        if auth.email == nil, auth.userId != nil {
+        if auth.email == nil, (auth.userId != nil || auth.userIdAnon != nil) {
             body[JsonKey.preferUserId] = true
         }
         
@@ -78,7 +78,7 @@ struct RequestCreator {
         
         setCurrentUser(inDict: &body)
         
-        if auth.email == nil, auth.userId != nil {
+        if auth.email == nil, (auth.userId != nil || auth.userIdAnon != nil) {
             body[JsonKey.preferUserId] = true
         }
         
@@ -101,22 +101,32 @@ struct RequestCreator {
         
         let itemsToSerialize = items.map { $0.toDictionary() }
         
-        let body: [String: Any] = [JsonKey.Commerce.user: apiUserDict,
+        var body: [String: Any] = [JsonKey.Commerce.user: apiUserDict,
                                    JsonKey.Commerce.items: itemsToSerialize]
         
+        if auth.email == nil, (auth.userId != nil || auth.userIdAnon != nil) {
+            body[JsonKey.preferUserId] = true
+        }
         return .success(.post(createPostRequest(path: Const.Path.updateCart, body: body)))
     }
     
-    func createUpdateCartRequest(items: [CommerceItem], withUser user: [AnyHashable: Any], createdAt: Int) -> Result<IterableRequest, IterableError> {
+    func createUpdateCartRequest(items: [CommerceItem], createdAt: Int) -> Result<IterableRequest, IterableError> {
         if case .none = auth.emailOrUserId {
             ITBError(Self.authMissingMessage)
             return .failure(IterableError.general(description: Self.authMissingMessage))
         }
+        var apiUserDict = [AnyHashable: Any]()
+        
+        setCurrentUser(inDict: &apiUserDict)
         let itemsToSerialize = items.map { $0.toDictionary() }
 
-        let body: [String: Any] = [JsonKey.Commerce.user: user,
+        var body: [String: Any] = [JsonKey.Commerce.user: apiUserDict,
                                    JsonKey.Body.createdAt: createdAt,
                                    JsonKey.Commerce.items: itemsToSerialize]
+        
+        if auth.email == nil, (auth.userId != nil || auth.userIdAnon != nil) {
+            body[JsonKey.preferUserId] = true
+        }
 
         return .success(.post(createPostRequest(path: Const.Path.updateCart, body: body)))
     }
@@ -141,6 +151,10 @@ struct RequestCreator {
                                    JsonKey.Commerce.items: itemsToSerialize,
                                    JsonKey.Commerce.total: total]
         
+        if auth.email == nil, (auth.userId != nil || auth.userIdAnon != nil) {
+            body[JsonKey.preferUserId] = true
+        }
+        
         if let dataFields = dataFields {
             body[JsonKey.dataFields] = dataFields
         }
@@ -158,20 +172,27 @@ struct RequestCreator {
     func createTrackPurchaseRequest(_ total: NSNumber,
                                     items: [CommerceItem],
                                     dataFields: [AnyHashable: Any]?,
-                                    withUser user: [AnyHashable: Any],
                                     createdAt: Int) -> Result<IterableRequest, IterableError> {
         if case .none = auth.emailOrUserId {
             ITBError(Self.authMissingMessage)
             return .failure(IterableError.general(description: Self.authMissingMessage))
         }
 
+        var apiUserDict = [AnyHashable: Any]()
+        
+        setCurrentUser(inDict: &apiUserDict)
+        
         let itemsToSerialize = items.map { $0.toDictionary() }
 
-        var body: [String: Any] = [JsonKey.Commerce.user: user,
+        var body: [String: Any] = [JsonKey.Commerce.user: apiUserDict,
                                    JsonKey.Body.createdAt: createdAt,
                                    JsonKey.Commerce.items: itemsToSerialize,
                                    JsonKey.Commerce.total: total]
 
+        if auth.email == nil, (auth.userId != nil || auth.userIdAnon != nil) {
+            body[JsonKey.preferUserId] = true
+        }
+        
         if let dataFields = dataFields {
             body[JsonKey.dataFields] = dataFields
         }
