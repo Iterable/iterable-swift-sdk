@@ -32,7 +32,6 @@ protocol RequestProcessorProtocol {
     
     @discardableResult
     func updateCart(items: [CommerceItem],
-                    withUser user: [AnyHashable:Any],
                     createdAt: Int,
                     onSuccess: OnSuccessHandler?,
                     onFailure: OnFailureHandler?) -> Pending<SendRequestValue, SendRequestError>
@@ -50,7 +49,6 @@ protocol RequestProcessorProtocol {
     func trackPurchase(_ total: NSNumber,
                        items: [CommerceItem],
                        dataFields: [AnyHashable: Any]?,
-                       withUser user: [AnyHashable: Any],
                        createdAt: Int,
                        onSuccess: OnSuccessHandler?,
                        onFailure: OnFailureHandler?) -> Pending<SendRequestValue, SendRequestError>

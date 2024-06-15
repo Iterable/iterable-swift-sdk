@@ -51,12 +51,11 @@ struct OfflineRequestProcessor: RequestProcessorProtocol {
     
     @discardableResult
     func updateCart(items: [CommerceItem],
-                    withUser user: [AnyHashable:Any],
                     createdAt: Int,
                     onSuccess: OnSuccessHandler?,
                     onFailure: OnFailureHandler?) -> Pending<SendRequestValue, SendRequestError> {
         let requestGenerator = { (requestCreator: RequestCreator) in
-            requestCreator.createUpdateCartRequest(items: items, withUser: user, createdAt: createdAt)
+            requestCreator.createUpdateCartRequest(items: items, createdAt: createdAt)
         }
 
         return sendIterableRequest(requestGenerator: requestGenerator,
@@ -91,7 +90,6 @@ struct OfflineRequestProcessor: RequestProcessorProtocol {
     func trackPurchase(_ total: NSNumber,
                        items: [CommerceItem],
                        dataFields: [AnyHashable: Any]?,
-                       withUser user: [AnyHashable: Any],
                        createdAt: Int,
                        onSuccess: OnSuccessHandler?,
                        onFailure: OnFailureHandler?) -> Pending<SendRequestValue, SendRequestError> {
@@ -99,7 +97,6 @@ struct OfflineRequestProcessor: RequestProcessorProtocol {
             requestCreator.createTrackPurchaseRequest(total,
                                                       items: items,
                                                       dataFields: dataFields,
-                                                      withUser: user,
                                                       createdAt: createdAt)
         }
 

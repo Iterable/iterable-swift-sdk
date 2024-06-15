@@ -87,11 +87,10 @@ struct OnlineRequestProcessor: RequestProcessorProtocol {
     
     @discardableResult
     func updateCart(items: [CommerceItem],
-                    withUser user: [AnyHashable:Any],
                     createdAt: Int,
                     onSuccess: OnSuccessHandler? = nil,
                     onFailure: OnFailureHandler? = nil) -> Pending<SendRequestValue, SendRequestError> {
-        sendRequest(requestProvider: { apiClient.updateCart(items: items, withUser: user, createdAt: createdAt) },
+        sendRequest(requestProvider: { apiClient.updateCart(items: items, createdAt: createdAt) },
                     successHandler: onSuccess,
                     failureHandler: onFailure,
                     requestIdentifier: "updateCart")
@@ -115,11 +114,10 @@ struct OnlineRequestProcessor: RequestProcessorProtocol {
                     requestIdentifier: "trackPurchase")
     }
     
-    func trackPurchase(_ total: NSNumber, items: [CommerceItem], dataFields: [AnyHashable : Any]?, withUser user: [AnyHashable : Any], createdAt: Int, onSuccess: OnSuccessHandler?, onFailure: OnFailureHandler?) -> Pending<SendRequestValue, SendRequestError> {
+    func trackPurchase(_ total: NSNumber, items: [CommerceItem], dataFields: [AnyHashable : Any]?, createdAt: Int, onSuccess: OnSuccessHandler?, onFailure: OnFailureHandler?) -> Pending<SendRequestValue, SendRequestError> {
         sendRequest(requestProvider: { apiClient.track(purchase: total,
                                                        items: items,
                                                        dataFields: dataFields,
-                                                       withUser: user,
                                                        createdAt: createdAt)},
                     successHandler: onSuccess,
                     failureHandler: onFailure,

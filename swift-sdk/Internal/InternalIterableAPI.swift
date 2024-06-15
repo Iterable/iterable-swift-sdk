@@ -302,11 +302,10 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
     
     @discardableResult
     func updateCart(items: [CommerceItem],
-                    withUser user: [AnyHashable:Any],
                     createdAt: Int,
                     onSuccess: OnSuccessHandler? = nil,
                     onFailure: OnFailureHandler? = nil) -> Pending<SendRequestValue, SendRequestError> {
-        return requestHandler.updateCart(items: items, withUser: user, createdAt: createdAt, onSuccess: onSuccess, onFailure: onFailure)
+        return requestHandler.updateCart(items: items, createdAt: createdAt, onSuccess: onSuccess, onFailure: onFailure)
     }
     
     @discardableResult
@@ -333,14 +332,12 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
     func trackPurchase(_ total: NSNumber,
                        items: [CommerceItem],
                        dataFields: [AnyHashable: Any]? = nil,
-                       withUser user: [AnyHashable: Any],
                        createdAt: Int,
                        onSuccess: OnSuccessHandler? = nil,
                        onFailure: OnFailureHandler? = nil) -> Pending<SendRequestValue, SendRequestError> {
         return requestHandler.trackPurchase(total,
                                      items: items,
                                      dataFields: dataFields,
-                                     withUser: user,
                                      createdAt: createdAt,
                                      onSuccess: onSuccess,
                                      onFailure: onFailure)
@@ -686,7 +683,9 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
         networkSession = dependencyContainer.networkSession
         notificationStateProvider = dependencyContainer.notificationStateProvider
         localStorage = dependencyContainer.localStorage
-       // localStorage.userIdAnnon = nil      // remove this before pushing the code (only for testing)
+        //localStorage.userIdAnnon = nil      // remove this before pushing the code (only for testing)
+        //localStorage.userId = nil      // remove this before pushing the code (only for testing)
+        //localStorage.email = nil      // remove this before pushing the code (only for testing)
         inAppDisplayer = dependencyContainer.inAppDisplayer
         urlOpener = dependencyContainer.urlOpener
         deepLinkManager = DeepLinkManager(redirectNetworkSessionProvider: dependencyContainer)

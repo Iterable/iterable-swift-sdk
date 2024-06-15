@@ -45,7 +45,6 @@ protocol RequestHandlerProtocol: AnyObject {
     
     @discardableResult
     func updateCart(items: [CommerceItem],
-                    withUser user: [AnyHashable:Any],
                     createdAt: Int,
                     onSuccess: OnSuccessHandler?,
                     onFailure: OnFailureHandler?) -> Pending<SendRequestValue, SendRequestError>
@@ -63,7 +62,6 @@ protocol RequestHandlerProtocol: AnyObject {
     func trackPurchase(_ total: NSNumber,
                        items: [CommerceItem],
                        dataFields: [AnyHashable: Any]?,
-                       withUser user: [AnyHashable: Any],
                        createdAt: Int,
                        onSuccess: OnSuccessHandler?,
                        onFailure: OnFailureHandler?) -> Pending<SendRequestValue, SendRequestError>
