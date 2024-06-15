@@ -417,6 +417,6 @@ class TaskRunnerTests: XCTestCase {
 
 extension TaskRunnerTests: AuthProvider {
     var auth: Auth {
-        Auth(userId: nil, email: "user@example.com", authToken: nil)
+        Auth(userId: nil, email: "user@example.com", authToken: nil, userIdAnon: nil)
     }
 }

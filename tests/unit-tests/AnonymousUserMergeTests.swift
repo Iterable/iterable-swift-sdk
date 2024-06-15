@@ -13,7 +13,7 @@ import Foundation
 
 class AnonymousUserMergeTests: XCTestCase, AuthProvider {
     public var auth: Auth {
-        Auth(userId: nil, email: "user@example.com", authToken: "asdf")
+        Auth(userId: nil, email: "user@example.com", authToken: "asdf", userIdAnon: nil)
     }
     
     private static let apiKey = "zeeApiKey"
@@ -31,9 +31,9 @@ class AnonymousUserMergeTests: XCTestCase, AuthProvider {
                                       deviceMetadata: InternalIterableAPI.initializeForTesting().deviceMetadata,
                                       dateProvider: MockDateProvider())
         
-        mockApiClient.getUserByUserID(userId: "123").onSuccess { data in
-            self.callMergeApi(sourceEmail: "", sourceUserId: "123", destinationEmail: "destination@example.com", destinationUserId: "456", apiClient: mockApiClient)
-        }
+        
+        self.callMergeApi(sourceEmail: "", sourceUserId: "123", destinationEmail: "destination@example.com", destinationUserId: "456", apiClient: mockApiClient)
+        
     }
     
     func testMergeUserUsingEmail() {
@@ -45,9 +45,9 @@ class AnonymousUserMergeTests: XCTestCase, AuthProvider {
                                       deviceMetadata: InternalIterableAPI.initializeForTesting().deviceMetadata,
                                       dateProvider: MockDateProvider())
         
-        mockApiClient.getUserByEmail(email: "source@example.com").onSuccess { data in
-            self.callMergeApi(sourceEmail: "source@example.com", sourceUserId: "", destinationEmail: "destination@example.com", destinationUserId: "456", apiClient: mockApiClient)
-        }
+        
+        self.callMergeApi(sourceEmail: "source@example.com", sourceUserId: "", destinationEmail: "destination@example.com", destinationUserId: "456", apiClient: mockApiClient)
+        
     }
     
     private func callMergeApi(sourceEmail: String, sourceUserId: String, destinationEmail: String, destinationUserId: String, apiClient: ApiClient) {
