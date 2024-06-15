@@ -64,11 +64,11 @@ struct CriteriaCompletionChecker {
         var criteriaId: String? = nil
         if let json = try? JSONSerialization.jsonObject(with: anonymousCriteria, options: []) as? [String: Any] {
             // Access the criteriaList
-            if let criteriaList = json["criterias"] as? [[String: Any]] {
+            if let criteriaList = json[JsonKey.criterias] as? [[String: Any]] {
                 // Iterate over the criteria
                 for criteria in criteriaList {
                     // Perform operations on each criteria
-                    if let searchQuery = criteria["searchQuery"] as? [String: Any], let currentCriteriaId = criteria["criteriaId"] as? String {
+                    if let searchQuery = criteria[JsonKey.CriteriaItem.searchQuery] as? [String: Any], let currentCriteriaId = criteria[JsonKey.CriteriaItem.criteriaId] as? String {
                         // we will split purhase/updatecart event items as seperate events because we need to compare it against the single item in criteria json
                         var eventsToProcess = getEventsWithCartItems()
                         eventsToProcess.append(contentsOf: getNonCartEvents())
@@ -100,7 +100,7 @@ struct CriteriaCompletionChecker {
     func getNonCartEvents() -> [[AnyHashable: Any]] {
         let nonPurchaseEvents = anonymousEvents.filter { dictionary in
             if let dataType = dictionary[JsonKey.eventType] as? String {
-                return dataType != EventType.purchase && dataType != EventType.cartUpdate
+                return dataType != EventType.purchase && dataType != EventType.updateCart
             }
             return false
         }
@@ -108,13 +108,13 @@ struct CriteriaCompletionChecker {
         for eventItem in nonPurchaseEvents {
             var updatedItem = eventItem
             // handle dataFields if any
-            if let dataFields = eventItem["dataFields"] as? [AnyHashable: Any] {
+            if let dataFields = eventItem[JsonKey.CommerceItem.dataFields] as? [AnyHashable: Any] {
                 for (key, value) in dataFields {
                     if key is String {
                         updatedItem[key] = value
                     }
                 }
-                updatedItem.removeValue(forKey: "dataFields")
+                updatedItem.removeValue(forKey: JsonKey.CommerceItem.dataFields)
             }
             processedEvents.append(updatedItem)
         }
@@ -126,7 +126,7 @@ struct CriteriaCompletionChecker {
         let purchaseEvents = anonymousEvents.filter { dictionary in
             if let dataType = dictionary[JsonKey.eventType] as? String {
                 dataTypeEvent = dataType;
-                return dataType == EventType.purchase || dataType == EventType.cartUpdate
+                return dataType == EventType.purchase || dataType == EventType.updateCart
             }
             return false
         }
@@ -134,7 +134,7 @@ struct CriteriaCompletionChecker {
         var processedEvents: [[AnyHashable: Any]] = [[:]]
         for eventItem in purchaseEvents {
             if dataTypeEvent == EventType.purchase {
-                if let items = eventItem["items"] as? [[AnyHashable: Any]] {
+                if let items = eventItem[JsonKey.Commerce.items] as? [[AnyHashable: Any]] {
                     let itemsWithOtherProps = items.map { item -> [AnyHashable: Any] in
                         var updatedItem = [AnyHashable: Any]()
                         
@@ -145,7 +145,7 @@ struct CriteriaCompletionChecker {
                         }
                         
                         // handle dataFields if any
-                        if let dataFields = eventItem["dataFields"] as? [AnyHashable: Any] {
+                        if let dataFields = eventItem[JsonKey.CommerceItem.dataFields] as? [AnyHashable: Any] {
                             for (key, value) in dataFields {
                                 if key is String {
                                     updatedItem[key] = value
@@ -154,7 +154,7 @@ struct CriteriaCompletionChecker {
                         }
                         
                         for (key, value) in eventItem {
-                            if (key as! String != "items" && key as! String != "dataFields") {
+                            if (key as! String != JsonKey.Commerce.items && key as! String != JsonKey.CommerceItem.dataFields) {
                                 updatedItem[key] = value
                             }
                         }
@@ -162,13 +162,13 @@ struct CriteriaCompletionChecker {
                     }
                     processedEvents.append(contentsOf: itemsWithOtherProps)
                 }
-            } else {
+            } else if dataTypeEvent == EventType.updateCart {
                 let defaultEvent: [AnyHashable: Any] = [
-                    "dataType": EventType.customEvent,
-                    "eventName": "updateCart"
+                    JsonKey.eventType: EventType.customEvent,
+                    JsonKey.eventName: EventType.updateCart
                 ]
                 processedEvents.append(defaultEvent)
-                if let items = eventItem["items"] as? [[AnyHashable: Any]] {
+                if let items = eventItem[JsonKey.Commerce.items] as? [[AnyHashable: Any]] {
                     let itemsWithOtherProps = items.map { item -> [AnyHashable: Any] in
                         var updatedItem = [AnyHashable: Any]()
                         
@@ -179,7 +179,7 @@ struct CriteriaCompletionChecker {
                         }
                         
                         // handle dataFields if any
-                        if let dataFields = eventItem["dataFields"] as? [AnyHashable: Any] {
+                        if let dataFields = eventItem[JsonKey.CommerceItem.dataFields] as? [AnyHashable: Any] {
                             for (key, value) in dataFields {
                                 if key is String {
                                     updatedItem[key] = value
@@ -188,7 +188,7 @@ struct CriteriaCompletionChecker {
                         }
                         
                         for (key, value) in eventItem {
-                            if (key as! String != "items" && key as! String != "dataFields") {
+                            if (key as! String != JsonKey.Commerce.items && key as! String != JsonKey.CommerceItem.dataFields) {
                                 if (key as! String == JsonKey.eventType) {
                                     updatedItem[key] = EventType.customEvent;
                                 } else {
@@ -221,15 +221,15 @@ struct CriteriaCompletionChecker {
     }
 
     func evaluateTree(node: [String: Any], localEventData: [[AnyHashable: Any]]) -> Bool {
-        if let searchQueries = node["searchQueries"] as? [[String: Any]], let combinator = node["combinator"] as? String {
-            if combinator == "And" {
+        if let searchQueries = node[JsonKey.CriteriaItem.searchQueries] as? [[String: Any]], let combinator = node[JsonKey.CriteriaItem.combinator] as? String {
+            if combinator == JsonKey.CriteriaItem.Combinator.and {
                 for query in searchQueries {
                     if !evaluateTree(node: query, localEventData: localEventData) {
                         return false  // If any subquery fails, return false
                     }
                 }
                 return true  // If all subqueries pass, return true
-            } else if combinator == "Or" {
+            } else if combinator == JsonKey.CriteriaItem.Combinator.or {
                 for query in searchQueries {
                     if evaluateTree(node: query, localEventData: localEventData) {
                         return true  // If any subquery passes, return true
@@ -237,9 +237,9 @@ struct CriteriaCompletionChecker {
                 }
                 return false  // If all subqueries fail, return false
             }
-        } else if let searchCombo = node["searchCombo"] as? [String: Any] {
+        } else if let searchCombo = node[JsonKey.CriteriaItem.searchCombo] as? [String: Any] {
             return evaluateTree(node: searchCombo, localEventData: localEventData)
-        } else if node["field"] != nil {
+        } else if node[JsonKey.CriteriaItem.field] != nil {
             return evaluateField(node: node, localEventData: localEventData)
         }
         
@@ -259,13 +259,13 @@ struct CriteriaCompletionChecker {
         var isEvaluateSuccess = false
         for eventData in localEventData {
             let localDataKeys = eventData.keys
-            if node["dataType"] as? String == eventData["dataType"] as? String {
-                if let field = node["field"] as? String,
-                   let comparatorType = node["comparatorType"] as? String,
-                   let fieldType = node["fieldType"] as? String {
+            if node[JsonKey.eventType] as? String == eventData[JsonKey.eventType] as? String {
+                if let field = node[JsonKey.CriteriaItem.field] as? String,
+                   let comparatorType = node[JsonKey.CriteriaItem.comparatorType] as? String,
+                   let fieldType = node[JsonKey.CriteriaItem.fieldType] as? String {
                     for key in localDataKeys {
                         if field == key as! String, let matchObj = eventData[key] {
-                            if evaluateComparison(comparatorType: comparatorType, fieldType: fieldType, matchObj: matchObj, valueToCompare:  node["value"] as? String) {
+                            if evaluateComparison(comparatorType: comparatorType, fieldType: fieldType, matchObj: matchObj, valueToCompare:  node[JsonKey.CriteriaItem.value] as? String) {
                                 isEvaluateSuccess = true
                                 break
                             }
@@ -283,27 +283,27 @@ struct CriteriaCompletionChecker {
         }
         
         switch comparatorType {
-            case "Equals":
+            case JsonKey.CriteriaItem.Comparator.Equals:
                 return compareValueEquality(matchObj, stringValue)
-            case "DoesNotEquals":
+            case JsonKey.CriteriaItem.Comparator.DoesNotEquals:
                 return !compareValueEquality(matchObj, stringValue)
-            case "IsSet":
+            case JsonKey.CriteriaItem.Comparator.IsSet:
                 return !(matchObj as! String).isEmpty;
-            case "GreaterThan":
-                print("GreatherThan:: \(compareNumericValues(matchObj, stringValue, compareOperator: >))")
+            case JsonKey.CriteriaItem.Comparator.GreaterThan:
+                print("\(JsonKey.CriteriaItem.Comparator.GreaterThan):: \(compareNumericValues(matchObj, stringValue, compareOperator: >))")
                 return compareNumericValues(matchObj, stringValue, compareOperator: >)
-            case "LessThan":
+            case JsonKey.CriteriaItem.Comparator.LessThan:
                 return compareNumericValues(matchObj, stringValue, compareOperator: <)
-            case "GreaterThanOrEqualTo":
-                print("GreaterThanOrEqualTo:: \(compareNumericValues(matchObj, stringValue, compareOperator: >=))")
+            case JsonKey.CriteriaItem.Comparator.GreaterThanOrEqualTo:
+                print("\(JsonKey.CriteriaItem.Comparator.GreaterThanOrEqualTo):: \(compareNumericValues(matchObj, stringValue, compareOperator: >=))")
                 return compareNumericValues(matchObj, stringValue, compareOperator: >=)
-            case "LessThanOrEqualTo":
+            case JsonKey.CriteriaItem.Comparator.LessThanOrEqualTo:
                 return compareNumericValues(matchObj, stringValue, compareOperator: <=)
-            case "Contains":
+            case JsonKey.CriteriaItem.Comparator.Contains:
                 return compareStringContains(matchObj, stringValue)
-            case "StartsWith":
+            case JsonKey.CriteriaItem.Comparator.StartsWith:
                 return compareStringStartsWith(matchObj, stringValue)
-            case "MatchesRegex":
+            case JsonKey.CriteriaItem.Comparator.MatchesRegex:
                 return compareWithRegex(matchObj as? String ?? "", pattern: stringValue)
             default:
                 return false

@@ -14,7 +14,7 @@ enum EventType {
     static let customEvent = "customEvent"
     static let purchase = "purchase"
     static let updateUser = "user"
-    static let cartUpdate = "cartUpdate"
+    static let updateCart = "updateCart"
     static let anonSession = "anonSession"
     static let tokenRegistration = "tokenRegistration"
 }
@@ -194,6 +194,39 @@ enum JsonKey {
     static let createNewFields = "createNewFields"
     static let eventType = "dataType"
     static let eventTimeStamp = "eventTimeStamp"
+    static let criterias = "criterias"
+    static let matchedCriteriaId = "matchedCriteriaId"
+    static let mobilePushOptIn = "mobilePushOptIn"
+    
+    enum CriteriaItem {
+        static let searchQuery = "searchQuery"
+        static let criteriaId = "criteriaId"
+        static let searchQueries = "searchQueries"
+        static let combinator = "combinator"
+        static let searchCombo = "searchCombo"
+        static let field = "field"
+        static let comparatorType = "comparatorType"
+        static let fieldType = "fieldType"
+        static let value = "value"
+
+        enum Combinator {
+            static let and = "And"
+            static let or = "Or"
+        }
+        
+        enum Comparator {
+            static let Equals = "Equals"
+            static let DoesNotEquals = "DoesNotEquals"
+            static let IsSet = "IsSet"
+            static let GreaterThan = "GreaterThan"
+            static let LessThan = "LessThan"
+            static let GreaterThanOrEqualTo = "GreaterThanOrEqualTo"
+            static let LessThanOrEqualTo = "LessThanOrEqualTo"
+            static let Contains = "Contains"
+            static let StartsWith = "StartsWith"
+            static let MatchesRegex = "MatchesRegex"
+        }
+    }
 
     enum ActionButton {
         static let identifier = "identifier"
@@ -412,6 +445,12 @@ public enum IterableCustomActionName: String, CaseIterable {
     case delete
 }
 
+public enum MergeResult: String {
+    case mergenotrequired
+    case mergesuccessful
+    case mergefailed
+}
+
 public typealias ITEActionBlock = (String?) -> Void
 public typealias ITBURLCallback = (URL?) -> Void
 public typealias OnSuccessHandler = (_ data: [AnyHashable: Any]?) -> Void
@@ -419,4 +458,4 @@ public typealias OnFailureHandler = (_ reason: String?, _ data: Data?) -> Void
 public typealias UrlHandler = (URL) -> Bool
 public typealias CustomActionHandler = (String) -> Bool
 public typealias AuthTokenRetrievalHandler = (String?) -> Void
-public typealias MergeActionHandler = (Bool, String?) -> Void
+public typealias MergeActionHandler = (MergeResult, String?) -> Void

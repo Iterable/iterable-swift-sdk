@@ -130,7 +130,7 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
         ITBInfo()
 
         anonymousUserMerge.tryMergeUser(sourceUserId: localStorage.userIdAnnon, destinationUserIdOrEmail: email, isEmail: true) { mergeResult, error in
-            if mergeResult {
+            if mergeResult == MergeResult.mergenotrequired ||  mergeResult == MergeResult.mergesuccessful {
                 if self._email == email && email != nil && authToken != nil {
                     self.checkAndUpdateAuthToken(authToken)
                     return
@@ -161,7 +161,7 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
         ITBInfo()
 
         anonymousUserMerge.tryMergeUser(sourceUserId: localStorage.userIdAnnon, destinationUserIdOrEmail: userId, isEmail: false) { mergeResult, error in
-            if mergeResult {
+            if mergeResult == MergeResult.mergenotrequired ||  mergeResult == MergeResult.mergesuccessful {
                 
                 if self._userId == userId && userId != nil && authToken != nil {
                     self.checkAndUpdateAuthToken(authToken)
