@@ -60,7 +60,7 @@ public class AnonymousUserManager: AnonymousUserManagerProtocol {
         var body = [AnyHashable: Any]()
         body.setValue(for: JsonKey.Body.createdAt, value: Int(dateProvider.currentDate.timeIntervalSince1970) * 1000)
         body.setValue(for: JsonKey.Commerce.items, value: convertCommerceItemsToDictionary(items))
-        storeEventData(type: EventType.cartUpdate, data: body)
+        storeEventData(type: EventType.updateCart, data: body)
     }
     
     // Tracks an anonymous token registration event and store it locally
@@ -85,42 +85,31 @@ public class AnonymousUserManager: AnonymousUserManagerProtocol {
     }
     
     // Creates a user after criterias met and login the user and then sync the data through track APIs
-    private func createKnownUserIfCriteriaMatched(criteriaId: String?) {
-        if (criteriaId != nil) {
-            var anonSessions = convertToDictionary(data: localStorage.anonymousSessions?.itbl_anon_sessions)
-            let userId = IterableUtil.generateUUID()
-            anonSessions["matchedCriteriaId"] = Int(criteriaId ?? "0")
-            var appName = ""
-            notificationStateProvider.isNotificationsEnabled { isEnabled in
-                if (isEnabled) {
-                    appName = Bundle.main.appPackageName ?? ""
+    private func createKnownUserIfCriteriaMatched(_ criteriaId: String) {
+        var anonSessions = convertToDictionary(data: localStorage.anonymousSessions?.itbl_anon_sessions)
+        let userId = IterableUtil.generateUUID()
+        anonSessions[JsonKey.matchedCriteriaId] = Int(criteriaId)
+        let appName = Bundle.main.appPackageName ?? ""
+        notificationStateProvider.isNotificationsEnabled { isEnabled in
+            if (!appName.isEmpty && isEnabled) {
+                anonSessions[JsonKey.mobilePushOptIn] = appName
+            }
+            IterableAPI.implementation?.apiClient.trackAnonSession(createdAt: (Int(self.dateProvider.currentDate.timeIntervalSince1970) * 1000), withUserId: userId, requestJson: anonSessions).onError { error in
+                if (error.httpStatusCode == 409) {
+                    self.getAnonCriteria() // refetch the criteria
                 }
-                if (!appName.isEmpty) {
-                    anonSessions["mobilePushOptIn"] = appName
-                }
-                IterableAPI.implementation?.apiClient.trackAnonSession(createdAt: (Int(self.dateProvider.currentDate.timeIntervalSince1970) * 1000), withUserId: userId, requestJson: anonSessions).onError { error in
-                    if (error.httpStatusCode == 409) {
-                        self.getAnonCriteria() // refetch the criteria
-                    }
-                }.onSuccess { success in
-                    self.localStorage.userIdAnnon = userId
-                    self.syncNonSyncedEvents()
-                }
+            }.onSuccess { success in
+                self.localStorage.userIdAnnon = userId
+                self.syncNonSyncedEvents()
             }
         }
     }
     
     // Syncs unsynced data which might have failed to sync when calling syncEvents for the first time after criterias met
     public func syncNonSyncedEvents() {
-        DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
+        DispatchQueue.main.asyncAfter(deadline: .now() + 2) { // little delay necessary in case it takes time to store userIdAnon in localstorage
             self.syncEvents()
         }
-    }
-    
-    // Reset the locally saved data when user logs out to make sure no old data is left
-    public func logout() {
-        localStorage.anonymousSessions = nil
-        localStorage.anonymousUserEvents = nil
     }
     
     // Syncs locally saved data through track APIs
@@ -142,15 +131,13 @@ public class AnonymousUserManager: AnonymousUserManagerProtocol {
                         var total = NSNumber(value: 0)
                         if let _total = NumberFormatter().number(from: eventData[JsonKey.Commerce.total] as! String) {
                             total = _total
-                        } else {
-                            print("Conversion failed")
                         }
                         
                         IterableAPI.implementation?.trackPurchase(total, items: convertCommerceItems(from: eventData[JsonKey.Commerce.items] as! [[AnyHashable: Any]]), dataFields: eventData[JsonKey.dataFields] as? [AnyHashable : Any], createdAt: eventData[JsonKey.Body.createdAt] as? Int ?? 0, onSuccess: {result in
                             successfulSyncedData.append(eventData[JsonKey.eventTimeStamp] as? Int ?? 0)
                         })
                         break
-                    case EventType.cartUpdate:
+                    case EventType.updateCart:
                         IterableAPI.implementation?.updateCart(items: convertCommerceItems(from: eventData[JsonKey.Commerce.items] as! [[AnyHashable: Any]]), createdAt: eventData[JsonKey.Body.createdAt] as? Int ?? 0,
                                                onSuccess: {result in
                                                   successfulSyncedData.append(eventData[JsonKey.eventTimeStamp] as? Int ?? 0)
@@ -217,6 +204,8 @@ public class AnonymousUserManager: AnonymousUserManagerProtocol {
             eventsDataObjects.append(appendData)
         }
         localStorage.anonymousUserEvents = eventsDataObjects
-        createKnownUserIfCriteriaMatched(criteriaId: evaluateCriteriaAndReturnID())
+        if let criteriaId = evaluateCriteriaAndReturnID() {
+            createKnownUserIfCriteriaMatched(criteriaId)
+        }
     }
 }

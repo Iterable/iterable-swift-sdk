@@ -14,5 +14,4 @@ import Foundation
     func updateAnonSession()
     func getAnonCriteria()
     func syncNonSyncedEvents()
-    func logout()
 }
