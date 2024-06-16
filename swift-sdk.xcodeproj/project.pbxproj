@@ -407,6 +407,8 @@
 		E9EA7CA02C1EDE5800A9D6FB /* AnonymousUserMerge.swift in Sources */ = {isa = PBXBuildFile; fileRef = E9EA7C9C2C1EDE5800A9D6FB /* AnonymousUserMerge.swift */; };
 		E9EA7CA12C1EDE5800A9D6FB /* AnonymousUserManagerProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = E9EA7C9D2C1EDE5800A9D6FB /* AnonymousUserManagerProtocol.swift */; };
 		E9EA7CA22C1EDE5800A9D6FB /* AnonymousUserManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = E9EA7C9E2C1EDE5800A9D6FB /* AnonymousUserManager.swift */; };
+		E9EA7CA82C1EE3BA00A9D6FB /* AnonymousUserCriteriaMatchTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E9EA7CA62C1EE3BA00A9D6FB /* AnonymousUserCriteriaMatchTests.swift */; };
+		E9EA7CA92C1EE3BA00A9D6FB /* AnonymousUserMergeTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E9EA7CA72C1EE3BA00A9D6FB /* AnonymousUserMergeTests.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -822,6 +824,8 @@
 		E9EA7C9C2C1EDE5800A9D6FB /* AnonymousUserMerge.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AnonymousUserMerge.swift; sourceTree = "<group>"; };
 		E9EA7C9D2C1EDE5800A9D6FB /* AnonymousUserManagerProtocol.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AnonymousUserManagerProtocol.swift; sourceTree = "<group>"; };
 		E9EA7C9E2C1EDE5800A9D6FB /* AnonymousUserManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AnonymousUserManager.swift; sourceTree = "<group>"; };
+		E9EA7CA62C1EE3BA00A9D6FB /* AnonymousUserCriteriaMatchTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AnonymousUserCriteriaMatchTests.swift; sourceTree = "<group>"; };
+		E9EA7CA72C1EE3BA00A9D6FB /* AnonymousUserMergeTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AnonymousUserMergeTests.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -1343,6 +1347,7 @@
 		AC7B142C20D02CE200877BFE /* unit-tests */ = {
 			isa = PBXGroup;
 			children = (
+				E9EA7CA52C1EE39A00A9D6FB /* anonymous-tracking-tests */,
 				1CBFFE152A97AEDC00ED57EE /* embedded-messaging-tests */,
 				552A0AAA280E24E400A80963 /* api-tests */,
 				AC3A3029262EE04400425435 /* deep-linking-tests */,
@@ -1641,6 +1646,15 @@
 				E9EA7C9C2C1EDE5800A9D6FB /* AnonymousUserMerge.swift */,
 			);
 			name = AnonymousTracking;
+			sourceTree = "<group>";
+		};
+		E9EA7CA52C1EE39A00A9D6FB /* anonymous-tracking-tests */ = {
+			isa = PBXGroup;
+			children = (
+				E9EA7CA62C1EE3BA00A9D6FB /* AnonymousUserCriteriaMatchTests.swift */,
+				E9EA7CA72C1EE3BA00A9D6FB /* AnonymousUserMergeTests.swift */,
+			);
+			name = "anonymous-tracking-tests";
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -2280,8 +2294,10 @@
 				5588DFB928C045E3000697D7 /* MockInAppDelegate.swift in Sources */,
 				5588DFD128C0465E000697D7 /* MockAPNSTypeChecker.swift in Sources */,
 				00B6FACC210E8484007535CF /* APNSTypeCheckerTests.swift in Sources */,
+				E9EA7CA92C1EE3BA00A9D6FB /* AnonymousUserMergeTests.swift in Sources */,
 				AC8F35A2239806B500302994 /* InboxViewControllerViewModelTests.swift in Sources */,
 				AC995F9A2166EEB50099A184 /* CommonMocks.swift in Sources */,
+				E9EA7CA82C1EE3BA00A9D6FB /* AnonymousUserCriteriaMatchTests.swift in Sources */,
 				5588DFE128C046B7000697D7 /* MockLocalStorage.swift in Sources */,
 				1CBFFE1B2A97AEEF00ED57EE /* EmbeddedMessagingProcessorTests.swift in Sources */,
 				5588DF8128C04494000697D7 /* MockUrlDelegate.swift in Sources */,
