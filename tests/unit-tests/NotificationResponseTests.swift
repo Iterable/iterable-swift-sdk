@@ -46,7 +46,8 @@ class NotificationResponseTests: XCTestCase {
         let appIntegration = InternalIterableAppIntegration(tracker: pushTracker,
                                                             customActionDelegate: customActionDelegate,
                                                             urlOpener: MockUrlOpener(),
-                                                            inAppNotifiable: EmptyInAppManager())
+                                                            inAppNotifiable: EmptyInAppManager(),
+                                                            embeddedNotifiable: EmptyEmbeddedManager())
         appIntegration.userNotificationCenter(nil, didReceive: response, withCompletionHandler: nil)
         
         wait(for: [expection], timeout: testExpectationTimeout)
@@ -90,7 +91,8 @@ class NotificationResponseTests: XCTestCase {
         let appIntegration = InternalIterableAppIntegration(tracker: pushTracker,
                                                             customActionDelegate: customActionDelegate,
                                                             urlOpener: MockUrlOpener(),
-                                                            inAppNotifiable: EmptyInAppManager())
+                                                            inAppNotifiable: EmptyInAppManager(),
+                                                            embeddedNotifiable: EmptyEmbeddedManager())
         appIntegration.userNotificationCenter(nil, didReceive: response, withCompletionHandler: nil)
         
         wait(for: [expection], timeout: testExpectationTimeout)
@@ -156,7 +158,8 @@ class NotificationResponseTests: XCTestCase {
         let pushTracker = MockPushTracker()
         let appIntegration = InternalIterableAppIntegration(tracker: pushTracker,
                                                             urlOpener: urlOpener,
-                                                            inAppNotifiable: EmptyInAppManager())
+                                                            inAppNotifiable: EmptyInAppManager(),
+                                                            embeddedNotifiable: EmptyEmbeddedManager())
         appIntegration.userNotificationCenter(nil, didReceive: response, withCompletionHandler: nil)
         
         XCTAssertEqual(pushTracker.campaignId, 1234)

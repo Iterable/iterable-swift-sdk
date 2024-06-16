@@ -277,16 +277,6 @@ extension ApiClient: ApiClientProtocol {
         let result = createRequestCreator().flatMap { $0.createGetRemoteConfigurationRequest() }
         return send(iterableRequestResult: result)
     }
-    
-    func getUserByUserID(userId: String) -> Pending<SendRequestValue, SendRequestError> {
-        let result = createRequestCreator().flatMap { $0.createGetUserByUserIdRequest(userId) }
-        return send(iterableRequestResult: result)
-    }
-
-    func getUserByEmail(email: String) -> Pending<SendRequestValue, SendRequestError> {
-        let result = createRequestCreator().flatMap { $0.createGetUserByEmailRequest(email) }
-        return send(iterableRequestResult: result)
-    }
 
     func mergeUser(sourceEmail: String?, sourceUserId: String, destinationEmail: String?, destinationUserId: String?)  -> Pending<SendRequestValue, SendRequestError> {
         let result = createRequestCreator().flatMap { $0.createMergeUserRequest(sourceEmail, sourceUserId, destinationEmail, destinationUserId: destinationUserId) }
@@ -301,5 +291,38 @@ extension ApiClient: ApiClientProtocol {
     func trackAnonSession(createdAt: Int, withUserId userId: String, requestJson: [AnyHashable: Any])  -> Pending<SendRequestValue, SendRequestError> {
         let result = createRequestCreator().flatMap { $0.createTrackAnonSessionRequest(createdAt: createdAt, withUserId: userId, requestJson: requestJson) }
         return send(iterableRequestResult: result)
+    }
+    // MARK: - Embedded Messaging
+    
+    func getEmbeddedMessages() -> Pending<PlacementsPayload, SendRequestError> {
+        let result = createRequestCreator().flatMap { $0.createGetEmbeddedMessagesRequest() }
+        return send(iterableRequestResult: result)
+    }
+    
+    @discardableResult
+    func track(embeddedMessageReceived message: IterableEmbeddedMessage) -> Pending<SendRequestValue, SendRequestError> {
+        let result = createRequestCreator().flatMap { $0.createEmbeddedMessageReceivedRequest(message) }
+        return send(iterableRequestResult: result)
+    }
+    
+    @discardableResult
+    func track(embeddedMessageClick message: IterableEmbeddedMessage, buttonIdentifier: String?, clickedUrl: String) -> Pending<SendRequestValue, SendRequestError> {
+        let result = createRequestCreator().flatMap { $0.createEmbeddedMessageClickRequest(message, buttonIdentifier, clickedUrl) }
+        return send(iterableRequestResult: result)
+    }
+    
+    func track(embeddedMessageDismiss message: IterableEmbeddedMessage) -> Pending<SendRequestValue, SendRequestError> {
+        let result = createRequestCreator().flatMap { $0.createEmbeddedMessageDismissRequest(message) }
+        return send(iterableRequestResult: result)
+    }
+    
+    func track(embeddedMessageImpression message: IterableEmbeddedMessage) -> Pending<SendRequestValue, SendRequestError> {
+        let result = createRequestCreator().flatMap { $0.createEmbeddedMessageImpressionRequest(message) }
+        return send(iterableRequestResult: result)
+    }
+    
+    func track(embeddedSession: IterableEmbeddedSession) -> Pending<SendRequestValue, SendRequestError> {
+        let result = createRequestCreator().flatMap { $0.createTrackEmbeddedSessionRequest(embeddedSession: embeddedSession) }
+        return send(iterableRequestResult:  result)
     }
 }

@@ -3,6 +3,47 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## [6.5.3]
+### Changed
+- Deprecated support for iOS 10 and iOS 11.
+
+## [6.5.2]
+### Fixed
+- The Privacy Manifest has been relocated to the resources folder within the SDK. This adjustment facilitates the inclusion of the SDK's privacy manifest in the generation process.
+- Resolved a bug where a scheduled authentication token refresh would occur even if the user had logged out in the interim.
+
+### Changed
+- Improved the Out Of The Box (OOTB) Embedded CardView image content view by setting it to aspect fill. This change ensures a consistent appearance across web, iOS, and Android platforms.
+
+## [6.5.1]
+
+### Added
+
+- iOS SDK now includes a new privacy policy file indicating SDK's usage of user data
+
+### Fixed
+
+- Fixed an issue where AuthManager's onTokenRequested would get called without user logged in
+- Updates logic for notificationsEnabled flag to be more inclusive in case of failures for fetching the current settings 
+
+## [6.5.0]
+
+### Added
+
+- Introduces support for embedded messaging: an eligibility–based, personalized messages sent from Iterable to your mobile and web apps, which can display them inline, using native interface components
+- To display embedded messages, you can use customizable, out-of-the-box components provided by the SDK (cards, notifications, banners), or you can build fully custom components of your own design.
+- To learn more, read [Embedded Messages with Iterable's iOS SDK](https://support.iterable.com/hc/articles/23061840746900).
+
+### Changed
+
+- `IterableConfig` is updated with an `enableEmbeddedMessaging` flag that needs to be set to true to allow use of embedded messaging functionality
+
+## [6.4.17]
+
+### Fixed
+
+- Resolved push open tracking issue when the app is running in the background.
+
 ## [6.4.16]
 
 ### Added

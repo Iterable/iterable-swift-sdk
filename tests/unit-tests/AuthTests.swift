@@ -431,6 +431,7 @@ class AuthTests: XCTestCase {
         let localStorage = MockLocalStorage()
         
         localStorage.authToken = mockEncodedPayload
+        localStorage.userId = AuthTests.userId
         
         let authManager = AuthManager(delegate: authDelegate,
                                       expirationRefreshPeriod: expirationRefreshPeriod,
@@ -457,6 +458,7 @@ class AuthTests: XCTestCase {
         
         let mockLocalStorage = MockLocalStorage()
         mockLocalStorage.authToken = mockEncodedPayload
+        mockLocalStorage.email = AuthTests.email
         
         let authManager = AuthManager(delegate: authDelegate,
                                       expirationRefreshPeriod: expirationRefreshPeriod,
@@ -466,6 +468,35 @@ class AuthTests: XCTestCase {
         let _ = authManager
         
         wait(for: [condition1], timeout: testExpectationTimeout)
+    }
+    
+    func testAuthTokenRefreshSkippedIfUserLoggedOutAfterReschedule() {
+        let callbackNotCalledExpectation = expectation(description: "\(#function) - Callback got called. Which it shouldn't when there is no userId or emailId in memory")
+        callbackNotCalledExpectation.isInverted = true
+        
+        let authDelegate = createAuthDelegate({
+            callbackNotCalledExpectation.fulfill()
+            return nil
+        })
+        
+        let expirationRefreshPeriod: TimeInterval = 0
+        let waitTime: TimeInterval = 1.0
+        let expirationTimeSinceEpoch = Date(timeIntervalSinceNow: expirationRefreshPeriod + waitTime).timeIntervalSince1970
+        let mockEncodedPayload = createMockEncodedPayload(exp: Int(expirationTimeSinceEpoch))
+        
+        let mockLocalStorage = MockLocalStorage()
+        mockLocalStorage.authToken = mockEncodedPayload
+        mockLocalStorage.email = nil
+        mockLocalStorage.userId = nil
+        
+        let authManager = AuthManager(delegate: authDelegate,
+                                      expirationRefreshPeriod: expirationRefreshPeriod,
+                                      localStorage: mockLocalStorage,
+                                      dateProvider: MockDateProvider())
+        
+        let _ = authManager
+        
+        wait(for: [callbackNotCalledExpectation], timeout: 2.0)
     }
     
     func testAuthTokenCallbackOnSetEmail() {

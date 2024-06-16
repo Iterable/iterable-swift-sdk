@@ -1017,7 +1017,8 @@ class InAppTests: XCTestCase {
                                                             urlDelegate: config.urlDelegate,
                                                             customActionDelegate: config.customActionDelegate,
                                                             urlOpener: MockUrlOpener(),
-                                                            inAppNotifiable: internalApi.inAppManager)
+                                                            inAppNotifiable: internalApi.inAppManager,
+                                                            embeddedNotifiable: internalApi.embeddedManager)
         
         appIntegration.application(UIApplication.shared, didReceiveRemoteNotification: notification, fetchCompletionHandler: nil)
         
@@ -1053,7 +1054,7 @@ class InAppTests: XCTestCase {
         
         let mockInAppManager = MockInAppManager(expectation: expectation1)
         
-        let appIntegration = InternalIterableAppIntegration(tracker: MockPushTracker(), inAppNotifiable: mockInAppManager)
+        let appIntegration = InternalIterableAppIntegration(tracker: MockPushTracker(), inAppNotifiable: mockInAppManager, embeddedNotifiable: EmptyEmbeddedManager())
         appIntegration.application(MockApplicationStateProvider(applicationState: .background), didReceiveRemoteNotification: notification, fetchCompletionHandler: nil)
         
         wait(for: [expectation1], timeout: testExpectationTimeout)
@@ -1099,7 +1100,8 @@ class InAppTests: XCTestCase {
                                                                     urlDelegate: config.urlDelegate,
                                                                     customActionDelegate: config.customActionDelegate,
                                                                     urlOpener: MockUrlOpener(),
-                                                                    inAppNotifiable: internalApi.inAppManager)
+                                                                    inAppNotifiable: internalApi.inAppManager,
+                                                                    embeddedNotifiable: internalApi.embeddedManager)
         
         appIntegrationInternal.application(MockApplicationStateProvider(applicationState: .background), didReceiveRemoteNotification: notification, fetchCompletionHandler: nil)
         

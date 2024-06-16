@@ -16,7 +16,7 @@ protocol NotificationStateProviderProtocol {
 struct SystemNotificationStateProvider: NotificationStateProviderProtocol {
     func isNotificationsEnabled(withCallback callback: @escaping (Bool) -> Void) {
         UNUserNotificationCenter.current().getNotificationSettings { setttings in
-            callback(setttings.authorizationStatus == .authorized)
+            callback(setttings.authorizationStatus != .denied)
         }
     }
     
@@ -117,19 +117,22 @@ struct InternalIterableAppIntegration {
     private let urlOpener: UrlOpenerProtocol?
     private let allowedProtocols: [String]
     private weak var inAppNotifiable: InAppNotifiable?
+    private weak var embeddedNotifiable: EmbeddedNotifiable?
     
     init(tracker: PushTrackerProtocol,
          urlDelegate: IterableURLDelegate? = nil,
          customActionDelegate: IterableCustomActionDelegate? = nil,
          urlOpener: UrlOpenerProtocol? = nil,
          allowedProtocols: [String] = [],
-         inAppNotifiable: InAppNotifiable) {
+         inAppNotifiable: InAppNotifiable,
+         embeddedNotifiable: EmbeddedNotifiable) {
         self.tracker = tracker
         self.urlDelegate = urlDelegate
         self.customActionDelegate = customActionDelegate
         self.urlOpener = urlOpener
         self.allowedProtocols = allowedProtocols
         self.inAppNotifiable = inAppNotifiable
+        self.embeddedNotifiable = embeddedNotifiable
     }
     
     /**
@@ -147,6 +150,8 @@ struct InternalIterableAppIntegration {
             switch silentPush.notificationType {
             case .update:
                 _ = inAppNotifiable?.scheduleSync()
+            case .updateEmbedded:
+                embeddedNotifiable?.syncMessages {}
             case .remove:
                 if let messageId = silentPush.messageId {
                     inAppNotifiable?.onInAppRemoved(messageId: messageId)

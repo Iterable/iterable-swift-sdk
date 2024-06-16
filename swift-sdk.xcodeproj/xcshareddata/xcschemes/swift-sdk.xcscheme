@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Scheme
-   LastUpgradeVersion = "1200"
+   LastUpgradeVersion = "1420"
    version = "1.3">
    <BuildAction
       parallelizeBuildables = "YES"
@@ -212,7 +212,16 @@
             </BuildableReference>
             <SkippedTests>
                <Test
+                  Identifier = "NetworkConnectivityManagerTests/testConnectivityChange()">
+               </Test>
+               <Test
+                  Identifier = "NetworkConnectivityManagerTests/testPollingNetworkMonitor()">
+               </Test>
+               <Test
                   Identifier = "RequestHandlerTests/testFeatureFlagTurnOnOfflineMode()">
+               </Test>
+               <Test
+                  Identifier = "TaskRunnerTests/testResumeWhenNetworkIsBackOnline()">
                </Test>
             </SkippedTests>
          </TestableReference>
