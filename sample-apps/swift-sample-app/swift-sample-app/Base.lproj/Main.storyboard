@@ -382,6 +382,7 @@
                 <placeholder placeholderIdentifier="IBFirstResponder" id="4uQ-0h-Z2c" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="197.59999999999999" y="-667.01649175412297"/>
+        </scene>
         <!--Embedded Messages View Controller-->
         <scene sceneID="ztZ-M0-K6L">
             <objects>
