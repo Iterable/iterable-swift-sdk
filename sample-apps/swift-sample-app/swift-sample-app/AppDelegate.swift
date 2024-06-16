@@ -27,6 +27,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         config.customActionDelegate = self
         config.urlDelegate = self
         config.inAppDisplayInterval = 1
+        
+        // clear data on reload for testing AUT
         if let bundleIdentifier = Bundle.main.bundleIdentifier {
             UserDefaults.standard.removePersistentDomain(forName: bundleIdentifier)
         }
