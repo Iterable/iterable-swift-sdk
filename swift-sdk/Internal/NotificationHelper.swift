@@ -19,6 +19,7 @@ struct ITBLSilentPushNotificationInfo {
     enum ITBLSilentPushNotificationType: String, Codable {
         case remove = "InAppRemove"
         case update = "InAppUpdate"
+        case updateEmbedded = "UpdateEmbedded"
     }
     
     static func parse(notification: [AnyHashable: Any]) -> ITBLSilentPushNotificationInfo? {

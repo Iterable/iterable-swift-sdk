@@ -130,4 +130,6 @@ public class IterableConfig: NSObject {
     
     /// When set to `true`, IterableSDK will track all events when users are not logged into the application.
     public var enableAnonTracking = true
+    /// Allows for fetching embedded messages.
+    public var enableEmbeddedMessaging = false
 }

@@ -97,6 +97,14 @@ class Pending<Value, Failure> where Failure: Error {
     }
 }
 
+// need this class for testing failure
+class FailPending<Value, Failure: Error>: Pending<Value, Failure> {
+    init(error: Failure) {
+        super.init()
+        self.result = .failure(error)
+    }
+}
+
 extension Pending {
     func flatMap<NewValue>(_ closure: @escaping (Value) -> Pending<NewValue, Failure>) -> Pending<NewValue, Failure> {
         let fulfill = Fulfill<NewValue, Failure>()
