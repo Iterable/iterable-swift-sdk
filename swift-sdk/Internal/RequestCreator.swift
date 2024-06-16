@@ -656,16 +656,6 @@ struct RequestCreator {
         return .success(.get(createGetRequest(forPath: Const.Path.getRemoteConfiguration, withArgs: args as! [String: String])))
     }
     
-    func createGetUserByUserIdRequest(_ userId: String) -> Result<IterableRequest, IterableError> {
-        let body: [AnyHashable: Any] = [JsonKey.userId: userId]
-        return .success(.get(createGetRequest(forPath: Const.Path.userByUserId, withArgs: body as! [String: String])))
-    }
-    
-    func createGetUserByEmailRequest(_ email: String) -> Result<IterableRequest, IterableError> {
-        let body: [AnyHashable: Any] = [JsonKey.email: email]
-        return .success(.get(createGetRequest(forPath: Const.Path.userByEmail, withArgs: body as! [String: String])))
-    }
-    
     func createMergeUserRequest(_ sourceEmail: String?, _ sourceUserId: String, _ destinationEmail: String?, destinationUserId: String?) -> Result<IterableRequest, IterableError> {
         var body = [AnyHashable: Any]()
         
@@ -752,6 +742,8 @@ struct RequestCreator {
         case let .email(email):
             dict.setValue(for: JsonKey.userKey, value: email)
         case let .userId(userId):
+            dict.setValue(for: JsonKey.userKey, value: userId)
+        case let .userIdAnon(userId):
             dict.setValue(for: JsonKey.userKey, value: userId)
         case .none:
             ITBInfo("Current user is unavailable")
