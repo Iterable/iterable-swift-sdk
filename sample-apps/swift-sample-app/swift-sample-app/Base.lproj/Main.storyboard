@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="22505" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="umW-9Q-hvM">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="32700.99.1234" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="umW-9Q-hvM">
     <device id="retina4_7" orientation="portrait" appearance="light"/>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="22504"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="22685"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="System colors in document resources" minToolsVersion="11.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
@@ -155,13 +155,13 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" spacing="50" translatesAutoresizingMaskIntoConstraints="NO" id="zHd-qK-BTi">
-                                <rect key="frame" x="40" y="214" width="295" height="211"/>
+                                <rect key="frame" x="40" y="214" width="295" height="181"/>
                                 <subviews>
                                     <imageView userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="iterableLogo" translatesAutoresizingMaskIntoConstraints="NO" id="KPy-RO-OAN">
                                         <rect key="frame" x="0.0" y="0.0" width="295" height="33"/>
                                     </imageView>
                                     <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" translatesAutoresizingMaskIntoConstraints="NO" id="8Qh-YS-Owy">
-                                        <rect key="frame" x="0.0" y="83" width="295" height="128"/>
+                                        <rect key="frame" x="0.0" y="83" width="295" height="98"/>
                                         <subviews>
                                             <textField opaque="NO" contentMode="scaleToFill" verticalHuggingPriority="249" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" placeholder="User Id" textAlignment="natural" minimumFontSize="17" clearButtonMode="whileEditing" translatesAutoresizingMaskIntoConstraints="NO" id="rb4-2p-4z4">
                                                 <rect key="frame" x="0.0" y="0.0" width="295" height="34"/>
@@ -181,16 +181,6 @@
                                                 </state>
                                                 <connections>
                                                     <action selector="loginInOutButtonTapped:" destination="8n5-2h-usW" eventType="touchUpInside" id="85D-2g-gMO"/>
-                                                </connections>
-                                            </button>
-                                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="leading" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="MNg-nB-DPG">
-                                                <rect key="frame" x="0.0" y="98" width="295" height="30"/>
-                                                <state key="normal" title="New Log in"/>
-                                                <state key="disabled">
-                                                    <color key="titleColor" white="0.33333333329999998" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                                                </state>
-                                                <connections>
-                                                    <action selector="newLoginButtonTapped" destination="8n5-2h-usW" eventType="touchUpInside" id="dzR-bx-giW"/>
                                                 </connections>
                                             </button>
                                         </subviews>
@@ -269,8 +259,9 @@
                                     <action selector="trackEventBtnClicked" destination="dFV-10-h5Y" eventType="touchUpInside" id="EjV-RF-j2M"/>
                                 </connections>
                             </button>
-                            <textField opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="248" contentHorizontalAlignment="left" contentVerticalAlignment="center" text="{&quot;items&quot;:[{&quot;name&quot;:&quot;keyboard&quot;,&quot;id&quot;:&quot;fdsafds&quot;,&quot;price&quot;:100,&quot;quantity&quot;:3}], &quot;total&quot;: 100}" borderStyle="roundedRect" placeholder="Track Purchase" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="Ao1-Zt-8ep">
+                            <textField opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="248" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" placeholder="Track Purchase" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="Ao1-Zt-8ep">
                                 <rect key="frame" x="10" y="162" width="300" height="34"/>
+                                <string key="text">{"items":[{"name":"keyboard","id":"fdsafds","price":4.67,"quantity":3}, {"name":"keyboard","id":"fdsafds","price":4.67,"quantity":2}], "total": 100}</string>
                                 <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                 <textInputTraits key="textInputTraits"/>
                             </textField>

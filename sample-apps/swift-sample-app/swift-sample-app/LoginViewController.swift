@@ -54,13 +54,6 @@ class LoginViewController: UIViewController {
         presentingViewController?.dismiss(animated: true)
     }
     
-    @IBAction func newLoginButtonTapped() {
-        if let text = userIdTextField.text, !text.isEmpty {
-            IterableAPI.setUserId(text)
-        }
-        presentingViewController?.dismiss(animated: true)
-    }
-    
     enum IterableEmailOrUserIdCheckResult {
         case email(String)
         case userId(String)
