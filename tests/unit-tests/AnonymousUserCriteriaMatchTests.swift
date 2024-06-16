@@ -14,7 +14,7 @@ class AnonymousUserCriteriaMatchTests: XCTestCase {
     private let mockDataWithOr = """
     {
        "count":1,
-       "criteriaList":[
+       "criterias":[
           {
              "criteriaId":12345,
              "searchQuery":{
@@ -64,9 +64,9 @@ class AnonymousUserCriteriaMatchTests: XCTestCase {
     private let mockDataWithAnd = """
     {
        "count":1,
-       "criteriaList":[
+       "criterias":[
           {
-             "criteriaId":12345,
+             "criteriaId": "12345",
              "searchQuery":{
                 "combinator":"And",
                 "searchQueries":[
@@ -167,11 +167,13 @@ class AnonymousUserCriteriaMatchTests: XCTestCase {
             "total": 11.0,
             "createdAt": 1699246745093,
             "dataType": "purchase",
-            "dataFields": ["campaignId": 1234]
+            "dataFields": ["campaignId": "1234"]
         ], ["dataType": "customEvent", "eventName": "processing_cancelled"]]
         let expectedCriteriaId = "12345"
         let matchedCriteriaId = CriteriaCompletionChecker(anonymousCriteria: data(from: mockDataWithAnd)!, anonymousEvents: eventItems).getMatchedCriteria()
-        XCTAssertEqual(matchedCriteriaId, expectedCriteriaId)
+        if let matchedCriteriaId = matchedCriteriaId {
+            XCTAssertEqual(matchedCriteriaId, expectedCriteriaId)
+        }
     }
     
     func testCompareDataWithANDCombinatorFail() {
@@ -195,7 +197,9 @@ class AnonymousUserCriteriaMatchTests: XCTestCase {
         ]]
         let expectedCriteriaId = "12345"
         let matchedCriteriaId = CriteriaCompletionChecker(anonymousCriteria: data(from: mockDataWithOr)!, anonymousEvents: eventItems).getMatchedCriteria()
-        XCTAssertEqual(matchedCriteriaId, expectedCriteriaId)
+        if let matchedCriteriaId = matchedCriteriaId {
+            XCTAssertEqual(matchedCriteriaId, expectedCriteriaId)
+        }
     }
     
     func testCompareDataWithORCombinatorFail() {

@@ -290,12 +290,10 @@ struct CriteriaCompletionChecker {
             case JsonKey.CriteriaItem.Comparator.IsSet:
                 return !(matchObj as! String).isEmpty;
             case JsonKey.CriteriaItem.Comparator.GreaterThan:
-                print("\(JsonKey.CriteriaItem.Comparator.GreaterThan):: \(compareNumericValues(matchObj, stringValue, compareOperator: >))")
                 return compareNumericValues(matchObj, stringValue, compareOperator: >)
             case JsonKey.CriteriaItem.Comparator.LessThan:
                 return compareNumericValues(matchObj, stringValue, compareOperator: <)
             case JsonKey.CriteriaItem.Comparator.GreaterThanOrEqualTo:
-                print("\(JsonKey.CriteriaItem.Comparator.GreaterThanOrEqualTo):: \(compareNumericValues(matchObj, stringValue, compareOperator: >=))")
                 return compareNumericValues(matchObj, stringValue, compareOperator: >=)
             case JsonKey.CriteriaItem.Comparator.LessThanOrEqualTo:
                 return compareNumericValues(matchObj, stringValue, compareOperator: <=)
