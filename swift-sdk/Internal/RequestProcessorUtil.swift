@@ -53,9 +53,6 @@ struct RequestProcessorUtil {
         }.onError { error in
             if error.httpStatusCode == 401, matchesJWTErrorCode(error.iterableCode) {
                 ITBError(error.reason)
-                authManager?.setIsLastAuthTokenValid(false)
-                let retryInterval = authManager?.getNextRetryInterval() ?? 1
-                authManager?.scheduleAuthTokenRefreshTimer(interval: retryInterval, isScheduledRefresh: false, successCallback: nil)
             } else if error.httpStatusCode == 401, error.iterableCode == JsonValue.Code.badApiKey {
                 ITBError(error.reason)
             }
@@ -126,7 +123,7 @@ struct RequestProcessorUtil {
         }
     }
     
-    private static func matchesJWTErrorCode(_ errorCode: String?) -> Bool {
+    public static func matchesJWTErrorCode(_ errorCode: String?) -> Bool {
         return errorCode == JsonValue.Code.invalidJwtPayload || errorCode == JsonValue.Code.badAuthorizationHeader || errorCode == JsonValue.Code.jwtUserIdentifiersMismatched
     }
 }

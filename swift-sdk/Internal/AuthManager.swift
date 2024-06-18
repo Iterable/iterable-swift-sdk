@@ -150,23 +150,21 @@ class AuthManager: IterableAuthManagerProtocol {
         
         pendingAuth = false
         
-        guard retrievedAuthToken != nil else {
-            delegate?.onTokenRegistrationFailed("auth token was nil, scheduling auth token retrieval in 10 seconds")
+        if retrievedAuthToken != nil {
+            let isRefreshQueued = queueAuthTokenExpirationRefresh(retrievedAuthToken, onSuccess: onSuccess)
+            if !isRefreshQueued {
+                onSuccess?(authToken)
+            }
+        } else {
+            delegate?.onTokenRegistrationFailed("auth token was nil, scheduling auth token retrieval in \(getNextRetryInterval()) seconds")
             
             /// by default, schedule a refresh for 10s
             scheduleAuthTokenRefreshTimer(interval: getNextRetryInterval(), successCallback: onSuccess)
-            
-            return
         }
         
         authToken = retrievedAuthToken
         
         storeAuthToken()
-        
-        let isRefreshQueued = queueAuthTokenExpirationRefresh(authToken, onSuccess: onSuccess)
-        if !isRefreshQueued {
-            onSuccess?(authToken)
-        }
     }
     
     private func queueAuthTokenExpirationRefresh(_ authToken: String?, onSuccess: AuthTokenRetrievalHandler? = nil) -> Bool {
