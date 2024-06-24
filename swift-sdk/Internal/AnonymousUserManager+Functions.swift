@@ -278,8 +278,12 @@ struct CriteriaCompletionChecker {
     }
 
     func evaluateComparison(comparatorType: String, fieldType: String, matchObj: Any, valueToCompare: String?) -> Bool {
-        guard let stringValue = valueToCompare else {
+        guard var stringValue = valueToCompare else {
             return false
+        }
+        
+        if let doubleValue = Double(stringValue) {
+              stringValue = formattedDoubleValue(doubleValue)
         }
         
         switch comparatorType {
@@ -308,6 +312,14 @@ struct CriteriaCompletionChecker {
         }
     }
 
+    func formattedDoubleValue(_ d: Double) -> String {
+        if d == Double(Int64(d)) {
+            return String(format: "%lld", Int64(d))
+        } else {
+            return String(format: "%f", d).trimmingCharacters(in: CharacterSet(charactersIn: "0"))
+        }
+    }
+    
     func compareValueEquality(_ sourceTo: Any, _ stringValue: String) -> Bool {
         switch (sourceTo, stringValue) {
             case (let doubleNumber as Double, let value): return doubleNumber == Double(value)
