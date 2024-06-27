@@ -330,7 +330,7 @@ struct CriteriaCompletionChecker {
 
 
     func evaluateComparison(comparatorType: String, matchObj: Any, valueToCompare: String?) -> Bool {
-        guard let stringValue = valueToCompare else {
+        guard var stringValue = valueToCompare else {
             return false
         }
         
@@ -344,7 +344,7 @@ struct CriteriaCompletionChecker {
             case JsonKey.CriteriaItem.Comparator.DoesNotEquals:
                 return !compareValueEquality(matchObj, stringValue)
             case JsonKey.CriteriaItem.Comparator.IsSet:
-                return !(matchObj as! String).isEmpty;
+                return !String(describing: matchObj).isEmpty
             case JsonKey.CriteriaItem.Comparator.GreaterThan:
                 return compareNumericValues(matchObj, stringValue, compareOperator: >)
             case JsonKey.CriteriaItem.Comparator.LessThan:
