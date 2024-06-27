@@ -623,6 +623,10 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
         IterableUtil.isNotNullOrEmpty(string: _email) || IterableUtil.isNotNullOrEmpty(string: _userId)
     }
     
+    public func isAnonUserSet() -> Bool {
+        IterableUtil.isNotNullOrEmpty(string: localStorage.userIdAnnon)
+    }
+    
     private func logoutPreviousUser() {
         ITBInfo()
         
