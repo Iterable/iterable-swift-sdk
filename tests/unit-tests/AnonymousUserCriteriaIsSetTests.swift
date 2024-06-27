@@ -282,14 +282,14 @@ class AnonymousUserCriteriaIsSetTests: XCTestCase {
     }
     
     func testCompareDataIsSetUserPropertySuccess() {
-        let eventItems: [[AnyHashable: Any]] = [["phoneNumberDetails": "999999", "country": "UK", "eventTimeStamp": "1234567890", "shoppingCartItems.price": "33"]]
+        let eventItems: [[AnyHashable: Any]] = [["dataType": "user", "createdAt": 1699246745093, "phoneNumberDetails": "999999", "country": "UK", "eventTimeStamp": "1234567890", "shoppingCartItems.price": "33"]]
         let expectedCriteriaId = "1"
         let matchedCriteriaId = CriteriaCompletionChecker(anonymousCriteria: data(from: mockDataUserProperty)!, anonymousEvents: eventItems).getMatchedCriteria()
         XCTAssertEqual(matchedCriteriaId, expectedCriteriaId)
     }
     
     func testCompareDataIsSetUserPropertyFailure() {
-        let eventItems: [[AnyHashable: Any]] = [["phoneNumberDetails": "999999", "country": "UK", "eventTimeStamp": "", "shoppingCartItems.price": ""]]
+        let eventItems: [[AnyHashable: Any]] = [["dataType": "user", "createdAt": 1699246745093, "phoneNumberDetails": "999999", "country": "", "eventTimeStamp": "", "shoppingCartItems.price": "33"]]
         let matchedCriteriaId = CriteriaCompletionChecker(anonymousCriteria: data(from: mockDataUserProperty)!, anonymousEvents: eventItems).getMatchedCriteria()
         XCTAssertEqual(matchedCriteriaId, nil)
     }
