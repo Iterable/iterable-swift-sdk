@@ -129,7 +129,7 @@ import UIKit
         if(config.enableAnonTracking) {
             if let _implementation = implementation {
                 // call this to fetch anon criteria from API and save it into userdefaults
-                if(!(_implementation.isEitherUserIdOrEmailSet()) && _implementation.isAnonUserSet()) {
+                if(!(_implementation.isEitherUserIdOrEmailSet()) && !(_implementation.isAnonUserSet())) {
                     _implementation.anonymousUserManager.getAnonCriteria()
                     _implementation.anonymousUserManager.updateAnonSession()
                 }
