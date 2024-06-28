@@ -223,9 +223,14 @@ enum JsonKey {
             static let or = "Or"
         }
         
+        enum CartEventItemsPrefix {
+            static let updateCartItemPrefix = "updateCart.updatedShoppingCartItems"
+            static let purchaseItemPrefix = "shoppingCartItems"
+        }
+        
         enum CartEventPrefix {
-            static let updateCartItemPrefix = "updateCart.updatedShoppingCartItems."
-            static let purchaseItemPrefix = "shoppingCartItems."
+            static let updateCartItemPrefix = CartEventItemsPrefix.updateCartItemPrefix + "."
+            static let purchaseItemPrefix = CartEventItemsPrefix.purchaseItemPrefix + "."
         }
         
         enum Comparator {
