@@ -71,6 +71,8 @@ enum Const {
         static let anonymousUserEvents = "itbl_anonymous_user_events"
         static let criteriaData = "itbl_criteria_data"
         static let anonymousSessions = "itbl_anon_sessions"
+        static let matchedCriteria = "itbl_matched_criteria"
+        static let eventList = "itbl_event_list"
 
         static let attributionInfoExpiration = 24
     }
@@ -214,10 +216,16 @@ enum JsonKey {
         static let comparatorType = "comparatorType"
         static let fieldType = "fieldType"
         static let value = "value"
+        static let minMatch = "minMatch"
 
         enum Combinator {
             static let and = "And"
             static let or = "Or"
+        }
+        
+        enum CartEventPrefix {
+            static let updateCartItemPrefix = "updateCart.updatedShoppingCartItems."
+            static let purchaseItemPrefix = "shoppingCartItems."
         }
         
         enum Comparator {
