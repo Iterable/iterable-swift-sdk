@@ -253,6 +253,8 @@ struct CriteriaCompletionChecker {
             return evaluateFieldLogic(searchQueries: searchQueries, eventData: eventData)
        }
     
+
+    
     // Check if item criteria exists in search queries
        private func doesItemCriteriaExist(searchQueries: [[AnyHashable: Any]]) -> Bool {
            return searchQueries.contains { query in
