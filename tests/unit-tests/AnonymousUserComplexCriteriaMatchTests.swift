@@ -471,7 +471,7 @@ class AnonymousUserComplexCriteriaMatchTests: XCTestCase {
       ]
     }
     """
-    
+
     
     override func setUp() {
         super.setUp()
@@ -576,38 +576,28 @@ class AnonymousUserComplexCriteriaMatchTests: XCTestCase {
         XCTAssertEqual(matchedCriteriaId, nil)
     }
     
-//    func testCompareDataWithCriteria4Success() {
-//        let eventItems: [[AnyHashable: Any]] = [ [
-//            "items": [["id": "12", "name": "coffee", "price": 4.67, "quantity": 5]],
-//            "total": 11.0,
-//            "createdAt": 1699246745093,
-//            "dataType": "purchase"
-//        ],[
-//            "items": [["id": "12", "name": "slippers", "price": 4.67, "quantity": 5]],
-//            "total": 11.0,
-//            "createdAt": 1699246745093,
-//            "dataType": "purchase"
-//        ]]
-//        let expectedCriteriaId = "48"
-//        let matchedCriteriaId = CriteriaCompletionChecker(anonymousCriteria: data(from: mockDataForCriteria4)!, anonymousEvents: eventItems).getMatchedCriteria()
-//        XCTAssertEqual(matchedCriteriaId, expectedCriteriaId)
-//    }
-//    
-//    func testCompareDataWithCriteria4Failure() {
-//        let eventItems: [[AnyHashable: Any]] = [ [
-//            "items": [["id": "12", "name": "coffee", "price": 4.67, "quantity": 5]],
-//            "total": 11.0,
-//            "createdAt": 1699246745093,
-//            "dataType": "purchase"
-//        ],[
-//            "items": [["id": "12", "name": "slippers2", "price": 4.67, "quantity": 5]],
-//            "total": 11.0,
-//            "createdAt": 1699246745093,
-//            "dataType": "purchase"
-//        ]]
-//        let matchedCriteriaId = CriteriaCompletionChecker(anonymousCriteria: data(from: mockDataForCriteria4)!, anonymousEvents: eventItems).getMatchedCriteria()
-//        XCTAssertEqual(matchedCriteriaId, nil)
-//    }
-
+    func testCompareDataWithCriteria4Success() {
+        let eventItems: [[AnyHashable: Any]] = [[
+            "items": [["id": "12", "name": "slippers", "price": 4.67, "quantity": 5]],
+            "total": 11.0,
+            "createdAt": 1699246745093,
+            "dataType": "purchase"
+        ]]
+        let expectedCriteriaId = "48"
+        let matchedCriteriaId = CriteriaCompletionChecker(anonymousCriteria: data(from: mockDataForCriteria4)!, anonymousEvents: eventItems).getMatchedCriteria()
+        XCTAssertEqual(matchedCriteriaId, expectedCriteriaId)
+    }
+    
+    func testCompareDataWithCriteria4Failure() {
+        let eventItems: [[AnyHashable: Any]] = [[
+            "items": [["id": "12", "name": "sneakers", "price": 4.67, "quantity": 2]],
+            "total": 11.0,
+            "createdAt": 1699246745093,
+            "dataType": "purchase"
+        ]]
+        let matchedCriteriaId = CriteriaCompletionChecker(anonymousCriteria: data(from: mockDataForCriteria4)!, anonymousEvents: eventItems).getMatchedCriteria()
+        XCTAssertEqual(matchedCriteriaId, nil)
+    }
+    
 }
 

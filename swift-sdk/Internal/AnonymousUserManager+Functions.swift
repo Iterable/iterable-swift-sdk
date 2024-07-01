@@ -104,7 +104,7 @@ struct CriteriaCompletionChecker {
             }
             return false
         }
-        var processedEvents: [[AnyHashable: Any]] = [[:]]
+        var processedEvents: [[AnyHashable: Any]] = []
         for eventItem in nonPurchaseEvents {
             var updatedItem = eventItem
             // handle dataFields if any
@@ -169,7 +169,7 @@ struct CriteriaCompletionChecker {
             return false
         }
         
-        var processedEvents: [[AnyHashable: Any]] = [[:]]
+        var processedEvents: [[AnyHashable: Any]] = []
         for var eventItem in purchaseEvents {
             if eventItem[JsonKey.eventType] as! String == EventType.purchase {
                 processedEvents.append(processEvent(eventItem: eventItem, eventType: EventType.purchase, eventName: "", prefix: JsonKey.CriteriaItem.CartEventPrefix.purchaseItemPrefix))
@@ -213,6 +213,14 @@ struct CriteriaCompletionChecker {
                     }
                 }
                 return false  // If all subqueries fail, return false
+            } else if combinator == JsonKey.CriteriaItem.Combinator.not {
+                for var query in searchQueries {
+                    query["isNot"] = true
+                    if evaluateTree(node: query, localEventData: localEventData) {
+                        return false  // If all subquery passes, return false
+                    }
+                }
+                return true  // If any subqueries fail, return true
             }
         } else if node[JsonKey.CriteriaItem.searchCombo] is [String: Any] {
             return evaluateSearchQueries(node: node, localEventData: localEventData)
@@ -224,13 +232,14 @@ struct CriteriaCompletionChecker {
     func evaluateSearchQueries(node: [String: Any], localEventData: [[AnyHashable: Any]]) -> Bool {
         // Make a mutable copy of the node
             var mutableNode = node
-            for eventData in localEventData {
+        for (index, eventData) in localEventData.enumerated() {
                 guard let trackingType = eventData[JsonKey.eventType] as? String else { continue }
                 let dataType = mutableNode[JsonKey.eventType] as? String
                 if eventData[JsonKey.CriteriaItem.criteriaId] == nil && dataType == trackingType {
                     if let searchCombo = mutableNode[JsonKey.CriteriaItem.searchCombo] as? [String: Any] {
                         let searchQueries = searchCombo[JsonKey.CriteriaItem.searchQueries] as? [[AnyHashable: Any]] ?? []
                         let combinator = searchCombo[JsonKey.CriteriaItem.combinator] as? String ?? ""
+                        let isNot = node["isNot"] as? Bool ?? false
                         if evaluateEvent(eventData: eventData, searchQueries: searchQueries, combinator: combinator) {
                                    if var minMatch = mutableNode[JsonKey.CriteriaItem.minMatch] as? Int {
                                        minMatch -= 1
@@ -239,7 +248,12 @@ struct CriteriaCompletionChecker {
                                            continue
                                 }
                         }
+                        if isNot && index + 1 != localEventData.count {
+                            continue
+                        }
                         return true
+                    } else if (isNot){
+                        return false;
                     }
                 }
             }
