@@ -214,7 +214,7 @@ struct CriteriaCompletionChecker {
                 }
                 return false  // If all subqueries fail, return false
             }
-        } else if let searchCombo = node[JsonKey.CriteriaItem.searchCombo] as? [String: Any] {
+        } else if node[JsonKey.CriteriaItem.searchCombo] is [String: Any] {
             return evaluateSearchQueries(node: node, localEventData: localEventData)
         }
         
@@ -324,7 +324,7 @@ struct CriteriaCompletionChecker {
           let matchResult = filteredSearchQueries.allSatisfy { query in
               let field = query[JsonKey.CriteriaItem.field]
               return filteredLocalDataKeys.contains(where: { $0 == field as! AnyHashable }) &&
-              evaluateComparison(comparatorType: query[JsonKey.CriteriaItem.comparatorType] as! String, matchObj: eventData[field as! String], valueToCompare: query[JsonKey.CriteriaItem.value] as! String)
+              evaluateComparison(comparatorType: query[JsonKey.CriteriaItem.comparatorType] as! String, matchObj: eventData[field as! String] ?? "", valueToCompare: query[JsonKey.CriteriaItem.value] as? String)
           }
           
           return matchResult
