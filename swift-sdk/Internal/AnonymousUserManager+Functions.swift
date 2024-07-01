@@ -74,6 +74,7 @@ struct CriteriaCompletionChecker {
                         eventsToProcess.append(contentsOf: getNonCartEvents())
                         print("vvvvv eventsToProcess \(eventsToProcess)")
                         let result = evaluateTree(node: searchQuery, localEventData: eventsToProcess)
+                        print("vvvvvv result\(result)")
                         if (result) {
                             criteriaId = currentCriteriaId
                             break
@@ -312,28 +313,32 @@ struct CriteriaCompletionChecker {
                    if !result && doesItemCriteriaExist(searchQueries: searchQueries) {
                        return result
                    }
+                   print("vvvv result11\(result)")
                    itemMatchedResult = result
-               }
+                }
               if let items = eventData[JsonKey.CriteriaItem.CartEventItemsPrefix.purchaseItemPrefix] as? [[String: Any]] {
                       let result = items.contains { doesItemMatchQueries(item: $0, searchQueries: searchQueries) }
                       if !result && doesItemCriteriaExist(searchQueries: searchQueries) {
-                          return false
+                          return result
                       }
-                      return result
-                  }
+                  print("vvvv result22\(result)")
+                    itemMatchedResult = result
+                }
               if let items = eventData[JsonKey.CriteriaItem.CartEventItemsPrefix.updateCartItemPrefix] as? [[String: Any]] {
                       let result = items.contains { doesItemMatchQueries(item: $0, searchQueries: searchQueries) }
                       if !result && doesItemCriteriaExist(searchQueries: searchQueries) {
-                          return false
+                          return result
                       }
-                      return result
-                  }
+                  print("vvvv result33\(result)")
+                    itemMatchedResult = result
+                }
           }
           
           
           // Assuming localDataKeys is [String]
          // let filteredLocalDataKeys = localDataKeys.filter { $0 as! String != JsonKey.Commerce.items }
 
+          print("vvvv localDataKeys\(localDataKeys)")
           if localDataKeys.isEmpty {
               return itemMatchedResult
           }
@@ -341,9 +346,10 @@ struct CriteriaCompletionChecker {
           // Assuming searchQueries is [[String: Any]]
           let filteredSearchQueries = searchQueries.filter { query in
               if let field = query[JsonKey.CriteriaItem.field] as? String {
-                  return !field.hasPrefix(JsonKey.CriteriaItem.CartEventPrefix.updateCartItemPrefix) &&
-                         !field.hasPrefix(JsonKey.CriteriaItem.CartEventPrefix.purchaseItemPrefix)
+                  return !field.hasPrefix(JsonKey.CriteriaItem.CartEventItemsPrefix.updateCartItemPrefix) &&
+                         !field.hasPrefix(JsonKey.CriteriaItem.CartEventItemsPrefix.purchaseItemPrefix)
               }
+              print("vvvvvvvvvv false")
               return false
           }
           
@@ -353,6 +359,7 @@ struct CriteriaCompletionChecker {
               evaluateComparison(comparatorType: query[JsonKey.CriteriaItem.comparatorType] as! String, matchObj: eventData[field as! String], valueToCompare: query[JsonKey.CriteriaItem.value] as! String)
           }
           
+          print("vvvvvvvvvv matchResult\(matchResult)")
           return matchResult
       }
 
