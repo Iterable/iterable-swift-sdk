@@ -141,6 +141,7 @@ struct CriteriaCompletionChecker {
                 updatedItem[JsonKey.CriteriaItem.CartEventItemsPrefix.updateCartItemPrefix] = updatedCartOrPurchaseItems;
             }
         }
+
             
             // handle dataFields if any
             if let dataFields = eventItem[JsonKey.CommerceItem.dataFields] as? [AnyHashable: Any] {
@@ -164,6 +165,7 @@ struct CriteriaCompletionChecker {
             if !eventName.isEmpty {
                 updatedItem[JsonKey.eventName] = eventName
             }
+            updatedItem.removeValue(forKey: JsonKey.Commerce.items)
             return updatedItem;
     }
     
@@ -321,28 +323,29 @@ struct CriteriaCompletionChecker {
           var itemMatchedResult = false
 
           if localDataKeys.contains(JsonKey.Commerce.items) {
+              print("vvvvvvv eventData\(eventData)")
                if let items = eventData[JsonKey.Commerce.items] as? [[String: Any]] {
                    let result = items.contains { doesItemMatchQueries(item: $0, searchQueries: searchQueries) }
+                   print("vvvv result11\(result)")
                    if !result && doesItemCriteriaExist(searchQueries: searchQueries) {
                        return result
                    }
-                   print("vvvv result11\(result)")
                    itemMatchedResult = result
                 }
               if let items = eventData[JsonKey.CriteriaItem.CartEventItemsPrefix.purchaseItemPrefix] as? [[String: Any]] {
                       let result = items.contains { doesItemMatchQueries(item: $0, searchQueries: searchQueries) }
+                  print("vvvv result22\(result)")
                       if !result && doesItemCriteriaExist(searchQueries: searchQueries) {
                           return result
                       }
-                  print("vvvv result22\(result)")
                     itemMatchedResult = result
                 }
               if let items = eventData[JsonKey.CriteriaItem.CartEventItemsPrefix.updateCartItemPrefix] as? [[String: Any]] {
                       let result = items.contains { doesItemMatchQueries(item: $0, searchQueries: searchQueries) }
+                  print("vvvv result33\(result)")
                       if !result && doesItemCriteriaExist(searchQueries: searchQueries) {
                           return result
                       }
-                  print("vvvv result33\(result)")
                     itemMatchedResult = result
                 }
           }
