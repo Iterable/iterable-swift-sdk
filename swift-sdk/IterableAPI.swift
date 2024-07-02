@@ -137,11 +137,11 @@ import UIKit
 
     // MARK: - SDK
     
-    public static func setEmail(_ email: String?, _ authToken: String? = nil, _ successHandler: OnSuccessHandler? = nil, _ failureHandler: OnFailureHandler? = nil) {
-        implementation?.setEmail(email, authToken: authToken, successHandler: successHandler, failureHandler: failureHandler)
+    public static func setEmail(_ email: String?, merge: Bool? = nil,  _ authToken: String? = nil, _ successHandler: OnSuccessHandler? = nil, _ failureHandler: OnFailureHandler? = nil) {
+        implementation?.setEmail(email, merge: merge, authToken: authToken, successHandler: successHandler, failureHandler: failureHandler)
     }
     
-    public static func setUserId(_ userId: String?, merge: Bool?,  _ authToken: String? = nil, _ successHandler: OnSuccessHandler? = nil, _ failureHandler: OnFailureHandler? = nil) {
+    public static func setUserId(_ userId: String?, merge: Bool? = nil,  _ authToken: String? = nil, _ successHandler: OnSuccessHandler? = nil, _ failureHandler: OnFailureHandler? = nil) {
         implementation?.setUserId(userId, merge: merge, authToken: authToken, successHandler: successHandler, failureHandler: failureHandler)
     }
     
