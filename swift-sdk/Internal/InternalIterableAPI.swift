@@ -220,7 +220,6 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
                     self._email = nil
                     self._userId = userId
                     
-                    print("vvvv mergee:: \(isMerge)")
                     if (isMerge) {
                         self.anonymousUserManager.syncNonSyncedEvents()
                     }
