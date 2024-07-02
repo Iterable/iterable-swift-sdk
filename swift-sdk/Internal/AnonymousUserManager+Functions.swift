@@ -386,7 +386,7 @@ struct CriteriaCompletionChecker {
         }
         
         if let doubleValue = Double(stringValue) {
-              stringValue = formattedDoubleValue(doubleValue)
+            stringValue = formattedDoubleValue(doubleValue)
         }
         
         switch comparatorType {

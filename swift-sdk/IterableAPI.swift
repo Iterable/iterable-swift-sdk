@@ -143,8 +143,8 @@ import UIKit
         implementation?.setEmail(email, authToken: authToken, successHandler: successHandler, failureHandler: failureHandler)
     }
     
-    public static func setUserId(_ userId: String?, _ authToken: String? = nil, _ successHandler: OnSuccessHandler? = nil, _ failureHandler: OnFailureHandler? = nil) {
-        implementation?.setUserId(userId, authToken: authToken, successHandler: successHandler, failureHandler: failureHandler)
+    public static func setUserId(_ userId: String?, merge: Bool?,  _ authToken: String? = nil, _ successHandler: OnSuccessHandler? = nil, _ failureHandler: OnFailureHandler? = nil) {
+        implementation?.setUserId(userId, merge: merge, authToken: authToken, successHandler: successHandler, failureHandler: failureHandler)
     }
     
     /// Handle a Universal Link
