@@ -1,7 +1,7 @@
 Pod::Spec.new do |s|
   s.name         = "Iterable-iOS-SDK"
   s.module_name  = "IterableSDK"
-  s.version      = "6.5.2"
+  s.version      = "6.5.3"
   s.summary      = "Iterable's official SDK for iOS"
 
   s.description  = <<-DESC
@@ -12,7 +12,7 @@ Pod::Spec.new do |s|
   s.license      = "MIT"
   s.author       = { "Jay Kim" => "jay.kim@iterable.com" }
 
-  s.platform     = :ios, "10.0"
+  s.platform     = :ios, "12.0"
   s.source       = { :git => "https://github.com/Iterable/swift-sdk.git", :tag => s.version }
   s.source_files = "swift-sdk/**/*.{h,m,swift}"
   s.exclude_files = "swift-sdk/swiftui/**"
