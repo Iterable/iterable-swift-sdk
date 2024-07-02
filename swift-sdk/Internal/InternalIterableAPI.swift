@@ -775,9 +775,9 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
         networkSession = dependencyContainer.networkSession
         notificationStateProvider = dependencyContainer.notificationStateProvider
         localStorage = dependencyContainer.localStorage
-        localStorage.userIdAnnon = nil      // remove this before pushing the code (only for testing)
-        localStorage.userId = nil      // remove this before pushing the code (only for testing)
-        localStorage.email = nil      // remove this before pushing the code (only for testing)
+        //localStorage.userIdAnnon = nil      // remove this before pushing the code (only for testing)
+        //localStorage.userId = nil      // remove this before pushing the code (only for testing)
+        //localStorage.email = nil      // remove this before pushing the code (only for testing)
         inAppDisplayer = dependencyContainer.inAppDisplayer
         urlOpener = dependencyContainer.urlOpener
         deepLinkManager = DeepLinkManager(redirectNetworkSessionProvider: dependencyContainer)
