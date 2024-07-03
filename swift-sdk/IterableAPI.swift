@@ -137,19 +137,19 @@ import UIKit
 
     // MARK: - SDK
     
-    public static func setEmail(_ email: String?,  _ authToken: String? = nil, _ successHandler: OnSuccessHandler? = nil, _ failureHandler: OnFailureHandler? = nil) {
+    public static func setEmail(_ email: String?, _ authToken: String? = nil, _ successHandler: OnSuccessHandler? = nil, _ failureHandler: OnFailureHandler? = nil) {
         implementation?.setEmail(email, authToken: authToken, successHandler: successHandler, failureHandler: failureHandler)
     }
     
-    public static func setUserId(_ userId: String?,  _ authToken: String? = nil, _ successHandler: OnSuccessHandler? = nil, _ failureHandler: OnFailureHandler? = nil) {
+    public static func setUserId(_ userId: String?, _ authToken: String? = nil, _ successHandler: OnSuccessHandler? = nil, _ failureHandler: OnFailureHandler? = nil) {
         implementation?.setUserId(userId, authToken: authToken, successHandler: successHandler, failureHandler: failureHandler)
     }
     
-    public static func setEmail(_ email: String?,  _ authToken: String? = nil, merge: Bool? = nil, _ successHandler: OnSuccessHandler? = nil, _ failureHandler: OnFailureHandler? = nil) {
+    public static func setEmail(_ email: String?, _ authToken: String? = nil, merge: Bool? = nil, _ successHandler: OnSuccessHandler? = nil, _ failureHandler: OnFailureHandler? = nil) {
         implementation?.setEmail(email, authToken: authToken, merge: merge, successHandler: successHandler, failureHandler: failureHandler)
     }
     
-    public static func setUserId(_ userId: String?,  _ authToken: String? = nil, merge: Bool? = nil, _ successHandler: OnSuccessHandler? = nil, _ failureHandler: OnFailureHandler? = nil) {
+    public static func setUserId(_ userId: String?, _ authToken: String? = nil, merge: Bool? = nil, _ successHandler: OnSuccessHandler? = nil, _ failureHandler: OnFailureHandler? = nil) {
         implementation?.setUserId(userId, authToken: authToken, merge: merge,successHandler: successHandler, failureHandler: failureHandler)
     }
     
