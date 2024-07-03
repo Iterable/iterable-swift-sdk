@@ -275,6 +275,10 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
                     mergeNestedObjects: Bool,
                     onSuccess: OnSuccessHandler? = nil,
                     onFailure: OnFailureHandler? = nil) -> Pending<SendRequestValue, SendRequestError> {
+        if !isEitherUserIdOrEmailSet() {
+            return rejectWithInitializationError(onFailure: onFailure)
+        }
+        
         if !isEitherUserIdOrEmailSet() && localStorage.userIdAnnon == nil {
             if config.enableAnonTracking {
                 anonymousUserManager.trackAnonUpdateUser(dataFields)
@@ -306,6 +310,10 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
     func updateCart(items: [CommerceItem],
                     onSuccess: OnSuccessHandler? = nil,
                     onFailure: OnFailureHandler? = nil) -> Pending<SendRequestValue, SendRequestError> {
+        if !isEitherUserIdOrEmailSet() {
+            return rejectWithInitializationError(onFailure: onFailure)
+        }
+        
         if !isEitherUserIdOrEmailSet() && localStorage.userIdAnnon == nil {
             if config.enableAnonTracking {
                 anonymousUserManager.trackAnonUpdateCart(items: items)
@@ -338,6 +346,10 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
                        templateId: NSNumber? = nil,
                        onSuccess: OnSuccessHandler? = nil,
                        onFailure: OnFailureHandler? = nil) -> Pending<SendRequestValue, SendRequestError> {
+        if !isEitherUserIdOrEmailSet() {
+            return rejectWithInitializationError(onFailure: onFailure)
+        }
+        
         if !isEitherUserIdOrEmailSet() && localStorage.userIdAnnon == nil {
             if config.enableAnonTracking {
                 anonymousUserManager.trackAnonPurchaseEvent(total: total, items: items, dataFields: dataFields)
@@ -411,6 +423,10 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
                dataFields: [AnyHashable: Any]? = nil,
                onSuccess: OnSuccessHandler? = nil,
                onFailure: OnFailureHandler? = nil) -> Pending<SendRequestValue, SendRequestError> {
+        if !isEitherUserIdOrEmailSet() {
+            return rejectWithInitializationError(onFailure: onFailure)
+        }
+        
         if !isEitherUserIdOrEmailSet() && localStorage.userIdAnnon == nil {
             if config.enableAnonTracking {
                 anonymousUserManager.trackAnonEvent(name: eventName, dataFields: dataFields)
