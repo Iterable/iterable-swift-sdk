@@ -130,7 +130,7 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
         _payloadData = data
     }
     
-    func setEmail(_ email: String?, merge: Bool? = nil, authToken: String? = nil, successHandler: OnSuccessHandler? = nil, failureHandler: OnFailureHandler? = nil) {
+    func setEmail(_ email: String?, authToken: String? = nil, merge: Bool? = nil, successHandler: OnSuccessHandler? = nil, failureHandler: OnFailureHandler? = nil) {
         
         ITBInfo()
 
@@ -196,7 +196,7 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
         
     }
     
-    func setUserId(_ userId: String?, merge: Bool? = nil, authToken: String? = nil, successHandler: OnSuccessHandler? = nil, failureHandler: OnFailureHandler? = nil) {
+    func setUserId(_ userId: String?, authToken: String? = nil, merge: Bool? = nil, successHandler: OnSuccessHandler? = nil, failureHandler: OnFailureHandler? = nil) {
         ITBInfo()
         
         let isMerge = getMergeDefaultValue(merge: merge);

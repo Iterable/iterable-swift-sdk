@@ -137,12 +137,20 @@ import UIKit
 
     // MARK: - SDK
     
-    public static func setEmail(_ email: String?, merge: Bool? = nil,  _ authToken: String? = nil, _ successHandler: OnSuccessHandler? = nil, _ failureHandler: OnFailureHandler? = nil) {
-        implementation?.setEmail(email, merge: merge, authToken: authToken, successHandler: successHandler, failureHandler: failureHandler)
+    public static func setEmail(_ email: String?,  _ authToken: String? = nil, _ successHandler: OnSuccessHandler? = nil, _ failureHandler: OnFailureHandler? = nil) {
+        implementation?.setEmail(email, authToken: authToken, successHandler: successHandler, failureHandler: failureHandler)
     }
     
-    public static func setUserId(_ userId: String?, merge: Bool? = nil,  _ authToken: String? = nil, _ successHandler: OnSuccessHandler? = nil, _ failureHandler: OnFailureHandler? = nil) {
-        implementation?.setUserId(userId, merge: merge, authToken: authToken, successHandler: successHandler, failureHandler: failureHandler)
+    public static func setUserId(_ userId: String?,  _ authToken: String? = nil, _ successHandler: OnSuccessHandler? = nil, _ failureHandler: OnFailureHandler? = nil) {
+        implementation?.setUserId(userId, authToken: authToken, successHandler: successHandler, failureHandler: failureHandler)
+    }
+    
+    public static func setEmail(_ email: String?,  _ authToken: String? = nil, merge: Bool? = nil, _ successHandler: OnSuccessHandler? = nil, _ failureHandler: OnFailureHandler? = nil) {
+        implementation?.setEmail(email, authToken: authToken, merge: merge, successHandler: successHandler, failureHandler: failureHandler)
+    }
+    
+    public static func setUserId(_ userId: String?,  _ authToken: String? = nil, merge: Bool? = nil, _ successHandler: OnSuccessHandler? = nil, _ failureHandler: OnFailureHandler? = nil) {
+        implementation?.setUserId(userId, authToken: authToken, merge: merge,successHandler: successHandler, failureHandler: failureHandler)
     }
     
     /// Handle a Universal Link
