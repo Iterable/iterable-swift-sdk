@@ -335,6 +335,10 @@ struct CriteriaCompletionChecker {
               return false
           }
           
+          if filteredSearchQueries.isEmpty {
+              return itemMatchedResult
+          }
+          
           let matchResult = filteredSearchQueries.allSatisfy { query in
               let field = query[JsonKey.CriteriaItem.field]
               return filteredLocalDataKeys.contains(where: { $0 == field as! AnyHashable }) &&
