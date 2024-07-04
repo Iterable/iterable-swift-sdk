@@ -34,7 +34,7 @@ class AnonymousUserMergeTests: XCTestCase, AuthProvider {
                                       dateProvider: MockDateProvider())
         
         
-        self.callMergeApi(sourceUserId: "123", destinationUserIdOrEmail: "destinationUserId", isEmail: false, apiClient: mockApiClient)
+        self.callMergeApi(sourceUserId: "123", destinationUserIdOrEmail: "destinationUserId", isEmail: false, apiClient: mockApiClient, merge: true)
         
     }
     
@@ -50,11 +50,11 @@ class AnonymousUserMergeTests: XCTestCase, AuthProvider {
                                       dateProvider: MockDateProvider())
         
         
-        self.callMergeApi(sourceUserId: "123", destinationUserIdOrEmail: "destination@example.com", isEmail: true, apiClient: mockApiClient)
+        self.callMergeApi(sourceUserId: "123", destinationUserIdOrEmail: "destination@example.com", isEmail: true, apiClient: mockApiClient, merge: true)
         
     }
     
-    private func callMergeApi(sourceUserId: String?, destinationUserIdOrEmail: String?, isEmail: Bool, apiClient: ApiClient) {
+    private func callMergeApi(sourceUserId: String?, destinationUserIdOrEmail: String?, isEmail: Bool, apiClient: ApiClient, merge: Bool) {
         let config = IterableConfig()
         config.enableAnonTracking = true
         let networkSession = MockNetworkSession(statusCode: 200)
@@ -62,7 +62,7 @@ class AnonymousUserMergeTests: XCTestCase, AuthProvider {
         
         let expectation1 = expectation(description: #function)
         if let sourceUserId = sourceUserId, let destinationUserIdOrEmail = destinationUserIdOrEmail {
-            internalAPI.anonymousUserMerge.tryMergeUser(sourceUserId: sourceUserId, destinationUserIdOrEmail: isEmail ? destinationUserIdOrEmail : nil, isEmail: isEmail) { mergeResult, error in
+            internalAPI.anonymousUserMerge.tryMergeUser(sourceUserId: sourceUserId, sourceEmail: nil, destinationUserId: isEmail ? nil : destinationUserIdOrEmail, destinationEmail: isEmail ? destinationUserIdOrEmail : nil, merge: merge) { mergeResult, error in
                 if mergeResult == MergeResult.mergenotrequired ||  mergeResult == MergeResult.mergesuccessful {
                     expectation1.fulfill()
                 } else {

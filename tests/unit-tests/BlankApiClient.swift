@@ -7,6 +7,7 @@ import Foundation
 @testable import IterableSDK
 
 class BlankApiClient: ApiClientProtocol {
+    
     func updateCart(items: [IterableSDK.CommerceItem], createdAt: Int) -> IterableSDK.Pending<IterableSDK.SendRequestValue, IterableSDK.SendRequestError> {
         Pending()
     }
@@ -15,7 +16,7 @@ class BlankApiClient: ApiClientProtocol {
         Pending()
     }
     
-    func mergeUser(sourceEmail: String?, sourceUserId: String, destinationEmail: String?, destinationUserId: String?) -> IterableSDK.Pending<IterableSDK.SendRequestValue, IterableSDK.SendRequestError> {
+    func mergeUser(sourceEmail: String?, sourceUserId: String?, destinationEmail: String?, destinationUserId: String?) -> IterableSDK.Pending<IterableSDK.SendRequestValue, IterableSDK.SendRequestError> {
         Pending()
     }
     
