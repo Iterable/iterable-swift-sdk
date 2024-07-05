@@ -222,6 +222,7 @@ enum JsonKey {
         enum Combinator {
             static let and = "And"
             static let or = "Or"
+            static let not = "Not"
         }
         
         enum CartEventPrefix {
