@@ -178,65 +178,6 @@ public class AnonymousUserManager: AnonymousUserManagerProtocol {
     // Gets the anonymous criteria
     public func getAnonCriteria() {
         IterableAPI.implementation?.getCriteriaData { returnedData in
-            let jsonString = """
-            {
-              "count": 1,
-              "criterias": [
-                     {
-                          "criteriaId": "96",
-                          "name": "Purchase: isSet Comparator",
-                          "createdAt": 1719328487701,
-                          "updatedAt": 1719328487701,
-                          "searchQuery": {
-                            "combinator": "And",
-                            "searchQueries": [
-                              {
-                                "combinator": "And",
-                                "searchQueries": [
-                                  {
-                                    "dataType": "purchase",
-                                    "searchCombo": {
-                                      "combinator": "And",
-                                      "searchQueries": [
-                                        {
-                                          "dataType": "purchase",
-                                          "field": "shoppingCartItems",
-                                          "comparatorType": "IsSet",
-                                          "value": "",
-                                          "fieldType": "object"
-                                        },
-                                        {
-                                          "dataType": "purchase",
-                                          "field": "shoppingCartItems.price",
-                                          "comparatorType": "IsSet",
-                                          "value": "",
-                                          "fieldType": "double"
-                                        },
-                                        {
-                                          "dataType": "purchase",
-                                          "field": "shoppingCartItems.name",
-                                          "value": "",
-                                          "fieldType": "string"
-                                        },
-                                        {
-                                          "dataType": "purchase",
-                                          "field": "total",
-                                          "comparatorType": "IsSet",
-                                          "value": "",
-                                          "fieldType": "double"
-                                        }
-                                      ]
-                                    }
-                                  }
-                                ]
-                              }
-                            ]
-                          }
-                        }
-              ]
-            }
-            """
-            guard let jsonData = jsonString.data(using: .utf8) else { return }
             self.localStorage.criteriaData = returnedData
         };
     }
