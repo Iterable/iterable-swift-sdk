@@ -88,6 +88,7 @@ public class AnonymousUserManager: AnonymousUserManagerProtocol {
     private func createKnownUserIfCriteriaMatched(_ criteriaId: String) {
         var anonSessions = convertToDictionary(data: localStorage.anonymousSessions?.itbl_anon_sessions)
         let userId = IterableUtil.generateUUID()
+        print("vvvvv userId \(userId)")
         anonSessions[JsonKey.matchedCriteriaId] = Int(criteriaId)
         let appName = Bundle.main.appPackageName ?? ""
         notificationStateProvider.isNotificationsEnabled { isEnabled in
@@ -164,18 +165,78 @@ public class AnonymousUserManager: AnonymousUserManagerProtocol {
             localStorage.anonymousSessions = nil
         }
     }
-    
+
     // Checks if criterias are being met and returns criteriaId if it matches the criteria.
     private func evaluateCriteriaAndReturnID() -> String? {
         guard let events = localStorage.anonymousUserEvents, let criteriaData = localStorage.criteriaData  else {
             return nil
         }
         let matchedCriteriaId = CriteriaCompletionChecker(anonymousCriteria: criteriaData, anonymousEvents: events).getMatchedCriteria()
+        print("vvvvv matchedCriteriaId \(matchedCriteriaId)")
         return matchedCriteriaId
     }
     // Gets the anonymous criteria
     public func getAnonCriteria() {
         IterableAPI.implementation?.getCriteriaData { returnedData in
+            let jsonString = """
+            {
+              "count": 1,
+              "criterias": [
+                     {
+                          "criteriaId": "96",
+                          "name": "Purchase: isSet Comparator",
+                          "createdAt": 1719328487701,
+                          "updatedAt": 1719328487701,
+                          "searchQuery": {
+                            "combinator": "And",
+                            "searchQueries": [
+                              {
+                                "combinator": "And",
+                                "searchQueries": [
+                                  {
+                                    "dataType": "purchase",
+                                    "searchCombo": {
+                                      "combinator": "And",
+                                      "searchQueries": [
+                                        {
+                                          "dataType": "purchase",
+                                          "field": "shoppingCartItems",
+                                          "comparatorType": "IsSet",
+                                          "value": "",
+                                          "fieldType": "object"
+                                        },
+                                        {
+                                          "dataType": "purchase",
+                                          "field": "shoppingCartItems.price",
+                                          "comparatorType": "IsSet",
+                                          "value": "",
+                                          "fieldType": "double"
+                                        },
+                                        {
+                                          "dataType": "purchase",
+                                          "field": "shoppingCartItems.name",
+                                          "value": "",
+                                          "fieldType": "string"
+                                        },
+                                        {
+                                          "dataType": "purchase",
+                                          "field": "total",
+                                          "comparatorType": "IsSet",
+                                          "value": "",
+                                          "fieldType": "double"
+                                        }
+                                      ]
+                                    }
+                                  }
+                                ]
+                              }
+                            ]
+                          }
+                        }
+              ]
+            }
+            """
+            guard let jsonData = jsonString.data(using: .utf8) else { return }
             self.localStorage.criteriaData = returnedData
         };
     }

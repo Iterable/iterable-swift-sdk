@@ -383,7 +383,7 @@ struct CriteriaCompletionChecker {
                       }
                   }
               }
-              return filteredLocalDataKeys.contains(where: { $0 == field as! AnyHashable }) &&
+              return localDataKeys.contains(where: { $0 == field as! AnyHashable }) &&
               evaluateComparison(comparatorType: query[JsonKey.CriteriaItem.comparatorType] as! String, matchObj: eventData[field as! String] ?? "", valueToCompare: query[JsonKey.CriteriaItem.value] as? String)
           }
           
