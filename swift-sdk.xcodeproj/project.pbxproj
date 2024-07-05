@@ -410,7 +410,6 @@
 		E9EA7CA12C1EDE5800A9D6FB /* AnonymousUserManagerProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = E9EA7C9D2C1EDE5800A9D6FB /* AnonymousUserManagerProtocol.swift */; };
 		E9EA7CA22C1EDE5800A9D6FB /* AnonymousUserManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = E9EA7C9E2C1EDE5800A9D6FB /* AnonymousUserManager.swift */; };
 		E9EA7CA82C1EE3BA00A9D6FB /* AnonymousUserCriteriaMatchTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E9EA7CA62C1EE3BA00A9D6FB /* AnonymousUserCriteriaMatchTests.swift */; };
-		E9EA7CA92C1EE3BA00A9D6FB /* AnonymousUserMergeTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E9EA7CA72C1EE3BA00A9D6FB /* AnonymousUserMergeTests.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -829,7 +828,6 @@
 		E9EA7C9D2C1EDE5800A9D6FB /* AnonymousUserManagerProtocol.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AnonymousUserManagerProtocol.swift; sourceTree = "<group>"; };
 		E9EA7C9E2C1EDE5800A9D6FB /* AnonymousUserManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AnonymousUserManager.swift; sourceTree = "<group>"; };
 		E9EA7CA62C1EE3BA00A9D6FB /* AnonymousUserCriteriaMatchTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AnonymousUserCriteriaMatchTests.swift; sourceTree = "<group>"; };
-		E9EA7CA72C1EE3BA00A9D6FB /* AnonymousUserMergeTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AnonymousUserMergeTests.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -1656,7 +1654,6 @@
 			isa = PBXGroup;
 			children = (
 				E9EA7CA62C1EE3BA00A9D6FB /* AnonymousUserCriteriaMatchTests.swift */,
-				E9EA7CA72C1EE3BA00A9D6FB /* AnonymousUserMergeTests.swift */,
 				DF7302142C2C176E0002633A /* AnonymousUserComplexCriteriaMatchTests.swift */,
 				DFFD62382C3681B900010883 /* UserMergeScenariosTests.swift */,
 			);
@@ -2301,7 +2298,6 @@
 				5588DFD128C0465E000697D7 /* MockAPNSTypeChecker.swift in Sources */,
 				DF7302152C2C176E0002633A /* AnonymousUserComplexCriteriaMatchTests.swift in Sources */,
 				00B6FACC210E8484007535CF /* APNSTypeCheckerTests.swift in Sources */,
-				E9EA7CA92C1EE3BA00A9D6FB /* AnonymousUserMergeTests.swift in Sources */,
 				AC8F35A2239806B500302994 /* InboxViewControllerViewModelTests.swift in Sources */,
 				AC995F9A2166EEB50099A184 /* CommonMocks.swift in Sources */,
 				E9EA7CA82C1EE3BA00A9D6FB /* AnonymousUserCriteriaMatchTests.swift in Sources */,

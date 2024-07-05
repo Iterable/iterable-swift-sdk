@@ -73,15 +73,6 @@ class UserMergeScenariosTests: XCTestCase, AuthProvider {
     }
     """
     
-    private func createApiClient(networkSession: NetworkSessionProtocol = MockNetworkSession()) -> ApiClient {
-        ApiClient(apiKey: UserMergeScenariosTests.apiKey,
-                  authProvider: self,
-                  endpoint: Endpoint.api,
-                  networkSession: networkSession,
-                  deviceMetadata: InternalIterableAPI.initializeForTesting().deviceMetadata,
-                  dateProvider: dateProvider)
-    }
-    
     
     // Helper function to wait for a specified duration
     private func waitForDuration(seconds: TimeInterval) {
@@ -117,9 +108,9 @@ class UserMergeScenariosTests: XCTestCase, AuthProvider {
                }
         
         if let events = localStorage.anonymousUserEvents {
-                    XCTAssertFalse(events.isEmpty, "Expected events to be logged")
+                    XCTAssertFalse(events.isEmpty, "Expected events to not be synced")
                } else {
-                   XCTFail("Expected events to be logged but found nil")
+                   XCTFail("Expected events but found nil")
                }
  
         // Verify "merge user" API call is not made
@@ -239,9 +230,9 @@ class UserMergeScenariosTests: XCTestCase, AuthProvider {
         waitForDuration(seconds: 3)
 
         if let anonUser = localStorage.userIdAnnon {
-            XCTAssertFalse(anonUser.isEmpty, "Expected anon user nil")
+            XCTAssertFalse(anonUser.isEmpty, "Expected anon user to be found")
                } else {
-                   XCTFail("Expected anon user nil but found")
+                   XCTFail("Expected anon user but found nil")
                }
         
         IterableAPI.setUserId("testuser123", merge: false)
@@ -508,9 +499,9 @@ class UserMergeScenariosTests: XCTestCase, AuthProvider {
                }
         
         if let events = localStorage.anonymousUserEvents {
-                    XCTAssertFalse(events.isEmpty, "Expected events to be logged")
+                    XCTAssertFalse(events.isEmpty, "Expected events to not be synced")
                } else {
-                   XCTFail("Expected events to be logged but found nil")
+                   XCTFail("Expected events but found nil")
                }
  
         // Verify "merge user" API call is not made
@@ -632,7 +623,7 @@ class UserMergeScenariosTests: XCTestCase, AuthProvider {
         if let anonUser = localStorage.userIdAnnon {
             XCTAssertFalse(anonUser.isEmpty, "Expected anon user")
                } else {
-                   XCTFail("Expected anon user found nil")
+                   XCTFail("Expected anon user but found nil")
                }
         
         IterableAPI.setEmail("testuser123@test.com", merge: false)
