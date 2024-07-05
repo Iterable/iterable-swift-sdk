@@ -72,7 +72,9 @@ struct CriteriaCompletionChecker {
                         // we will split purhase/updatecart event items as seperate events because we need to compare it against the single item in criteria json
                         var eventsToProcess = getEventsWithCartItems()
                         eventsToProcess.append(contentsOf: getNonCartEvents())
+                        print("vvvvv eventsToProcess \(eventsToProcess)")
                         let result = evaluateTree(node: searchQuery, localEventData: eventsToProcess)
+                        print("vvvvvv result\(result)")
                         if (result) {
                             criteriaId = currentCriteriaId
                             break
@@ -133,8 +135,13 @@ struct CriteriaCompletionChecker {
                 }
                 return updateCartOrPurchaseItem
             }
-            updatedItem[JsonKey.Commerce.items] = updatedCartOrPurchaseItems;
+            if eventName.isEmpty {
+                updatedItem[JsonKey.CriteriaItem.CartEventItemsPrefix.purchaseItemPrefix] = updatedCartOrPurchaseItems;
+            } else {
+                updatedItem[JsonKey.CriteriaItem.CartEventItemsPrefix.updateCartItemPrefix] = updatedCartOrPurchaseItems;
+            }
         }
+
             
             // handle dataFields if any
             if let dataFields = eventItem[JsonKey.CommerceItem.dataFields] as? [AnyHashable: Any] {
@@ -146,7 +153,7 @@ struct CriteriaCompletionChecker {
             }
 
             for (key, value) in eventItem {
-                if (key as! String != JsonKey.Commerce.items && key as! String != JsonKey.CommerceItem.dataFields) {
+                if (key as! String != JsonKey.CriteriaItem.CartEventItemsPrefix.updateCartItemPrefix && key as! String != JsonKey.CriteriaItem.CartEventItemsPrefix.purchaseItemPrefix && key as! String != JsonKey.CommerceItem.dataFields) {
                     if (key as! String == JsonKey.eventType) {
                         updatedItem[key] = EventType.customEvent;
                     } else {
@@ -158,6 +165,7 @@ struct CriteriaCompletionChecker {
             if !eventName.isEmpty {
                 updatedItem[JsonKey.eventName] = eventName
             }
+            updatedItem.removeValue(forKey: JsonKey.Commerce.items)
             return updatedItem;
     }
     
@@ -273,8 +281,11 @@ struct CriteriaCompletionChecker {
        private func doesItemCriteriaExist(searchQueries: [[AnyHashable: Any]]) -> Bool {
            return searchQueries.contains { query in
                if let field = query[JsonKey.CriteriaItem.field] as? String {
-                   return field.hasPrefix(JsonKey.CriteriaItem.CartEventPrefix.updateCartItemPrefix) ||
-                          field.hasPrefix(JsonKey.CriteriaItem.CartEventPrefix.purchaseItemPrefix)
+                   print("vvvv field \(field)")
+                   print("vvvv field prefix \(field.hasPrefix(JsonKey.CriteriaItem.CartEventItemsPrefix.purchaseItemPrefix))")
+
+                   return field.hasPrefix(JsonKey.CriteriaItem.CartEventItemsPrefix.updateCartItemPrefix) ||
+                          field.hasPrefix(JsonKey.CriteriaItem.CartEventItemsPrefix.purchaseItemPrefix)
                }
                return false
            }
@@ -283,8 +294,10 @@ struct CriteriaCompletionChecker {
     // Check if an item matches the search queries
         private func doesItemMatchQueries(item: [String: Any], searchQueries: [[AnyHashable: Any]]) -> Bool {
         // Filter searchQueries based on whether the item's keys contain the query field
+            print("vvvv item222 \(item)")
             let filteredSearchQueries = searchQueries.filter { query in
                 if let field = query[JsonKey.CriteriaItem.field] as? String {
+                    print("vvvv field222 \(field)")
                     return item.keys.contains { $0 == field }
                 }
                 return false
@@ -310,28 +323,49 @@ struct CriteriaCompletionChecker {
           var itemMatchedResult = false
 
           if localDataKeys.contains(JsonKey.Commerce.items) {
-              if let items = eventData[JsonKey.Commerce.items] as? [[String: Any]] {
-                  let result = items.contains { doesItemMatchQueries(item: $0, searchQueries: searchQueries) }
-                  if !result && doesItemCriteriaExist(searchQueries: searchQueries) {
-                      return result
-                  }
-                  itemMatchedResult = result
-              }
+              print("vvvvvvv eventData\(eventData)")
+               if let items = eventData[JsonKey.Commerce.items] as? [[String: Any]] {
+                   let result = items.contains { doesItemMatchQueries(item: $0, searchQueries: searchQueries) }
+                   print("vvvv result11\(result)")
+                   if !result && doesItemCriteriaExist(searchQueries: searchQueries) {
+                       return result
+                   }
+                   itemMatchedResult = result
+                }
+              if let items = eventData[JsonKey.CriteriaItem.CartEventItemsPrefix.purchaseItemPrefix] as? [[String: Any]] {
+                      let result = items.contains { doesItemMatchQueries(item: $0, searchQueries: searchQueries) }
+                  print("vvvv result22\(result)")
+                      if !result && doesItemCriteriaExist(searchQueries: searchQueries) {
+                          return result
+                      }
+                    itemMatchedResult = result
+                }
+              if let items = eventData[JsonKey.CriteriaItem.CartEventItemsPrefix.updateCartItemPrefix] as? [[String: Any]] {
+                      let result = items.contains { doesItemMatchQueries(item: $0, searchQueries: searchQueries) }
+                  print("vvvv result33\(result)")
+                      if !result && doesItemCriteriaExist(searchQueries: searchQueries) {
+                          return result
+                      }
+                    itemMatchedResult = result
+                }
           }
           
+          
           // Assuming localDataKeys is [String]
-          let filteredLocalDataKeys = localDataKeys.filter { $0 as! String != JsonKey.Commerce.items }
+         // let filteredLocalDataKeys = localDataKeys.filter { $0 as! String != JsonKey.Commerce.items }
 
-          if filteredLocalDataKeys.isEmpty {
+          print("vvvv localDataKeys\(localDataKeys)")
+          if localDataKeys.isEmpty {
               return itemMatchedResult
           }
 
           // Assuming searchQueries is [[String: Any]]
           let filteredSearchQueries = searchQueries.filter { query in
               if let field = query[JsonKey.CriteriaItem.field] as? String {
-                  return !field.hasPrefix(JsonKey.CriteriaItem.CartEventPrefix.updateCartItemPrefix) &&
-                         !field.hasPrefix(JsonKey.CriteriaItem.CartEventPrefix.purchaseItemPrefix)
+                  return !field.hasPrefix(JsonKey.CriteriaItem.CartEventItemsPrefix.updateCartItemPrefix) &&
+                         !field.hasPrefix(JsonKey.CriteriaItem.CartEventItemsPrefix.purchaseItemPrefix)
               }
+              print("vvvvvvvvvv false")
               return false
           }
 
@@ -353,6 +387,7 @@ struct CriteriaCompletionChecker {
               evaluateComparison(comparatorType: query[JsonKey.CriteriaItem.comparatorType] as! String, matchObj: eventData[field as! String] ?? "", valueToCompare: query[JsonKey.CriteriaItem.value] as? String)
           }
           
+          print("vvvvvvvvvv matchResult\(matchResult)")
           return matchResult
       }
 
@@ -372,7 +407,8 @@ struct CriteriaCompletionChecker {
             case JsonKey.CriteriaItem.Comparator.DoesNotEquals:
                 return !compareValueEquality(matchObj, stringValue)
             case JsonKey.CriteriaItem.Comparator.IsSet:
-                return !String(describing: matchObj).isEmpty
+                return compareValueIsSet(matchObj)
+                //return !String(describing: matchObj).isEmpty
             case JsonKey.CriteriaItem.Comparator.GreaterThan:
                 return compareNumericValues(matchObj, stringValue, compareOperator: >)
             case JsonKey.CriteriaItem.Comparator.LessThan:
@@ -408,6 +444,37 @@ struct CriteriaCompletionChecker {
             case (let booleanValue as Bool, let value): return booleanValue == Bool(value)
             case (let stringTypeValue as String, let value): return stringTypeValue == value
             default: return false
+        }
+    }
+    
+    func compareValueIsSet(_ sourceTo: Any?) -> Bool {
+        switch sourceTo {
+        case let doubleValue as Double:
+            return !doubleValue.isNaN // Checks if the Double is not NaN (not a number)
+            
+        case let intValue as Int:
+            return true // Ints are always set (0 is a valid value)
+            
+        case let longValue as Int64:
+            return true // Int64s are always set (0 is a valid value)
+            
+        case let boolValue as Bool:
+            return true // Bools are always set (false is a valid value)
+            
+        case let stringValue as String:
+            return !stringValue.isEmpty // Checks if the string is not empty
+            
+        case let arrayValue as [Any]:
+            return !arrayValue.isEmpty // Checks if the array is not empty
+            
+        case let dictValue as [AnyHashable: Any]:
+            return !dictValue.isEmpty // Checks if the dictionary is not empty
+            
+        case let optionalValue as Any?:
+            return optionalValue != nil // Checks if the optional is not nil
+            
+        default:
+            return false // For any other types, return false
         }
     }
 
