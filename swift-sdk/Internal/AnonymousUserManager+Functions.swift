@@ -138,7 +138,8 @@ struct CriteriaCompletionChecker {
             if eventName.isEmpty {
                 updatedItem[JsonKey.CriteriaItem.CartEventItemsPrefix.purchaseItemPrefix] = updatedCartOrPurchaseItems;
             } else {
-                updatedItem[JsonKey.CriteriaItem.CartEventItemsPrefix.updateCartItemPrefix] = updatedCartOrPurchaseItems;
+                updatedItem[JsonKey.Commerce.items] = updatedCartOrPurchaseItems;
+
             }
         }
 
@@ -153,7 +154,7 @@ struct CriteriaCompletionChecker {
             }
 
             for (key, value) in eventItem {
-                if (key as! String != JsonKey.CriteriaItem.CartEventItemsPrefix.updateCartItemPrefix && key as! String != JsonKey.CriteriaItem.CartEventItemsPrefix.purchaseItemPrefix && key as! String != JsonKey.CommerceItem.dataFields) {
+                if (key as! String != JsonKey.Commerce.items && key as! String != JsonKey.CriteriaItem.CartEventItemsPrefix.purchaseItemPrefix && key as! String != JsonKey.CommerceItem.dataFields) {
                     if (key as! String == JsonKey.eventType) {
                         updatedItem[key] = EventType.customEvent;
                     } else {
@@ -161,11 +162,14 @@ struct CriteriaCompletionChecker {
                     }
                 }
             }
+
             updatedItem[JsonKey.eventType] = eventType
             if !eventName.isEmpty {
                 updatedItem[JsonKey.eventName] = eventName
+            } else {
+                updatedItem.removeValue(forKey: JsonKey.Commerce.items)
             }
-            updatedItem.removeValue(forKey: JsonKey.Commerce.items)
+
             return updatedItem;
     }
     
@@ -187,6 +191,7 @@ struct CriteriaCompletionChecker {
             }
             eventItem.removeValue(forKey: JsonKey.CommerceItem.dataFields)
         }
+        print("vvvv processedEvents\(processedEvents)")
         return processedEvents
     }
     
@@ -332,22 +337,17 @@ struct CriteriaCompletionChecker {
                    }
                    itemMatchedResult = result
                 }
+          }
+          if localDataKeys.contains(JsonKey.CriteriaItem.CartEventItemsPrefix.purchaseItemPrefix) {
+              print("vvvvvvv eventData222\(eventData)")
               if let items = eventData[JsonKey.CriteriaItem.CartEventItemsPrefix.purchaseItemPrefix] as? [[String: Any]] {
-                      let result = items.contains { doesItemMatchQueries(item: $0, searchQueries: searchQueries) }
+                  let result = items.contains { doesItemMatchQueries(item: $0, searchQueries: searchQueries) }
                   print("vvvv result22\(result)")
-                      if !result && doesItemCriteriaExist(searchQueries: searchQueries) {
-                          return result
-                      }
-                    itemMatchedResult = result
-                }
-              if let items = eventData[JsonKey.CriteriaItem.CartEventItemsPrefix.updateCartItemPrefix] as? [[String: Any]] {
-                      let result = items.contains { doesItemMatchQueries(item: $0, searchQueries: searchQueries) }
-                  print("vvvv result33\(result)")
-                      if !result && doesItemCriteriaExist(searchQueries: searchQueries) {
-                          return result
-                      }
-                    itemMatchedResult = result
-                }
+                  if !result && doesItemCriteriaExist(searchQueries: searchQueries) {
+                      return result
+                  }
+                  itemMatchedResult = result
+              }
           }
           
           
@@ -362,6 +362,8 @@ struct CriteriaCompletionChecker {
           // Assuming searchQueries is [[String: Any]]
           let filteredSearchQueries = searchQueries.filter { query in
               if let field = query[JsonKey.CriteriaItem.field] as? String {
+                  print("vvvvvvvvvv field\(field)")
+
                   return !field.hasPrefix(JsonKey.CriteriaItem.CartEventItemsPrefix.updateCartItemPrefix) &&
                          !field.hasPrefix(JsonKey.CriteriaItem.CartEventItemsPrefix.purchaseItemPrefix)
               }
