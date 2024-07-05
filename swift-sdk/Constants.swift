@@ -17,6 +17,7 @@ enum EventType {
     static let updateCart = "updateCart"
     static let anonSession = "anonSession"
     static let tokenRegistration = "tokenRegistration"
+    static let trackEvent = "trackEvent"
 }
 
 enum Const {
