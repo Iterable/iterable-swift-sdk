@@ -320,9 +320,21 @@ struct CriteriaCompletionChecker {
               }
               return false
           }
-          
+
           let matchResult = filteredSearchQueries.allSatisfy { query in
-              let field = query[JsonKey.CriteriaItem.field]
+              let field = query[JsonKey.CriteriaItem.field] as! String
+
+              if query[JsonKey.eventType] as! String == EventType.trackEvent,
+                 query[JsonKey.CriteriaItem.fieldType] as! String == "object",
+                 query[JsonKey.CriteriaItem.comparatorType] as! String == JsonKey.CriteriaItem.Comparator.IsSet {
+                  
+                  if let eventName = eventData[JsonKey.eventName] as? String {
+                      if (eventName == EventType.updateCart && field == eventName) ||
+                         (field == eventName) {
+                          return true
+                      }
+                  }
+              }
               return filteredLocalDataKeys.contains(where: { $0 == field as! AnyHashable }) &&
               evaluateComparison(comparatorType: query[JsonKey.CriteriaItem.comparatorType] as! String, matchObj: eventData[field as! String], valueToCompare: query[JsonKey.CriteriaItem.value] as! String)
           }
