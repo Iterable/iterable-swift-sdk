@@ -217,6 +217,7 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
             if config.enableAnonTracking {
                 anonymousUserManager.trackAnonTokenRegistration(token: token.hexString())
             }
+            onFailure?("Iterable SDK must be initialized with an API key and user email/userId before calling SDK methods", nil)
             return
         }
         
@@ -325,9 +326,7 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
     private func rejectWithInitializationError(onFailure: OnFailureHandler? = nil) -> Pending<SendRequestValue, SendRequestError> {
         let result = Fulfill<SendRequestValue, SendRequestError>()
         result.reject(with: SendRequestError())
-        if let _onFailure = onFailure {
-            _onFailure("Iterable SDK must be initialized with an API key and user email/userId before calling SDK methods", nil)
-        }
+        onFailure?("Iterable SDK must be initialized with an API key and user email/userId before calling SDK methods", nil)
         return result
     }
     

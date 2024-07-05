@@ -230,7 +230,7 @@ struct CriteriaCompletionChecker {
                 }
                 return true  // If any subqueries fail, return true
             }
-        } else if let searchCombo = node[JsonKey.CriteriaItem.searchCombo] as? [String: Any] {
+        } else if node[JsonKey.CriteriaItem.searchCombo] is [String: Any] {
             return evaluateSearchQueries(node: node, localEventData: localEventData)
         }
         
@@ -368,11 +368,23 @@ struct CriteriaCompletionChecker {
               print("vvvvvvvvvv false")
               return false
           }
-          
+
           let matchResult = filteredSearchQueries.allSatisfy { query in
-              let field = query[JsonKey.CriteriaItem.field]
-              return localDataKeys.contains(where: { $0 == field as! AnyHashable }) &&
-              evaluateComparison(comparatorType: query[JsonKey.CriteriaItem.comparatorType] as! String, matchObj: eventData[field as! String], valueToCompare: query[JsonKey.CriteriaItem.value] as! String)
+              let field = query[JsonKey.CriteriaItem.field] as! String
+
+              if query[JsonKey.eventType] as! String == EventType.trackEvent,
+                 query[JsonKey.CriteriaItem.fieldType] as! String == "object",
+                 query[JsonKey.CriteriaItem.comparatorType] as! String == JsonKey.CriteriaItem.Comparator.IsSet {
+                  
+                  if let eventName = eventData[JsonKey.eventName] as? String {
+                      if (eventName == EventType.updateCart && field == eventName) ||
+                         (field == eventName) {
+                          return true
+                      }
+                  }
+              }
+              return filteredLocalDataKeys.contains(where: { $0 == field as! AnyHashable }) &&
+              evaluateComparison(comparatorType: query[JsonKey.CriteriaItem.comparatorType] as! String, matchObj: eventData[field as! String] ?? "", valueToCompare: query[JsonKey.CriteriaItem.value] as? String)
           }
           
           print("vvvvvvvvvv matchResult\(matchResult)")
@@ -386,7 +398,7 @@ struct CriteriaCompletionChecker {
         }
         
         if let doubleValue = Double(stringValue) {
-              stringValue = formattedDoubleValue(doubleValue)
+            stringValue = formattedDoubleValue(doubleValue)
         }
         
         switch comparatorType {

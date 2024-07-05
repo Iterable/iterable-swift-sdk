@@ -307,4 +307,47 @@ class AnonymousUserCriteriaIsSetTests: XCTestCase {
         let matchedCriteriaId = CriteriaCompletionChecker(anonymousCriteria: data(from: mockDataCustomEvent)!, anonymousEvents: eventItems).getMatchedCriteria()
         XCTAssertEqual(matchedCriteriaId, nil)
     }
+    
+    func testCompareDataIsSetPurchaseSuccess() {
+        let eventItems: [[AnyHashable: Any]] = [[
+            "items": [["id": "12", "name": "coffee", "price": 4.67, "quantity": 3]],
+            "total": 11.0,
+            "createdAt": 1699246745093,
+            "dataType": "purchase"
+        ]]
+        let expectedCriteriaId = "1"
+        let matchedCriteriaId = CriteriaCompletionChecker(anonymousCriteria: data(from: mockDataPurchase)!, anonymousEvents: eventItems).getMatchedCriteria()
+        XCTAssertEqual(matchedCriteriaId, expectedCriteriaId)
+    }
+    
+    func testCompareDataIsSetPurchaseFailure() {
+        let eventItems: [[AnyHashable: Any]] = [ [
+            "items": [["id": "12", "name": "coffee", "price": 4.67, "quantity": 3]],
+            "createdAt": 1699246745093,
+            "dataType": "purchase"
+        ]]
+        let matchedCriteriaId = CriteriaCompletionChecker(anonymousCriteria: data(from: mockDataPurchase)!, anonymousEvents: eventItems).getMatchedCriteria()
+        XCTAssertEqual(matchedCriteriaId, nil)
+    }
+    
+    func testCompareDataIsSetUpdateCartSuccess() {
+        let eventItems: [[AnyHashable: Any]] = [[
+            "items": [["id": "12", "name": "keyboard", "price": 90, "quantity": 60]],
+            "createdAt": 1699246745093,
+            "dataType": "updateCart"
+        ]]
+        let expectedCriteriaId = "1"
+        let matchedCriteriaId = CriteriaCompletionChecker(anonymousCriteria: data(from: mockDataUpdateCart)!, anonymousEvents: eventItems).getMatchedCriteria()
+        XCTAssertEqual(matchedCriteriaId, expectedCriteriaId)
+    }
+    
+    func testCompareDataIsSetUpdateCartFailure() {
+        let eventItems: [[AnyHashable: Any]] = [[
+            "items": [["id": "12", "name": "keyboard", "price": 90]],
+            "createdAt": 1699246745093,
+            "dataType": "updateCart"
+        ]]
+        let matchedCriteriaId = CriteriaCompletionChecker(anonymousCriteria: data(from: mockDataUpdateCart)!, anonymousEvents: eventItems).getMatchedCriteria()
+        XCTAssertEqual(matchedCriteriaId, nil)
+    }
 }
