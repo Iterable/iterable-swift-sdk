@@ -351,9 +351,8 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
             if config.enableAnonTracking {
                 anonymousUserManager.trackAnonPurchaseEvent(total: total, items: items, dataFields: dataFields)
                 return resolveWithSuccess(onSuccess: onSuccess, data: dataFields)
-            } else {
-                return rejectWithInitializationError(onFailure: onFailure)
             }
+            return rejectWithInitializationError(onFailure: onFailure)
         }
         return requestHandler.trackPurchase(total,
                                      items: items,
