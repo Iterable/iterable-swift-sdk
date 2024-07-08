@@ -278,6 +278,7 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
         if !isEitherUserIdOrEmailSet() && localStorage.userIdAnnon == nil {
             if config.enableAnonTracking {
                 anonymousUserManager.trackAnonUpdateUser(dataFields)
+                return resolveWithSuccess(onSuccess: onSuccess, data: dataFields)
             }
             return rejectWithInitializationError(onFailure: onFailure)
         }
@@ -309,6 +310,7 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
         if !isEitherUserIdOrEmailSet() && localStorage.userIdAnnon == nil {
             if config.enableAnonTracking {
                 anonymousUserManager.trackAnonUpdateCart(items: items)
+                return resolveWithSuccess(onSuccess: onSuccess)
             }
             return rejectWithInitializationError(onFailure: onFailure)
         }
@@ -321,6 +323,13 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
                     onSuccess: OnSuccessHandler? = nil,
                     onFailure: OnFailureHandler? = nil) -> Pending<SendRequestValue, SendRequestError> {
         return requestHandler.updateCart(items: items, createdAt: createdAt, onSuccess: onSuccess, onFailure: onFailure)
+    }
+    
+    private func resolveWithSuccess(onSuccess: OnSuccessHandler? = nil, data: [AnyHashable: Any]? = nil) -> Pending<SendRequestValue, SendRequestError> {
+        let result = Fulfill<SendRequestValue, SendRequestError>()
+        result.resolve(with: SendRequestValue())
+        onSuccess?(data)
+        return result
     }
     
     private func rejectWithInitializationError(onFailure: OnFailureHandler? = nil) -> Pending<SendRequestValue, SendRequestError> {
@@ -341,8 +350,10 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
         if !isEitherUserIdOrEmailSet() && localStorage.userIdAnnon == nil {
             if config.enableAnonTracking {
                 anonymousUserManager.trackAnonPurchaseEvent(total: total, items: items, dataFields: dataFields)
+                return resolveWithSuccess(onSuccess: onSuccess, data: dataFields)
+            } else {
+                return rejectWithInitializationError(onFailure: onFailure)
             }
-            return rejectWithInitializationError(onFailure: onFailure)
         }
         return requestHandler.trackPurchase(total,
                                      items: items,
@@ -414,6 +425,7 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
         if !isEitherUserIdOrEmailSet() && localStorage.userIdAnnon == nil {
             if config.enableAnonTracking {
                 anonymousUserManager.trackAnonEvent(name: eventName, dataFields: dataFields)
+                return resolveWithSuccess(onSuccess: onSuccess, data: dataFields)
             }
             return rejectWithInitializationError(onFailure: onFailure)
         }
