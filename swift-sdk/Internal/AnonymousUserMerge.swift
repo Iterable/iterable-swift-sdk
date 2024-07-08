@@ -8,7 +8,7 @@
 import Foundation
 
 protocol AnonymousUserMergeProtocol {
-    func tryMergeUser(sourceUserId: String?, destinationUserIdOrEmail: String?, isEmail: Bool, onMergeResult: @escaping MergeActionHandler)
+    func tryMergeUser(sourceUserId: String?, sourceEmail: String?, destinationUserId: String?,  destinationEmail: String?, merge: Bool, onMergeResult: @escaping MergeActionHandler)
 }
 
 class AnonymousUserMerge: AnonymousUserMergeProtocol {
@@ -20,18 +20,18 @@ class AnonymousUserMerge: AnonymousUserMergeProtocol {
         self.apiClient = apiClient
         self.anonymousUserManager = anonymousUserManager
     }
-
-    public func tryMergeUser(sourceUserId: String?, destinationUserIdOrEmail: String?, isEmail: Bool, onMergeResult: @escaping MergeActionHandler) {
-        if let sourceUserId = sourceUserId, let destinationUserIdOrEmail = destinationUserIdOrEmail {
-            apiClient.mergeUser(sourceEmail: nil, sourceUserId: sourceUserId, destinationEmail: isEmail ? destinationUserIdOrEmail : nil, destinationUserId: isEmail ? nil : destinationUserIdOrEmail).onSuccess {_ in
-                onMergeResult(MergeResult.mergesuccessful, nil)
-            }.onError {error in
-                print("Merge failed error: \(error)")
-                onMergeResult(MergeResult.mergefailed, error.reason)
-            }
-        } else {
-            // this will return mergeResult true in case of anon userId doesn't exist or destinationUserIdOrEmail is nil because merge is not required
-            onMergeResult(MergeResult.mergenotrequired, nil)
+    
+    public func tryMergeUser(sourceUserId: String?, sourceEmail: String?, destinationUserId: String?,  destinationEmail: String?, merge: Bool, onMergeResult: @escaping MergeActionHandler) {
+            if (merge && (sourceUserId != nil || sourceEmail != nil)) {
+                apiClient.mergeUser(sourceEmail: sourceEmail, sourceUserId: sourceUserId,  destinationEmail : destinationEmail, destinationUserId: destinationUserId).onSuccess {_ in
+                    onMergeResult(MergeResult.mergesuccessful, nil)
+                }.onError {error in
+                    print("Merge failed error: \(error)")
+                    onMergeResult(MergeResult.mergefailed, error.reason)
+                }
+            } else {
+                // this will return mergeResult true in case of anon userId doesn't exist or destinationUserIdOrEmail is nil because merge is not required
+                onMergeResult(MergeResult.mergenotrequired, nil)
         }
     }
 }
