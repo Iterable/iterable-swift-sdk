@@ -172,7 +172,7 @@ public class AnonymousUserManager: AnonymousUserManagerProtocol {
             return nil
         }
         let matchedCriteriaId = CriteriaCompletionChecker(anonymousCriteria: criteriaData, anonymousEvents: events).getMatchedCriteria()
-        print("vvvvv matchedCriteriaId \(matchedCriteriaId)")
+        print("vvvvv matchedCriteriaId \(String(describing: matchedCriteriaId))")
         return matchedCriteriaId
     }
     // Gets the anonymous criteria
