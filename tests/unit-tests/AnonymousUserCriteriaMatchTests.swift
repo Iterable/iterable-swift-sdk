@@ -282,7 +282,6 @@ class AnonymousUserCriteriaMatchTests: XCTestCase {
             "items": [["id": "12", "name": "keyboard", "price": 40, "quantity": 3]],
             "createdAt": 1699246745093,
             "dataType": "customEvent",
-            "eventName": "updateCart",
             "dataFields": ["campaignId": "1234"]
         ]]
         let matchedCriteriaId = CriteriaCompletionChecker(anonymousCriteria: data(from: mockData)!, anonymousEvents: eventItems).getMatchedCriteria()
@@ -308,7 +307,6 @@ class AnonymousUserCriteriaMatchTests: XCTestCase {
             "items": [["id": "12", "name": "keyboard", "price": 10, "quantity": 3]],
             "createdAt": 1699246745093,
             "dataType": "customEvent",
-            "eventName": "updateCart",
             "dataFields": ["campaignId": "1234"]
         ],["dataType": "customEvent", "eventName": "processing_cancelled"]]
         let matchedCriteriaId = CriteriaCompletionChecker(anonymousCriteria: data(from: mockData)!, anonymousEvents: eventItems).getMatchedCriteria()

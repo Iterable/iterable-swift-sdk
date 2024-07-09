@@ -17,6 +17,7 @@ enum EventType {
     static let updateCart = "updateCart"
     static let anonSession = "anonSession"
     static let tokenRegistration = "tokenRegistration"
+    static let trackEvent = "trackEvent"
 }
 
 enum Const {
@@ -224,9 +225,14 @@ enum JsonKey {
             static let not = "Not"
         }
         
+        enum CartEventItemsPrefix {
+            static let updateCartItemPrefix = "updateCart.updatedShoppingCartItems"
+            static let purchaseItemPrefix = "shoppingCartItems"
+        }
+        
         enum CartEventPrefix {
-            static let updateCartItemPrefix = "updateCart.updatedShoppingCartItems."
-            static let purchaseItemPrefix = "shoppingCartItems."
+            static let updateCartItemPrefix = CartEventItemsPrefix.updateCartItemPrefix + "."
+            static let purchaseItemPrefix = CartEventItemsPrefix.purchaseItemPrefix + "."
         }
         
         enum Comparator {
