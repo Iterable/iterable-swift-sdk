@@ -147,6 +147,14 @@ import UIKit
         implementation?.setUserId(userId, authToken: authToken, successHandler: successHandler, failureHandler: failureHandler)
     }
     
+    public static func setEmail(_ email: String?, _ authToken: String? = nil, merge: Bool? = nil, _ successHandler: OnSuccessHandler? = nil, _ failureHandler: OnFailureHandler? = nil) {
+        implementation?.setEmail(email, authToken: authToken, merge: merge, successHandler: successHandler, failureHandler: failureHandler)
+    }
+    
+    public static func setUserId(_ userId: String?, _ authToken: String? = nil, merge: Bool? = nil, _ successHandler: OnSuccessHandler? = nil, _ failureHandler: OnFailureHandler? = nil) {
+        implementation?.setUserId(userId, authToken: authToken, merge: merge,successHandler: successHandler, failureHandler: failureHandler)
+    }
+    
     /// Handle a Universal Link
     ///
     /// For Iterable links, it will track the click and retrieve the original URL,

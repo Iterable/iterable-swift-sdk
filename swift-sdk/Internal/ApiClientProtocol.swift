@@ -52,7 +52,7 @@ protocol ApiClientProtocol: AnyObject {
 
     func getRemoteConfiguration() -> Pending<RemoteConfiguration, SendRequestError>
         
-    func mergeUser(sourceEmail: String?, sourceUserId: String, destinationEmail: String?, destinationUserId: String?) -> Pending<SendRequestValue, SendRequestError>
+    func mergeUser(sourceEmail: String?, sourceUserId: String?, destinationEmail: String?, destinationUserId: String?) -> Pending<SendRequestValue, SendRequestError>
     
     func getCriteria() -> Pending<SendRequestValue, SendRequestError>
 

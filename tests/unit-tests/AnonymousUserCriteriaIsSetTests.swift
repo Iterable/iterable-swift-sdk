@@ -296,7 +296,7 @@ class AnonymousUserCriteriaIsSetTests: XCTestCase {
     
     
     func testCompareDataIsSetCustomEventSuccess() {
-        let eventItems: [[AnyHashable: Any]] = [["dataType": "customEvent", "eventName":"vvv", "dataFields": ["button-clicked":"cc", "button-clicked.animal": "aa", "button-clicked.clickCount": "1", "total": "10"]]]
+        let eventItems: [[AnyHashable: Any]] = [["dataType": "customEvent", "eventName":"button-clicked", "dataFields": ["button-clicked":"cc", "button-clicked.animal": "aa", "button-clicked.clickCount": "1", "total": "10"]]]
         let expectedCriteriaId = "1"
         let matchedCriteriaId = CriteriaCompletionChecker(anonymousCriteria: data(from: mockDataCustomEvent)!, anonymousEvents: eventItems).getMatchedCriteria()
         XCTAssertEqual(matchedCriteriaId, expectedCriteriaId)
