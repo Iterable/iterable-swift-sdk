@@ -88,7 +88,6 @@ public class AnonymousUserManager: AnonymousUserManagerProtocol {
     private func createKnownUserIfCriteriaMatched(_ criteriaId: String) {
         var anonSessions = convertToDictionary(data: localStorage.anonymousSessions?.itbl_anon_sessions)
         let userId = IterableUtil.generateUUID()
-        print("vvvvv userId \(userId)")
         anonSessions[JsonKey.matchedCriteriaId] = Int(criteriaId)
         let appName = Bundle.main.appPackageName ?? ""
         notificationStateProvider.isNotificationsEnabled { isEnabled in
@@ -172,7 +171,6 @@ public class AnonymousUserManager: AnonymousUserManagerProtocol {
             return nil
         }
         let matchedCriteriaId = CriteriaCompletionChecker(anonymousCriteria: criteriaData, anonymousEvents: events).getMatchedCriteria()
-        print("vvvvv matchedCriteriaId \(String(describing: matchedCriteriaId))")
         return matchedCriteriaId
     }
     // Gets the anonymous criteria

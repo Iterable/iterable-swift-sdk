@@ -410,7 +410,6 @@ struct CriteriaCompletionChecker {
                 return !compareValueEquality(matchObj, stringValue)
             case JsonKey.CriteriaItem.Comparator.IsSet:
                 return compareValueIsSet(matchObj)
-                //return !String(describing: matchObj).isEmpty
             case JsonKey.CriteriaItem.Comparator.GreaterThan:
                 return compareNumericValues(matchObj, stringValue, compareOperator: >)
             case JsonKey.CriteriaItem.Comparator.LessThan:
