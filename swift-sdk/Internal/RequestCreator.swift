@@ -656,7 +656,7 @@ struct RequestCreator {
         return .success(.get(createGetRequest(forPath: Const.Path.getRemoteConfiguration, withArgs: args as! [String: String])))
     }
     
-    func createMergeUserRequest(_ sourceEmail: String?, _ sourceUserId: String, _ destinationEmail: String?, destinationUserId: String?) -> Result<IterableRequest, IterableError> {
+    func createMergeUserRequest(_ sourceEmail: String?, _ sourceUserId: String?, _ destinationEmail: String?, _ destinationUserId: String?) -> Result<IterableRequest, IterableError> {
         var body = [AnyHashable: Any]()
         
         if IterableUtil.isNotNullOrEmpty(string: sourceEmail) {
