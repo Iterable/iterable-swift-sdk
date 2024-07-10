@@ -151,8 +151,8 @@ import UIKit
         implementation?.setEmail(email, authToken: authToken, merge: merge, successHandler: successHandler, failureHandler: failureHandler)
     }
     
-    public static func setUserId(_ userId: String?, _ authToken: String? = nil, merge: Bool? = nil, _ successHandler: OnSuccessHandler? = nil, _ failureHandler: OnFailureHandler? = nil) {
-        implementation?.setUserId(userId, authToken: authToken, merge: merge,successHandler: successHandler, failureHandler: failureHandler)
+    public static func setUserId(_ userId: String?, _ authToken: String? = nil, merge: Bool? = nil, _ successHandler: OnSuccessHandler? = nil, _ failureHandler: OnFailureHandler? = nil, _ isAnon: Bool = false) {
+        implementation?.setUserId(userId, authToken: authToken, merge: merge,successHandler: successHandler, failureHandler: failureHandler, isAnon: isAnon)
     }
     
     /// Handle a Universal Link
