@@ -22,7 +22,7 @@ class AnonymousUserMerge: AnonymousUserMergeProtocol {
     }
     
     public func tryMergeUser(sourceUserId: String?, sourceEmail: String?, destinationUserIdOrEmail: String?, isEmail: Bool, merge: Bool, onMergeResult: @escaping MergeActionHandler) {
-        if ((sourceUserId != nil || sourceEmail != nil) && destinationUserIdOrEmail != nil && merge) {
+        if (sourceUserId != nil && destinationUserIdOrEmail != nil && merge) {
             let destinationEmail = isEmail ? destinationUserIdOrEmail : nil
             let destinationUserId = isEmail ? nil : destinationUserIdOrEmail
             
