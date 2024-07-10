@@ -235,7 +235,7 @@ class UserMergeScenariosTests: XCTestCase, AuthProvider {
                    XCTFail("Expected anon user but found nil")
                }
         
-        IterableAPI.setUserId("testuser123", merge: false)
+        IterableAPI.setUserId("testuser123", nil, merge: false)
  
         // Verify "merge user" API call is not made
            let expectation = self.expectation(description: "No API call is made to merge user")
@@ -626,7 +626,7 @@ class UserMergeScenariosTests: XCTestCase, AuthProvider {
                    XCTFail("Expected anon user but found nil")
                }
         
-        IterableAPI.setEmail("testuser123@test.com", merge: false)
+        IterableAPI.setEmail("testuser123@test.com", nil, merge: false)
  
         // Verify "merge user" API call is not made
            let expectation = self.expectation(description: "No API call is made to merge user")
@@ -783,13 +783,13 @@ class UserMergeScenariosTests: XCTestCase, AuthProvider {
         waitForDuration(seconds: 3)
 
 
-        if let anonUser = localStorage.userIdAnnon {
+        if localStorage.userIdAnnon != nil {
                 XCTFail("Expected anon user nil but found")
                } else {
                    XCTAssertNil(localStorage.anonymousUserEvents, "Expected anon user to be nil")
                }
         
-        IterableAPI.setEmail("testuseranotheruser@test.com", merge: true)
+        IterableAPI.setEmail("testuseranotheruser@test.com", nil, merge: true)
         waitForDuration(seconds: 3)
 
         if let userId = IterableAPI.email {
@@ -799,13 +799,14 @@ class UserMergeScenariosTests: XCTestCase, AuthProvider {
                }
  
         // Verify "merge user" API call is made
-           let apiCallExpectation = self.expectation(description: "API call is made to merge user")
+        let expectation = self.expectation(description: "No API call is made to merge user")
            DispatchQueue.main.async {
                if let _ = self.mockSession.getRequest(withEndPoint: Const.Path.mergeUser) {
                    // Pass the test if the API call was made
-                   apiCallExpectation.fulfill()
+                   XCTFail("merge user API call was made unexpectedly")
                } else {
-                   XCTFail("Expected merge user API call was not made")
+                   // Pass the test if the API call was not made
+                   expectation.fulfill()
                }
            }
            

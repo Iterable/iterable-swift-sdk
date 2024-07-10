@@ -374,7 +374,7 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
                        templateId: NSNumber? = nil,
                        onSuccess: OnSuccessHandler? = nil,
                        onFailure: OnFailureHandler? = nil) -> Pending<SendRequestValue, SendRequestError> {
-        if !isEitherUserIdOrEmailSet() && localStorage.userIdAnnon == nil {
+        if !isEitherUserIdOrEmailSet() {
             if config.enableAnonTracking {
                 anonymousUserManager.trackAnonPurchaseEvent(total: total, items: items, dataFields: dataFields)
             }
