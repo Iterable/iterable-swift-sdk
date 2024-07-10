@@ -137,7 +137,7 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
         let merge = getMergeDefaultValue(merge: merge);
         let (sourceUserId, sourceEmail) = getSourceUserIdOrEmail();
         
-        anonymousUserMerge.tryMergeUser(sourceUserId: sourceUserId, sourceEmail: sourceEmail, destinationUserIdOrEmail: nil, isEmail: true, merge: isMerge) { mergeResult, error in
+        anonymousUserMerge.tryMergeUser(sourceUserId: sourceUserId, sourceEmail: sourceEmail, destinationUserIdOrEmail: nil, isEmail: true, merge: merge) { mergeResult, error in
             if mergeResult == MergeResult.mergenotrequired ||  mergeResult == MergeResult.mergesuccessful {
                 if self._email == email && email != nil && authToken != nil {
                     self.checkAndUpdateAuthToken(authToken)
