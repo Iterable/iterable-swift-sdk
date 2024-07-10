@@ -10,22 +10,14 @@ import Foundation
 
 class MockAuthManager: IterableAuthManagerProtocol {
     
-    func handleAuthFailure(failedAuthToken: String?, reason: IterableSDK.AuthFailureReason) {
-        
-    }
-    
     var shouldRetry = true
     var retryWasRequested = false
 
-    func getAuthToken() -> String? {
-        return "AuthToken"
+    func handleAuthFailure(failedAuthToken: String?, reason: IterableSDK.AuthFailureReason) {
+        
     }
 
-    func resetFailedAuthCount() {
-
-    }
-
-    func requestNewAuthToken(hasFailedPriorAuth: Bool, onSuccess: ((String?) -> Void)?) {
+    func requestNewAuthToken(hasFailedPriorAuth: Bool, onSuccess: ((String?) -> Void)?, shouldIgnoreRetryPolicy: Bool) {
         if shouldRetry {
             // Simulate the authManager obtaining a new token
             retryWasRequested = true
@@ -36,6 +28,31 @@ class MockAuthManager: IterableAuthManagerProtocol {
             retryWasRequested = false
             onSuccess?(nil)
         }
+    }
+    
+    func scheduleAuthTokenRefreshTimer(interval: TimeInterval, isScheduledRefresh: Bool, successCallback: IterableSDK.AuthTokenRetrievalHandler?) {
+        requestNewAuthToken(hasFailedPriorAuth: false, onSuccess: successCallback, shouldIgnoreRetryPolicy: true)
+    }
+    
+    func pauseAuthRetries(_ pauseAuthRetry: Bool) {
+        
+    }
+    
+    func setIsLastAuthTokenValid(_ isValid: Bool) {
+        
+    }
+    
+    func getNextRetryInterval() -> Double {
+        return 0
+    }
+    
+
+    func getAuthToken() -> String? {
+        return "AuthToken"
+    }
+
+    func resetFailedAuthCount() {
+
     }
 
     func setNewToken(_ newToken: String) {

@@ -118,6 +118,9 @@ public class IterableConfig: NSObject {
     /// an expiration date field in it
     public var expiringAuthTokenRefreshPeriod: TimeInterval = 60.0
     
+    /// Retry policy for JWT Refresh.
+    public var retryPolicy: RetryPolicy = RetryPolicy(maxRetry: 10, retryInterval: 6, retryBackoff: .linear)
+    
     /// We allow navigation only to urls with `https` protocol (for deep links within your app or external links).
     /// If you want to allow other protocols, such as,  `http`, `tel` etc., please add them to the list below
     public var allowedProtocols: [String] = []
