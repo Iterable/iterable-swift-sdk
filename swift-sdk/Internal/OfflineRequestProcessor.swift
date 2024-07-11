@@ -350,6 +350,7 @@ struct OfflineRequestProcessor: RequestProcessorProtocol {
                                               withIdentifier: identifier)
             result.onError { error in
                 if error.httpStatusCode == 401, RequestProcessorUtil.matchesJWTErrorCode(error.iterableCode) {
+                    authManager?.handleAuthFailure(failedAuthToken: authManager?.getAuthToken(), reason: RequestProcessorUtil.getMappedErrorCodeForMessage(error.reason ?? ""))
                     authManager?.setIsLastAuthTokenValid(false)
                     let retryInterval = authManager?.getNextRetryInterval() ?? 1
                     DispatchQueue.main.async {
