@@ -367,12 +367,6 @@ struct CriteriaCompletionChecker {
           }
           
           let matchResult = filteredSearchQueries.allSatisfy { query in
-              let field = query[JsonKey.CriteriaItem.field]
-              return filteredLocalDataKeys.contains(where: { $0 == field as! AnyHashable }) &&
-              evaluateComparison(comparatorType: query[JsonKey.CriteriaItem.comparatorType] as! String, matchObj: eventData[field as! String] ?? "", valueToCompare: query[JsonKey.CriteriaItem.value] as? String)
-          }
-          
-          let matchResult = filteredSearchQueries.allSatisfy { query in
               let field = query[JsonKey.CriteriaItem.field] as! String
               var doesKeyExist = false
 
