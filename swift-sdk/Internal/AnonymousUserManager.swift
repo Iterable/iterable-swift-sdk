@@ -164,7 +164,7 @@ public class AnonymousUserManager: AnonymousUserManagerProtocol {
             localStorage.anonymousSessions = nil
         }
     }
-    
+
     // Checks if criterias are being met and returns criteriaId if it matches the criteria.
     private func evaluateCriteriaAndReturnID() -> String? {
         guard let events = localStorage.anonymousUserEvents, let criteriaData = localStorage.criteriaData  else {
