@@ -134,10 +134,10 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
         
         ITBInfo()
 
-        let shouldMerge = getMergeDefaultValue(merge: merge)
+        let shouldMerge = merge ?? true
         let (sourceUserId, sourceEmail) = getSourceUserIdOrEmail();
         
-        anonymousUserMerge.tryMergeUser(sourceUserId: sourceUserId, sourceEmail: sourceEmail, destinationUserIdOrEmail: email, isEmail: true, merge: merge) { mergeResult, error in
+        anonymousUserMerge.tryMergeUser(sourceUserId: sourceUserId, sourceEmail: sourceEmail, destinationUserIdOrEmail: email, isEmail: true, merge: shouldMerge) { mergeResult, error in
             if mergeResult == MergeResult.mergenotrequired ||  mergeResult == MergeResult.mergesuccessful {
                 if self._email == email && email != nil && authToken != nil {
                     self.checkAndUpdateAuthToken(authToken)
@@ -153,7 +153,7 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
                 self._email = email
                 self._userId = nil
                 
-                if (merge) {
+                if (shouldMerge) {
                     self.anonymousUserManager.syncNonSyncedEvents()
                 }
                 self._successCallback = successHandler
@@ -165,16 +165,6 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
             } else {
                 failureHandler?(error, nil)
             }
-        }
-    }
-    
-    func getMergeDefaultValue(merge: Bool?) -> Bool {
-        //let anonUser = localStorage.userIdAnnon;
-        //let isEmailOrUserId = isEitherUserIdOrEmailSet();
-        if let merge = merge {
-            return merge
-        } else {
-            return true
         }
     }
     
@@ -194,10 +184,10 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
     func setUserId(_ userId: String?, authToken: String? = nil, merge: Bool? = nil, successHandler: OnSuccessHandler? = nil, failureHandler: OnFailureHandler? = nil, isAnon: Bool = false) {
         ITBInfo()
         
-        let merge = getMergeDefaultValue(merge: merge);
+        let shouldMerge = merge ?? true
         let (sourceUserId, sourceEmail) = getSourceUserIdOrEmail();
    
-        anonymousUserMerge.tryMergeUser(sourceUserId: sourceUserId, sourceEmail: sourceEmail, destinationUserIdOrEmail: userId, isEmail: false, merge: merge) { mergeResult, error in
+        anonymousUserMerge.tryMergeUser(sourceUserId: sourceUserId, sourceEmail: sourceEmail, destinationUserIdOrEmail: userId, isEmail: false, merge: shouldMerge) { mergeResult, error in
             if mergeResult == MergeResult.mergenotrequired ||  mergeResult == MergeResult.mergesuccessful {
                     
                 if self._userId == userId && userId != nil && authToken != nil {
@@ -217,7 +207,7 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
                 self._email = nil
                 self._userId = userId
                     
-                if (merge) {
+                if (shouldMerge) {
                     self.anonymousUserManager.syncNonSyncedEvents()
                 }
                 self._successCallback = successHandler
