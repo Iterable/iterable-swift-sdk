@@ -9,6 +9,14 @@ import Foundation
 @testable import IterableSDK
 
 class MockAuthManager: IterableAuthManagerProtocol {
+    
+    var shouldRetry = true
+    var retryWasRequested = false
+
+    func handleAuthFailure(failedAuthToken: String?, reason: IterableSDK.AuthFailureReason) {
+        
+    }
+
     func requestNewAuthToken(hasFailedPriorAuth: Bool, onSuccess: ((String?) -> Void)?, shouldIgnoreRetryPolicy: Bool) {
         if shouldRetry {
             // Simulate the authManager obtaining a new token
@@ -38,8 +46,6 @@ class MockAuthManager: IterableAuthManagerProtocol {
         return 0
     }
     
-    var shouldRetry = true
-    var retryWasRequested = false
 
     func getAuthToken() -> String? {
         return "AuthToken"

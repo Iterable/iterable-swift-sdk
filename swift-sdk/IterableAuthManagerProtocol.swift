@@ -11,6 +11,7 @@ import Foundation
     func scheduleAuthTokenRefreshTimer(interval: TimeInterval, isScheduledRefresh: Bool, successCallback: AuthTokenRetrievalHandler?)
     func setNewToken(_ newToken: String)
     func logoutUser()
+    func handleAuthFailure(failedAuthToken: String?, reason: AuthFailureReason)
     func pauseAuthRetries(_ pauseAuthRetry: Bool)
     func setIsLastAuthTokenValid(_ isValid: Bool)
     func getNextRetryInterval() -> Double

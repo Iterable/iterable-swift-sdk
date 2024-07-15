@@ -164,9 +164,7 @@ class AuthManager: IterableAuthManagerProtocol {
                 onSuccess?(authToken)
             }
         } else {
-            delegate?.onTokenRegistrationFailed("auth token was nil, scheduling auth token retrieval in \(getNextRetryInterval()) seconds")
-            
-            /// by default, schedule a refresh for 10s
+            handleAuthFailure(failedAuthToken: nil, reason: .authTokenNull)
             scheduleAuthTokenRefreshTimer(interval: getNextRetryInterval(), successCallback: onSuccess)
         }
         
@@ -175,13 +173,17 @@ class AuthManager: IterableAuthManagerProtocol {
         storeAuthToken()
     }
     
+    func handleAuthFailure(failedAuthToken: String?, reason: AuthFailureReason) {
+        delegate?.onAuthFailure(AuthFailure(userKey: IterableUtil.getEmailOrUserId(), failedAuthToken: failedAuthToken, failedRequestTime: IterableUtil.secondsFromEpoch(for: dateProvider.currentDate), failureReason: reason))
+    }
+    
     private func queueAuthTokenExpirationRefresh(_ authToken: String?, onSuccess: AuthTokenRetrievalHandler? = nil) -> Bool {
         ITBInfo()
         
         clearRefreshTimer()
         
         guard let authToken = authToken, let expirationDate = AuthManager.decodeExpirationDateFromAuthToken(authToken) else {
-            delegate?.onTokenRegistrationFailed("auth token was nil or could not decode an expiration date, scheduling auth token retrieval in 10 seconds")
+            handleAuthFailure(failedAuthToken: authToken, reason: .authTokenPayloadInvalid)
             
             /// schedule a default timer of 10 seconds if we fall into this case
             scheduleAuthTokenRefreshTimer(interval: getNextRetryInterval(), successCallback: onSuccess)
