@@ -134,7 +134,7 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
         
         ITBInfo()
 
-        let shouldMerge = (merge ?? true) && localStorage.userIdAnnon != nil
+        let shouldMerge = (merge ?? true)
         let (sourceUserId, sourceEmail) = getSourceUserIdOrEmail();
         
         anonymousUserMerge.tryMergeUser(sourceUserId: sourceUserId, sourceEmail: sourceEmail, destinationUserIdOrEmail: email, isEmail: true, merge: shouldMerge) { mergeResult, error in
@@ -184,7 +184,7 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
     func setUserId(_ userId: String?, authToken: String? = nil, merge: Bool? = nil, successHandler: OnSuccessHandler? = nil, failureHandler: OnFailureHandler? = nil, isAnon: Bool = false) {
         ITBInfo()
         
-        let shouldMerge = (merge ?? true) && localStorage.userIdAnnon != nil
+        let shouldMerge = (merge ?? true) 
         let (sourceUserId, sourceEmail) = getSourceUserIdOrEmail();
    
         anonymousUserMerge.tryMergeUser(sourceUserId: sourceUserId, sourceEmail: sourceEmail, destinationUserIdOrEmail: userId, isEmail: false, merge: shouldMerge) { mergeResult, error in
