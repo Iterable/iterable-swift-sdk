@@ -1,9 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="32700.99.1234" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="umW-9Q-hvM">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="22154" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="umW-9Q-hvM">
     <device id="retina4_7" orientation="portrait" appearance="light"/>
     <dependencies>
-        <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="22685"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="22130"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="System colors in document resources" minToolsVersion="11.0"/>
         <capability name="collection view cell content view" minToolsVersion="11.0"/>
@@ -638,7 +637,7 @@
                         <outlet property="currentRetryCountLabel" destination="YA7-ZO-g4f" id="eHU-Ft-15a"/>
                         <outlet property="expiredButton" destination="iDN-a3-9VW" id="daf-sJ-eXv"/>
                         <outlet property="invalidButton" destination="3Lp-qp-r3F" id="peP-bg-zWk"/>
-                        <outlet property="lastErrorCodeLabel" destination="kbU-iN-Ocz" id="3Ko-Dh-2HL"/>
+                        <outlet property="lastErrorCodeLabel" destination="xkV-ry-dpc" id="GJB-mR-hWV"/>
                         <outlet property="lastRetryTimeLabel" destination="4zc-Xq-aiW" id="pq7-QS-Oey"/>
                         <outlet property="maxRetryCountLabel" destination="u9x-vG-7MR" id="Ub9-1Q-RG8"/>
                         <outlet property="mySwitch" destination="KyJ-Xd-L8g" id="PZV-em-gNe"/>
