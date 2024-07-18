@@ -155,6 +155,9 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
                 
                 if (shouldMerge) {
                     self.anonymousUserManager.syncNonSyncedEvents()
+                } else {
+                    self.localStorage.anonymousUserEvents = nil
+                    self.localStorage.anonymousSessions = nil
                 }
                 self._successCallback = successHandler
                 self._failureCallback = failureHandler
@@ -209,6 +212,9 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
                     
                 if (shouldMerge) {
                     self.anonymousUserManager.syncNonSyncedEvents()
+                } else {
+                    self.localStorage.anonymousUserEvents = nil
+                    self.localStorage.anonymousSessions = nil
                 }
                 self._successCallback = successHandler
                 self._failureCallback = failureHandler
