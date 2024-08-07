@@ -99,7 +99,7 @@ struct RequestProcessorUtil {
             case "jwt authorization header is not set":
                 return .authTokenMissing
             default:
-            return .authTokenInvalid
+            return .authTokenGenericError
         }
     }
 

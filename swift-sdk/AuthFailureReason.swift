@@ -19,5 +19,4 @@ import Foundation
     case authTokenNull
     case authTokenGenerationError
     case authTokenMissing
-    case authTokenInvalid
 }
