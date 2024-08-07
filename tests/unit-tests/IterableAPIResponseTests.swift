@@ -156,7 +156,7 @@ class IterableAPIResponseTests: XCTestCase {
         createApiClient(networkSession: MockNetworkSession(statusCode: 401))
             .send(iterableRequest: iterableRequest).onError { sendError in
                 xpectation.fulfill()
-                XCTAssert(sendError.reason!.lowercased().contains("invalid api key"))
+                XCTAssert(sendError.reason!.lowercased().contains("invalid request"))
             }
         
         wait(for: [xpectation], timeout: testExpectationTimeout)
