@@ -66,6 +66,7 @@ struct APNSTypeChecker: APNSTypeCheckerProtocol {
 
         let encodings: [String.Encoding] = [
             .ascii,
+            .isoLatin1,
             .utf8,
             .utf16,
             .utf16BigEndian,
@@ -73,29 +74,21 @@ struct APNSTypeChecker: APNSTypeCheckerProtocol {
             .utf32,
             .utf32BigEndian,
             .utf32LittleEndian,
-            .isoLatin1,
             .macOSRoman
         ]
         
-        var asciiString: String?
+        var plistString: String?
         
         for encoding in encodings {
-            if let string = String(data: data, encoding: encoding) {
-                asciiString = string
+            if let string = String(data: data, encoding: encoding),
+            let propertyListString = scan(string: string, begin: "<plist", end: "</plist>") {
+                plistString = propertyListString
                 break
             }
         }
         
-        guard let finalString = asciiString else {
-            ITBError("Failed to detect APNS type from provisioning file. Defaulting to type - Production. Please use IterableConfig.pushPlatform to manually set APNS platform type")
-            return [:]
-        }
-        
-        guard let propertyListString = scan(string: finalString, begin: "<plist", end: "</plist>") else {
-            return [:]
-        }
-        
-        guard let propertyListData = propertyListString.data(using: .utf8) else {
+        guard let propertyListData = plistString?.data(using: .utf8) else {
+            ITBDebug("Failed to detect APNS type from provisioning file. Defaulting to type - Production. Please use IterableConfig.pushPlatform to manually set APNS platform type")
             return [:]
         }
         
