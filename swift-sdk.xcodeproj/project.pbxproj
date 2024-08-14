@@ -13,6 +13,7 @@
 		00CB31B621096129004ACDEC /* TestUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 00CB31B4210960C4004ACDEC /* TestUtils.swift */; };
 		182A2A152C661C9A002FF058 /* DataTypeComparatorSearchQueryCriteria.swift in Sources */ = {isa = PBXBuildFile; fileRef = 182A2A142C661C9A002FF058 /* DataTypeComparatorSearchQueryCriteria.swift */; };
 		18BB8B7A2C64DC8D007EBF23 /* ComparatorTypeDoesNotEqualMatchTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 18BB8B792C64DC8D007EBF23 /* ComparatorTypeDoesNotEqualMatchTest.swift */; };
+		18E23AE02C6CDE97002B2D92 /* CombinationLogicEventTypeCriteria.swift in Sources */ = {isa = PBXBuildFile; fileRef = 18E23ADF2C6CDE97002B2D92 /* CombinationLogicEventTypeCriteria.swift */; };
 		1CBFFE1A2A97AEEF00ED57EE /* EmbeddedManagerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1CBFFE162A97AEEE00ED57EE /* EmbeddedManagerTests.swift */; };
 		1CBFFE1B2A97AEEF00ED57EE /* EmbeddedMessagingProcessorTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1CBFFE172A97AEEE00ED57EE /* EmbeddedMessagingProcessorTests.swift */; };
 		1CBFFE1C2A97AEEF00ED57EE /* EmbeddedSessionManagerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1CBFFE182A97AEEE00ED57EE /* EmbeddedSessionManagerTests.swift */; };
@@ -559,6 +560,7 @@
 		00CB31B4210960C4004ACDEC /* TestUtils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestUtils.swift; sourceTree = "<group>"; };
 		182A2A142C661C9A002FF058 /* DataTypeComparatorSearchQueryCriteria.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataTypeComparatorSearchQueryCriteria.swift; sourceTree = "<group>"; };
 		18BB8B792C64DC8D007EBF23 /* ComparatorTypeDoesNotEqualMatchTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ComparatorTypeDoesNotEqualMatchTest.swift; sourceTree = "<group>"; };
+		18E23ADF2C6CDE97002B2D92 /* CombinationLogicEventTypeCriteria.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CombinationLogicEventTypeCriteria.swift; sourceTree = "<group>"; };
 		1CBFFE162A97AEEE00ED57EE /* EmbeddedManagerTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EmbeddedManagerTests.swift; sourceTree = "<group>"; };
 		1CBFFE172A97AEEE00ED57EE /* EmbeddedMessagingProcessorTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EmbeddedMessagingProcessorTests.swift; sourceTree = "<group>"; };
 		1CBFFE182A97AEEE00ED57EE /* EmbeddedSessionManagerTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EmbeddedSessionManagerTests.swift; sourceTree = "<group>"; };
@@ -1663,8 +1665,9 @@
 				DF97D12A2C2D4A060034D38C /* AnonymousUserCriteriaIsSetTests.swift */,
 				DF7302142C2C176E0002633A /* AnonymousUserComplexCriteriaMatchTests.swift */,
 				DFFD62382C3681B900010883 /* UserMergeScenariosTests.swift */,
-        182A2A142C661C9A002FF058 /* DataTypeComparatorSearchQueryCriteria.swift */,
-        18BB8B792C64DC8D007EBF23 /* ComparatorTypeDoesNotEqualMatchTest.swift */,
+				182A2A142C661C9A002FF058 /* DataTypeComparatorSearchQueryCriteria.swift */,
+				18BB8B792C64DC8D007EBF23 /* ComparatorTypeDoesNotEqualMatchTest.swift */,
+				18E23ADF2C6CDE97002B2D92 /* CombinationLogicEventTypeCriteria.swift */,
 			);
 			name = "anonymous-tracking-tests";
 			sourceTree = "<group>";
@@ -2329,6 +2332,7 @@
 				55B37FC822975A840042F13A /* InboxMessageViewModelTests.swift in Sources */,
 				182A2A152C661C9A002FF058 /* DataTypeComparatorSearchQueryCriteria.swift in Sources */,
 				55E6F462238E066400808BCE /* DeepLinkTests.swift in Sources */,
+				18E23AE02C6CDE97002B2D92 /* CombinationLogicEventTypeCriteria.swift in Sources */,
 				55B37FC1229620D20042F13A /* CommerceItemTests.swift in Sources */,
 				5588DFC128C0460E000697D7 /* MockNotificationCenter.swift in Sources */,
 				DFFD62392C3681B900010883 /* UserMergeScenariosTests.swift in Sources */,
