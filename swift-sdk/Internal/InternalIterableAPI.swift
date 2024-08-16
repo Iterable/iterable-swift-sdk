@@ -83,7 +83,7 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
     }()
     
     lazy var anonymousUserManager: AnonymousUserManagerProtocol = {
-        self.dependencyContainer.createAnonymousUserManager()
+        self.dependencyContainer.createAnonymousUserManager(config: self.config)
     }()
     
     lazy var anonymousUserMerge: AnonymousUserMergeProtocol = {
@@ -264,8 +264,7 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
                                 onFailure: { (_ reason: String?, _ data: Data?) in
                                                 self._failureCallback?(reason, data)
                                                 onFailure?(reason, data)
-                                }
-        )
+                                })
     }
     
     @discardableResult
