@@ -137,9 +137,12 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
         let shouldMerge = merge && localStorage.userIdAnnon != nil
         let (sourceUserId, sourceEmail) = getSourceUserIdOrEmail();
         
-        attemptAndProcessMerge(sourceUserId: sourceUserId, sourceEmail: sourceEmail, shouldMerge: shouldMerge, destinationUserIdOrEmail: email, isEmail: true, failureHandler: failureHandler)
+        if(config.enableAnonTracking) {
+            self.localStorage.userIdAnnon = nil
+            attemptAndProcessMerge(sourceUserId: sourceUserId, sourceEmail: sourceEmail, shouldMerge: shouldMerge, destinationUserIdOrEmail: email, isEmail: true, failureHandler: failureHandler)
+        }
         
-        if self._email == email && email != nil && authToken != nil {
+        if self._email == email && email != nil {
             self.checkAndUpdateAuthToken(authToken)
             return
         }
@@ -149,7 +152,7 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
         }
         
         self.logoutPreviousUser()
-        self.localStorage.userIdAnnon = nil
+        
         self._email = email
         self._userId = nil
         
@@ -179,9 +182,14 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
         let shouldMerge = merge && localStorage.userIdAnnon != nil
         let (sourceUserId, sourceEmail) = getSourceUserIdOrEmail();
         
-        attemptAndProcessMerge(sourceUserId: sourceUserId, sourceEmail: sourceEmail, shouldMerge: shouldMerge, destinationUserIdOrEmail: userId, isEmail: false, failureHandler: failureHandler)
+        if(config.enableAnonTracking) {
+            if(!isAnon) {
+                self.localStorage.userIdAnnon = nil
+            }
+            attemptAndProcessMerge(sourceUserId: sourceUserId, sourceEmail: sourceEmail, shouldMerge: shouldMerge, destinationUserIdOrEmail: userId, isEmail: false, failureHandler: failureHandler)
+        }
    
-        if self._userId == userId && userId != nil && authToken != nil {
+        if self._userId == userId && userId != nil {
             self.checkAndUpdateAuthToken(authToken)
             return
         }
@@ -191,10 +199,6 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
         }
         
         self.logoutPreviousUser()
-        
-        if(!isAnon) {
-            self.localStorage.userIdAnnon = nil
-        }
         
         self._email = nil
         self._userId = userId
@@ -759,7 +763,7 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
     }
     
     private func checkAndUpdateAuthToken(_ authToken: String? = nil) {
-        if config.authDelegate != nil && authToken != authManager.getAuthToken() {
+        if config.authDelegate != nil && authToken != authManager.getAuthToken() && authToken != nil {
             onLogin(authToken)
         }
     }
