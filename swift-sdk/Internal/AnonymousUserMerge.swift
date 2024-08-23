@@ -26,7 +26,7 @@ class AnonymousUserMerge: AnonymousUserMergeProtocol {
             let destinationEmail = isEmail ? destinationUserIdOrEmail : nil
             let destinationUserId = isEmail ? nil : destinationUserIdOrEmail
             
-            apiClient.mergeUser(sourceEmail: nil, sourceUserId: sourceUserId,  destinationEmail : destinationEmail, destinationUserId: destinationUserId).onSuccess {_ in
+            apiClient.mergeUser(sourceEmail: nil, sourceUserId: sourceUserId,  destinationEmail: destinationEmail, destinationUserId: destinationUserId).onSuccess {_ in
                 onMergeResult(MergeResult.mergesuccessful, nil)
             }.onError {error in
                 print("Merge failed error: \(error)")
