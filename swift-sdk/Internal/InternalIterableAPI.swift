@@ -163,19 +163,6 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
 
     }
     
-    func getSourceUserIdOrEmail()  -> (sourceUserId: String?, sourceEmail: String?){
-        let userIdLocal = localStorage.userId
-        let emailLocal = localStorage.email
-        let anonUserIdLocal = localStorage.userIdAnnon
-        var sourceUserId: String? = nil
-        var sourceEmail: String? = nil
-
-        sourceUserId = userIdLocal != nil ? userIdLocal : anonUserIdLocal
-        sourceEmail = emailLocal
-        return (sourceUserId, sourceEmail)
-        
-    }
-    
     func setUserId(_ userId: String?, authToken: String? = nil, merge: Bool = true, successHandler: OnSuccessHandler? = nil, failureHandler: OnFailureHandler? = nil, isAnon: Bool = false) {
         ITBInfo()
         
