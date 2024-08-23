@@ -135,11 +135,11 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
         ITBInfo()
 
         let shouldMerge = merge && localStorage.userIdAnnon != nil
-        let (sourceUserId, sourceEmail) = getSourceUserIdOrEmail();
+        let sourceUserId = localStorage.userIdAnnon
         
         if(config.enableAnonTracking) {
             self.localStorage.userIdAnnon = nil
-            attemptAndProcessMerge(sourceUserId: sourceUserId, sourceEmail: sourceEmail, shouldMerge: shouldMerge, destinationUserIdOrEmail: email, isEmail: true, failureHandler: failureHandler)
+            attemptAndProcessMerge(sourceUserId: sourceUserId, shouldMerge: shouldMerge, destinationUserIdOrEmail: email, isEmail: true, failureHandler: failureHandler)
         }
         
         if self._email == email && email != nil {
@@ -180,13 +180,13 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
         ITBInfo()
         
         let shouldMerge = merge && localStorage.userIdAnnon != nil
-        let (sourceUserId, sourceEmail) = getSourceUserIdOrEmail();
-        
+        let sourceUserId = localStorage.userIdAnnon
+
         if(config.enableAnonTracking) {
             if(!isAnon) {
                 self.localStorage.userIdAnnon = nil
             }
-            attemptAndProcessMerge(sourceUserId: sourceUserId, sourceEmail: sourceEmail, shouldMerge: shouldMerge, destinationUserIdOrEmail: userId, isEmail: false, failureHandler: failureHandler)
+            attemptAndProcessMerge(sourceUserId: sourceUserId, shouldMerge: shouldMerge, destinationUserIdOrEmail: userId, isEmail: false, failureHandler: failureHandler)
         }
    
         if self._userId == userId && userId != nil {
@@ -213,8 +213,8 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
         logoutPreviousUser()
     }
     
-    func attemptAndProcessMerge(sourceUserId: String?, sourceEmail: String?, shouldMerge: Bool, destinationUserIdOrEmail: String?, isEmail: Bool, failureHandler: OnFailureHandler? = nil) {
-        anonymousUserMerge.tryMergeUser(sourceUserId: sourceUserId, sourceEmail: sourceEmail, destinationUserIdOrEmail: destinationUserIdOrEmail, isEmail: isEmail, merge: shouldMerge) { mergeResult, error in
+    func attemptAndProcessMerge(sourceUserId: String?, shouldMerge: Bool, destinationUserIdOrEmail: String?, isEmail: Bool, failureHandler: OnFailureHandler? = nil) {
+        anonymousUserMerge.tryMergeUser(sourceUserId: sourceUserId, destinationUserIdOrEmail: destinationUserIdOrEmail, isEmail: isEmail, merge: shouldMerge) { mergeResult, error in
             
             if mergeResult == MergeResult.mergenotrequired ||  mergeResult == MergeResult.mergesuccessful {
                 if (shouldMerge) {
