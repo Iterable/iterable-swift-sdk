@@ -836,28 +836,6 @@ final class CombinationLogicEventTypeCriteria: XCTestCase {
 
         let eventItems: [[AnyHashable: Any]] = [
             ["items": [["id": "12",
-                        "name": "chicken",
-                        "price": 130,
-                        "quantity": 110]],
-             "dataType":"purchase"
-            ],
-            ["items": [["id": "12",
-                        "name": "fried1",
-                        "price": 130,
-                        "quantity": 110]],
-             "dataType":"updateCart"
-            ]
-        ]
-
-        let expectedCriteriaId = "285"
-        let matchedCriteriaId = CriteriaCompletionChecker(anonymousCriteria: data(from: mockDataCombinatPurchaseOr)!, anonymousEvents: eventItems).getMatchedCriteria()
-        XCTAssertEqual(matchedCriteriaId, expectedCriteriaId)
-    }
-
-    func testCompareDataPurchaseNotFailed() {
-
-        let eventItems: [[AnyHashable: Any]] = [
-            ["items": [["id": "12",
                         "name": "chicken1",
                         "price": 130,
                         "quantity": 110]],
@@ -871,7 +849,29 @@ final class CombinationLogicEventTypeCriteria: XCTestCase {
             ]
         ]
 
-        let matchedCriteriaId = CriteriaCompletionChecker(anonymousCriteria: data(from: mockDataCombinatPurchaseOr)!, anonymousEvents: eventItems).getMatchedCriteria()
+        let expectedCriteriaId = "285"
+        let matchedCriteriaId = CriteriaCompletionChecker(anonymousCriteria: data(from: mockDataCombinatPurchaseNot)!, anonymousEvents: eventItems).getMatchedCriteria()
+        XCTAssertEqual(matchedCriteriaId, expectedCriteriaId)
+    }
+
+    func testCompareDataPurchaseNotFailed() {
+
+        let eventItems: [[AnyHashable: Any]] = [
+            ["items": [["id": "12",
+                        "name": "chicken",
+                        "price": 130,
+                        "quantity": 110]],
+             "dataType":"purchase"
+            ],
+            ["items": [["id": "12",
+                        "name": "fried",
+                        "price": 130,
+                        "quantity": 110]],
+             "dataType":"updateCart"
+            ]
+        ]
+
+        let matchedCriteriaId = CriteriaCompletionChecker(anonymousCriteria: data(from: mockDataCombinatPurchaseNot)!, anonymousEvents: eventItems).getMatchedCriteria()
         XCTAssertEqual(matchedCriteriaId, nil)
     }
 
