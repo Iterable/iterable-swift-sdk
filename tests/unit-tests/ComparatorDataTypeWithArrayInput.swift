@@ -143,7 +143,7 @@ final class ComparatorDataTypeWithArrayInput: XCTestCase {
     }
 
 
-    //MARK: Comparator DoesNotEqual For MileStoneYear Array
+    //MARK: Comparator GreaterThan For MileStoneYear Array
     private let mockDataMileStoneYearGreaterThan = """
        {
          "count": 1,
@@ -206,7 +206,7 @@ final class ComparatorDataTypeWithArrayInput: XCTestCase {
     }
 
 
-    //MARK: Comparator DoesNotEqual For MileStoneYear Array
+    //MARK: Comparator GreaterThanOrEqualTo For MileStoneYear Array
     private let mockDataMileStoneYearGreaterThanOrEqualTo = """
        {
          "count": 1,
@@ -268,7 +268,7 @@ final class ComparatorDataTypeWithArrayInput: XCTestCase {
         XCTAssertEqual(matchedCriteriaId, nil)
     }
 
-    //MARK: Comparator DoesNotEqual For MileStoneYear Array
+    //MARK: Comparator LessThan For MileStoneYear Array
     private let mockDataMileStoneYearLessThan = """
        {
          "count": 1,
@@ -330,8 +330,8 @@ final class ComparatorDataTypeWithArrayInput: XCTestCase {
         XCTAssertEqual(matchedCriteriaId, nil)
     }
 
-    //MARK: Comparator DoesNotEqual For MileStoneYear Array
-    private let mockDataMileStoneYearLessThanOrEqual = """
+    //MARK: Comparator LessThanOrEqualTo For MileStoneYear Array
+    private let mockDataMileStoneYearLessThanOrEquaTo = """
        {
          "count": 1,
          "criterias": [
@@ -378,7 +378,7 @@ final class ComparatorDataTypeWithArrayInput: XCTestCase {
             "milestoneYears": [1990, 1992, 1994, 1996, 1998]
         ]]
         let expectedCriteriaId = "285"
-        let matchedCriteriaId = CriteriaCompletionChecker(anonymousCriteria: data(from: mockDataMileStoneYearLessThanOrEqual)!, anonymousEvents: eventItems).getMatchedCriteria()
+        let matchedCriteriaId = CriteriaCompletionChecker(anonymousCriteria: data(from: mockDataMileStoneYearLessThanOrEquaTo)!, anonymousEvents: eventItems).getMatchedCriteria()
         XCTAssertEqual(matchedCriteriaId, expectedCriteriaId)
     }
 
@@ -388,7 +388,7 @@ final class ComparatorDataTypeWithArrayInput: XCTestCase {
             "createdAt": 1699246745093,
             "milestoneYears": [1998, 1999, 2002, 2004]
         ]]
-        let matchedCriteriaId = CriteriaCompletionChecker(anonymousCriteria: data(from: mockDataMileStoneYearLessThanOrEqual)!, anonymousEvents: eventItems).getMatchedCriteria()
+        let matchedCriteriaId = CriteriaCompletionChecker(anonymousCriteria: data(from: mockDataMileStoneYearLessThanOrEquaTo)!, anonymousEvents: eventItems).getMatchedCriteria()
         XCTAssertEqual(matchedCriteriaId, nil)
     }
 
