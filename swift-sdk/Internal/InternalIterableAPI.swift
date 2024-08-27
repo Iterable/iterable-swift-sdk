@@ -83,7 +83,7 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
     }()
     
     lazy var anonymousUserManager: AnonymousUserManagerProtocol = {
-        self.dependencyContainer.createAnonymousUserManager()
+        self.dependencyContainer.createAnonymousUserManager(config: self.config)
     }()
     
     lazy var anonymousUserMerge: AnonymousUserMergeProtocol = {
