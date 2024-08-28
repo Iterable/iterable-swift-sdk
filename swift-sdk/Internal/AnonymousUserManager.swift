@@ -9,16 +9,16 @@ import Foundation
 
 public class AnonymousUserManager: AnonymousUserManagerProtocol {
     
-    init(localStorage: LocalStorageProtocol,
+    init(config: IterableConfig,
+         localStorage: LocalStorageProtocol,
          dateProvider: DateProviderProtocol,
          notificationStateProvider: NotificationStateProviderProtocol) {
         ITBInfo()
-        
+        self.config = config
         self.localStorage = localStorage
         self.dateProvider = dateProvider
         self.notificationStateProvider = notificationStateProvider
     }
-    
     deinit {
         ITBInfo()
     }
@@ -26,6 +26,7 @@ public class AnonymousUserManager: AnonymousUserManagerProtocol {
     private var localStorage: LocalStorageProtocol
     private let dateProvider: DateProviderProtocol
     private let notificationStateProvider: NotificationStateProviderProtocol
+    private var config: IterableConfig
 
     // Tracks an anonymous event and store it locally
     public func trackAnonEvent(name: String, dataFields: [AnyHashable: Any]?) {
@@ -185,7 +186,7 @@ public class AnonymousUserManager: AnonymousUserManagerProtocol {
     private func storeEventData(type: String, data: [AnyHashable: Any], shouldOverWrite: Bool? = false) {
         let storedData = localStorage.anonymousUserEvents
         var eventsDataObjects: [[AnyHashable: Any]] = []
-        
+
         if let _storedData = storedData {
             eventsDataObjects = _storedData
         }
@@ -203,6 +204,11 @@ public class AnonymousUserManager: AnonymousUserManagerProtocol {
                     }
         } else {
             eventsDataObjects.append(appendData)
+        }
+
+        let eventDataCount = eventsDataObjects.count
+        if  eventDataCount > config.eventThresholdLimit {
+            eventsDataObjects = eventsDataObjects.suffix(config.eventThresholdLimit)
         }
         localStorage.anonymousUserEvents = eventsDataObjects
         if let criteriaId = evaluateCriteriaAndReturnID() {
