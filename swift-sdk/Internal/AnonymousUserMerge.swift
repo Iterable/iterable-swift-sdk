@@ -8,20 +8,24 @@
 import Foundation
 
 protocol AnonymousUserMergeProtocol {
-    func tryMergeUser(anonymousUserId: String?, destinationUser: String?, isEmail: Bool, shouldMerge: Bool, onMergeResult: @escaping MergeActionHandler)
+    func tryMergeUser(destinationUser: String?, isEmail: Bool, shouldMerge: Bool, onMergeResult: @escaping MergeActionHandler)
 }
 
 class AnonymousUserMerge: AnonymousUserMergeProtocol {
     
     var anonymousUserManager: AnonymousUserManagerProtocol
     var apiClient: ApiClient
+    private var localStorage: LocalStorageProtocol
     
-    init(apiClient: ApiClient, anonymousUserManager: AnonymousUserManagerProtocol) {
+    init(apiClient: ApiClient, anonymousUserManager: AnonymousUserManagerProtocol, localStorage: LocalStorageProtocol) {
         self.apiClient = apiClient
         self.anonymousUserManager = anonymousUserManager
+        self.localStorage = localStorage
     }
     
-    func tryMergeUser(anonymousUserId: String?, destinationUser: String?, isEmail: Bool, shouldMerge: Bool, onMergeResult: @escaping MergeActionHandler) {
+    func tryMergeUser(destinationUser: String?, isEmail: Bool, shouldMerge: Bool, onMergeResult: @escaping MergeActionHandler) {
+        let anonymousUserId = localStorage.userIdAnnon
+        
         if (anonymousUserId != nil && destinationUser != nil && shouldMerge) {
             let destinationEmail = isEmail ? destinationUser : nil
             let destinationUserId = isEmail ? nil : destinationUser
