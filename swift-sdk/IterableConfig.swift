@@ -132,4 +132,7 @@ public class IterableConfig: NSObject {
     public var enableAnonTracking = true
     /// Allows for fetching embedded messages.
     public var enableEmbeddedMessaging = false
+
+    // How many events can be stored in the local storage. By default limt is 100.
+    public var eventThresholdLimit: Int = 100
 }
