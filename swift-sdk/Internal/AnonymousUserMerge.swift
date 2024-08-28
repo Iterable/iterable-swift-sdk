@@ -8,7 +8,7 @@
 import Foundation
 
 protocol AnonymousUserMergeProtocol {
-    func tryMergeUser(sourceUserId: String?, destinationUserIdOrEmail: String?, isEmail: Bool, merge: Bool, onMergeResult: @escaping MergeActionHandler)
+    func tryMergeUser(anonymousUserId: String?, destinationUser: String?, isEmail: Bool, shouldMerge: Bool, onMergeResult: @escaping MergeActionHandler)
 }
 
 class AnonymousUserMerge: AnonymousUserMergeProtocol {
@@ -21,12 +21,12 @@ class AnonymousUserMerge: AnonymousUserMergeProtocol {
         self.anonymousUserManager = anonymousUserManager
     }
     
-    func tryMergeUser(sourceUserId: String?, destinationUserIdOrEmail: String?, isEmail: Bool, merge: Bool, onMergeResult: @escaping MergeActionHandler) {
-        if (sourceUserId != nil && destinationUserIdOrEmail != nil && merge) {
-            let destinationEmail = isEmail ? destinationUserIdOrEmail : nil
-            let destinationUserId = isEmail ? nil : destinationUserIdOrEmail
+    func tryMergeUser(anonymousUserId: String?, destinationUser: String?, isEmail: Bool, shouldMerge: Bool, onMergeResult: @escaping MergeActionHandler) {
+        if (anonymousUserId != nil && destinationUser != nil && shouldMerge) {
+            let destinationEmail = isEmail ? destinationUser : nil
+            let destinationUserId = isEmail ? nil : destinationUser
             
-            apiClient.mergeUser(sourceEmail: nil, sourceUserId: sourceUserId,  destinationEmail: destinationEmail, destinationUserId: destinationUserId).onSuccess {_ in
+            apiClient.mergeUser(sourceEmail: nil, sourceUserId: anonymousUserId,  destinationEmail: destinationEmail, destinationUserId: destinationUserId).onSuccess {_ in
                 onMergeResult(MergeResult.mergesuccessful, nil)
             }.onError {error in
                 print("Merge failed error: \(error)")
