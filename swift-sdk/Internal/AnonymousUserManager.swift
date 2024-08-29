@@ -32,7 +32,7 @@ public class AnonymousUserManager: AnonymousUserManagerProtocol {
     public func trackAnonEvent(name: String, dataFields: [AnyHashable: Any]?) {
         var body = [AnyHashable: Any]()
         body.setValue(for: JsonKey.eventName, value: name)
-        body.setValue(for: JsonKey.Body.createdAt, value: Int(dateProvider.currentDate.timeIntervalSince1970) * 1000)
+        body.setValue(for: JsonKey.Body.createdAt, value: IterableUtil.secondsFromEpoch(for: dateProvider.currentDate))
         body.setValue(for: JsonKey.createNewFields, value: true)
         if let dataFields = dataFields {
             body[JsonKey.dataFields] = dataFields
@@ -47,7 +47,7 @@ public class AnonymousUserManager: AnonymousUserManagerProtocol {
     // Tracks an anonymous purchase event and store it locally
     public func trackAnonPurchaseEvent(total: NSNumber, items: [CommerceItem], dataFields: [AnyHashable: Any]?) {
         var body = [AnyHashable: Any]()
-        body.setValue(for: JsonKey.Body.createdAt, value: Int(dateProvider.currentDate.timeIntervalSince1970) * 1000)
+        body.setValue(for: JsonKey.Body.createdAt, value:IterableUtil.secondsFromEpoch(for: dateProvider.currentDate))
         body.setValue(for: JsonKey.Commerce.total, value: total.stringValue)
         body.setValue(for: JsonKey.Commerce.items, value: convertCommerceItemsToDictionary(items))
         if let dataFields = dataFields {
@@ -59,7 +59,7 @@ public class AnonymousUserManager: AnonymousUserManagerProtocol {
     // Tracks an anonymous cart event and store it locally
     public func trackAnonUpdateCart(items: [CommerceItem]) {
         var body = [AnyHashable: Any]()
-        body.setValue(for: JsonKey.Body.createdAt, value: Int(dateProvider.currentDate.timeIntervalSince1970) * 1000)
+        body.setValue(for: JsonKey.Body.createdAt, value: IterableUtil.secondsFromEpoch(for: dateProvider.currentDate))
         body.setValue(for: JsonKey.Commerce.items, value: convertCommerceItemsToDictionary(items))
         storeEventData(type: EventType.updateCart, data: body)
     }
@@ -75,11 +75,11 @@ public class AnonymousUserManager: AnonymousUserManagerProtocol {
     public func updateAnonSession() {
         if var sessions = localStorage.anonymousSessions {
             sessions.itbl_anon_sessions.totalAnonSessionCount += 1
-            sessions.itbl_anon_sessions.lastAnonSession = (Int(self.dateProvider.currentDate.timeIntervalSince1970) * 1000)
+            sessions.itbl_anon_sessions.lastAnonSession = IterableUtil.secondsFromEpoch(for: dateProvider.currentDate)
             localStorage.anonymousSessions = sessions
         } else {
             // create session object for the first time
-            let initialAnonSessions = IterableAnonSessions(totalAnonSessionCount: 1, lastAnonSession: (Int(self.dateProvider.currentDate.timeIntervalSince1970) * 1000), firstAnonSession: (Int(self.dateProvider.currentDate.timeIntervalSince1970) * 1000))
+            let initialAnonSessions = IterableAnonSessions(totalAnonSessionCount: 1, lastAnonSession: IterableUtil.secondsFromEpoch(for: dateProvider.currentDate), firstAnonSession: IterableUtil.secondsFromEpoch(for: dateProvider.currentDate))
             let anonSessionWrapper = IterableAnonSessionsWrapper(itbl_anon_sessions: initialAnonSessions)
             localStorage.anonymousSessions = anonSessionWrapper
         }
@@ -95,7 +95,7 @@ public class AnonymousUserManager: AnonymousUserManagerProtocol {
             if (!appName.isEmpty && isEnabled) {
                 anonSessions[JsonKey.mobilePushOptIn] = appName
             }
-            IterableAPI.implementation?.apiClient.trackAnonSession(createdAt: (Int(self.dateProvider.currentDate.timeIntervalSince1970) * 1000), withUserId: userId, requestJson: anonSessions).onError { error in
+            IterableAPI.implementation?.apiClient.trackAnonSession(createdAt: IterableUtil.secondsFromEpoch(for: self.dateProvider.currentDate), withUserId: userId, requestJson: anonSessions).onError { error in
                 if (error.httpStatusCode == 409) {
                     self.getAnonCriteria() // refetch the criteria
                 }
@@ -192,7 +192,7 @@ public class AnonymousUserManager: AnonymousUserManagerProtocol {
         }
         var appendData = data
         appendData.setValue(for: JsonKey.eventType, value: type)
-        appendData.setValue(for: JsonKey.eventTimeStamp, value: Int(dateProvider.currentDate.timeIntervalSince1970)) // this we use as unique idenfier too
+        appendData.setValue(for: JsonKey.eventTimeStamp, value:IterableUtil.secondsFromEpoch(for: dateProvider.currentDate)) // this we use as unique idenfier too
 
         if shouldOverWrite == true {
             let trackingType = type
