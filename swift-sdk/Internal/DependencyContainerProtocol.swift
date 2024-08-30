@@ -155,7 +155,7 @@ extension DependencyContainerProtocol {
                            connectivityManager: NetworkConnectivityManager())
     }
     
-    func createAnonymousUserMerge(apiClient: ApiClient, anonymousUserManager: AnonymousUserManagerProtocol) -> AnonymousUserMergeProtocol {
-        AnonymousUserMerge(apiClient: apiClient, anonymousUserManager: anonymousUserManager)
+    func createAnonymousUserMerge(apiClient: ApiClient, anonymousUserManager: AnonymousUserManagerProtocol, localStorage: LocalStorageProtocol) -> AnonymousUserMergeProtocol {
+        AnonymousUserMerge(apiClient: apiClient, anonymousUserManager: anonymousUserManager, localStorage: localStorage)
     }
 }

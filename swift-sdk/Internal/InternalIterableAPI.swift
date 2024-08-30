@@ -87,7 +87,7 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
     }()
     
     lazy var anonymousUserMerge: AnonymousUserMergeProtocol = {
-        self.dependencyContainer.createAnonymousUserMerge(apiClient: apiClient as! ApiClient, anonymousUserManager: anonymousUserManager)
+        self.dependencyContainer.createAnonymousUserMerge(apiClient: apiClient as! ApiClient, anonymousUserManager: anonymousUserManager, localStorage: localStorage)
     }()
     
     lazy var embeddedManager: IterableInternalEmbeddedManagerProtocol = {
@@ -135,11 +135,12 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
         ITBInfo()
 
         let shouldMerge = merge && localStorage.userIdAnnon != nil
-        let (sourceUserId, sourceEmail) = getSourceUserIdOrEmail();
         
         if(config.enableAnonTracking) {
+            if(email != nil) {
+                attemptAndProcessMerge(shouldMerge: shouldMerge, destinationUser: email, isEmail: true, failureHandler: failureHandler)
+            }
             self.localStorage.userIdAnnon = nil
-            attemptAndProcessMerge(sourceUserId: sourceUserId, sourceEmail: sourceEmail, shouldMerge: shouldMerge, destinationUserIdOrEmail: email, isEmail: true, failureHandler: failureHandler)
         }
         
         if self._email == email && email != nil {
@@ -163,30 +164,19 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
 
     }
     
-    func getSourceUserIdOrEmail()  -> (sourceUserId: String?, sourceEmail: String?){
-        let userIdLocal = localStorage.userId
-        let emailLocal = localStorage.email
-        let anonUserIdLocal = localStorage.userIdAnnon
-        var sourceUserId: String? = nil
-        var sourceEmail: String? = nil
-
-        sourceUserId = userIdLocal != nil ? userIdLocal : anonUserIdLocal
-        sourceEmail = emailLocal
-        return (sourceUserId, sourceEmail)
-        
-    }
-    
     func setUserId(_ userId: String?, authToken: String? = nil, merge: Bool = true, successHandler: OnSuccessHandler? = nil, failureHandler: OnFailureHandler? = nil, isAnon: Bool = false) {
         ITBInfo()
         
         let shouldMerge = merge && localStorage.userIdAnnon != nil
-        let (sourceUserId, sourceEmail) = getSourceUserIdOrEmail();
-        
+
         if(config.enableAnonTracking) {
+            if(userId != nil && userId != localStorage.userIdAnnon) {
+                attemptAndProcessMerge(shouldMerge: shouldMerge, destinationUser: userId, isEmail: false, failureHandler: failureHandler)
+            }
+
             if(!isAnon) {
                 self.localStorage.userIdAnnon = nil
             }
-            attemptAndProcessMerge(sourceUserId: sourceUserId, sourceEmail: sourceEmail, shouldMerge: shouldMerge, destinationUserIdOrEmail: userId, isEmail: false, failureHandler: failureHandler)
         }
    
         if self._userId == userId && userId != nil {
@@ -213,8 +203,8 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
         logoutPreviousUser()
     }
     
-    func attemptAndProcessMerge(sourceUserId: String?, sourceEmail: String?, shouldMerge: Bool, destinationUserIdOrEmail: String?, isEmail: Bool, failureHandler: OnFailureHandler? = nil) {
-        anonymousUserMerge.tryMergeUser(sourceUserId: sourceUserId, sourceEmail: sourceEmail, destinationUserIdOrEmail: destinationUserIdOrEmail, isEmail: isEmail, merge: shouldMerge) { mergeResult, error in
+    func attemptAndProcessMerge(shouldMerge: Bool, destinationUser: String?, isEmail: Bool, failureHandler: OnFailureHandler? = nil) {
+        anonymousUserMerge.tryMergeUser(destinationUser: destinationUser, isEmail: isEmail, shouldMerge: shouldMerge) { mergeResult, error in
             
             if mergeResult == MergeResult.mergenotrequired ||  mergeResult == MergeResult.mergesuccessful {
                 if (shouldMerge) {
