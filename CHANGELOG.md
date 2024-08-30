@@ -3,6 +3,26 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## [6.5.6]
+### Fixed
+- Fixed an issue where push notification were not being delivered in iOS 18 beta Sandbox builds.
+
+## [6.5.5]
+### Added
+- Introduced a new configuration option, `RetryPolicy`, in IterableConfig to set the retry policy for JWT token refresh.
+- Added the method `pauseAuthRetries(_ pauseRetry: Bool)` to allow pausing the SDK from requesting JWT tokens from the app.
+
+### Changed
+- Updated the method `onTokenRegistrationFailed(_ reason: String?)` to `onAuthFailure(_ authFailure: AuthFailure)`. The new `AuthFailure` object provides more detailed information about JWT failures.
+
+## [6.5.4]
+### Fixed
+- SDK is now compatible with Xcode 16 beta 2
+
+## [6.5.3]
+### Changed
+- Deprecated support for iOS 10 and iOS 11.
+
 ## [6.5.2]
 ### Fixed
 - The Privacy Manifest has been relocated to the resources folder within the SDK. This adjustment facilitates the inclusion of the SDK's privacy manifest in the generation process.
