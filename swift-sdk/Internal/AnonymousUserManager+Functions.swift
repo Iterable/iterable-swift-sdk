@@ -385,13 +385,10 @@ struct CriteriaCompletionChecker {
               
               if field.contains(".") {
                   if let firstKey = field.components(separatedBy: ".").first, let dataArray = eventData[firstKey] as? [Any], let eventType = query[JsonKey.eventType] as? String {
-                      return dataArray.allSatisfy { item in
+                      return dataArray.contains { item in
                           let dataItem: [String: Any] = [ firstKey: item,
-                                                      JsonKey.eventType: eventType ]
-                          if let valueFromObj = getFieldValue(data: dataItem, field: field) {
-                              return evaluateComparison(comparatorType: query[JsonKey.CriteriaItem.comparatorType] as! String, matchObj: valueFromObj, valueToCompare: query[JsonKey.CriteriaItem.value] as? String)
-                          }
-                          return false
+                                                          JsonKey.eventType: eventType ]
+                          return evaluateFieldLogic(searchQueries: searchQueries, eventData: dataItem)
                       }
                   }
                   if let valueFromObj = getFieldValue(data: eventData, field: field) {

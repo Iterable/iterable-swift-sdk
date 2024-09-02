@@ -41,8 +41,8 @@ final class NestedFieldSupportForArrayData: XCTestCase {
                                            {
                                                "dataType": "user",
                                                "field": "furniture.furnitureColor",
-                                               "comparatorType": "IsSet",
-                                               "value": "",
+                                               "comparatorType": "Equals",
+                                               "value": "White",
                                                "fieldType": "string"
                                            },
                                            {
@@ -87,7 +87,7 @@ final class NestedFieldSupportForArrayData: XCTestCase {
                             "widthInches": 60
                         ],
                         [
-                            "furnitureType": "Sofa",
+                            "furnitureType": "Table",
                             "furnitureColor": "Gray",
                             "lengthInches": 20,
                             "widthInches": 30
@@ -113,13 +113,13 @@ final class NestedFieldSupportForArrayData: XCTestCase {
                     "furniture": [
                         [
                             "furnitureType": "Sofa",
-                            "furnitureColor": "White",
+                            "furnitureColor": "Gray",
                             "lengthInches": 40,
                             "widthInches": 60
                         ],
                         [
                             "furnitureType": "Table",
-                            "furnitureColor": "Gray",
+                            "furnitureColor": "White",
                             "lengthInches": 20,
                             "widthInches": 30
                         ],
