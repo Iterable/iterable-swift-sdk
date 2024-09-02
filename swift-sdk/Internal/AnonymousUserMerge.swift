@@ -8,25 +8,29 @@
 import Foundation
 
 protocol AnonymousUserMergeProtocol {
-    func tryMergeUser(sourceUserId: String?, sourceEmail: String?, destinationUserIdOrEmail: String?, isEmail: Bool, merge: Bool, onMergeResult: @escaping MergeActionHandler)
+    func tryMergeUser(destinationUser: String?, isEmail: Bool, shouldMerge: Bool, onMergeResult: @escaping MergeActionHandler)
 }
 
 class AnonymousUserMerge: AnonymousUserMergeProtocol {
     
     var anonymousUserManager: AnonymousUserManagerProtocol
     var apiClient: ApiClient
+    private var localStorage: LocalStorageProtocol
     
-    init(apiClient: ApiClient, anonymousUserManager: AnonymousUserManagerProtocol) {
+    init(apiClient: ApiClient, anonymousUserManager: AnonymousUserManagerProtocol, localStorage: LocalStorageProtocol) {
         self.apiClient = apiClient
         self.anonymousUserManager = anonymousUserManager
+        self.localStorage = localStorage
     }
     
-    public func tryMergeUser(sourceUserId: String?, sourceEmail: String?, destinationUserIdOrEmail: String?, isEmail: Bool, merge: Bool, onMergeResult: @escaping MergeActionHandler) {
-        if (sourceUserId != nil && destinationUserIdOrEmail != nil && merge) {
-            let destinationEmail = isEmail ? destinationUserIdOrEmail : nil
-            let destinationUserId = isEmail ? nil : destinationUserIdOrEmail
+    func tryMergeUser(destinationUser: String?, isEmail: Bool, shouldMerge: Bool, onMergeResult: @escaping MergeActionHandler) {
+        let anonymousUserId = localStorage.userIdAnnon
+        
+        if (anonymousUserId != nil && destinationUser != nil && shouldMerge) {
+            let destinationEmail = isEmail ? destinationUser : nil
+            let destinationUserId = isEmail ? nil : destinationUser
             
-            apiClient.mergeUser(sourceEmail: sourceEmail, sourceUserId: sourceUserId,  destinationEmail : destinationEmail, destinationUserId: destinationUserId).onSuccess {_ in
+            apiClient.mergeUser(sourceEmail: nil, sourceUserId: anonymousUserId,  destinationEmail: destinationEmail, destinationUserId: destinationUserId).onSuccess {_ in
                 onMergeResult(MergeResult.mergesuccessful, nil)
             }.onError {error in
                 print("Merge failed error: \(error)")

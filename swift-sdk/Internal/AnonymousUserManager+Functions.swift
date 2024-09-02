@@ -446,7 +446,7 @@ struct CriteriaCompletionChecker {
             case JsonKey.CriteriaItem.Comparator.StartsWith:
                 return compareStringStartsWith(matchObj, stringValue)
             case JsonKey.CriteriaItem.Comparator.MatchesRegex:
-                return compareWithRegex(matchObj as? String ?? "", pattern: stringValue)
+                return compareWithRegex(matchObj, pattern: stringValue)
             default:
                 return false
         }
@@ -462,12 +462,23 @@ struct CriteriaCompletionChecker {
     
     func compareValueEquality(_ sourceTo: Any, _ stringValue: String) -> Bool {
         switch (sourceTo, stringValue) {
-            case (let doubleNumber as Double, let value): return doubleNumber == Double(value)
-            case (let intNumber as Int, let value): return intNumber == Int(value)
-            case (let longNumber as Int64, let value): return longNumber == Int64(value)
-            case (let booleanValue as Bool, let value): return booleanValue == Bool(value)
-            case (let stringTypeValue as String, let value): return stringTypeValue == value
-            default: return false
+        case (let doubleNumber as Double, let value): return doubleNumber == Double(value)
+        case (let intNumber as Int, let value): return intNumber == Int(value)
+        case (let longNumber as Int64, let value): return longNumber == Int64(value)
+        case (let booleanValue as Bool, let value): return booleanValue == Bool(value)
+        case (let stringTypeValue as String, let value): return stringTypeValue == value
+        case (let doubleNumbers as [Double], let value):
+            guard let doubleValue = Double(value) else { return false }
+            return doubleNumbers.contains(doubleValue)
+        case (let intNumbers as [Int], let value):
+            guard let intValue = Int(value) else { return false }
+            return intNumbers.contains(intValue)
+        case (let longNumbers as [Int64], let value):
+            guard let intValue = Int64(value) else { return false }
+            return longNumbers.contains(intValue)
+        case (let stringTypeValues as [String], let value):
+            return stringTypeValues.contains(value)
+        default: return false
         }
     }
     
@@ -514,6 +525,34 @@ struct CriteriaCompletionChecker {
                 } else {
                     return false // Handle the case where string cannot be converted to a Double
                 }
+            case (let doubleNumbers as [Double]):
+                for value in doubleNumbers {
+                    if compareOperator(Double(value), sourceNumber) {
+                        return true
+                    }
+                }
+                return false
+            case (let intNumbers as [Int]):
+                for value in intNumbers {
+                    if compareOperator(Double(value), sourceNumber) {
+                        return true
+                    }
+                }
+                return false
+            case (let longNumbers as [Int64]):
+                for value in longNumbers {
+                    if compareOperator(Double(value), sourceNumber) {
+                        return true
+                    }
+                }
+                return false
+            case (let stringTypeValues as [String]):
+                for value in stringTypeValues {
+                    if let doubleFromString = Double(value), compareOperator(doubleFromString, sourceNumber) {
+                        return true
+                    }
+                }
+                return false
             default:
                 return false
             }
@@ -534,16 +573,41 @@ struct CriteriaCompletionChecker {
     }
 
     func compareStringStartsWith(_ sourceTo: Any, _ stringValue: String) -> Bool {
-        guard let stringTypeValue = sourceTo as? String else { return false }
-        return stringTypeValue.hasPrefix(stringValue)
+        if let stringTypeValue = sourceTo as? String {
+            // sourceTo is a String
+            return stringTypeValue.hasPrefix(stringValue)
+        } else if let arrayTypeValue = sourceTo as? [String] {
+            // sourceTo is an Array of String
+            for value in arrayTypeValue {
+                if value.hasPrefix(stringValue) {
+                    return true
+                }
+            }
+        }
+        return false
     }
     
-    func compareWithRegex(_ sourceTo: String, pattern: String) -> Bool {
-        do {
-            let regex = try NSRegularExpression(pattern: pattern)
-            let range = NSRange(sourceTo.startIndex..<sourceTo.endIndex, in: sourceTo)
-            return regex.firstMatch(in: sourceTo, options: [], range: range) != nil
-        } catch {
+    func compareWithRegex(_ sourceTo: Any, pattern: String) -> Bool {
+        if let stringTypeValue = sourceTo as? String {
+            do {
+                let regex = try NSRegularExpression(pattern: pattern)
+                let range = NSRange(stringTypeValue.startIndex..<stringTypeValue.endIndex, in: stringTypeValue)
+                return regex.firstMatch(in: stringTypeValue, options: [], range: range) != nil
+            } catch {
+                return false
+            }
+        } else if let stringTypeValues = sourceTo as? [String] {
+            for stringTypeValue in stringTypeValues {
+                do {
+                    let regex = try NSRegularExpression(pattern: pattern)
+                    let range = NSRange(stringTypeValue.startIndex..<stringTypeValue.endIndex, in: stringTypeValue)
+                    if regex.firstMatch(in: stringTypeValue, options: [], range: range) != nil {
+                        return true
+                    }
+                } catch {}
+            }
+            return false
+        } else {
             return false
         }
     }
