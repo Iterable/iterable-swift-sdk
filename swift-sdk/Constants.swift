@@ -217,6 +217,7 @@ enum JsonKey {
         static let comparatorType = "comparatorType"
         static let fieldType = "fieldType"
         static let value = "value"
+        static let values = "values"
         static let minMatch = "minMatch"
 
         enum Combinator {
