@@ -310,7 +310,7 @@ struct CriteriaCompletionChecker {
             let result = filteredSearchQueries.allSatisfy { query in
                 let field = query[JsonKey.CriteriaItem.field]
                 if let value = item[field as! String] {
-                    return evaluateComparison(comparatorType: query[JsonKey.CriteriaItem.comparatorType] as! String, matchObj: value, valueToCompare: query[JsonKey.CriteriaItem.value] as? String ?? "")
+                    return evaluateComparison(comparatorType: query[JsonKey.CriteriaItem.comparatorType] as! String, matchObj: value, valueToCompare: query[JsonKey.CriteriaItem.value] ?? query[JsonKey.CriteriaItem.values])
                 }
                 return false
             }
@@ -392,21 +392,22 @@ struct CriteriaCompletionChecker {
                       }
                   }
                   if let valueFromObj = getFieldValue(data: eventData, field: field) {
-                      return evaluateComparison(comparatorType: query[JsonKey.CriteriaItem.comparatorType] as! String, matchObj: valueFromObj, valueToCompare: query[JsonKey.CriteriaItem.value] as? String)
+                      return evaluateComparison(comparatorType: query[JsonKey.CriteriaItem.comparatorType] as! String, matchObj: valueFromObj, valueToCompare: query[JsonKey.CriteriaItem.value]  ?? query[JsonKey.CriteriaItem.values])
                   }
               }
 
               
               if doesKeyExist {
-                  if (evaluateComparison(comparatorType: query[JsonKey.CriteriaItem.comparatorType] as! String, matchObj: eventData[field] ?? "", valueToCompare: query[JsonKey.CriteriaItem.value] as? String)) {
+                  if (evaluateComparison(comparatorType: query[JsonKey.CriteriaItem.comparatorType] as! String, matchObj: eventData[field] ?? "", valueToCompare: query[JsonKey.CriteriaItem.value] ?? query[JsonKey.CriteriaItem.values])) {
                       return true
                   }
+
               }
               return false
           }
           return matchResult
       }
-    
+
     func getFieldValue(data: Any, field: String) -> Any? {
         let fields = field.split(separator: ".").map { String($0) }
         return fields.reduce(data) { (value, currentField) -> Any? in
@@ -417,39 +418,54 @@ struct CriteriaCompletionChecker {
         }
     }
 
-    func evaluateComparison(comparatorType: String, matchObj: Any, valueToCompare: String?) -> Bool {
-        guard var stringValue = valueToCompare else {
-            return false
+
+    func evaluateComparison(comparatorType: String, matchObj: Any, valueToCompare: Any?) -> Bool {
+        if var stringValue = valueToCompare as? String {
+            if let doubleValue = Double(stringValue) {
+                stringValue = formattedDoubleValue(doubleValue)
+            }
+
+            switch comparatorType {
+                case JsonKey.CriteriaItem.Comparator.Equals:
+                    return compareValueEquality(matchObj, stringValue)
+                case JsonKey.CriteriaItem.Comparator.DoesNotEquals:
+                    return !compareValueEquality(matchObj, stringValue)
+                case JsonKey.CriteriaItem.Comparator.IsSet:
+                    return compareValueIsSet(matchObj)
+                case JsonKey.CriteriaItem.Comparator.GreaterThan:
+                    return compareNumericValues(matchObj, stringValue, compareOperator: >)
+                case JsonKey.CriteriaItem.Comparator.LessThan:
+                    return compareNumericValues(matchObj, stringValue, compareOperator: <)
+                case JsonKey.CriteriaItem.Comparator.GreaterThanOrEqualTo:
+                    return compareNumericValues(matchObj, stringValue, compareOperator: >=)
+                case JsonKey.CriteriaItem.Comparator.LessThanOrEqualTo:
+                    return compareNumericValues(matchObj, stringValue, compareOperator: <=)
+                case JsonKey.CriteriaItem.Comparator.Contains:
+                    return compareStringContains(matchObj, stringValue)
+                case JsonKey.CriteriaItem.Comparator.StartsWith:
+                    return compareStringStartsWith(matchObj, stringValue)
+                case JsonKey.CriteriaItem.Comparator.MatchesRegex:
+                    return compareWithRegex(matchObj, pattern: stringValue)
+                default:
+                    return false
+            }
+        } else if var arrayOfString = valueToCompare as? [String] {
+            arrayOfString = arrayOfString.compactMap({ stringValue in
+                if let doubleValue = Double(stringValue) {
+                    return formattedDoubleValue(doubleValue)
+                }
+                return stringValue
+            })
+            switch comparatorType {
+                case JsonKey.CriteriaItem.Comparator.Equals:
+                    return compareValuesEquality(matchObj, arrayOfString)
+                case JsonKey.CriteriaItem.Comparator.DoesNotEquals:
+                    return !compareValuesEquality(matchObj, arrayOfString)
+                default:
+                    return false
+            }
         }
-        
-        if let doubleValue = Double(stringValue) {
-            stringValue = formattedDoubleValue(doubleValue)
-        }
-        
-        switch comparatorType {
-            case JsonKey.CriteriaItem.Comparator.Equals:
-                return compareValueEquality(matchObj, stringValue)
-            case JsonKey.CriteriaItem.Comparator.DoesNotEquals:
-                return !compareValueEquality(matchObj, stringValue)
-            case JsonKey.CriteriaItem.Comparator.IsSet:
-                return compareValueIsSet(matchObj)
-            case JsonKey.CriteriaItem.Comparator.GreaterThan:
-                return compareNumericValues(matchObj, stringValue, compareOperator: >)
-            case JsonKey.CriteriaItem.Comparator.LessThan:
-                return compareNumericValues(matchObj, stringValue, compareOperator: <)
-            case JsonKey.CriteriaItem.Comparator.GreaterThanOrEqualTo:
-                return compareNumericValues(matchObj, stringValue, compareOperator: >=)
-            case JsonKey.CriteriaItem.Comparator.LessThanOrEqualTo:
-                return compareNumericValues(matchObj, stringValue, compareOperator: <=)
-            case JsonKey.CriteriaItem.Comparator.Contains:
-                return compareStringContains(matchObj, stringValue)
-            case JsonKey.CriteriaItem.Comparator.StartsWith:
-                return compareStringStartsWith(matchObj, stringValue)
-            case JsonKey.CriteriaItem.Comparator.MatchesRegex:
-                return compareWithRegex(matchObj, pattern: stringValue)
-            default:
-                return false
-        }
+        return false
     }
 
     func formattedDoubleValue(_ d: Double) -> String {
@@ -481,7 +497,34 @@ struct CriteriaCompletionChecker {
         default: return false
         }
     }
-    
+
+    func compareValuesEquality(_ sourceTo: Any, _ stringsValue: [String]) -> Bool {
+        switch (sourceTo, stringsValue) {
+        case (let doubleNumber as Double, let values): return values.compactMap({Double($0)}).contains(doubleNumber)
+        case (let intNumber as Int, let values): return values.compactMap({Int($0)}).contains(intNumber)
+        case (let longNumber as Int64, let values): return values.compactMap({Int64($0)}).contains(longNumber)
+        case (let booleanValue as Bool, let values): return values.compactMap({Bool($0)}).contains(booleanValue)
+        case (let stringTypeValue as String, let values): return values.contains(stringTypeValue)
+        case (let doubleNumbers as [Double], let values):
+            let set1 = Set(doubleNumbers)
+            let set2 = Set(values.compactMap({Double($0)}))
+            return !set1.intersection(set2).isEmpty
+        case (let intNumbers as [Int], let values):
+            let set1 = Set(intNumbers)
+            let set2 = Set(values.compactMap({Int($0)}))
+            return !set1.intersection(set2).isEmpty
+        case (let longNumbers as [Int64], let values):
+            let set1 = Set(longNumbers)
+            let set2 = Set(values.compactMap({Int64($0)}))
+            return !set1.intersection(set2).isEmpty
+        case (let stringTypeValues as [String], let values):
+            let set1 = Set(stringTypeValues)
+            let set2 = Set(values)
+            return !set1.intersection(set2).isEmpty
+        default: return false
+        }
+    }
+
     func compareValueIsSet(_ sourceTo: Any?) -> Bool {
         switch sourceTo {
         case let doubleValue as Double:
