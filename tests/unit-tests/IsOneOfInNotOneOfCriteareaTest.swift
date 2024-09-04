@@ -18,7 +18,7 @@ final class IsOneOfInNotOneOfCriteareaTest: XCTestCase {
          "criterias": [
            {
                "criteriaId": "299",
-               "name": "Criteria_IsNonOf_Is_One_of",
+               "name": "Criteria_Is_One_of",
                "createdAt": 1722851586508,
                "updatedAt": 1725268680330,
                "searchQuery": {
