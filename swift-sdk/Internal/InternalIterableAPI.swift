@@ -130,15 +130,15 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
         _payloadData = data
     }
     
-    func setEmail(_ email: String?, authToken: String? = nil, disableMergeAndReplay: Bool = false, successHandler: OnSuccessHandler? = nil, failureHandler: OnFailureHandler? = nil) {
+    func setEmail(_ email: String?, authToken: String? = nil, disableReplay: Bool = false, successHandler: OnSuccessHandler? = nil, failureHandler: OnFailureHandler? = nil) {
         
         ITBInfo()
         
         if(config.enableAnonTracking) {
-            let shouldMergeAndReplay = !disableMergeAndReplay && localStorage.userIdAnnon != nil
+//            let shouldMergeAndReplay = !disableMergeAndReplay && localStorage.userIdAnnon != nil
             
             if(email != nil) {
-                attemptAndProcessMerge(shouldMergeAndReplay: shouldMergeAndReplay, destinationUser: email, isEmail: true, failureHandler: failureHandler)
+                attemptAndProcessMerge(disableReplay: disableReplay, destinationUser: email, isEmail: true, failureHandler: failureHandler)
             }
             self.localStorage.userIdAnnon = nil
         }
@@ -164,14 +164,14 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
 
     }
     
-    func setUserId(_ userId: String?, authToken: String? = nil, disableMergeAndReplay: Bool = false, successHandler: OnSuccessHandler? = nil, failureHandler: OnFailureHandler? = nil, isAnon: Bool = false) {
+    func setUserId(_ userId: String?, authToken: String? = nil, disableReplay: Bool = false, successHandler: OnSuccessHandler? = nil, failureHandler: OnFailureHandler? = nil, isAnon: Bool = false) {
         ITBInfo()
         
         if(config.enableAnonTracking) {
-            let shouldMergeAndReplay = !disableMergeAndReplay && localStorage.userIdAnnon != nil
             
-            if(userId != nil && userId != localStorage.userIdAnnon) {
-                attemptAndProcessMerge(shouldMergeAndReplay: shouldMergeAndReplay, destinationUser: userId, isEmail: false, failureHandler: failureHandler)
+            //TODO: remove check to annoymous user id storage
+            if(userId != nil) {
+                attemptAndProcessMerge(disableReplay: disableReplay, destinationUser: userId, isEmail: false, failureHandler: failureHandler)
             }
 
             if(!isAnon) {
@@ -203,11 +203,11 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
         logoutPreviousUser()
     }
     
-    func attemptAndProcessMerge(shouldMergeAndReplay: Bool, destinationUser: String?, isEmail: Bool, failureHandler: OnFailureHandler? = nil) {
-        anonymousUserMerge.tryMergeUser(destinationUser: destinationUser, isEmail: isEmail, shouldMergeAndReplay: shouldMergeAndReplay) { mergeResult, error in
+    func attemptAndProcessMerge(disableReplay: Bool, destinationUser: String?, isEmail: Bool, failureHandler: OnFailureHandler? = nil) {
+        anonymousUserMerge.tryMergeUser(destinationUser: destinationUser, isEmail: isEmail) { mergeResult, error in
             
             if mergeResult == MergeResult.mergenotrequired ||  mergeResult == MergeResult.mergesuccessful {
-                if (shouldMergeAndReplay) {
+                if(!disableReplay) {
                     self.anonymousUserManager.syncNonSyncedEvents()
                 }
             } else {

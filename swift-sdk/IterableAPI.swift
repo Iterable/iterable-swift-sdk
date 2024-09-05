@@ -147,12 +147,12 @@ import UIKit
         implementation?.setUserId(userId, authToken: authToken, successHandler: successHandler, failureHandler: failureHandler)
     }
     
-    public static func setEmail(_ email: String?, _ authToken: String? = nil, disableMergeAndReplay: Bool = false, _ successHandler: OnSuccessHandler? = nil, _ failureHandler: OnFailureHandler? = nil) {
-        implementation?.setEmail(email, authToken: authToken, disableMergeAndReplay: disableMergeAndReplay, successHandler: successHandler, failureHandler: failureHandler)
+    public static func setEmail(_ email: String?, _ authToken: String? = nil, disableReplay: Bool = false, _ successHandler: OnSuccessHandler? = nil, _ failureHandler: OnFailureHandler? = nil) {
+        implementation?.setEmail(email, authToken: authToken, disableReplay: disableReplay, successHandler: successHandler, failureHandler: failureHandler)
     }
     
-    public static func setUserId(_ userId: String?, _ authToken: String? = nil, disableMergeAndReplay: Bool = false, _ successHandler: OnSuccessHandler? = nil, _ failureHandler: OnFailureHandler? = nil, _ isAnon: Bool = false) {
-        implementation?.setUserId(userId, authToken: authToken, disableMergeAndReplay: disableMergeAndReplay, successHandler: successHandler, failureHandler: failureHandler, isAnon: isAnon)
+    public static func setUserId(_ userId: String?, _ authToken: String? = nil, disableReplay: Bool = false, _ successHandler: OnSuccessHandler? = nil, _ failureHandler: OnFailureHandler? = nil) {
+        implementation?.setUserId(userId, authToken: authToken, disableReplay: disableReplay, successHandler: successHandler, failureHandler: failureHandler)
     }
     
     /// Handle a Universal Link
