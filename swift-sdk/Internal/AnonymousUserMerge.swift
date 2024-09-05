@@ -8,7 +8,7 @@
 import Foundation
 
 protocol AnonymousUserMergeProtocol {
-    func tryMergeUser(destinationUser: String?, isEmail: Bool, shouldMerge: Bool, onMergeResult: @escaping MergeActionHandler)
+    func tryMergeUser(destinationUser: String?, isEmail: Bool, shouldMergeAndReplay: Bool, onMergeResult: @escaping MergeActionHandler)
 }
 
 class AnonymousUserMerge: AnonymousUserMergeProtocol {
@@ -23,10 +23,10 @@ class AnonymousUserMerge: AnonymousUserMergeProtocol {
         self.localStorage = localStorage
     }
     
-    func tryMergeUser(destinationUser: String?, isEmail: Bool, shouldMerge: Bool, onMergeResult: @escaping MergeActionHandler) {
+    func tryMergeUser(destinationUser: String?, isEmail: Bool, shouldMergeAndReplay: Bool, onMergeResult: @escaping MergeActionHandler) {
         let anonymousUserId = localStorage.userIdAnnon
         
-        if (anonymousUserId != nil && destinationUser != nil && shouldMerge) {
+        if (anonymousUserId != nil && destinationUser != nil && shouldMergeAndReplay) {
             let destinationEmail = isEmail ? destinationUser : nil
             let destinationUserId = isEmail ? nil : destinationUser
             
