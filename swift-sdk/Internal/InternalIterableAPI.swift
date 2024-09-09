@@ -135,8 +135,6 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
         ITBInfo()
         
         if(config.enableAnonTracking) {
-//            let shouldMergeAndReplay = !disableMergeAndReplay && localStorage.userIdAnnon != nil
-            
             if(email != nil) {
                 attemptAndProcessMerge(disableReplay: disableReplay, destinationUser: email, isEmail: true, failureHandler: failureHandler)
             }
@@ -205,7 +203,6 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
     
     func attemptAndProcessMerge(disableReplay: Bool, destinationUser: String?, isEmail: Bool, failureHandler: OnFailureHandler? = nil) {
         anonymousUserMerge.tryMergeUser(destinationUser: destinationUser, isEmail: isEmail) { mergeResult, error in
-            
             if mergeResult == MergeResult.mergenotrequired ||  mergeResult == MergeResult.mergesuccessful {
                 if(!disableReplay) {
                     self.anonymousUserManager.syncNonSyncedEvents()
