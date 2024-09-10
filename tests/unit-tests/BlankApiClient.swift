@@ -19,12 +19,11 @@ class BlankApiClient: ApiClientProtocol {
     func mergeUser(sourceEmail: String?, sourceUserId: String?, destinationEmail: String?, destinationUserId: String?) -> IterableSDK.Pending<IterableSDK.SendRequestValue, IterableSDK.SendRequestError> {
         Pending()
     }
-    
-    
-    func trackAnonSession(createdAt: Int, withUserId userId: String, requestJson: [AnyHashable : Any]) -> IterableSDK.Pending<IterableSDK.SendRequestValue, IterableSDK.SendRequestError> {
+
+    func trackAnonSession(createdAt: Int, withUserId userId: String, dataFields: [AnyHashable : Any]?, requestJson: [AnyHashable : Any]) -> IterableSDK.Pending<IterableSDK.SendRequestValue, IterableSDK.SendRequestError> {
         Pending()
     }
-    
+
     func getCriteria() -> IterableSDK.Pending<IterableSDK.SendRequestValue, IterableSDK.SendRequestError> {
         Pending()
     }

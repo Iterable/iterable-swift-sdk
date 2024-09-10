@@ -288,8 +288,8 @@ extension ApiClient: ApiClientProtocol {
         return send(iterableRequestResult: result)
     }
         
-    func trackAnonSession(createdAt: Int, withUserId userId: String, requestJson: [AnyHashable: Any])  -> Pending<SendRequestValue, SendRequestError> {
-        let result = createRequestCreator().flatMap { $0.createTrackAnonSessionRequest(createdAt: createdAt, withUserId: userId, requestJson: requestJson) }
+    func trackAnonSession(createdAt: Int, withUserId userId: String, dataFields: [AnyHashable: Any]?, requestJson: [AnyHashable: Any])  -> Pending<SendRequestValue, SendRequestError> {
+        let result = createRequestCreator().flatMap { $0.createTrackAnonSessionRequest(createdAt: createdAt, withUserId: userId, dataFields: dataFields, requestJson: requestJson) }
         return send(iterableRequestResult: result)
     }
     // MARK: - Embedded Messaging

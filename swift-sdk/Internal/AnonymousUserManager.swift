@@ -95,11 +95,32 @@ public class AnonymousUserManager: AnonymousUserManagerProtocol {
             if (!appName.isEmpty && isEnabled) {
                 anonSessions[JsonKey.mobilePushOptIn] = appName
             }
-            IterableAPI.implementation?.apiClient.trackAnonSession(createdAt: IterableUtil.secondsFromEpoch(for: self.dateProvider.currentDate), withUserId: userId, requestJson: anonSessions).onError { error in
+            var updateUserEventIndex : Int?
+            var dataFields: [AnyHashable:Any]?
+            if let events = self.localStorage.anonymousUserEvents {
+                if let eventIndex = events.lastIndex(where: { dict in
+                    if let eventType = dict[JsonKey.eventType] as? String, eventType == EventType.updateUser {
+                        return true
+                    }
+                    return false
+                }) {
+                    updateUserEventIndex = eventIndex
+                    var updateUserEvent = events[eventIndex]
+                    updateUserEvent.removeValue(forKey: JsonKey.eventType)
+                    dataFields = updateUserEvent
+                }
+            }
+           
+            IterableAPI.implementation?.apiClient.trackAnonSession(createdAt: IterableUtil.secondsFromEpoch(for: self.dateProvider.currentDate), withUserId: userId, dataFields: dataFields,requestJson: anonSessions).onError { error in
                 if (error.httpStatusCode == 409) {
                     self.getAnonCriteria() // refetch the criteria
                 }
             }.onSuccess { success in
+                if var events = self.localStorage.anonymousUserEvents, let index = updateUserEventIndex {
+                    events.remove(at: index)
+                    self.localStorage.anonymousUserEvents = events
+                }
+
                 self.localStorage.userIdAnnon = userId
                 IterableAPI.setUserId(userId, nil, merge: false, nil, nil, true)
                 self.syncNonSyncedEvents()
