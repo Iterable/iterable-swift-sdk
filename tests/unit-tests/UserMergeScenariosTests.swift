@@ -83,7 +83,7 @@ class UserMergeScenariosTests: XCTestCase, AuthProvider {
         wait(for: [waitExpectation], timeout: seconds + 1)
     }
     
-    func testCriteriaNotMatchDisableMergeAndReplayTrueWithUserId() {  // criteria not met with merge false with setUserId
+    func testCriteriaNotMatchDisableReplayTrueWithUserId() {  // criteria not met with merge false with setUserId
         let config = IterableConfig()
         config.enableAnonTracking = true
         IterableAPI.initializeForTesting(apiKey: UserMergeScenariosTests.apiKey,
@@ -126,7 +126,7 @@ class UserMergeScenariosTests: XCTestCase, AuthProvider {
            waitForExpectations(timeout: 5, handler: nil)
     }
     
-    func testCriteriaNotMatchDisableMergeAndReplayFalseWithUserId() {  // criteria not met with merge true with setUserId
+    func testCriteriaNotMatchDisableReplayFalseWithUserId() {  // criteria not met with merge true with setUserId
         let config = IterableConfig()
         config.enableAnonTracking = true
         IterableAPI.initializeForTesting(apiKey: UserMergeScenariosTests.apiKey,
@@ -171,7 +171,7 @@ class UserMergeScenariosTests: XCTestCase, AuthProvider {
            waitForExpectations(timeout: 5, handler: nil)
     }
     
-    func testCriteriaNotMatchDisableMergeAndReplayDefaultWithUserId() {  // criteria not met with merge default with setUserId
+    func testCriteriaNotMatchDisableReplayDefaultWithUserId() {  // criteria not met with merge default with setUserId
         let config = IterableConfig()
         config.enableAnonTracking = true
         IterableAPI.initializeForTesting(apiKey: UserMergeScenariosTests.apiKey,
@@ -216,7 +216,7 @@ class UserMergeScenariosTests: XCTestCase, AuthProvider {
            waitForExpectations(timeout: 5, handler: nil)
     }
     
-    func testCriteriaMatchDisableMergeAndReplayTrueWithUserId() {  // criteria met with merge false with setUserId
+    func testCriteriaMatchDisableReplayTrueWithUserId() {  // criteria met with merge false with setUserId
         let config = IterableConfig()
         config.enableAnonTracking = true
         let internalAPI = IterableAPI.initializeForTesting(apiKey: UserMergeScenariosTests.apiKey,
@@ -238,19 +238,19 @@ class UserMergeScenariosTests: XCTestCase, AuthProvider {
         IterableAPI.setUserId("testuser123", nil, disableReplay: true)
  
         // Verify "merge user" API call is not made
-           let expectation = self.expectation(description: "No API call is made to merge user")
+           let expectation = self.expectation(description: "API call is made to merge user")
            DispatchQueue.main.async {
                if let _ = self.mockSession.getRequest(withEndPoint: Const.Path.mergeUser) {
-                   XCTFail("merge user API call was made unexpectedly")
-               } else {
                    expectation.fulfill()
+               } else {
+                   XCTFail("Expected merge user API call was not made")
                }
            }
            
            waitForExpectations(timeout: 5, handler: nil)
     }
     
-    func testCriteriaMatchDisableMergeAndReplayFalseWithUserId() {  // criteria met with merge true with setUserId
+    func testCriteriaMatchDisableReplayFalseWithUserId() {  // criteria met with merge true with setUserId
         let config = IterableConfig()
         config.enableAnonTracking = true
         let internalAPI = IterableAPI.initializeForTesting(apiKey: UserMergeScenariosTests.apiKey,
@@ -286,7 +286,7 @@ class UserMergeScenariosTests: XCTestCase, AuthProvider {
            waitForExpectations(timeout: 5, handler: nil)
     }
     
-    func testCriteriaMatchDisableMergeAndReplayDefaultWithUserId() {  // criteria met with merge default with setUserId
+    func testCriteriaMatchDisableReplayDefaultWithUserId() {  // criteria met with merge default with setUserId
         let config = IterableConfig()
         config.enableAnonTracking = true
         let internalAPI = IterableAPI.initializeForTesting(apiKey: UserMergeScenariosTests.apiKey,
@@ -322,7 +322,7 @@ class UserMergeScenariosTests: XCTestCase, AuthProvider {
     }
     
     
-    func testCurrentUserIdentifiedWithDisableMergeAndReplayTrueWithUserId() {  // current user identified with setUserId merge false
+    func testCurrentUserIdentifiedWithDisableReplayTrueWithUserId() {  // current user identified with setUserId merge false
         let config = IterableConfig()
         config.enableAnonTracking = true
         let internalAPI = IterableAPI.initializeForTesting(apiKey: UserMergeScenariosTests.apiKey,
@@ -370,7 +370,7 @@ class UserMergeScenariosTests: XCTestCase, AuthProvider {
     }
     
     
-    func testCurrentUserIdentifiedWithDisableMergeAndReplayFalseWithUserId() {  // current user identified with setUserId true
+    func testCurrentUserIdentifiedWithDisableReplayFalseWithUserId() {  // current user identified with setUserId true
         let config = IterableConfig()
         config.enableAnonTracking = true
         IterableAPI.initializeForTesting(apiKey: UserMergeScenariosTests.apiKey,
@@ -421,7 +421,7 @@ class UserMergeScenariosTests: XCTestCase, AuthProvider {
            waitForExpectations(timeout: 5, handler: nil)
     }
     
-    func testCurrentUserIdentifiedWithDisableMergeAndReplayDefaultWithUserId() {  // current user identified with setUserId default
+    func testCurrentUserIdentifiedWithDisableReplayDefaultWithUserId() {  // current user identified with setUserId default
         let config = IterableConfig()
         config.enableAnonTracking = true
         let internalAPI = IterableAPI.initializeForTesting(apiKey: UserMergeScenariosTests.apiKey,
@@ -469,7 +469,7 @@ class UserMergeScenariosTests: XCTestCase, AuthProvider {
            waitForExpectations(timeout: 5, handler: nil)
     }
     
-    func testCriteriaNotMatchDisableMergeAndReplayTrueWithEmail() {  // criteria not met with merge false with setEmail
+    func testCriteriaNotMatchDisableReplayTrueWithEmail() {  // criteria not met with merge false with setEmail
         let config = IterableConfig()
         config.enableAnonTracking = true
         IterableAPI.initializeForTesting(apiKey: UserMergeScenariosTests.apiKey,
@@ -512,7 +512,7 @@ class UserMergeScenariosTests: XCTestCase, AuthProvider {
            waitForExpectations(timeout: 5, handler: nil)
     }
     
-    func testCriteriaNotMatchDisableMergeAndReplayFalseWithEmail() {  // criteria not met with merge true with setEmail
+    func testCriteriaNotMatchDisableReplayFalseWithEmail() {  // criteria not met with merge true with setEmail
         let config = IterableConfig()
         config.enableAnonTracking = true
         IterableAPI.initializeForTesting(apiKey: UserMergeScenariosTests.apiKey,
@@ -557,7 +557,7 @@ class UserMergeScenariosTests: XCTestCase, AuthProvider {
            waitForExpectations(timeout: 5, handler: nil)
     }
     
-    func testCriteriaNotMatchDisableMergeAndReplayDefaultWithEmail() {  // criteria not met with merge default with setEmail
+    func testCriteriaNotMatchDisableReplayDefaultWithEmail() {  // criteria not met with merge default with setEmail
         let config = IterableConfig()
         config.enableAnonTracking = true
         IterableAPI.initializeForTesting(apiKey: UserMergeScenariosTests.apiKey,
@@ -602,7 +602,7 @@ class UserMergeScenariosTests: XCTestCase, AuthProvider {
            waitForExpectations(timeout: 5, handler: nil)
     }
     
-    func testCriteriaMatchDisableMergeAndReplayTrueWithEmail() {  // criteria met with merge false with setEmail
+    func testCriteriaMatchDisableReplayTrueWithEmail() {  // criteria met with merge false with setEmail
         let config = IterableConfig()
         config.enableAnonTracking = true
         let internalAPI = IterableAPI.initializeForTesting(apiKey: UserMergeScenariosTests.apiKey,
@@ -624,19 +624,19 @@ class UserMergeScenariosTests: XCTestCase, AuthProvider {
         IterableAPI.setEmail("testuser123@test.com", nil, disableReplay: true)
  
         // Verify "merge user" API call is not made
-           let expectation = self.expectation(description: "No API call is made to merge user")
+           let expectation = self.expectation(description: "API call is made to merge user")
            DispatchQueue.main.async {
                if let _ = self.mockSession.getRequest(withEndPoint: Const.Path.mergeUser) {
-                   XCTFail("merge user API call was made unexpectedly")
-               } else {
                    expectation.fulfill()
+               } else {
+                   XCTFail("Expected merge user API call was not made")
                }
            }
            
            waitForExpectations(timeout: 5, handler: nil)
     }
     
-    func testCriteriaMatchDisableMergeAndReplayFalseWithEmail() {  // criteria met with merge true with setEmail
+    func testCriteriaMatchDisableReplayFalseWithEmail() {  // criteria met with merge true with setEmail
         let config = IterableConfig()
         config.enableAnonTracking = true
         let internalAPI = IterableAPI.initializeForTesting(apiKey: UserMergeScenariosTests.apiKey,
@@ -671,7 +671,7 @@ class UserMergeScenariosTests: XCTestCase, AuthProvider {
            waitForExpectations(timeout: 5, handler: nil)
     }
     
-    func testCriteriaMatchDisableMergeAndReplayDefaultWithEmail() {  // criteria met with merge default with setEmail
+    func testCriteriaMatchDisableReplayDefaultWithEmail() {  // criteria met with merge default with setEmail
         let config = IterableConfig()
         config.enableAnonTracking = true
         let internalAPI = IterableAPI.initializeForTesting(apiKey: UserMergeScenariosTests.apiKey,
@@ -707,7 +707,7 @@ class UserMergeScenariosTests: XCTestCase, AuthProvider {
     }
     
     
-    func testCurrentUserIdentifiedWithDisableMergeAndReplayTrueWithEmail() {  // current user identified with setEmail merge false
+    func testCurrentUserIdentifiedWithDisableReplayTrueWithEmail() {  // current user identified with setEmail merge false
         let config = IterableConfig()
         config.enableAnonTracking = true
         let internalAPI = IterableAPI.initializeForTesting(apiKey: UserMergeScenariosTests.apiKey,
@@ -756,7 +756,7 @@ class UserMergeScenariosTests: XCTestCase, AuthProvider {
     }
     
     
-    func testCurrentUserIdentifiedWithDisableMergeAndReplayFalseWithEmail() {  // current user identified with setEmail true
+    func testCurrentUserIdentifiedWithDisableReplayFalseWithEmail() {  // current user identified with setEmail true
         let config = IterableConfig()
         config.enableAnonTracking = true
         IterableAPI.initializeForTesting(apiKey: UserMergeScenariosTests.apiKey,
