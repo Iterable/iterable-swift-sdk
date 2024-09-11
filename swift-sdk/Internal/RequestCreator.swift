@@ -682,7 +682,7 @@ struct RequestCreator {
         return .success(.get(createGetRequest(forPath: Const.Path.getCriteria, withArgs: body as! [String: String])))
     }
 
-    func createTrackAnonSessionRequest(createdAt: Int, withUserId userId: String, requestJson: [AnyHashable: Any]) -> Result<IterableRequest, IterableError> {
+    func createTrackAnonSessionRequest(createdAt: Int, withUserId userId: String, dataFields: [AnyHashable: Any]?, requestJson: [AnyHashable: Any]) -> Result<IterableRequest, IterableError> {
         var body = [AnyHashable: Any]()
         
         var userDict = [AnyHashable: Any]()
@@ -690,6 +690,9 @@ struct RequestCreator {
         userDict[JsonKey.preferUserId] = true
         userDict[JsonKey.mergeNestedObjects] = true
         userDict[JsonKey.createNewFields] = true
+        if let dataFields = dataFields {
+            userDict[JsonKey.dataFields] = dataFields
+        }
 
         body.setValue(for: JsonKey.Commerce.user, value: userDict)
         body.setValue(for: JsonKey.Body.createdAt, value: createdAt)

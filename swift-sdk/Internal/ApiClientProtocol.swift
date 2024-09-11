@@ -56,7 +56,7 @@ protocol ApiClientProtocol: AnyObject {
     
     func getCriteria() -> Pending<SendRequestValue, SendRequestError>
 
-    func trackAnonSession(createdAt: Int, withUserId userId: String, requestJson: [AnyHashable: Any])  -> Pending<SendRequestValue, SendRequestError>
+    func trackAnonSession(createdAt: Int, withUserId userId: String, dataFields: [AnyHashable: Any]?, requestJson: [AnyHashable: Any])  -> Pending<SendRequestValue, SendRequestError>
     func getEmbeddedMessages() -> Pending<PlacementsPayload, SendRequestError>
     
     @discardableResult func track(embeddedMessageReceived message: IterableEmbeddedMessage) -> Pending<SendRequestValue, SendRequestError>

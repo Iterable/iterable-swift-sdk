@@ -95,11 +95,38 @@ public class AnonymousUserManager: AnonymousUserManagerProtocol {
             if (!appName.isEmpty && isEnabled) {
                 anonSessions[JsonKey.mobilePushOptIn] = appName
             }
-            IterableAPI.implementation?.apiClient.trackAnonSession(createdAt: IterableUtil.secondsFromEpoch(for: self.dateProvider.currentDate), withUserId: userId, requestJson: anonSessions).onError { error in
+            
+            // store last update user event
+            var updateUserEventIndex : Int?
+            var dataFields: [AnyHashable:Any]?
+            if let events = self.localStorage.anonymousUserEvents {
+                // if there is an update user event, find the index of the last one
+                if let eventIndex = events.lastIndex(where: { dict in
+                    if let eventType = dict[JsonKey.eventType] as? String, eventType == EventType.updateUser {
+                        return true
+                    }
+                    return false
+                }) {
+                    updateUserEventIndex = eventIndex
+                    var updateUserEvent = events[eventIndex]
+                    updateUserEvent.removeValue(forKey: JsonKey.eventType)
+                    //save update user event to data fields removing the event type
+                    dataFields = updateUserEvent
+                }
+            }
+           
+            //track anon session for new user
+            IterableAPI.implementation?.apiClient.trackAnonSession(createdAt: IterableUtil.secondsFromEpoch(for: self.dateProvider.currentDate), withUserId: userId, dataFields: dataFields,requestJson: anonSessions).onError { error in
                 if (error.httpStatusCode == 409) {
                     self.getAnonCriteria() // refetch the criteria
                 }
             }.onSuccess { success in
+                //remove the update user event from local storage
+                if var events = self.localStorage.anonymousUserEvents, let index = updateUserEventIndex {
+                    events.remove(at: index)
+                    self.localStorage.anonymousUserEvents = events
+                }
+
                 self.localStorage.userIdAnnon = userId
                 IterableAPI.setUserId(userId, nil, merge: false, nil, nil, true)
                 self.syncNonSyncedEvents()
