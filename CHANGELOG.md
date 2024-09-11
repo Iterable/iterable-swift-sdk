@@ -3,6 +3,10 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## [6.5.7]
+### Fixed
+- Fixed deeplink re-routing issue where delegate would only return `false` value. Thanks to @scottasoutherland :) 
+
 ## [6.5.6]
 ### Fixed
 - Fixed an issue where push notification were not being delivered in iOS 18 beta Sandbox builds.
