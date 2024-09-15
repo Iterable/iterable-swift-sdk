@@ -185,4 +185,62 @@ final class IsOneOfInNotOneOfCriteareaTest: XCTestCase {
         XCTAssertEqual(matchedCriteriaId, nil)
     }
 
+
+    private let mockDataCrashTest = """
+       {
+         "count": 1,
+         "criterias": [
+           {
+               "criteriaId": "403",
+               "name": "button-clicked.animal isNotOneOf [cat,giraffe,hippo,horse]",
+               "createdAt": 1725471874865,
+               "updatedAt": 1725631049514,
+               "searchQuery": {
+                   "combinator": "And",
+                   "searchQueries": [
+                       {
+                           "combinator": "And",
+                           "searchQueries": [
+                               {
+                                   "dataType": "customEvent",
+                                   "searchCombo": {
+                                       "combinator": "And",
+                                       "searchQueries": [
+                                           {
+                                               "dataType": "customEvent",
+                                               "field": "button-clicked.animal",
+                                               "comparatorType": "DoesNotEqual",
+                                               "values": [
+                                                   "cat",
+                                                   "giraffe",
+                                                   "hippo",
+                                                   "horse"
+                                               ]
+                                           }
+                                       ]
+                                   }
+                               }
+                           ]
+                       }
+                   ]
+               }
+           }
+         ]
+       }
+    """
+
+    func testCompareMockDataCrashTest() {
+
+        let eventItems: [[AnyHashable: Any]] = [
+            ["dataType":"customEvent",
+             "dataFields": ["button-clicked": ["animal":"dog"]]
+            ]
+        ]
+
+
+        let expectedCriteriaId = "403"
+        let matchedCriteriaId = CriteriaCompletionChecker(anonymousCriteria: data(from: mockDataCrashTest)!, anonymousEvents: eventItems).getMatchedCriteria()
+        XCTAssertEqual(matchedCriteriaId, expectedCriteriaId)
+    }
+
 }
