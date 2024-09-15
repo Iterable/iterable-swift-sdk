@@ -178,10 +178,10 @@ struct CriteriaCompletionChecker {
         
         var processedEvents: [[AnyHashable: Any]] = []
         for var eventItem in purchaseEvents {
-            if eventItem[JsonKey.eventType] as! String == EventType.purchase {
+            if let eventType = eventItem[JsonKey.eventType] as? String, eventType == EventType.purchase {
                 processedEvents.append(processEvent(eventItem: eventItem, eventType: EventType.purchase, eventName: "", prefix: JsonKey.CriteriaItem.CartEventPrefix.purchaseItemPrefix))
                 
-            } else if eventItem[JsonKey.eventType] as! String == EventType.updateCart {
+            } else if let eventType = eventItem[JsonKey.eventType] as? String, eventType == EventType.updateCart {
                 processedEvents.append(processEvent(eventItem: eventItem, eventType: EventType.customEvent, eventName: EventType.updateCart, prefix: JsonKey.CriteriaItem.CartEventPrefix.updateCartItemPrefix))
             }
             eventItem.removeValue(forKey: JsonKey.CommerceItem.dataFields)
@@ -309,8 +309,8 @@ struct CriteriaCompletionChecker {
         
             let result = filteredSearchQueries.allSatisfy { query in
                 let field = query[JsonKey.CriteriaItem.field]
-                if let value = item[field as! String] {
-                    return evaluateComparison(comparatorType: query[JsonKey.CriteriaItem.comparatorType] as! String, matchObj: value, valueToCompare: query[JsonKey.CriteriaItem.value] ?? query[JsonKey.CriteriaItem.values])
+                if let value = item[field as! String], let comparatorType =  query[JsonKey.CriteriaItem.comparatorType] as? String{
+                    return evaluateComparison(comparatorType: comparatorType, matchObj: value, valueToCompare: query[JsonKey.CriteriaItem.value] ?? query[JsonKey.CriteriaItem.values])
                 }
                 return false
             }
@@ -369,15 +369,10 @@ struct CriteriaCompletionChecker {
           let matchResult = filteredSearchQueries.allSatisfy { query in
               let field = query[JsonKey.CriteriaItem.field] as! String
               var doesKeyExist = false
-
-              if query[JsonKey.eventType] as! String == EventType.customEvent,
-                 query[JsonKey.CriteriaItem.fieldType] as! String == "object",
-                 query[JsonKey.CriteriaItem.comparatorType] as! String == JsonKey.CriteriaItem.Comparator.IsSet {
-                  if let eventName = eventData[JsonKey.eventName] as? String {
-                      if (eventName == EventType.updateCart && field == eventName) ||
-                         (field == eventName) {
-                          return true
-                      }
+              if let eventType = query[JsonKey.eventType] as? String, eventType == EventType.customEvent, let fieldType = query[JsonKey.CriteriaItem.fieldType] as? String, fieldType == "object", let comparatorType = query[JsonKey.CriteriaItem.comparatorType] as? String, comparatorType == JsonKey.CriteriaItem.Comparator.IsSet, let eventName = eventData[JsonKey.eventName] as? String {
+                  if (eventName == EventType.updateCart && field == eventName) ||
+                     (field == eventName) {
+                      return true
                   }
               } else {
                   doesKeyExist = filteredLocalDataKeys.filter {$0 as! String == field }.count > 0
@@ -391,14 +386,14 @@ struct CriteriaCompletionChecker {
                           return evaluateFieldLogic(searchQueries: searchQueries, eventData: dataItem)
                       }
                   }
-                  if let valueFromObj = getFieldValue(data: eventData, field: field) {
-                      return evaluateComparison(comparatorType: query[JsonKey.CriteriaItem.comparatorType] as! String, matchObj: valueFromObj, valueToCompare: query[JsonKey.CriteriaItem.value]  ?? query[JsonKey.CriteriaItem.values])
+                  if let valueFromObj = getFieldValue(data: eventData, field: field), let comparatorType = query[JsonKey.CriteriaItem.comparatorType] as? String {
+                      return evaluateComparison(comparatorType: comparatorType, matchObj: valueFromObj, valueToCompare: query[JsonKey.CriteriaItem.value]  ?? query[JsonKey.CriteriaItem.values])
                   }
               }
 
               
               if doesKeyExist {
-                  if (evaluateComparison(comparatorType: query[JsonKey.CriteriaItem.comparatorType] as! String, matchObj: eventData[field] ?? "", valueToCompare: query[JsonKey.CriteriaItem.value] ?? query[JsonKey.CriteriaItem.values])) {
+                  if let comparatorType = query[JsonKey.CriteriaItem.comparatorType] as? String, (evaluateComparison(comparatorType: comparatorType, matchObj: eventData[field] ?? "", valueToCompare: query[JsonKey.CriteriaItem.value] ?? query[JsonKey.CriteriaItem.values])) {
                       return true
                   }
               }
