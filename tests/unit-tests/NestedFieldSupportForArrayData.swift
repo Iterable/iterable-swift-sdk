@@ -14,7 +14,7 @@ final class NestedFieldSupportForArrayData: XCTestCase {
     private let mockData = """
        {
          "count": 1,
-         "criterias": [
+         "criteriaSets": [
            {
                "criteriaId": "168",
                "name": "nested testing",

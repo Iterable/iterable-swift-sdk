@@ -14,7 +14,7 @@ class AnonymousUserCriteriaIsSetTests: XCTestCase {
     private let mockDataUserProperty = """
     {
       "count": 1,
-      "criterias": [
+      "criteriaSets": [
       
         {
           "criteriaId": "1",
@@ -80,7 +80,7 @@ class AnonymousUserCriteriaIsSetTests: XCTestCase {
     private let mockDataCustomEvent = """
     {
       "count": 1,
-      "criterias": [
+      "criteriaSets": [
         {
           "criteriaId": "1",
           "name": "updateCart",
@@ -146,7 +146,7 @@ class AnonymousUserCriteriaIsSetTests: XCTestCase {
     private let mockDataPurchase = """
     {
       "count": 1,
-      "criterias": [
+      "criteriaSets": [
 
         {
           "criteriaId": "1",
@@ -211,7 +211,7 @@ class AnonymousUserCriteriaIsSetTests: XCTestCase {
     private let mockDataUpdateCart = """
     {
       "count": 1,
-      "criterias": [
+      "criteriaSets": [
         {
           "criteriaId": "1",
           "name": "Contact Property",

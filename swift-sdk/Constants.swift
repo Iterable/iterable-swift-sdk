@@ -204,7 +204,7 @@ enum JsonKey {
     static let createNewFields = "createNewFields"
     static let eventType = "dataType"
     static let eventTimeStamp = "eventTimeStamp"
-    static let criterias = "criterias"
+    static let criteriaSets = "criteriaSets"
     static let matchedCriteriaId = "matchedCriteriaId"
     static let mobilePushOptIn = "mobilePushOptIn"
     
