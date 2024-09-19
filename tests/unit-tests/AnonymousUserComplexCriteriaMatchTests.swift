@@ -38,7 +38,7 @@ class AnonymousUserComplexCriteriaMatchTests: XCTestCase {
                           "comparatorType": "Equals",
                           "dataType": "customEvent",
                           "id": 23,
-                          "value": "button.clicked"
+                          "value": "button-clicked"
                         },
                         {
                           "field": "button-clicked.animal",
@@ -483,7 +483,7 @@ class AnonymousUserComplexCriteriaMatchTests: XCTestCase {
     
     func testCompareDataWithCriteria1Success() {
         let eventItems: [[AnyHashable: Any]] = [
-            ["dataType": "customEvent", "createdAt": 1699246745093, "eventName": "button.clicked", "dataFields": ["button-clicked.animal": "giraffe"]
+            ["dataType": "customEvent", "createdAt": 1699246745093, "eventName": "button-clicked", "dataFields": ["animal": "giraffe"]
             ], [
                 "items": [["id": "12", "name": "keyboard", "price": 130, "quantity": 110]],
                 "createdAt": 1699246745093,
@@ -496,7 +496,7 @@ class AnonymousUserComplexCriteriaMatchTests: XCTestCase {
 
     func testCompareDataWithCriteria1Failure() {
         let eventItems: [[AnyHashable: Any]] = [
-            ["dataType": "customEvent", "createdAt": 1699246745093, "eventName": "button.clicked", "dataFields": ["button-clicked.animal": "giraffe22"]
+            ["dataType": "customEvent", "createdAt": 1699246745093, "eventName": "button-clicked", "dataFields": ["animal": "giraffe22"]
             ], [
                 "items": [["id": "12", "name": "keyboard", "price": 130, "quantity": 110]],
                 "createdAt": 1699246745093,
@@ -508,7 +508,7 @@ class AnonymousUserComplexCriteriaMatchTests: XCTestCase {
     
     func testCompareDataWithCriteria2Success() {
         let eventItems: [[AnyHashable: Any]] = [
-            ["dataType": "customEvent", "createdAt": 1699246745093, "eventName": "button-clicked", "dataFields": ["button-clicked.lastPageViewed": "welcome page"]
+            ["dataType": "customEvent", "createdAt": 1699246745093, "eventName": "button-clicked", "dataFields": ["lastPageViewed": "welcome page"]
             ], ["dataType": "user", "createdAt": 1699246745093, "phone_number": "999999", "country": "USA",    "dataFields": ["preferred_car_models": "Subaru"]
                ]]
         let expectedCriteriaId = "51"
@@ -518,7 +518,7 @@ class AnonymousUserComplexCriteriaMatchTests: XCTestCase {
     
     func testCompareDataWithCriteria2Failure() {
         let eventItems: [[AnyHashable: Any]] = [
-            ["dataType": "customEvent", "createdAt": 1699246745093, "eventName": "button-clicked", "dataFields": ["button-clicked.lastPageViewed": "welcome page"]
+            ["dataType": "customEvent", "createdAt": 1699246745093, "eventName": "button-clicked", "dataFields": ["lastPageViewed": "welcome page"]
             ], ["dataType": "user", "createdAt": 1699246745093, "phone_number": "999999", "country": "USA",    "dataFields": ["preferred_car_models": "Mazda"]
                ]]
         let matchedCriteriaId = CriteriaCompletionChecker(anonymousCriteria: data(from: mockDataForCriteria2)!, anonymousEvents: eventItems).getMatchedCriteria()
@@ -543,7 +543,7 @@ class AnonymousUserComplexCriteriaMatchTests: XCTestCase {
             ], [
                 "dataType": "user", "createdAt": 1699246745093, "dataFields": [ "phone_number": "999999", "country": "USA", "preferred_car_models": "Subaru"]
             ], [
-                "dataType": "customEvent", "createdAt": 1699246745093, "eventName": "button-clicked", "dataFields": ["button-clicked.lastPageViewed": "welcome page"]
+                "dataType": "customEvent", "createdAt": 1699246745093, "eventName": "button-clicked", "dataFields": ["lastPageViewed": "welcome page"]
             ], ]
       
         let expectedCriteriaId = "50"
@@ -555,7 +555,7 @@ class AnonymousUserComplexCriteriaMatchTests: XCTestCase {
     func testCompareDataWithCriteria3Failure() {
         let eventItems: [[AnyHashable: Any]] = [
             [
-                "dataType": "customEvent", "createdAt": 1699246745093, "eventName": "button-clicked2", "dataFields": ["button-clicked.lastPageViewed": "welcome page"]
+                "dataType": "customEvent", "createdAt": 1699246745093, "eventName": "button-clicked2", "dataFields": ["lastPageViewed": "welcome page"]
             ], [
                 "items": [["id": "12", "name": "keyboard", "price": 90, "quantity": 60]],
                 "createdAt": 1699246745093,

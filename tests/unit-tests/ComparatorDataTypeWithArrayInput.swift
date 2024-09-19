@@ -675,7 +675,8 @@ final class ComparatorDataTypeWithArrayInput: XCTestCase {
             ],
             [
                 "dataType": "customEvent",
-                "button-clicked.animal": ["zirraf", "horse"]
+                "eventName": "button-clicked",
+                "dataFields": ["animal": ["zirraf", "horse"]]
             ],
             [
                 "dataType": "purchase",
@@ -696,7 +697,9 @@ final class ComparatorDataTypeWithArrayInput: XCTestCase {
             ],
             [
                 "dataType": "customEvent",
-                "button-clicked.animal": ["zirraf", "horse", "giraffe"]
+                "eventName": "button-clicked",
+                "dataFields": ["animal": ["zirraf", "horse", "giraffe"]]
+
             ],
             [
                 "dataType": "purchase",
