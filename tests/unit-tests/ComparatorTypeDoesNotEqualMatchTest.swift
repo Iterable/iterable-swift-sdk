@@ -22,7 +22,7 @@ final class ComparatorTypeDoesNotEqualMatchTest: XCTestCase {
     private let mokeDataBool = """
        {
          "count": 1,
-         "criterias": [
+         "criteriaSets": [
         {
                     "criteriaId": "194",
                     "name": "Contact: Phone Number != 57688559",
@@ -81,7 +81,7 @@ final class ComparatorTypeDoesNotEqualMatchTest: XCTestCase {
     private let mokeDataString = """
        {
          "count": 1,
-         "criterias": [
+         "criteriaSets": [
         {
                     "criteriaId": "195",
                     "name": "Contact: Phone Number != 57688559",
@@ -141,7 +141,7 @@ final class ComparatorTypeDoesNotEqualMatchTest: XCTestCase {
     private let mokeDataDouble = """
        {
          "count": 1,
-         "criterias": [
+         "criteriaSets": [
         {
                     "criteriaId": "196",
                     "name": "Contact: Phone Number != 57688559",
@@ -199,7 +199,7 @@ final class ComparatorTypeDoesNotEqualMatchTest: XCTestCase {
     private let mokeDataLong = """
        {
          "count": 1,
-         "criterias": [
+         "criteriaSets": [
         {
                     "criteriaId": "197",
                     "name": "Contact: Phone Number != 57688559",

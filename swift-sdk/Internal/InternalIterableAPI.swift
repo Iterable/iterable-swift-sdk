@@ -168,7 +168,7 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
         ITBInfo()
         
         let shouldMerge = merge && localStorage.userIdAnnon != nil
-
+        
         if(config.enableAnonTracking) {
             if(userId != nil && userId != localStorage.userIdAnnon) {
                 attemptAndProcessMerge(shouldMerge: shouldMerge, destinationUser: userId, isEmail: false, failureHandler: failureHandler)

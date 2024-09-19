@@ -14,7 +14,7 @@ class AnonymousUserCriteriaMatchTests: XCTestCase {
     private let mockData = """
     {
       "count": 4,
-      "criterias": [
+      "criteriaSets": [
         {
           "criteriaId": "49",
           "name": "updateCart",

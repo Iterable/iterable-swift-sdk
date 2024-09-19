@@ -64,7 +64,7 @@ struct CriteriaCompletionChecker {
         var criteriaId: String? = nil
         if let json = try? JSONSerialization.jsonObject(with: anonymousCriteria, options: []) as? [String: Any] {
             // Access the criteriaList
-            if let criteriaList = json[JsonKey.criterias] as? [[String: Any]] {
+            if let criteriaList = json[JsonKey.criteriaSets] as? [[String: Any]] {
                 // Iterate over the criteria
                 for criteria in criteriaList {
                     // Perform operations on each criteria
