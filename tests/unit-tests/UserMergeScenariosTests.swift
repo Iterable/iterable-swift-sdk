@@ -37,7 +37,7 @@ class UserMergeScenariosTests: XCTestCase, AuthProvider {
     let mockData = """
     {
       "count": 1,
-      "criterias": [
+      "criteriaSets": [
         {
           "criteriaId": "96",
           "name": "Purchase: isSet Comparator",
