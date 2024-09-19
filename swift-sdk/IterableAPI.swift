@@ -147,12 +147,12 @@ import UIKit
         implementation?.setUserId(userId, authToken: authToken, successHandler: successHandler, failureHandler: failureHandler)
     }
     
-    public static func setEmail(_ email: String?, _ authToken: String? = nil, merge: Bool = true, _ successHandler: OnSuccessHandler? = nil, _ failureHandler: OnFailureHandler? = nil) {
-        implementation?.setEmail(email, authToken: authToken, merge: merge, successHandler: successHandler, failureHandler: failureHandler)
+    public static func setEmail(_ email: String?, _ authToken: String? = nil, identityResolution: IterableIdentityResolution? = nil, _ successHandler: OnSuccessHandler? = nil, _ failureHandler: OnFailureHandler? = nil) {
+        implementation?.setEmail(email, authToken: authToken, successHandler: successHandler, failureHandler: failureHandler, identityResolution: identityResolution)
     }
     
-    public static func setUserId(_ userId: String?, _ authToken: String? = nil, merge: Bool = true, _ successHandler: OnSuccessHandler? = nil, _ failureHandler: OnFailureHandler? = nil, _ isAnon: Bool = false) {
-        implementation?.setUserId(userId, authToken: authToken, merge: merge,successHandler: successHandler, failureHandler: failureHandler, isAnon: isAnon)
+    public static func setUserId(_ userId: String?, _ authToken: String? = nil, identityResolution: IterableIdentityResolution? = nil, _ successHandler: OnSuccessHandler? = nil, _ failureHandler: OnFailureHandler? = nil, _ isAnon: Bool = false) {
+        implementation?.setUserId(userId, authToken: authToken, successHandler: successHandler, failureHandler: failureHandler, isAnon: isAnon, identityResolution: identityResolution)
     }
     
     /// Handle a Universal Link
