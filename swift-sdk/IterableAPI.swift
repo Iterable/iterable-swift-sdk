@@ -139,21 +139,21 @@ import UIKit
 
     // MARK: - SDK
     
-    public static func setEmail(_ email: String?, _ authToken: String? = nil, _ successHandler: OnSuccessHandler? = nil, _ failureHandler: OnFailureHandler? = nil) {
-        implementation?.setEmail(email, authToken: authToken, successHandler: successHandler, failureHandler: failureHandler)
-    }
-    
-    public static func setUserId(_ userId: String?, _ authToken: String? = nil, _ successHandler: OnSuccessHandler? = nil, _ failureHandler: OnFailureHandler? = nil) {
-        implementation?.setUserId(userId, authToken: authToken, successHandler: successHandler, failureHandler: failureHandler)
-    }
-    
-    public static func setEmail(_ email: String?, _ authToken: String? = nil, _ identityResolution: IterableIdentityResolution? = nil, _ successHandler: OnSuccessHandler? = nil, _ failureHandler: OnFailureHandler? = nil) {
+    public static func setEmail(_ email: String?, _ authToken: String? = nil,  _ identityResolution: IterableIdentityResolution? = nil, _ successHandler: OnSuccessHandler? = nil, _ failureHandler: OnFailureHandler? = nil) {
         implementation?.setEmail(email, authToken: authToken, successHandler: successHandler, failureHandler: failureHandler, identityResolution: identityResolution)
     }
     
-    public static func setUserId(_ userId: String?, _ authToken: String? = nil, _ identityResolution: IterableIdentityResolution? = nil, _ successHandler: OnSuccessHandler? = nil, _ failureHandler: OnFailureHandler? = nil, _ isAnon: Bool = false) {
-        implementation?.setUserId(userId, authToken: authToken, successHandler: successHandler, failureHandler: failureHandler, isAnon: isAnon, identityResolution: identityResolution)
+    public static func setUserId(_ userId: String?, _ authToken: String? = nil,  _ identityResolution: IterableIdentityResolution? = nil, _ successHandler: OnSuccessHandler? = nil, _ failureHandler: OnFailureHandler? = nil) {
+        implementation?.setUserId(userId, authToken: authToken, successHandler: successHandler, failureHandler: failureHandler, identityResolution: identityResolution)
     }
+    
+//    public static func setEmail(_ email: String?, _ authToken: String? = nil, _ identityResolution: IterableIdentityResolution? = nil, _ successHandler: OnSuccessHandler? = nil, _ failureHandler: OnFailureHandler? = nil) {
+//        implementation?.setEmail(email, authToken: authToken, successHandler: successHandler, failureHandler: failureHandler, identityResolution: identityResolution)
+//    }
+//    
+//    public static func setUserId(_ userId: String?, _ authToken: String? = nil, _ identityResolution: IterableIdentityResolution? = nil, _ successHandler: OnSuccessHandler? = nil, _ failureHandler: OnFailureHandler? = nil, _ isAnon: Bool = false) {
+//        implementation?.setUserId(userId, authToken: authToken, successHandler: successHandler, failureHandler: failureHandler, isAnon: isAnon, identityResolution: identityResolution)
+//    }
     
     /// Handle a Universal Link
     ///
