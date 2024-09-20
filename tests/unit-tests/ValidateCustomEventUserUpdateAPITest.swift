@@ -173,7 +173,7 @@ final class ValidateCustomEventUserUpdateAPITest: XCTestCase, AuthProvider  {
             TestUtils.validateMatch(keyPath: KeyPath(keys: JsonKey.eventName), value: "animal-found", inDictionary: request.bodyDict)
 
 
-            //Check direct key exist failear
+            //Check direct key exist failure
             TestUtils.validateNil(keyPath: KeyPath(keys: "count"), inDictionary: request.bodyDict)
             TestUtils.validateNil(keyPath: KeyPath(keys: "type"), inDictionary: request.bodyDict)
             TestUtils.validateNil(keyPath: KeyPath(keys: "vaccinated"), inDictionary: request.bodyDict)
@@ -190,7 +190,7 @@ final class ValidateCustomEventUserUpdateAPITest: XCTestCase, AuthProvider  {
             TestUtils.validateMatch(keyPath: KeyPath(keys: JsonKey.dataFields, "count"), value: 6, inDictionary: request.bodyDict)
             TestUtils.validateMatch(keyPath: KeyPath(keys: JsonKey.dataFields, "vaccinated"), value: true, inDictionary: request.bodyDict)
 
-            //Check inside dataFields with nested key failear
+            //Check inside dataFields with nested key failure
             TestUtils.validateNil(keyPath: KeyPath(keys: JsonKey.dataFields, "animal-found.count"), inDictionary: request.bodyDict)
             TestUtils.validateNil(keyPath: KeyPath(keys: JsonKey.dataFields, "animal-found.type"), inDictionary: request.bodyDict)
             TestUtils.validateNil(keyPath: KeyPath(keys: JsonKey.dataFields, "animal-found.vaccinated"), inDictionary: request.bodyDict)
