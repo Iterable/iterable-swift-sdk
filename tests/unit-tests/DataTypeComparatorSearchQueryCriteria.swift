@@ -15,7 +15,7 @@ final class DataTypeComparatorSearchQueryCriteria: XCTestCase {
     private let mockDataEqual = """
        {
          "count": 1,
-         "criterias": [
+         "criteriaSets": [
            {
              "criteriaId": "285",
              "name": "Criteria_EventTimeStamp_3_Long",
@@ -110,7 +110,7 @@ final class DataTypeComparatorSearchQueryCriteria: XCTestCase {
     private let mockDataDoesNotEquals = """
        {
          "count": 1,
-         "criterias": [
+         "criteriaSets": [
            {
              "criteriaId": "285",
              "name": "Criteria_EventTimeStamp_3_Long",
@@ -185,8 +185,8 @@ final class DataTypeComparatorSearchQueryCriteria: XCTestCase {
     //MARK: Comparator test For LessThan and LessThanOrEqual
     private let mockDataLessThanOrEqual = """
             {
-                   "count": 1,
-                            "criterias": [
+                "count": 1,
+                "criteriaSets": [
                     {
                        "criteriaId": "289",
                        "name": "Criteria_EventTimeStamp_3_Long",
@@ -308,8 +308,8 @@ final class DataTypeComparatorSearchQueryCriteria: XCTestCase {
     //MARK: Comparator test For GreaterThan and GreaterThanOrEqual
     private let mockDataGreaterThanOrEqual = """
             {
-                   "count": 1,
-                            "criterias": [
+                "count": 1,
+                "criteriaSets": [
                     {
                        "criteriaId": "290",
                        "name": "Criteria_EventTimeStamp_3_Long",
@@ -430,7 +430,7 @@ final class DataTypeComparatorSearchQueryCriteria: XCTestCase {
     private let mockDataIsSet = """
        {
          "count": 1,
-         "criterias": [
+         "criteriaSets": [
            {
              "criteriaId": "285",
              "name": "Criteria_EventTimeStamp_3_Long",
@@ -511,7 +511,7 @@ final class DataTypeComparatorSearchQueryCriteria: XCTestCase {
     private let mockDataContainRegexStartWith = """
         {
             "count": 1,
-            "criterias": [
+            "criteriaSets": [
                 {
                     "criteriaId": "288",
                     "name": "Criteria_Country_User",

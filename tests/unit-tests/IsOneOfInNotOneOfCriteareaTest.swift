@@ -15,7 +15,7 @@ final class IsOneOfInNotOneOfCriteareaTest: XCTestCase {
     private let mockDataIsOneOf = """
        {
          "count": 1,
-         "criterias": [
+         "criteriaSets": [
            {
                "criteriaId": "299",
                "name": "Criteria_IsNonOf_Is_One_of",
@@ -106,7 +106,7 @@ final class IsOneOfInNotOneOfCriteareaTest: XCTestCase {
     private let mockDataIsNotOneOf = """
        {
          "count": 1,
-         "criterias": [
+         "criteriaSets": [
            {
                "criteriaId": "299",
                "name": "Criteria_IsNonOf_Is_One_of",
@@ -189,7 +189,7 @@ final class IsOneOfInNotOneOfCriteareaTest: XCTestCase {
     private let mockDataCrashTest = """
        {
          "count": 1,
-         "criterias": [
+         "criteriaSets": [
            {
                "criteriaId": "403",
                "name": "button-clicked.animal isNotOneOf [cat,giraffe,hippo,horse]",

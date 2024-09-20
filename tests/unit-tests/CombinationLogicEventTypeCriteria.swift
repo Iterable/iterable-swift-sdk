@@ -15,7 +15,7 @@ final class CombinationLogicEventTypeCriteria: XCTestCase {
     private let mockDataCombinatUserAnd = """
        {
          "count": 1,
-         "criterias": [
+         "criteriaSets": [
            {
              "criteriaId": "285",
              "name": "Criteria_EventTimeStamp_3_Long",
@@ -111,7 +111,7 @@ final class CombinationLogicEventTypeCriteria: XCTestCase {
     private let mockDataCombinatUserOr = """
        {
          "count": 1,
-         "criterias": [
+         "criteriaSets": [
            {
              "criteriaId": "285",
              "name": "Criteria_EventTimeStamp_3_Long",
@@ -199,7 +199,7 @@ final class CombinationLogicEventTypeCriteria: XCTestCase {
     private let mockDataCombinatUserNot = """
        {
          "count": 1,
-         "criterias": [
+         "criteriaSets": [
            {
              "criteriaId": "285",
              "name": "Criteria_EventTimeStamp_3_Long",
@@ -292,7 +292,7 @@ final class CombinationLogicEventTypeCriteria: XCTestCase {
     private let mockDataCombinatUpdateCartAnd = """
        {
          "count": 1,
-         "criterias": [
+         "criteriaSets": [
            {
              "criteriaId": "285",
              "name": "Criteria_EventTimeStamp_3_Long",
@@ -387,7 +387,7 @@ final class CombinationLogicEventTypeCriteria: XCTestCase {
     private let mockDataCombinatUpdateCartOr = """
        {
          "count": 1,
-         "criterias": [
+         "criteriaSets": [
            {
              "criteriaId": "285",
              "name": "Criteria_EventTimeStamp_3_Long",
@@ -481,7 +481,7 @@ final class CombinationLogicEventTypeCriteria: XCTestCase {
     private let mockDataCombinatUpdateCartNot = """
        {
          "count": 1,
-         "criterias": [
+         "criteriaSets": [
            {
              "criteriaId": "285",
              "name": "Criteria_EventTimeStamp_3_Long",
@@ -577,7 +577,7 @@ final class CombinationLogicEventTypeCriteria: XCTestCase {
     private let mockDataCombinatPurchaseAnd = """
        {
          "count": 1,
-         "criterias": [
+         "criteriaSets": [
            {
              "criteriaId": "285",
              "name": "Criteria_EventTimeStamp_3_Long",
@@ -678,7 +678,7 @@ final class CombinationLogicEventTypeCriteria: XCTestCase {
     private let mockDataCombinatPurchaseOr = """
        {
          "count": 1,
-         "criterias": [
+         "criteriaSets": [
            {
              "criteriaId": "285",
              "name": "Criteria_EventTimeStamp_3_Long",
@@ -779,7 +779,7 @@ final class CombinationLogicEventTypeCriteria: XCTestCase {
     private let mockDataCombinatPurchaseNot = """
        {
          "count": 1,
-         "criterias": [
+         "criteriaSets": [
            {
              "criteriaId": "285",
              "name": "Criteria_EventTimeStamp_3_Long",
@@ -879,7 +879,7 @@ final class CombinationLogicEventTypeCriteria: XCTestCase {
     private let mockDataCombinatPurchaseCustomEventAnd = """
        {
          "count": 1,
-         "criterias": [
+         "criteriaSets": [
            {
              "criteriaId": "285",
              "name": "Criteria_EventTimeStamp_3_Long",
@@ -973,7 +973,7 @@ final class CombinationLogicEventTypeCriteria: XCTestCase {
     private let mockDataCombinatPurchaseCustomEventOr = """
        {
          "count": 1,
-         "criterias": [
+         "criteriaSets": [
            {
              "criteriaId": "285",
              "name": "Criteria_EventTimeStamp_3_Long",
@@ -1067,7 +1067,7 @@ final class CombinationLogicEventTypeCriteria: XCTestCase {
     private let mockDataCombinatPurchaseCustomEventNot = """
            {
              "count": 1,
-             "criterias": [
+             "criteriaSets": [
                {
                  "criteriaId": "285",
                  "name": "Criteria_EventTimeStamp_3_Long",

@@ -37,7 +37,7 @@ final class ValidateCustomEventUserUpdateAPITest: XCTestCase, AuthProvider  {
     let mockData = """
     {
       "count": 1,
-      "criterias": [
+      "criteriaSets": [
         {
           "criteriaId": "6",
           "name": "EventCriteria",

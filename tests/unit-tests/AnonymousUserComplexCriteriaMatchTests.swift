@@ -15,7 +15,7 @@ class AnonymousUserComplexCriteriaMatchTests: XCTestCase {
     private let mockDataForCriteria1 = """
     {
       "count": 1,
-      "criterias": [
+      "criteriaSets": [
         {
           "criteriaId": "49",
           "name": "updateCart",
@@ -142,7 +142,7 @@ class AnonymousUserComplexCriteriaMatchTests: XCTestCase {
     private let mockDataForCriteria2 = """
     {
       "count": 1,
-      "criterias": [
+      "criteriaSets": [
         {
           "criteriaId": "51",
           "name": "Contact Property",
@@ -272,7 +272,7 @@ class AnonymousUserComplexCriteriaMatchTests: XCTestCase {
     private let mockDataForCriteria3 = """
     {
       "count": 1,
-      "criterias": [
+      "criteriaSets": [
         {
           "criteriaId": "50",
           "name": "purchase",
@@ -396,7 +396,7 @@ class AnonymousUserComplexCriteriaMatchTests: XCTestCase {
     private let mockDataForCriteria4 = """
     {
       "count": 1,
-      "criterias": [
+      "criteriaSets": [
         {
           "criteriaId": "48",
           "name": "Custom event",

@@ -14,7 +14,7 @@ final class CustomEventUserUpdateTestCaseTests: XCTestCase {
     private let mockData = """
     {
       "count": 48,
-      "criterias": [
+      "criteriaSets": [
         {
           "criteriaId": "48",
           "name": "Custom event",

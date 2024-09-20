@@ -64,7 +64,7 @@ struct CriteriaCompletionChecker {
         var criteriaId: String? = nil
         if let json = try? JSONSerialization.jsonObject(with: anonymousCriteria, options: []) as? [String: Any] {
             // Access the criteriaList
-            if let criteriaList = json[JsonKey.criterias] as? [[String: Any]] {
+            if let criteriaList = json[JsonKey.criteriaSets] as? [[String: Any]] {
                 // Iterate over the criteria
                 for criteria in criteriaList {
                     // Perform operations on each criteria
@@ -400,10 +400,12 @@ struct CriteriaCompletionChecker {
       }
 
 
-    func getFieldValue(data: [String: Any] = ["a": ["b": ["c": 10]]], field: String = "a.b.c") -> Any? {
-        let fields = field.split(separator: ".").map(String.init)
+    func getFieldValue(data: Any, field: String) -> Any? {
+        var fields = field.split(separator: ".").map(String.init)
+        if let dictionary = data as? [String: Any] ,let dataType = dictionary[JsonKey.eventType] as? String, dataType == EventType.customEvent, let firstField = fields.first, let eventName = dictionary[JsonKey.eventName] as? String, firstField == eventName {
+            fields.removeFirst()
+        }
         var currentValue: Any? = data
-
         for (index, currentField) in fields.enumerated() {
             if index == fields.count - 1 {
                 if let currentDict = currentValue as? [String: Any] {
@@ -417,21 +419,7 @@ struct CriteriaCompletionChecker {
                 }
             }
         }
-
         return nil
-    }
-
-    func getFieldValue(data: Any, field: String) -> Any? {
-        var fields = field.split(separator: ".").map { String($0) }
-        if let dictionary = data as? [String: Any] ,let dataType = dictionary[JsonKey.eventType] as? String, dataType == EventType.customEvent, let firstField = fields.first, let eventName = dictionary[JsonKey.eventName] as? String, firstField == eventName, let lastField = fields.last {
-            fields = [lastField]
-        }
-        return fields.reduce(data) { (value, currentField) -> Any? in
-            if let dictionary = value as? [String: Any], let fieldValue = dictionary[currentField] {
-                return fieldValue
-            }
-            return nil
-        }
     }
 
 

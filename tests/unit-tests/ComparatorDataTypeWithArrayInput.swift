@@ -22,7 +22,7 @@ final class ComparatorDataTypeWithArrayInput: XCTestCase {
     private let mockDataMileStoneYearEqual = """
        {
          "count": 1,
-         "criterias": [
+         "criteriaSets": [
            {
              "criteriaId": "285",
              "name": "Criteria_EventTimeStamp_3_Long",
@@ -84,7 +84,7 @@ final class ComparatorDataTypeWithArrayInput: XCTestCase {
     private let mockDataMileStoneYearDoesNotEqual = """
        {
          "count": 1,
-         "criterias": [
+         "criteriaSets": [
            {
              "criteriaId": "285",
              "name": "Criteria_EventTimeStamp_3_Long",
@@ -147,7 +147,7 @@ final class ComparatorDataTypeWithArrayInput: XCTestCase {
     private let mockDataMileStoneYearGreaterThan = """
        {
          "count": 1,
-         "criterias": [
+         "criteriaSets": [
            {
              "criteriaId": "285",
              "name": "Criteria_EventTimeStamp_3_Long",
@@ -210,7 +210,7 @@ final class ComparatorDataTypeWithArrayInput: XCTestCase {
     private let mockDataMileStoneYearGreaterThanOrEqualTo = """
        {
          "count": 1,
-         "criterias": [
+         "criteriaSets": [
            {
              "criteriaId": "285",
              "name": "Criteria_EventTimeStamp_3_Long",
@@ -272,7 +272,7 @@ final class ComparatorDataTypeWithArrayInput: XCTestCase {
     private let mockDataMileStoneYearLessThan = """
        {
          "count": 1,
-         "criterias": [
+         "criteriaSets": [
            {
              "criteriaId": "285",
              "name": "Criteria_EventTimeStamp_3_Long",
@@ -334,7 +334,7 @@ final class ComparatorDataTypeWithArrayInput: XCTestCase {
     private let mockDataMileStoneYearLessThanOrEquaTo = """
        {
          "count": 1,
-         "criterias": [
+         "criteriaSets": [
            {
              "criteriaId": "285",
              "name": "Criteria_EventTimeStamp_3_Long",
@@ -396,7 +396,7 @@ final class ComparatorDataTypeWithArrayInput: XCTestCase {
     private let mockDataForArrayContains = """
        {
          "count": 1,
-         "criterias": [
+         "criteriaSets": [
            {
              "criteriaId": "285",
              "name": "Criteria_EventTimeStamp_3_Long",
@@ -458,7 +458,7 @@ final class ComparatorDataTypeWithArrayInput: XCTestCase {
     private let mockDataForArrayStartWith = """
        {
          "count": 1,
-         "criterias": [
+         "criteriaSets": [
            {
              "criteriaId": "285",
              "name": "Criteria_EventTimeStamp_3_Long",
@@ -530,7 +530,7 @@ final class ComparatorDataTypeWithArrayInput: XCTestCase {
     private let mockDataForArrayMatchRegex = """
        {
          "count": 1,
-         "criterias": [
+         "criteriaSets": [
            {
              "criteriaId": "285",
              "name": "Criteria_EventTimeStamp_3_Long",
@@ -600,7 +600,7 @@ final class ComparatorDataTypeWithArrayInput: XCTestCase {
     private let mockDataStringArrayMixCriteArea = """
        {
          "count": 1,
-         "criterias": [
+         "criteriaSets": [
            {
                "criteriaId": "382",
                "name": "comparison_for_Array_data_types_or",
