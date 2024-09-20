@@ -90,8 +90,10 @@ class AuthManager: IterableAuthManagerProtocol {
         
         clearRefreshTimer()
   
-        localStorage.anonymousUserEvents = nil
-        localStorage.anonymousSessions = nil
+        if localStorage.email != nil || localStorage.userId != nil || localStorage.userIdAnnon != nil {
+            localStorage.anonymousUserEvents = nil
+            localStorage.anonymousSessions = nil
+        }
 
         isLastAuthTokenValid = false
     }

@@ -13,6 +13,7 @@
 		00CB31B621096129004ACDEC /* TestUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 00CB31B4210960C4004ACDEC /* TestUtils.swift */; };
 		181063DB2C9841460078E0ED /* CustomEventUserUpdateTestCaseTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 181063DA2C9841460078E0ED /* CustomEventUserUpdateTestCaseTests.swift */; };
 		181063DD2C994FA40078E0ED /* ValidateCustomEventUserUpdateAPITest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 181063DC2C994FA40078E0ED /* ValidateCustomEventUserUpdateAPITest.swift */; };
+    181063DF2C9D51000078E0ED /* ValidateStoredEventCheckUnknownToKnownUserTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 181063DE2C9D51000078E0ED /* ValidateStoredEventCheckUnknownToKnownUserTest.swift */; };
 		182A2A152C661C9A002FF058 /* DataTypeComparatorSearchQueryCriteria.swift in Sources */ = {isa = PBXBuildFile; fileRef = 182A2A142C661C9A002FF058 /* DataTypeComparatorSearchQueryCriteria.swift */; };
 		1881A21B2C7602F80020C64D /* ComparatorDataTypeWithArrayInput.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1881A21A2C7602F80020C64D /* ComparatorDataTypeWithArrayInput.swift */; };
 		18A3520A2C7DC51C007FED53 /* NestedFieldSupportForArrayData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 18A352092C7DC51C007FED53 /* NestedFieldSupportForArrayData.swift */; };
@@ -568,6 +569,7 @@
 		00CB31B4210960C4004ACDEC /* TestUtils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestUtils.swift; sourceTree = "<group>"; };
 		181063DA2C9841460078E0ED /* CustomEventUserUpdateTestCaseTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomEventUserUpdateTestCaseTests.swift; sourceTree = "<group>"; };
 		181063DC2C994FA40078E0ED /* ValidateCustomEventUserUpdateAPITest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ValidateCustomEventUserUpdateAPITest.swift; sourceTree = "<group>"; };
+    181063DE2C9D51000078E0ED /* ValidateStoredEventCheckUnknownToKnownUserTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ValidateStoredEventCheckUnknownToKnownUserTest.swift; sourceTree = "<group>"; };
 		182A2A142C661C9A002FF058 /* DataTypeComparatorSearchQueryCriteria.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataTypeComparatorSearchQueryCriteria.swift; sourceTree = "<group>"; };
 		1881A21A2C7602F80020C64D /* ComparatorDataTypeWithArrayInput.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ComparatorDataTypeWithArrayInput.swift; sourceTree = "<group>"; };
 		18A352092C7DC51C007FED53 /* NestedFieldSupportForArrayData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NestedFieldSupportForArrayData.swift; sourceTree = "<group>"; };
@@ -1692,6 +1694,7 @@
 				18A3520B2C85BAF0007FED53 /* IsOneOfInNotOneOfCriteareaTest.swift */,
 				181063DA2C9841460078E0ED /* CustomEventUserUpdateTestCaseTests.swift */,
 				181063DC2C994FA40078E0ED /* ValidateCustomEventUserUpdateAPITest.swift */,
+        181063DE2C9D51000078E0ED /* ValidateStoredEventCheckUnknownToKnownUserTest.swift */,
 			);
 			name = "anonymous-tracking-tests";
 			sourceTree = "<group>";
@@ -2351,6 +2354,7 @@
 				55B9F15124B3D33700E8198A /* AuthTests.swift in Sources */,
 				55B06F3829D5102800C3B1BC /* BlankApiClient.swift in Sources */,
 				5588DFE928C046D7000697D7 /* MockInboxState.swift in Sources */,
+				181063DF2C9D51000078E0ED /* ValidateStoredEventCheckUnknownToKnownUserTest.swift in Sources */,
 				ACED4C01213F50B30055A497 /* LoggingTests.swift in Sources */,
 				AC52C5B8272A8B32000DCDCF /* KeychainWrapperTests.swift in Sources */,
 				ACC3FD9E2536D7A30004A2E0 /* InAppFilePersistenceTests.swift in Sources */,
