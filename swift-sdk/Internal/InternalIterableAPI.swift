@@ -134,8 +134,8 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
         
         ITBInfo()
 
-        let merge = identityResolution?.replayOnVisitorToKnown ?? config.identityResolution.replayOnVisitorToKnown
-        let replay = identityResolution?.mergeOnAnonymousToKnown ?? config.identityResolution.mergeOnAnonymousToKnown
+        let merge = identityResolution?.mergeOnAnonymousToKnown ?? config.identityResolution.mergeOnAnonymousToKnown
+        let replay = identityResolution?.replayOnVisitorToKnown ?? config.identityResolution.replayOnVisitorToKnown
         
         if(config.enableAnonTracking) {
             if(email != nil) {
@@ -168,8 +168,8 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
     func setUserId(_ userId: String?, authToken: String? = nil, successHandler: OnSuccessHandler? = nil, failureHandler: OnFailureHandler? = nil, isAnon: Bool = false, identityResolution: IterableIdentityResolution? = nil) {
         ITBInfo()
         
-        let merge = identityResolution?.replayOnVisitorToKnown ?? config.identityResolution.replayOnVisitorToKnown
-        let replay = identityResolution?.mergeOnAnonymousToKnown ?? config.identityResolution.mergeOnAnonymousToKnown
+        let merge = identityResolution?.mergeOnAnonymousToKnown ?? config.identityResolution.mergeOnAnonymousToKnown
+        let replay = identityResolution?.replayOnVisitorToKnown ?? config.identityResolution.replayOnVisitorToKnown
         
         if(config.enableAnonTracking) {
             if(userId != nil && userId != localStorage.userIdAnnon) {

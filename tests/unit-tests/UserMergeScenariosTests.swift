@@ -458,8 +458,7 @@ class UserMergeScenariosTests: XCTestCase, AuthProvider {
                    XCTAssertNil(localStorage.anonymousUserEvents, "Expected anon user to be nil")
                }
         
-        let identityResolution = IterableIdentityResolution(replayOnVisitorToKnown: true, mergeOnAnonymousToKnown: false)
-        IterableAPI.setUserId("testuseranotheruser", nil, identityResolution)
+        IterableAPI.setUserId("testuseranotheruser")
         if let userId = IterableAPI.userId {
             XCTAssertEqual(userId, "testuseranotheruser", "Expected userId to be 'testuseranotheruser'")
                } else {
