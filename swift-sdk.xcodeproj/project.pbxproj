@@ -11,7 +11,9 @@
 		00B6FACE210E88ED007535CF /* prod-1.mobileprovision in Resources */ = {isa = PBXBuildFile; fileRef = 00B6FACD210E874D007535CF /* prod-1.mobileprovision */; };
 		00B6FAD1210E8D90007535CF /* dev-1.mobileprovision in Resources */ = {isa = PBXBuildFile; fileRef = 00B6FAD0210E8D90007535CF /* dev-1.mobileprovision */; };
 		00CB31B621096129004ACDEC /* TestUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 00CB31B4210960C4004ACDEC /* TestUtils.swift */; };
-		181063DF2C9D51000078E0ED /* ValidateStoredEventCheckUnknownToKnownUserTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 181063DE2C9D51000078E0ED /* ValidateStoredEventCheckUnknownToKnownUserTest.swift */; };
+		181063DB2C9841460078E0ED /* CustomEventUserUpdateTestCaseTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 181063DA2C9841460078E0ED /* CustomEventUserUpdateTestCaseTests.swift */; };
+		181063DD2C994FA40078E0ED /* ValidateCustomEventUserUpdateAPITest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 181063DC2C994FA40078E0ED /* ValidateCustomEventUserUpdateAPITest.swift */; };
+    181063DF2C9D51000078E0ED /* ValidateStoredEventCheckUnknownToKnownUserTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 181063DE2C9D51000078E0ED /* ValidateStoredEventCheckUnknownToKnownUserTest.swift */; };
 		182A2A152C661C9A002FF058 /* DataTypeComparatorSearchQueryCriteria.swift in Sources */ = {isa = PBXBuildFile; fileRef = 182A2A142C661C9A002FF058 /* DataTypeComparatorSearchQueryCriteria.swift */; };
 		1881A21B2C7602F80020C64D /* ComparatorDataTypeWithArrayInput.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1881A21A2C7602F80020C64D /* ComparatorDataTypeWithArrayInput.swift */; };
 		18A3520A2C7DC51C007FED53 /* NestedFieldSupportForArrayData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 18A352092C7DC51C007FED53 /* NestedFieldSupportForArrayData.swift */; };
@@ -565,7 +567,9 @@
 		00B6FACD210E874D007535CF /* prod-1.mobileprovision */ = {isa = PBXFileReference; lastKnownFileType = file; path = "prod-1.mobileprovision"; sourceTree = "<group>"; };
 		00B6FAD0210E8D90007535CF /* dev-1.mobileprovision */ = {isa = PBXFileReference; lastKnownFileType = file; path = "dev-1.mobileprovision"; sourceTree = "<group>"; };
 		00CB31B4210960C4004ACDEC /* TestUtils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestUtils.swift; sourceTree = "<group>"; };
-		181063DE2C9D51000078E0ED /* ValidateStoredEventCheckUnknownToKnownUserTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ValidateStoredEventCheckUnknownToKnownUserTest.swift; sourceTree = "<group>"; };
+		181063DA2C9841460078E0ED /* CustomEventUserUpdateTestCaseTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomEventUserUpdateTestCaseTests.swift; sourceTree = "<group>"; };
+		181063DC2C994FA40078E0ED /* ValidateCustomEventUserUpdateAPITest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ValidateCustomEventUserUpdateAPITest.swift; sourceTree = "<group>"; };
+    181063DE2C9D51000078E0ED /* ValidateStoredEventCheckUnknownToKnownUserTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ValidateStoredEventCheckUnknownToKnownUserTest.swift; sourceTree = "<group>"; };
 		182A2A142C661C9A002FF058 /* DataTypeComparatorSearchQueryCriteria.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataTypeComparatorSearchQueryCriteria.swift; sourceTree = "<group>"; };
 		1881A21A2C7602F80020C64D /* ComparatorDataTypeWithArrayInput.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ComparatorDataTypeWithArrayInput.swift; sourceTree = "<group>"; };
 		18A352092C7DC51C007FED53 /* NestedFieldSupportForArrayData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NestedFieldSupportForArrayData.swift; sourceTree = "<group>"; };
@@ -1688,7 +1692,9 @@
 				18E23ADF2C6CDE97002B2D92 /* CombinationLogicEventTypeCriteria.swift */,
 				18A352092C7DC51C007FED53 /* NestedFieldSupportForArrayData.swift */,
 				18A3520B2C85BAF0007FED53 /* IsOneOfInNotOneOfCriteareaTest.swift */,
-				181063DE2C9D51000078E0ED /* ValidateStoredEventCheckUnknownToKnownUserTest.swift */,
+				181063DA2C9841460078E0ED /* CustomEventUserUpdateTestCaseTests.swift */,
+				181063DC2C994FA40078E0ED /* ValidateCustomEventUserUpdateAPITest.swift */,
+        181063DE2C9D51000078E0ED /* ValidateStoredEventCheckUnknownToKnownUserTest.swift */,
 			);
 			name = "anonymous-tracking-tests";
 			sourceTree = "<group>";
@@ -2326,6 +2332,7 @@
 				55AEA95925F05B7D00B38CED /* InAppMessageProcessorTests.swift in Sources */,
 				ACC362B824D17005002C67BA /* IterableRequestTests.swift in Sources */,
 				AC2C668720D3435700D46CC9 /* ActionRunnerTests.swift in Sources */,
+				181063DB2C9841460078E0ED /* CustomEventUserUpdateTestCaseTests.swift in Sources */,
 				00CB31B621096129004ACDEC /* TestUtils.swift in Sources */,
 				AC89661E2124FBCE0051A6CD /* AutoRegistrationTests.swift in Sources */,
 				9FF05EAF2AFEA5FA005311F7 /* MockAuthManager.swift in Sources */,
@@ -2391,6 +2398,7 @@
 				55B5498423973B5C00243E87 /* InboxSessionManagerTests.swift in Sources */,
 				ACB37AB0240268A60093A8EA /* SampleInboxViewDelegateImplementations.swift in Sources */,
 				5588DF7928C04463000697D7 /* MockNotificationResponse.swift in Sources */,
+				181063DD2C994FA40078E0ED /* ValidateCustomEventUserUpdateAPITest.swift in Sources */,
 				AC3A2FF0262EDD4C00425435 /* InAppPriorityTests.swift in Sources */,
 				ACD6116E21080564003E7F6B /* IterableAPITests.swift in Sources */,
 				5588DF8928C044BE000697D7 /* MockCustomActionDelegate.swift in Sources */,
