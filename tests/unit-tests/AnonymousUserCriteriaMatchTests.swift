@@ -250,7 +250,7 @@ class AnonymousUserCriteriaMatchTests: XCTestCase {
     
     func testCompareDataWithCustomEventCriteriaSuccess() {
         let eventItems: [[AnyHashable: Any]] = [
-            ["dataType": "customEvent", "createdAt": 1699246745093, "eventName": "button-clicked", "dataFields": ["button-clicked.lastPageViewed": "signup page"]
+            ["dataType": "customEvent", "createdAt": 1699246745093, "eventName": "button-clicked", "dataFields": ["lastPageViewed": "signup page"]
             ]]
         let expectedCriteriaId = "48"
         let matchedCriteriaId = CriteriaCompletionChecker(anonymousCriteria: data(from: mockData)!, anonymousEvents: eventItems).getMatchedCriteria()
@@ -259,7 +259,7 @@ class AnonymousUserCriteriaMatchTests: XCTestCase {
     
     func testCompareDataWithCustomEventCriteriaFailure() {
         let eventItems: [[AnyHashable: Any]] = [
-            ["dataType": "customEvent", "createdAt": 1699246745093, "eventName": "button", "dataFields": ["button-clicked.lastPageViewed": "signup page"]
+            ["dataType": "customEvent", "createdAt": 1699246745093, "eventName": "button", "dataFields": ["lastPageViewed": "signup page"]
             ]]
         let matchedCriteriaId = CriteriaCompletionChecker(anonymousCriteria: data(from: mockData)!, anonymousEvents: eventItems).getMatchedCriteria()
         XCTAssertEqual(matchedCriteriaId, nil)

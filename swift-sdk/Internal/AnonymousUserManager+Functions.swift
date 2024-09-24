@@ -389,10 +389,7 @@ struct CriteriaCompletionChecker {
                   if let valueFromObj = getFieldValue(data: eventData, field: field), let comparatorType = query[JsonKey.CriteriaItem.comparatorType] as? String {
                       return evaluateComparison(comparatorType: comparatorType, matchObj: valueFromObj, valueToCompare: query[JsonKey.CriteriaItem.value]  ?? query[JsonKey.CriteriaItem.values])
                   }
-              }
-
-              
-              if doesKeyExist {
+              } else if doesKeyExist {
                   if let comparatorType = query[JsonKey.CriteriaItem.comparatorType] as? String, (evaluateComparison(comparatorType: comparatorType, matchObj: eventData[field] ?? "", valueToCompare: query[JsonKey.CriteriaItem.value] ?? query[JsonKey.CriteriaItem.values])) {
                       return true
                   }
@@ -402,14 +399,27 @@ struct CriteriaCompletionChecker {
           return matchResult
       }
 
+
     func getFieldValue(data: Any, field: String) -> Any? {
-        let fields = field.split(separator: ".").map { String($0) }
-        return fields.reduce(data) { (value, currentField) -> Any? in
-            if let dictionary = value as? [String: Any], let fieldValue = dictionary[currentField] {
-                return fieldValue
-            }
-            return nil
+        var fields = field.split(separator: ".").map(String.init)
+        if let dictionary = data as? [String: Any] ,let dataType = dictionary[JsonKey.eventType] as? String, dataType == EventType.customEvent, let firstField = fields.first, let eventName = dictionary[JsonKey.eventName] as? String, firstField == eventName {
+            fields.removeFirst()
         }
+        var currentValue: Any? = data
+        for (index, currentField) in fields.enumerated() {
+            if index == fields.count - 1 {
+                if let currentDict = currentValue as? [String: Any] {
+                    return currentDict[currentField]
+                }
+            } else {
+                if let currentDict = currentValue as? [String: Any], let nextValue = currentDict[currentField] {
+                    currentValue = nextValue
+                } else {
+                    return nil
+                }
+            }
+        }
+        return nil
     }
 
 
