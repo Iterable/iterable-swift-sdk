@@ -194,6 +194,7 @@
 		5B5AA717284F1A6D0093FED4 /* MockNetworkSession.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5B5AA710284F1A6D0093FED4 /* MockNetworkSession.swift */; };
 		5B6C3C1127CE871F00B9A753 /* NavInboxSessionUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5B6C3C1027CE871F00B9A753 /* NavInboxSessionUITests.swift */; };
 		5B88BC482805D09D004016E5 /* NetworkSession.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5B88BC472805D09D004016E5 /* NetworkSession.swift */; };
+		9F0616412C9CA9D400FE2E6A /* IterableIdentityResolution.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F0616402C9CA9D200FE2E6A /* IterableIdentityResolution.swift */; };
 		9F76FFFF2B17884900962526 /* EmbeddedHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F76FFFE2B17884900962526 /* EmbeddedHelper.swift */; };
 		9FF05EAC2AFEA5FA005311F7 /* MockAuthManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FF05EAB2AFEA5FA005311F7 /* MockAuthManager.swift */; };
 		9FF05EAD2AFEA5FA005311F7 /* MockAuthManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FF05EAB2AFEA5FA005311F7 /* MockAuthManager.swift */; };
@@ -642,6 +643,7 @@
 		5B6C3C1027CE871F00B9A753 /* NavInboxSessionUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NavInboxSessionUITests.swift; sourceTree = "<group>"; };
 		5B88BC472805D09D004016E5 /* NetworkSession.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkSession.swift; sourceTree = "<group>"; };
 		5BFC7CED27FC9AF300E77479 /* inbox-ui-tests-app.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = "inbox-ui-tests-app.entitlements"; sourceTree = "<group>"; };
+		9F0616402C9CA9D200FE2E6A /* IterableIdentityResolution.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IterableIdentityResolution.swift; sourceTree = "<group>"; };
 		9F76FFFE2B17884900962526 /* EmbeddedHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmbeddedHelper.swift; sourceTree = "<group>"; };
 		9FF05EAB2AFEA5FA005311F7 /* MockAuthManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockAuthManager.swift; sourceTree = "<group>"; };
 		AC02480722791E2100495FB9 /* IterableInboxNavigationViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IterableInboxNavigationViewController.swift; sourceTree = "<group>"; };
@@ -1671,6 +1673,7 @@
 		E9EA7C9A2C1EDE4400A9D6FB /* AnonymousTracking */ = {
 			isa = PBXGroup;
 			children = (
+				9F0616402C9CA9D200FE2E6A /* IterableIdentityResolution.swift */,
 				E9EA7C9E2C1EDE5800A9D6FB /* AnonymousUserManager.swift */,
 				E9EA7C9B2C1EDE5800A9D6FB /* AnonymousUserManager+Functions.swift */,
 				E9EA7C9D2C1EDE5800A9D6FB /* AnonymousUserManagerProtocol.swift */,
@@ -2208,6 +2211,7 @@
 				ACB8273F22372A5C00DB17D3 /* IterableHtmlMessageViewController.swift in Sources */,
 				AC5812F624F3A90F007E6D36 /* OfflineRequestProcessor.swift in Sources */,
 				5555425028BED1B400DB5D20 /* KeychainWrapper.swift in Sources */,
+				9F0616412C9CA9D400FE2E6A /* IterableIdentityResolution.swift in Sources */,
 				AC81918A22713A400014955E /* AbstractDiffCalculator.swift in Sources */,
 				ACA95D2D275494A100AF4666 /* InboxViewRepresentable.swift in Sources */,
 				AC684A88222F4FDD00F29749 /* InAppDisplayer.swift in Sources */,
