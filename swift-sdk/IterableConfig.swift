@@ -58,6 +58,11 @@ import Foundation
     @objc func onAuthFailure(_ authFailure: AuthFailure)
 }
 
+/// The delegate for getting the UserId once annon session tracked
+@objc public protocol IterableAnonUserDelegate: AnyObject {
+    @objc func onAnonUserCreated(userId: String)
+}
+
 /// Iterable Configuration Object. Use this when initializing the API.
 @objcMembers
 public class IterableConfig: NSObject {
@@ -84,7 +89,11 @@ public class IterableConfig: NSObject {
     
     /// Implement this protocol to enable token-based authentication with the Iterable SDK
     public weak var authDelegate: IterableAuthDelegate?
-    
+
+    /// Implement this protocol to get userId once the userId set for AnonUser
+    public weak var anonUserDelegate: IterableAnonUserDelegate?
+
+
     /// When set to `true`, IterableSDK will automatically register and deregister
     /// notification tokens.
     public var autoPushRegistration = true
