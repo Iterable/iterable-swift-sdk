@@ -128,6 +128,7 @@ public class AnonymousUserManager: AnonymousUserManagerProtocol {
                 }
 
                 self.localStorage.userIdAnnon = userId
+                self.config.anonUserDelegate?.onAnonUserCreated(userId: userId)
                 IterableAPI.implementation?.setUserId(userId, authToken: nil, successHandler: nil, failureHandler: nil, isAnon: true, identityResolution: nil)
                 self.syncNonSyncedEvents()
             }
