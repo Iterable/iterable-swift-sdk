@@ -1,0 +1,15 @@
+{
+  "originHash" : "fbccee06323cd39972bf0c106d394418cb5bd9873f5a8b8364dda678e9616e8b",
+  "pins" : [
+    {
+      "identity" : "swift-sdk",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/Iterable/swift-sdk",
+      "state" : {
+        "revision" : "89a68e92a6ff389644bf6b6b08f77f41201a4b47",
+        "version" : "6.5.7"
+      }
+    }
+  ],
+  "version" : 3
+}

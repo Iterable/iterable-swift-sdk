@@ -7,8 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		551A5FF1251AB1950004C9A0 /* IterableSDK in Frameworks */ = {isa = PBXBuildFile; productRef = 551A5FF0251AB1950004C9A0 /* IterableSDK */; };
-		551A5FF3251AB19B0004C9A0 /* IterableAppExtensions in Frameworks */ = {isa = PBXBuildFile; productRef = 551A5FF2251AB19B0004C9A0 /* IterableAppExtensions */; };
+		09D8C3482CA597AA00A14EF3 /* IterableSDK in Frameworks */ = {isa = PBXBuildFile; productRef = 09D8C3472CA597AA00A14EF3 /* IterableSDK */; };
+		09D8C34A2CA597B300A14EF3 /* IterableAppExtensions in Frameworks */ = {isa = PBXBuildFile; productRef = 09D8C3492CA597B300A14EF3 /* IterableAppExtensions */; };
 		AC1BDF5820E304BC000010CA /* CoffeeListTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC5ECD9E20E304000081E1DA /* CoffeeListTableViewController.swift */; };
 		AC1BDF5920E304BF000010CA /* DeepLinkHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC1BDF5720E30436000010CA /* DeepLinkHandler.swift */; };
 		AC1BDF5A20E304CC000010CA /* CoffeeViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC5ECD9F20E304070081E1DA /* CoffeeViewController.swift */; };
@@ -51,7 +51,6 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
-		551A5FEC251AB1510004C9A0 /* swift-sdk */ = {isa = PBXFileReference; lastKnownFileType = folder; name = "swift-sdk"; path = ../..; sourceTree = "<group>"; };
 		AC1BDF5720E30436000010CA /* DeepLinkHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeepLinkHandler.swift; sourceTree = "<group>"; };
 		AC5ECD9C20E303D20081E1DA /* UIViewController+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIViewController+Extension.swift"; sourceTree = "<group>"; };
 		AC5ECD9E20E304000081E1DA /* CoffeeListTableViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoffeeListTableViewController.swift; sourceTree = "<group>"; };
@@ -78,7 +77,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				551A5FF1251AB1950004C9A0 /* IterableSDK in Frameworks */,
+				09D8C3482CA597AA00A14EF3 /* IterableSDK in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -86,13 +85,20 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				551A5FF3251AB19B0004C9A0 /* IterableAppExtensions in Frameworks */,
+				09D8C34A2CA597B300A14EF3 /* IterableAppExtensions in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		09D8C3462CA597AA00A14EF3 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
 		AC5ECD9B20E3038B0081E1DA /* Deep Link Handling */ = {
 			isa = PBXGroup;
 			children = (
@@ -117,8 +123,8 @@
 			children = (
 				ACA3A13720E2F6AF00FEF74F /* swift-sample-app */,
 				ACA3A14F20E2F83E00FEF74F /* swift-sample-app-notification-extension */,
+				09D8C3462CA597AA00A14EF3 /* Frameworks */,
 				ACA3A13620E2F6AF00FEF74F /* Products */,
-				551A5FEC251AB1510004C9A0 /* swift-sdk */,
 			);
 			sourceTree = "<group>";
 		};
@@ -218,7 +224,7 @@
 			);
 			name = "swift-sample-app";
 			packageProductDependencies = (
-				551A5FF0251AB1950004C9A0 /* IterableSDK */,
+				09D8C3472CA597AA00A14EF3 /* IterableSDK */,
 			);
 			productName = "swift-sample-app";
 			productReference = ACA3A13520E2F6AF00FEF74F /* swift-sample-app.app */;
@@ -238,7 +244,7 @@
 			);
 			name = "swift-sample-app-notification-extension";
 			packageProductDependencies = (
-				551A5FF2251AB19B0004C9A0 /* IterableAppExtensions */,
+				09D8C3492CA597B300A14EF3 /* IterableAppExtensions */,
 			);
 			productName = "swift-sample-app-notification-extension";
 			productReference = ACA3A14E20E2F83D00FEF74F /* swift-sample-app-notification-extension.appex */;
@@ -281,6 +287,9 @@
 				Base,
 			);
 			mainGroup = ACA3A12C20E2F6AF00FEF74F;
+			packageReferences = (
+				09D8C3452CA5966C00A14EF3 /* XCRemoteSwiftPackageReference "swift-sdk" */,
+			);
 			productRefGroup = ACA3A13620E2F6AF00FEF74F /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
@@ -591,13 +600,26 @@
 		};
 /* End XCConfigurationList section */
 
+/* Begin XCRemoteSwiftPackageReference section */
+		09D8C3452CA5966C00A14EF3 /* XCRemoteSwiftPackageReference "swift-sdk" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/Iterable/swift-sdk";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 6.5.7;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
 /* Begin XCSwiftPackageProductDependency section */
-		551A5FF0251AB1950004C9A0 /* IterableSDK */ = {
+		09D8C3472CA597AA00A14EF3 /* IterableSDK */ = {
 			isa = XCSwiftPackageProductDependency;
+			package = 09D8C3452CA5966C00A14EF3 /* XCRemoteSwiftPackageReference "swift-sdk" */;
 			productName = IterableSDK;
 		};
-		551A5FF2251AB19B0004C9A0 /* IterableAppExtensions */ = {
+		09D8C3492CA597B300A14EF3 /* IterableAppExtensions */ = {
 			isa = XCSwiftPackageProductDependency;
+			package = 09D8C3452CA5966C00A14EF3 /* XCRemoteSwiftPackageReference "swift-sdk" */;
 			productName = IterableAppExtensions;
 		};
 /* End XCSwiftPackageProductDependency section */
