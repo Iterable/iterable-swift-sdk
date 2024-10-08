@@ -506,26 +506,57 @@ final class CombinationComplexCriteria: XCTestCase {
                        }
                      }
                    ]
+                 },
+                 {
+                    "combinator": "Not",
+                    "searchQueries": [
+                       {
+                          "dataType": "purchase",
+                          "searchCombo": {
+                             "combinator": "And",
+                             "searchQueries": [
+                                {
+                                   "dataType": "purchase",
+                                   "field": "total",
+                                   "comparatorType": "LessThanOrEqualTo",
+                                   "value": "10",
+                                   "fieldType": "double"
+                                }
+                             ]
+                          }
+                       },
+                       {
+                          "dataType": "purchase",
+                          "searchCombo": {
+                             "combinator": "And",
+                             "searchQueries": [
+                                {
+                                   "dataType": "purchase",
+                                   "field": "shoppingCartItems.quantity",
+                                   "comparatorType": "LessThanOrEqualTo",
+                                   "value": "34",
+                                   "fieldType": "long"
+                                }
+                             ]
+                          }
+                       }
+                    ]
                  }
                ]
              }
            }
          ]
-       }
+    }
     """
 
     func testComplexCriteria3Success() {
         let eventItems: [[AnyHashable: Any]] = [
-            ["dataType":"user",
-             "dataFields": ["firstName": "xcode", "lastName":"ssr"]
-            ],
-            ["dataType": "customEvent",
-             "eventName": "animal-found",
-             "dataFields": ["vaccinated":true,
-                            "count":10]
+            [
+             "dataType":"purchase",
+             "createdAt": 1699246745093,
+             "items": [["id": "12", "name": "coffee", "price": 100, "quantity": 2]]
             ]
         ]
-
 
         let expectedCriteriaId = "292"
         let matchedCriteriaId = CriteriaCompletionChecker(anonymousCriteria: data(from: mockDataComplexCriteria3)!, anonymousEvents: eventItems).getMatchedCriteria()
@@ -534,13 +565,13 @@ final class CombinationComplexCriteria: XCTestCase {
 
     func testComplexCriteria3Fail() {
         let eventItems: [[AnyHashable: Any]] = [
+            [
+             "dataType":"purchase",
+             "createdAt": 1699246745093,
+             "items": [["id": "12", "name": "coffee", "price": 100, "quantity": 2]]
+            ],
             ["dataType":"user",
              "dataFields": ["firstName": "Alex", "lastName":"Aris"]
-            ],
-            ["dataType": "customEvent",
-             "eventName": "animal-found",
-             "dataFields": ["vaccinated":false,
-                            "count":4]
             ]
         ]
         let matchedCriteriaId = CriteriaCompletionChecker(anonymousCriteria: data(from: mockDataComplexCriteria3)!, anonymousEvents: eventItems).getMatchedCriteria()
