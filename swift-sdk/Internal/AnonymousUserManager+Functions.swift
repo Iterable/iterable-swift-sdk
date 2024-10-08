@@ -377,16 +377,41 @@ struct CriteriaCompletionChecker {
               } else {
                   doesKeyExist = filteredLocalDataKeys.filter {$0 as! String == field }.count > 0
               }
-              
+
               if field.contains(".") {
-                  if let firstKey = field.components(separatedBy: ".").first, let dataArray = eventData[firstKey] as? [Any], let eventType = query[JsonKey.eventType] as? String {
-                      return dataArray.contains { item in
-                          let dataItem: [String: Any] = [ firstKey: item,
-                                                          JsonKey.eventType: eventType ]
-                          return evaluateFieldLogic(searchQueries: searchQueries, eventData: dataItem)
+                  var fields = field.split(separator: ".").map { String($0) }
+                  if let type = eventData[JsonKey.eventType] as? String, let name = eventData[JsonKey.eventName] as? String, type == EventType.customEvent, name == fields.first {
+                      fields = Array(fields.dropFirst())
+                  }
+
+                  var fieldValue: Any = eventData
+                  var isSubFieldArray = false
+                  var isSubMatch = false
+
+                  for subField in fields {
+                      if let subFieldValue = (fieldValue as? [String: Any])?[subField] {
+                          if let arrayValue = subFieldValue as? [[String: Any]] {
+                              isSubFieldArray = true
+                              isSubMatch = arrayValue.contains { item in
+                                  let data = fields.reversed().reduce([String: Any]()) { acc, key in
+                                      if key == subField {
+                                          return [key: item]
+                                      }
+                                      return [key: acc]
+                                  }
+                                  return evaluateFieldLogic(searchQueries: searchQueries, eventData: eventData.merging(data) { $1 })
+                              }
+                          } else {
+                              fieldValue = subFieldValue
+                          }
                       }
                   }
-                  if let valueFromObj = getFieldValue(data: eventData, field: field), let comparatorType = query[JsonKey.CriteriaItem.comparatorType] as? String {
+
+                  if isSubFieldArray {
+                      return isSubMatch
+                  }
+
+                  if let valueFromObj =  getFieldValue(data: eventData, field: field), let comparatorType = query[JsonKey.CriteriaItem.comparatorType] as? String {
                       return evaluateComparison(comparatorType: comparatorType, matchObj: valueFromObj, valueToCompare: query[JsonKey.CriteriaItem.value]  ?? query[JsonKey.CriteriaItem.values])
                   }
               } else if doesKeyExist {
@@ -394,6 +419,7 @@ struct CriteriaCompletionChecker {
                       return true
                   }
               }
+
               return false
           }
           return matchResult
