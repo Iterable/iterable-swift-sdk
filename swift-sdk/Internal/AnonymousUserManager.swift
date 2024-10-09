@@ -212,6 +212,10 @@ public class AnonymousUserManager: AnonymousUserManagerProtocol {
     
     // Stores event data locally
     private func storeEventData(type: String, data: [AnyHashable: Any], shouldOverWrite: Bool? = false) {
+        if !self.localStorage.anonymousUsageTrack {
+            return
+        }
+
         let storedData = localStorage.anonymousUserEvents
         var eventsDataObjects: [[AnyHashable: Any]] = []
 

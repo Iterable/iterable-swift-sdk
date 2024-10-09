@@ -9,7 +9,7 @@ class IterableUserDefaults {
     init(userDefaults: UserDefaults = UserDefaults.standard) {
         self.userDefaults = userDefaults
     }
-    
+
     // migrated to IterableKeychain
     var userId: String? {
         get {
@@ -18,7 +18,7 @@ class IterableUserDefaults {
             save(string: newValue, withKey: .userId)
         }
     }
-    
+
     // migrated to IterableKeychain
     var email: String? {
         get {
@@ -27,7 +27,7 @@ class IterableUserDefaults {
             save(string: newValue, withKey: .email)
         }
     }
-    
+
     // migrated to IterableKeychain
     var authToken: String? {
         get {
@@ -36,7 +36,7 @@ class IterableUserDefaults {
             save(string: newValue, withKey: .authToken)
         }
     }
-    
+
     // deprecated, not in use anymore
     var ddlChecked: Bool {
         get {
@@ -45,7 +45,7 @@ class IterableUserDefaults {
             save(bool: newValue, withKey: .ddlChecked)
         }
     }
-    
+
     var deviceId: String? {
         get {
             string(withKey: .deviceId)
@@ -53,7 +53,7 @@ class IterableUserDefaults {
             save(string: newValue, withKey: .deviceId)
         }
     }
-    
+
     var sdkVersion: String? {
         get {
             string(withKey: .sdkVersion)
@@ -61,7 +61,7 @@ class IterableUserDefaults {
             save(string: newValue, withKey: .sdkVersion)
         }
     }
-    
+
     var offlineMode: Bool {
         get {
             return bool(withKey: .offlineMode)
@@ -69,7 +69,15 @@ class IterableUserDefaults {
             save(bool: newValue, withKey: .offlineMode)
         }
     }
-    
+
+    var anonymousUsageTrack: Bool {
+        get {
+            return bool(withKey: .anonymousUsageTrack)
+        } set {
+            save(bool: newValue, withKey: .anonymousUsageTrack)
+        }
+    }
+
     var anonymousUserEvents: [[AnyHashable: Any]]? {
         get {
             return eventData(withKey: .anonymousUserEvents)
@@ -284,6 +292,8 @@ class IterableUserDefaults {
         static let anonymousUserEvents = UserDefaultsKey(value: Const.UserDefault.offlineMode)
         static let criteriaData = UserDefaultsKey(value: Const.UserDefault.criteriaData)
         static let anonymousSessions = UserDefaultsKey(value: Const.UserDefault.anonymousSessions)
+        static let anonymousUsageTrack = UserDefaultsKey(value: Const.UserDefault.anonymousUsageTrack)
+
     }
     private struct Envelope: Codable {
         let payload: Data

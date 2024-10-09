@@ -20,7 +20,9 @@ protocol LocalStorageProtocol {
     var sdkVersion: String? { get set }
     
     var offlineMode: Bool { get set }
-    
+
+    var anonymousUsageTrack: Bool { get set }
+
     var anonymousUserEvents: [[AnyHashable: Any]]? { get set }
 
     var criteriaData: Data? { get set }

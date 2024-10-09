@@ -126,17 +126,21 @@ import UIKit
             callback?(false)
         }
         
-        if(config.enableAnonTracking) {
-            if let _implementation = implementation {
-                // call this to fetch anon criteria from API and save it into userdefaults
-                if(!_implementation.isEitherUserIdOrEmailSet()) {
-                    _implementation.anonymousUserManager.getAnonCriteria()
-                    _implementation.anonymousUserManager.updateAnonSession()
-                }
-            }
+        if let _implementation = implementation, config.enableAnonTracking, !_implementation.isEitherUserIdOrEmailSet(), _implementation.getAnonymousUsageTracked() {
+            _implementation.anonymousUserManager.getAnonCriteria()
+            _implementation.anonymousUserManager.updateAnonSession()
         }
     }
 
+    public static func setAnonymousUsageTracked(isAnonymousUsageTracked: Bool) {
+        if let _implementation = implementation {
+            _implementation.setAnonymousUsageTracked(isAnonymousUsageTracked: isAnonymousUsageTracked)
+        }
+    }
+
+    public static func getAnonymousUsageTracked() -> Bool {
+        return implementation?.getAnonymousUsageTracked() ?? false
+    }
     // MARK: - SDK
     
     public static func setEmail(_ email: String?, _ authToken: String? = nil,  _ identityResolution: IterableIdentityResolution? = nil, _ successHandler: OnSuccessHandler? = nil, _ failureHandler: OnFailureHandler? = nil) {
