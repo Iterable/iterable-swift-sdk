@@ -562,6 +562,20 @@ final class CombinationComplexCriteria: XCTestCase {
         let matchedCriteriaId = CriteriaCompletionChecker(anonymousCriteria: data(from: mockDataComplexCriteria3)!, anonymousEvents: eventItems).getMatchedCriteria()
         XCTAssertEqual(matchedCriteriaId, expectedCriteriaId)
     }
+    
+    func testComplexCriteria3Success2() {
+        let eventItems: [[AnyHashable: Any]] = [
+            [
+             "dataType":"purchase",
+             "createdAt": 1699246745067,
+             "items": [["id": "12", "name": "kittens", "price": 2, "quantity": 2]]
+            ]
+        ]
+
+        let expectedCriteriaId = "292"
+        let matchedCriteriaId = CriteriaCompletionChecker(anonymousCriteria: data(from: mockDataComplexCriteria3)!, anonymousEvents: eventItems).getMatchedCriteria()
+        XCTAssertEqual(matchedCriteriaId, expectedCriteriaId)
+    }
 
     func testComplexCriteria3Fail() {
         let eventItems: [[AnyHashable: Any]] = [
