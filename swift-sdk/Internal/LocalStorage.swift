@@ -5,7 +5,7 @@
 import Foundation
 
 struct LocalStorage: LocalStorageProtocol {
-    
+
     init(userDefaults: UserDefaults = UserDefaults.standard,
          keychain: IterableKeychain = IterableKeychain()) {
         iterableUserDefaults = IterableUserDefaults(userDefaults: userDefaults)
@@ -99,7 +99,15 @@ struct LocalStorage: LocalStorageProtocol {
             iterableUserDefaults.criteriaData = newValue
         }
     }
-    
+
+    var anonymousUsageTrack: Bool {
+        get {
+            iterableUserDefaults.anonymousUsageTrack
+        } set {
+            iterableUserDefaults.anonymousUsageTrack = newValue
+        }
+    }
+
     func getAttributionInfo(currentDate: Date) -> IterableAttributionInfo? {
         iterableUserDefaults.getAttributionInfo(currentDate: currentDate)
     }

@@ -217,7 +217,21 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
             }
         }
     }
-    
+
+    func setAnonymousUsageTracked(isAnonymousUsageTracked: Bool) {
+        self.localStorage.anonymousUsageTrack = isAnonymousUsageTracked
+        self.localStorage.anonymousUserEvents = nil
+        self.localStorage.anonymousSessions = nil
+        if isAnonymousUsageTracked {
+            self.anonymousUserManager.getAnonCriteria()
+            self.anonymousUserManager.updateAnonSession()
+        }
+    }
+
+    func getAnonymousUsageTracked() -> Bool {
+        return self.localStorage.anonymousUsageTrack
+    }
+
     // MARK: - API Request Calls
     
     func register(token: Data,
