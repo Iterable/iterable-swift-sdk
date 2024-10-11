@@ -200,11 +200,10 @@ public class AnonymousUserManager: AnonymousUserManagerProtocol {
         guard let events = localStorage.anonymousUserEvents, let criteriaData = localStorage.criteriaData  else {
             return nil
         }
-        
-        
         let matchedCriteriaId = CriteriaCompletionChecker(anonymousCriteria: criteriaData, anonymousEvents: events).getMatchedCriteria()
         return matchedCriteriaId
     }
+    
     // Gets the anonymous criteria
     public func getAnonCriteria() {
         IterableAPI.implementation?.getCriteriaData { returnedData in
