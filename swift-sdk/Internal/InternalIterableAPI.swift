@@ -219,10 +219,12 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
     }
 
     func setAnonymousUsageTracked(isAnonymousUsageTracked: Bool) {
+        ITBInfo("CONSENT CHANGED - local events cleared")
         self.localStorage.anonymousUsageTrack = isAnonymousUsageTracked
         self.localStorage.anonymousUserEvents = nil
         self.localStorage.anonymousSessions = nil
         if isAnonymousUsageTracked {
+            ITBInfo("CONSENT GIVEN - Criteria fetched")
             self.anonymousUserManager.getAnonCriteria()
             self.anonymousUserManager.updateAnonSession()
         }
@@ -309,6 +311,7 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
                     onFailure: OnFailureHandler? = nil) -> Pending<SendRequestValue, SendRequestError> {
         if !isEitherUserIdOrEmailSet() && localStorage.userIdAnnon == nil {
             if config.enableAnonTracking {
+                ITBInfo("AUT ENABLED - anon update user")
                 anonymousUserManager.trackAnonUpdateUser(dataFields)
             }
             return rejectWithInitializationError(onFailure: onFailure)
@@ -340,6 +343,7 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
                     onFailure: OnFailureHandler? = nil) -> Pending<SendRequestValue, SendRequestError> {
         if !isEitherUserIdOrEmailSet() && localStorage.userIdAnnon == nil {
             if config.enableAnonTracking {
+                ITBInfo("AUT ENABLED - anon update cart")
                 anonymousUserManager.trackAnonUpdateCart(items: items)
             }
             return rejectWithInitializationError(onFailure: onFailure)
@@ -372,6 +376,7 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
                        onFailure: OnFailureHandler? = nil) -> Pending<SendRequestValue, SendRequestError> {
         if !isEitherUserIdOrEmailSet() {
             if config.enableAnonTracking {
+                ITBInfo("AUT ENABLED - anon track purchase")
                 anonymousUserManager.trackAnonPurchaseEvent(total: total, items: items, dataFields: dataFields)
             }
             return rejectWithInitializationError(onFailure: onFailure)
@@ -445,6 +450,7 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
                onFailure: OnFailureHandler? = nil) -> Pending<SendRequestValue, SendRequestError> {
         if !isEitherUserIdOrEmailSet() && localStorage.userIdAnnon == nil {
             if config.enableAnonTracking {
+                ITBInfo("AUT ENABLED - anon track custom event")
                 anonymousUserManager.trackAnonEvent(name: eventName, dataFields: dataFields)
             }
             return rejectWithInitializationError(onFailure: onFailure)

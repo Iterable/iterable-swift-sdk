@@ -200,6 +200,8 @@ public class AnonymousUserManager: AnonymousUserManagerProtocol {
         guard let events = localStorage.anonymousUserEvents, let criteriaData = localStorage.criteriaData  else {
             return nil
         }
+        
+        
         let matchedCriteriaId = CriteriaCompletionChecker(anonymousCriteria: criteriaData, anonymousEvents: events).getMatchedCriteria()
         return matchedCriteriaId
     }
@@ -213,7 +215,7 @@ public class AnonymousUserManager: AnonymousUserManagerProtocol {
     // Stores event data locally
     private func storeEventData(type: String, data: [AnyHashable: Any], shouldOverWrite: Bool? = false) {
         if !self.localStorage.anonymousUsageTrack {
-            ITBInfo("AUT CONSENT NOT GIVEN")
+            ITBInfo("AUT CONSENT NOT GIVEN - no events being stored")
             return
         }
 
