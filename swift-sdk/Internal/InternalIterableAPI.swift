@@ -223,8 +223,8 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
         self.localStorage.anonymousUsageTrack = isAnonymousUsageTracked
         self.localStorage.anonymousUserEvents = nil
         self.localStorage.anonymousSessions = nil
-        if isAnonymousUsageTracked {
-            ITBInfo("CONSENT GIVEN - Criteria fetched")
+        if isAnonymousUsageTracked && config.enableAnonTracking {
+            ITBInfo("CONSENT GIVEN and ANON TRACKING ENABLED - Criteria fetched")
             self.anonymousUserManager.getAnonCriteria()
             self.anonymousUserManager.updateAnonSession()
         }
