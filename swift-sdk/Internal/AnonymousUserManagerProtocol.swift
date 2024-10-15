@@ -13,5 +13,5 @@ import Foundation
     func trackAnonUpdateUser(_ dataFields: [AnyHashable: Any])
     func updateAnonSession()
     func getAnonCriteria()
-    func syncNonSyncedEvents()
+    func syncEvents()
 }
