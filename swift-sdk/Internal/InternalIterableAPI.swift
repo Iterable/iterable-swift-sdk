@@ -151,13 +151,16 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
         self._email = email
         self._userId = nil
         
-        if(config.enableAnonTracking) {
-            if(email != nil) {
-                attemptAndProcessMerge(merge: merge ?? true, replay: replay ?? true, destinationUser: email, isEmail: true, failureHandler: failureHandler)
-            }
+        if config.enableAnonTracking, let email = email {
+            attemptAndProcessMerge(
+                merge: merge ?? true,
+                replay: replay ?? true,
+                destinationUser: email,
+                isEmail: true,
+                failureHandler: failureHandler
+            )
             self.localStorage.userIdAnnon = nil
         }
-        
         self._successCallback = successHandler
         self._failureCallback = failureHandler
         self.storeIdentifierData()
