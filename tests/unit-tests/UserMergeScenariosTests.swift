@@ -109,9 +109,9 @@ class UserMergeScenariosTests: XCTestCase, AuthProvider {
                }
         
         if let events = localStorage.anonymousUserEvents {
-                    XCTAssertFalse(events.isEmpty, "Expected events to be logged")
+                    XCTFail("Events are not replayed")
                } else {
-                   XCTFail("Expected events to be logged but found nil")
+                   XCTAssertNil(localStorage.anonymousUserEvents, "Expected events to be nil")
                }
  
         // Verify "merge user" API call is not made
@@ -504,9 +504,9 @@ class UserMergeScenariosTests: XCTestCase, AuthProvider {
                }
         
         if let events = localStorage.anonymousUserEvents {
-                    XCTAssertFalse(events.isEmpty, "Expected events to be logged")
+                    XCTFail("Events are not replayed")
                } else {
-                   XCTFail("Expected events to be logged but found nil")
+                   XCTAssertNil(localStorage.anonymousUserEvents, "Expected events to be nil")
                }
  
         // Verify "merge user" API call is not made
