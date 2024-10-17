@@ -58,7 +58,7 @@ final class ValidateStoredEventCheckUnknownToKnownUserTest: XCTestCase, AuthProv
 
         IterableAPI.setUserId("testuser123")
 
-        if let events = self.localStorage.anonymousUserEvents {
+        if self.localStorage.anonymousUserEvents != nil {
             XCTFail("Events are not replayed")
         } else {
             XCTAssertNil(localStorage.anonymousUserEvents, "Expected events to be nil")
