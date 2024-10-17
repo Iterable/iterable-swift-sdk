@@ -66,7 +66,7 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
     }
     
     var auth: Auth {
-        Auth(userId: userId, email: email, authToken: authManager.getAuthToken())
+        Auth(userId: userId, email: email, authToken: authManager.getAuthToken(), userIdAnon: localStorage.userIdAnnon)
     }
 
     var dependencyContainer: DependencyContainerProtocol
@@ -80,6 +80,14 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
     
     lazy var authManager: IterableAuthManagerProtocol = {
         self.dependencyContainer.createAuthManager(config: self.config)
+    }()
+    
+    lazy var anonymousUserManager: AnonymousUserManagerProtocol = {
+        self.dependencyContainer.createAnonymousUserManager(config: self.config)
+    }()
+    
+    lazy var anonymousUserMerge: AnonymousUserMergeProtocol = {
+        self.dependencyContainer.createAnonymousUserMerge(apiClient: apiClient as! ApiClient, anonymousUserManager: anonymousUserManager, localStorage: localStorage)
     }()
     
     lazy var embeddedManager: IterableInternalEmbeddedManagerProtocol = {
@@ -122,58 +130,119 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
         _payloadData = data
     }
     
-    func setEmail(_ email: String?, authToken: String? = nil, successHandler: OnSuccessHandler? = nil, failureHandler: OnFailureHandler? = nil) {
+    func setEmail(_ email: String?, authToken: String? = nil, successHandler: OnSuccessHandler? = nil, failureHandler: OnFailureHandler? = nil, identityResolution: IterableIdentityResolution? = nil) {
+        
         ITBInfo()
+
+        let merge = identityResolution?.mergeOnAnonymousToKnown ?? config.identityResolution.mergeOnAnonymousToKnown
+        let replay = identityResolution?.replayOnVisitorToKnown ?? config.identityResolution.replayOnVisitorToKnown
         
-        if _email == email && email != nil && authToken != nil {
-            checkAndUpdateAuthToken(authToken)
+        if self._email == email && email != nil {
+            self.checkAndUpdateAuthToken(authToken)
             return
         }
         
-        if _email == email {
+        if self._email == email {
             return
         }
         
-        logoutPreviousUser()
+        self.logoutPreviousUser()
         
-        _email = email
-        _userId = nil
-        _successCallback = successHandler
-        _failureCallback = failureHandler
+        self._email = email
+        self._userId = nil
         
-        storeIdentifierData()
-        
-        onLogin(authToken)
+        if config.enableAnonTracking, let email = email {
+            attemptAndProcessMerge(
+                merge: merge ?? true,
+                replay: replay ?? true,
+                destinationUser: email,
+                isEmail: true,
+                failureHandler: failureHandler
+            )
+            self.localStorage.userIdAnnon = nil
+        }
+        self._successCallback = successHandler
+        self._failureCallback = failureHandler
+        self.storeIdentifierData()
+        self.onLogin(authToken)
+
     }
     
-    func setUserId(_ userId: String?, authToken: String? = nil, successHandler: OnSuccessHandler? = nil, failureHandler: OnFailureHandler? = nil) {
+    func setUserId(_ userId: String?, authToken: String? = nil, successHandler: OnSuccessHandler? = nil, failureHandler: OnFailureHandler? = nil, isAnon: Bool = false, identityResolution: IterableIdentityResolution? = nil) {
         ITBInfo()
         
-        if _userId == userId && userId != nil && authToken != nil {
-            checkAndUpdateAuthToken(authToken)
+        let merge = identityResolution?.mergeOnAnonymousToKnown ?? config.identityResolution.mergeOnAnonymousToKnown
+        let replay = identityResolution?.replayOnVisitorToKnown ?? config.identityResolution.replayOnVisitorToKnown
+        
+        if self._userId == userId && userId != nil {
+            self.checkAndUpdateAuthToken(authToken)
             return
         }
         
-        if _userId == userId {
+        if self._userId == userId {
             return
         }
         
-        logoutPreviousUser()
+        self.logoutPreviousUser()
         
-        _email = nil
-        _userId = userId
-        _successCallback = successHandler
-        _failureCallback = failureHandler
+        self._email = nil
+        self._userId = userId
         
-        storeIdentifierData()
+        if config.enableAnonTracking {
+            if let userId = userId, userId != localStorage.userIdAnnon {
+                attemptAndProcessMerge(
+                    merge: merge ?? true,
+                    replay: replay ?? true,
+                    destinationUser: userId,
+                    isEmail: false,
+                    failureHandler: failureHandler
+                )
+            }
+            
+            if !isAnon {
+                localStorage.userIdAnnon = nil
+            }
+        }
         
-        onLogin(authToken)
+        self._successCallback = successHandler
+        self._failureCallback = failureHandler
+        self.storeIdentifierData()
+        self.onLogin(authToken)
     }
     
     func logoutUser() {
         logoutPreviousUser()
     }
     
+    func attemptAndProcessMerge(merge: Bool, replay: Bool, destinationUser: String?, isEmail: Bool, failureHandler: OnFailureHandler? = nil) {
+        anonymousUserMerge.tryMergeUser(destinationUser: destinationUser, isEmail: isEmail, merge: merge) { mergeResult, error in
+            
+            if mergeResult == MergeResult.mergenotrequired ||  mergeResult == MergeResult.mergesuccessful {
+                if (replay) {
+                    self.anonymousUserManager.syncEvents()
+                }
+            } else {
+                failureHandler?(error, nil)
+            }
+        }
+    }
+
+    func setAnonymousUsageTracked(isAnonymousUsageTracked: Bool) {
+        ITBInfo("CONSENT CHANGED - local events cleared")
+        self.localStorage.anonymousUsageTrack = isAnonymousUsageTracked
+        self.localStorage.anonymousUserEvents = nil
+        self.localStorage.anonymousSessions = nil
+        if isAnonymousUsageTracked && config.enableAnonTracking {
+            ITBInfo("CONSENT GIVEN and ANON TRACKING ENABLED - Criteria fetched")
+            self.anonymousUserManager.getAnonCriteria()
+            self.anonymousUserManager.updateAnonSession()
+        }
+    }
+
+    func getAnonymousUsageTracked() -> Bool {
+        return self.localStorage.anonymousUsageTrack
+    }
+
     // MARK: - API Request Calls
     
     func register(token: Data,
@@ -184,6 +253,14 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
             ITBError(errorMessage)
             _failureCallback?(errorMessage, nil)
             onFailure?(errorMessage, nil)
+            return
+        }
+        
+        if !isEitherUserIdOrEmailSet() && localStorage.userIdAnnon == nil {
+            if config.enableAnonTracking {
+                anonymousUserManager.trackAnonTokenRegistration(token: token.hexString())
+            }
+            onFailure?("Iterable SDK must be initialized with an API key and user email/userId before calling SDK methods", nil)
             return
         }
         
@@ -241,7 +318,14 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
                     mergeNestedObjects: Bool,
                     onSuccess: OnSuccessHandler? = nil,
                     onFailure: OnFailureHandler? = nil) -> Pending<SendRequestValue, SendRequestError> {
-        requestHandler.updateUser(dataFields, mergeNestedObjects: mergeNestedObjects, onSuccess: onSuccess, onFailure: onFailure)
+        if !isEitherUserIdOrEmailSet() && localStorage.userIdAnnon == nil {
+            if config.enableAnonTracking {
+                ITBInfo("AUT ENABLED - anon update user")
+                anonymousUserManager.trackAnonUpdateUser(dataFields)
+            }
+            return rejectWithInitializationError(onFailure: onFailure)
+        }
+        return requestHandler.updateUser(dataFields, mergeNestedObjects: mergeNestedObjects, onSuccess: onSuccess, onFailure: onFailure)
     }
     
     @discardableResult
@@ -266,7 +350,29 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
     func updateCart(items: [CommerceItem],
                     onSuccess: OnSuccessHandler? = nil,
                     onFailure: OnFailureHandler? = nil) -> Pending<SendRequestValue, SendRequestError> {
-        requestHandler.updateCart(items: items, onSuccess: onSuccess, onFailure: onFailure)
+        if !isEitherUserIdOrEmailSet() && localStorage.userIdAnnon == nil {
+            if config.enableAnonTracking {
+                ITBInfo("AUT ENABLED - anon update cart")
+                anonymousUserManager.trackAnonUpdateCart(items: items)
+            }
+            return rejectWithInitializationError(onFailure: onFailure)
+        }
+        return requestHandler.updateCart(items: items, onSuccess: onSuccess, onFailure: onFailure)
+    }
+    
+    @discardableResult
+    func updateCart(items: [CommerceItem],
+                    createdAt: Int,
+                    onSuccess: OnSuccessHandler? = nil,
+                    onFailure: OnFailureHandler? = nil) -> Pending<SendRequestValue, SendRequestError> {
+        return requestHandler.updateCart(items: items, createdAt: createdAt, onSuccess: onSuccess, onFailure: onFailure)
+    }
+    
+    private func rejectWithInitializationError(onFailure: OnFailureHandler? = nil) -> Pending<SendRequestValue, SendRequestError> {
+        let result = Fulfill<SendRequestValue, SendRequestError>()
+        result.reject(with: SendRequestError())
+        onFailure?("Iterable SDK must be initialized with an API key and user email/userId before calling SDK methods", nil)
+        return result
     }
     
     @discardableResult
@@ -277,11 +383,33 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
                        templateId: NSNumber? = nil,
                        onSuccess: OnSuccessHandler? = nil,
                        onFailure: OnFailureHandler? = nil) -> Pending<SendRequestValue, SendRequestError> {
-        requestHandler.trackPurchase(total,
+        if !isEitherUserIdOrEmailSet() {
+            if config.enableAnonTracking {
+                ITBInfo("AUT ENABLED - anon track purchase")
+                anonymousUserManager.trackAnonPurchaseEvent(total: total, items: items, dataFields: dataFields)
+            }
+            return rejectWithInitializationError(onFailure: onFailure)
+        }
+        return requestHandler.trackPurchase(total,
                                      items: items,
                                      dataFields: dataFields,
                                      campaignId: campaignId,
                                      templateId: templateId,
+                                     onSuccess: onSuccess,
+                                     onFailure: onFailure)
+    }
+    
+    @discardableResult
+    func trackPurchase(_ total: NSNumber,
+                       items: [CommerceItem],
+                       dataFields: [AnyHashable: Any]? = nil,
+                       createdAt: Int,
+                       onSuccess: OnSuccessHandler? = nil,
+                       onFailure: OnFailureHandler? = nil) -> Pending<SendRequestValue, SendRequestError> {
+        return requestHandler.trackPurchase(total,
+                                     items: items,
+                                     dataFields: dataFields,
+                                     createdAt: createdAt,
                                      onSuccess: onSuccess,
                                      onFailure: onFailure)
     }
@@ -329,7 +457,22 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
                dataFields: [AnyHashable: Any]? = nil,
                onSuccess: OnSuccessHandler? = nil,
                onFailure: OnFailureHandler? = nil) -> Pending<SendRequestValue, SendRequestError> {
-        requestHandler.track(event: eventName, dataFields: dataFields, onSuccess: onSuccess, onFailure: onFailure)
+        if !isEitherUserIdOrEmailSet() && localStorage.userIdAnnon == nil {
+            if config.enableAnonTracking {
+                ITBInfo("AUT ENABLED - anon track custom event")
+                anonymousUserManager.trackAnonEvent(name: eventName, dataFields: dataFields)
+            }
+            return rejectWithInitializationError(onFailure: onFailure)
+        }
+        return requestHandler.track(event: eventName, dataFields: dataFields, onSuccess: onSuccess, onFailure: onFailure)
+    }
+    
+    @discardableResult
+    func track(_ eventName: String,
+               withBody body: [AnyHashable: Any],
+               onSuccess: OnSuccessHandler? = nil,
+               onFailure: OnFailureHandler? = nil) -> Pending<SendRequestValue, SendRequestError> {
+        requestHandler.track(event: eventName, withBody: body, onSuccess: onSuccess, onFailure: onFailure)
     }
     
     @discardableResult
@@ -546,8 +689,12 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
         }
     }
     
-    private func isEitherUserIdOrEmailSet() -> Bool {
+    public func isEitherUserIdOrEmailSet() -> Bool {
         IterableUtil.isNotNullOrEmpty(string: _email) || IterableUtil.isNotNullOrEmpty(string: _userId)
+    }
+    
+    public func isAnonUserSet() -> Bool {
+        IterableUtil.isNotNullOrEmpty(string: localStorage.userIdAnnon)
     }
     
     private func logoutPreviousUser() {
@@ -638,7 +785,7 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
     }
     
     private func checkAndUpdateAuthToken(_ authToken: String? = nil) {
-        if config.authDelegate != nil && authToken != authManager.getAuthToken() {
+        if config.authDelegate != nil && authToken != authManager.getAuthToken() && authToken != nil {
             onLogin(authToken)
         }
     }
@@ -664,6 +811,9 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
         networkSession = dependencyContainer.networkSession
         notificationStateProvider = dependencyContainer.notificationStateProvider
         localStorage = dependencyContainer.localStorage
+        //localStorage.userIdAnnon = nil      // remove this before pushing the code (only for testing)
+        //localStorage.userId = nil      // remove this before pushing the code (only for testing)
+        //localStorage.email = nil      // remove this before pushing the code (only for testing)
         inAppDisplayer = dependencyContainer.inAppDisplayer
         urlOpener = dependencyContainer.urlOpener
         deepLinkManager = DeepLinkManager(redirectNetworkSessionProvider: dependencyContainer)
@@ -758,6 +908,17 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
         }.onError { error in
             let offlineMode = self.requestHandler.offlineMode
             ITBError("Could not get remote configuration: \(error.localizedDescription), using saved value: \(offlineMode)")
+        }
+    }
+    
+    func getCriteriaData(completion: @escaping (Data) -> Void) {
+        apiClient.getCriteria().onSuccess { data in
+            do {
+                let jsonData = try JSONSerialization.data(withJSONObject: data, options: [])
+                completion(jsonData)
+            } catch {
+                print("Error converting dictionary to data: \(error)")
+            }
         }
     }
     
