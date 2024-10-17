@@ -137,13 +137,6 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
         let merge = identityResolution?.mergeOnAnonymousToKnown ?? config.identityResolution.mergeOnAnonymousToKnown
         let replay = identityResolution?.replayOnVisitorToKnown ?? config.identityResolution.replayOnVisitorToKnown
         
-        if(config.enableAnonTracking) {
-            if(email != nil) {
-                attemptAndProcessMerge(merge: merge ?? true, replay: replay ?? true, destinationUser: email, isEmail: true, failureHandler: failureHandler)
-            }
-            self.localStorage.userIdAnnon = nil
-        }
-        
         if self._email == email && email != nil {
             self.checkAndUpdateAuthToken(authToken)
             return
@@ -158,6 +151,16 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
         self._email = email
         self._userId = nil
         
+        if config.enableAnonTracking, let email = email {
+            attemptAndProcessMerge(
+                merge: merge ?? true,
+                replay: replay ?? true,
+                destinationUser: email,
+                isEmail: true,
+                failureHandler: failureHandler
+            )
+            self.localStorage.userIdAnnon = nil
+        }
         self._successCallback = successHandler
         self._failureCallback = failureHandler
         self.storeIdentifierData()
@@ -171,16 +174,6 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
         let merge = identityResolution?.mergeOnAnonymousToKnown ?? config.identityResolution.mergeOnAnonymousToKnown
         let replay = identityResolution?.replayOnVisitorToKnown ?? config.identityResolution.replayOnVisitorToKnown
         
-        if(config.enableAnonTracking) {
-            if(userId != nil && userId != localStorage.userIdAnnon) {
-                attemptAndProcessMerge(merge: merge ?? true, replay: replay ?? true, destinationUser: userId, isEmail: false, failureHandler: failureHandler)
-            }
-
-            if(!isAnon) {
-                self.localStorage.userIdAnnon = nil
-            }
-        }
-   
         if self._userId == userId && userId != nil {
             self.checkAndUpdateAuthToken(authToken)
             return
@@ -194,6 +187,22 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
         
         self._email = nil
         self._userId = userId
+        
+        if config.enableAnonTracking {
+            if let userId = userId, userId != localStorage.userIdAnnon {
+                attemptAndProcessMerge(
+                    merge: merge ?? true,
+                    replay: replay ?? true,
+                    destinationUser: userId,
+                    isEmail: false,
+                    failureHandler: failureHandler
+                )
+            }
+            
+            if !isAnon {
+                localStorage.userIdAnnon = nil
+            }
+        }
         
         self._successCallback = successHandler
         self._failureCallback = failureHandler
@@ -210,7 +219,7 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
             
             if mergeResult == MergeResult.mergenotrequired ||  mergeResult == MergeResult.mergesuccessful {
                 if (replay) {
-                    self.anonymousUserManager.syncNonSyncedEvents()
+                    self.anonymousUserManager.syncEvents()
                 }
             } else {
                 failureHandler?(error, nil)

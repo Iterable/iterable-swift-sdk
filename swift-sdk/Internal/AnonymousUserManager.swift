@@ -143,7 +143,7 @@ public class AnonymousUserManager: AnonymousUserManagerProtocol {
     }
     
     // Syncs locally saved data through track APIs
-    private func syncEvents() {
+    public func syncEvents() {
         let events = localStorage.anonymousUserEvents
         var successfulSyncedData: [Int] = []
         
