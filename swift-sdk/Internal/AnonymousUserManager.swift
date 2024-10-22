@@ -218,9 +218,9 @@ public class AnonymousUserManager: AnonymousUserManagerProtocol {
         }
         
         if type == EventType.updateUser {
-            processAndStoreUserUpdate(data: data, shouldOverWrite: shouldOverWrite)
+            processAndStoreUserUpdate(data: data)
         } else {
-            processAndStoreEvent(type: type, data: data, shouldOverWrite: shouldOverWrite)
+            processAndStoreEvent(type: type, data: data)
         }
         
         if let criteriaId = evaluateCriteriaAndReturnID() {
@@ -229,32 +229,27 @@ public class AnonymousUserManager: AnonymousUserManagerProtocol {
     }
     
     // Stores User Update data
-    private func processAndStoreUserUpdate(data: [AnyHashable: Any], shouldOverWrite: Bool) {
-        if shouldOverWrite, var userUpdate = localStorage.anonymousUserUpdate {
-            userUpdate = userUpdate.merging(data) { (_, new) in new }
-        } else {
-            var newEventData = data
-            newEventData.setValue(for: JsonKey.eventType, value: EventType.updateUser)
-            newEventData.setValue(for: JsonKey.eventTimeStamp, value: IterableUtil.secondsFromEpoch(for: dateProvider.currentDate)) // this we use as unique idenfier too
-            
-            localStorage.anonymousUserUpdate = newEventData
-        }
+    private func processAndStoreUserUpdate(data: [AnyHashable: Any]) {
+        var userUpdate = localStorage.anonymousUserUpdate ?? [:]
+        
+        // Merge new data into userUpdate
+        userUpdate.merge(data) { (_, new) in new }
+        
+        userUpdate.setValue(for: JsonKey.eventType, value: EventType.updateUser)
+        userUpdate.setValue(for: JsonKey.eventTimeStamp, value: IterableUtil.secondsFromEpoch(for: dateProvider.currentDate)) 
+        
+        localStorage.anonymousUserUpdate = userUpdate
     }
     
     // Stores all other event data
-    private func processAndStoreEvent(type: String, data: [AnyHashable: Any], shouldOverWrite: Bool) {
+    private func processAndStoreEvent(type: String, data: [AnyHashable: Any]) {
         var eventsDataObjects: [[AnyHashable: Any]] = localStorage.anonymousUserEvents ?? []
         
-        if shouldOverWrite, let indexToUpdate = eventsDataObjects.firstIndex(where: { $0[JsonKey.eventType] as? String == type }) {
-            let dataToUpdate = eventsDataObjects[indexToUpdate]
-            eventsDataObjects[indexToUpdate] = dataToUpdate.merging(data) { (_, new) in new }
-        } else {
-            var newEventData = data
-            newEventData.setValue(for: JsonKey.eventType, value: type)
-            newEventData.setValue(for: JsonKey.eventTimeStamp, value: IterableUtil.secondsFromEpoch(for: dateProvider.currentDate)) // this we use as unique idenfier too
+        var newEventData = data
+        newEventData.setValue(for: JsonKey.eventType, value: type)
+        newEventData.setValue(for: JsonKey.eventTimeStamp, value: IterableUtil.secondsFromEpoch(for: dateProvider.currentDate)) // this we use as unique idenfier too
             
-            eventsDataObjects.append(newEventData)
-        }
+        eventsDataObjects.append(newEventData)
         
         if eventsDataObjects.count > config.eventThresholdLimit {
             eventsDataObjects = eventsDataObjects.suffix(config.eventThresholdLimit)
