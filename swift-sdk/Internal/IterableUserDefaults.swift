@@ -86,6 +86,14 @@ class IterableUserDefaults {
         }
     }
     
+    var anonymousUserUpdate: [AnyHashable: Any]? {
+        get {
+            return eventData(withKey: .anonymousUserUpdate)
+        } set {
+            saveEventData(anonymousUserEvents: newValue, withKey: .anonymousUserEvents)
+        }
+    }
+    
     var criteriaData: Data? {
         get {
             return getCriteriaData(withKey: .criteriaData)
@@ -290,6 +298,7 @@ class IterableUserDefaults {
         static let sdkVersion = UserDefaultsKey(value: Const.UserDefault.sdkVersion)
         static let offlineMode = UserDefaultsKey(value: Const.UserDefault.offlineMode)
         static let anonymousUserEvents = UserDefaultsKey(value: Const.UserDefault.offlineMode)
+        static let anonymousUserUpdate = UserDefaultsKey(value: Const.UserDefault.offlineMode)
         static let criteriaData = UserDefaultsKey(value: Const.UserDefault.criteriaData)
         static let anonymousSessions = UserDefaultsKey(value: Const.UserDefault.anonymousSessions)
         static let anonymousUsageTrack = UserDefaultsKey(value: Const.UserDefault.anonymousUsageTrack)
