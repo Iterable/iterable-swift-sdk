@@ -172,7 +172,7 @@ public class AnonymousUserManager: AnonymousUserManagerProtocol {
         }
         
         if var userUpdate = localStorage.anonymousUserUpdate {
-            if let eventType = userUpdate[JsonKey.eventType] as? String {
+            if userUpdate[JsonKey.eventType] is String {
                 userUpdate.removeValue(forKey: JsonKey.eventType)
             }
             
