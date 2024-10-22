@@ -243,11 +243,7 @@ public class AnonymousUserManager: AnonymousUserManagerProtocol {
     
     // Stores all other event data
     private func processAndStoreEvent(type: String, data: [AnyHashable: Any], shouldOverWrite: Bool) {
-        var eventsDataObjects: [[AnyHashable: Any]] = []
-        
-        if let anonymousUserEvents = localStorage.anonymousUserEvents {
-            eventsDataObjects.append(contentsOf: anonymousUserEvents)
-        }
+        var eventsDataObjects: [[AnyHashable: Any]] = localStorage.anonymousUserEvents ?? []
         
         if shouldOverWrite, let indexToUpdate = eventsDataObjects.firstIndex(where: { $0[JsonKey.eventType] as? String == type }) {
             let dataToUpdate = eventsDataObjects[indexToUpdate]
