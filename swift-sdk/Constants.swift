@@ -71,6 +71,7 @@ enum Const {
         static let sdkVersion = "itbl_sdk_version"
         static let offlineMode = "itbl_offline_mode"
         static let anonymousUserEvents = "itbl_anonymous_user_events"
+        static let anonymousUserUpdate = "itbl_anonymous_user_update"
         static let criteriaData = "itbl_criteria_data"
         static let anonymousSessions = "itbl_anon_sessions"
         static let matchedCriteria = "itbl_matched_criteria"

@@ -83,6 +83,14 @@ struct LocalStorage: LocalStorageProtocol {
             iterableUserDefaults.anonymousUserEvents = newValue
         }
     }
+    
+    var anonymousUserUpdate: [AnyHashable: Any]? {
+        get {
+            iterableUserDefaults.anonymousUserUpdate
+        } set {
+            iterableUserDefaults.anonymousUserUpdate = newValue
+        }
+    }
 
     var anonymousSessions: IterableAnonSessionsWrapper? {
         get {

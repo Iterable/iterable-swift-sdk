@@ -86,6 +86,14 @@ class IterableUserDefaults {
         }
     }
     
+    var anonymousUserUpdate: [AnyHashable: Any]? {
+        get {
+            return userUpdateData(withKey: .anonymousUserUpdate)
+        } set {
+            saveUserUpdate(newValue, withKey: .anonymousUserUpdate)
+        }
+    }
+    
     var criteriaData: Data? {
         get {
             return getCriteriaData(withKey: .criteriaData)
@@ -132,6 +140,10 @@ class IterableUserDefaults {
     
     private func saveEventData(anonymousUserEvents: [[AnyHashable: Any]]?, withKey key: UserDefaultsKey) {
         userDefaults.set(anonymousUserEvents, forKey: key.value)
+    }
+    
+    private func saveUserUpdate(_ update: [AnyHashable: Any]?, withKey key: UserDefaultsKey) {
+        userDefaults.set(update, forKey: key.value)
     }
     
     func getAttributionInfo(currentDate: Date) -> IterableAttributionInfo? {
@@ -204,6 +216,10 @@ class IterableUserDefaults {
     
     private func eventData(withKey key: UserDefaultsKey) -> [[AnyHashable: Any]]? {
         userDefaults.array(forKey: key.value) as? [[AnyHashable: Any]]
+    }
+    
+    private func userUpdateData(withKey key: UserDefaultsKey) -> [AnyHashable: Any]? {
+        userDefaults.object(forKey: key.value) as? [AnyHashable: Any]
     }
     
     private func getCriteriaData(withKey key: UserDefaultsKey) -> Data? {
@@ -289,7 +305,8 @@ class IterableUserDefaults {
         static let deviceId = UserDefaultsKey(value: Const.UserDefault.deviceId)
         static let sdkVersion = UserDefaultsKey(value: Const.UserDefault.sdkVersion)
         static let offlineMode = UserDefaultsKey(value: Const.UserDefault.offlineMode)
-        static let anonymousUserEvents = UserDefaultsKey(value: Const.UserDefault.offlineMode)
+        static let anonymousUserEvents = UserDefaultsKey(value: Const.UserDefault.anonymousUserEvents)
+        static let anonymousUserUpdate = UserDefaultsKey(value: Const.UserDefault.anonymousUserUpdate)
         static let criteriaData = UserDefaultsKey(value: Const.UserDefault.criteriaData)
         static let anonymousSessions = UserDefaultsKey(value: Const.UserDefault.anonymousSessions)
         static let anonymousUsageTrack = UserDefaultsKey(value: Const.UserDefault.anonymousUsageTrack)
