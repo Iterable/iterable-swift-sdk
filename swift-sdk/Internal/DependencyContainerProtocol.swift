@@ -17,7 +17,7 @@ protocol DependencyContainerProtocol: RedirectNetworkSessionProvider {
     var apnsTypeChecker: APNSTypeCheckerProtocol { get }
     
     func createInAppFetcher(apiClient: ApiClientProtocol) -> InAppFetcherProtocol
-    func createPersistenceContextProvider() -> IterablePersistenceContextProvider?
+    func createPersistenceContextProvider() -> IterablePersistenceContextProvider
     func createRequestHandler(apiKey: String,
                               config: IterableConfig,
                               endpoint: String,
@@ -83,12 +83,7 @@ extension DependencyContainerProtocol {
                                                      dateProvider: dateProvider)
         lazy var offlineProcessor: OfflineRequestProcessor? = nil
         lazy var healthMonitor: HealthMonitor? = nil
-        guard let persistenceContextProvider = createPersistenceContextProvider() else {
-            return RequestHandler(onlineProcessor: onlineProcessor,
-                                  offlineProcessor: nil,
-                                  healthMonitor: nil,
-                                  offlineMode: offlineMode)
-        }
+        let persistenceContextProvider = createPersistenceContextProvider()
         if offlineMode {
             
             let healthMonitorDataProvider = createHealthMonitorDataProvider(persistenceContextProvider: persistenceContextProvider)
@@ -124,7 +119,7 @@ extension DependencyContainerProtocol {
         HealthMonitorDataProvider(maxTasks: 1000, persistenceContextProvider: persistenceContextProvider)
     }
     
-    func createPersistenceContextProvider() -> IterablePersistenceContextProvider? {
+    func createPersistenceContextProvider() -> IterablePersistenceContextProvider {
         CoreDataPersistenceContextProvider(dateProvider: dateProvider)
     }
     

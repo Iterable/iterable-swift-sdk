@@ -129,7 +129,7 @@ class MockDependencyContainer: DependencyContainerProtocol {
         HealthMonitorDataProvider(maxTasks: maxTasks, persistenceContextProvider: persistenceContextProvider)
     }
     
-    func createPersistenceContextProvider() -> IterablePersistenceContextProvider? {
+    func createPersistenceContextProvider() -> IterablePersistenceContextProvider {
         if let persistenceContextProvider = persistenceContextProvider {
             return persistenceContextProvider
         } else {
