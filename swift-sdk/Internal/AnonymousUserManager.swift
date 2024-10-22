@@ -92,44 +92,26 @@ public class AnonymousUserManager: AnonymousUserManagerProtocol {
         anonSessions[JsonKey.matchedCriteriaId] = Int(criteriaId)
         let appName = Bundle.main.appPackageName ?? ""
         notificationStateProvider.isNotificationsEnabled { isEnabled in
-            if (!appName.isEmpty && isEnabled) {
+            if !appName.isEmpty && isEnabled {
                 anonSessions[JsonKey.mobilePushOptIn] = appName
-            }
-            
-            // store last update user event
-            var updateUserEventIndex : Int?
-            var dataFields: [AnyHashable:Any]?
-            if let events = self.localStorage.anonymousUserEvents {
-                // if there is an update user event, find the index of the last one
-                if let eventIndex = events.lastIndex(where: { dict in
-                    if let eventType = dict[JsonKey.eventType] as? String, eventType == EventType.updateUser {
-                        return true
-                    }
-                    return false
-                }) {
-                    updateUserEventIndex = eventIndex
-                    var updateUserEvent = events[eventIndex]
-                    updateUserEvent.removeValue(forKey: JsonKey.eventType)
-                    //save update user event to data fields removing the event type
-                    dataFields = updateUserEvent
-                }
             }
            
             //track anon session for new user
-            IterableAPI.implementation?.apiClient.trackAnonSession(createdAt: IterableUtil.secondsFromEpoch(for: self.dateProvider.currentDate), withUserId: userId, dataFields: dataFields,requestJson: anonSessions).onError { error in
-                if (error.httpStatusCode == 409) {
+            IterableAPI.implementation?.apiClient.trackAnonSession(
+                createdAt: IterableUtil.secondsFromEpoch(for: self.dateProvider.currentDate),
+                withUserId: userId,
+                dataFields: self.localStorage.anonymousUserUpdate,
+                requestJson: anonSessions
+            ).onError { error in
+                if error.httpStatusCode == 409 {
                     self.getAnonCriteria() // refetch the criteria
                 }
             }.onSuccess { success in
-                //remove the update user event from local storage
-                if var events = self.localStorage.anonymousUserEvents, let index = updateUserEventIndex {
-                    events.remove(at: index)
-                    self.localStorage.anonymousUserEvents = events
-                }
-
                 self.localStorage.userIdAnnon = userId
                 self.config.anonUserDelegate?.onAnonUserCreated(userId: userId)
-                IterableAPI.implementation?.setUserId(userId, authToken: nil, successHandler: nil, failureHandler: nil, isAnon: true, identityResolution: nil)
+                
+                IterableAPI.implementation?.setUserId(userId, isAnon: true)
+                
                 self.syncNonSyncedEvents()
             }
         }
@@ -144,18 +126,13 @@ public class AnonymousUserManager: AnonymousUserManagerProtocol {
     
     // Syncs locally saved data through track APIs
     public func syncEvents() {
-        let events = localStorage.anonymousUserEvents
-        var successfulSyncedData: [Int] = []
-        
-        if let _events = events {
-            for var eventData in _events {
+        if let events = localStorage.anonymousUserEvents {
+            for var eventData in events {
                 if let eventType = eventData[JsonKey.eventType] as? String {
                     eventData.removeValue(forKey: JsonKey.eventType)
                     switch eventType {
                     case EventType.customEvent:
-                        IterableAPI.implementation?.track(eventData[JsonKey.eventName] as? String ?? "", withBody: eventData, onSuccess: {result in
-                            successfulSyncedData.append(eventData[JsonKey.eventTimeStamp] as? Int ?? 0)
-                        })
+                        IterableAPI.implementation?.track(eventData[JsonKey.eventName] as? String ?? "", withBody: eventData)
                         break
                     case EventType.purchase:
                         var total = NSNumber(value: 0)
@@ -163,18 +140,18 @@ public class AnonymousUserManager: AnonymousUserManagerProtocol {
                             total = _total
                         }
                         
-                        IterableAPI.implementation?.trackPurchase(total, items: convertCommerceItems(from: eventData[JsonKey.Commerce.items] as! [[AnyHashable: Any]]), dataFields: eventData[JsonKey.dataFields] as? [AnyHashable : Any], createdAt: eventData[JsonKey.Body.createdAt] as? Int ?? 0, onSuccess: {result in
-                            successfulSyncedData.append(eventData[JsonKey.eventTimeStamp] as? Int ?? 0)
-                        })
+                        IterableAPI.implementation?.trackPurchase(
+                            total,
+                            items: convertCommerceItems(from: eventData[JsonKey.Commerce.items] as! [[AnyHashable: Any]]),
+                            dataFields: eventData[JsonKey.dataFields] as? [AnyHashable : Any],
+                            createdAt: eventData[JsonKey.Body.createdAt] as? Int ?? 0
+                        )
                         break
                     case EventType.updateCart:
-                        IterableAPI.implementation?.updateCart(items: convertCommerceItems(from: eventData[JsonKey.Commerce.items] as! [[AnyHashable: Any]]), createdAt: eventData[JsonKey.Body.createdAt] as? Int ?? 0,
-                                               onSuccess: {result in
-                                                  successfulSyncedData.append(eventData[JsonKey.eventTimeStamp] as? Int ?? 0)
-                        })
-                        break
-                    case EventType.updateUser:
-                        IterableAPI.implementation?.updateUser(eventData, mergeNestedObjects: false)
+                        IterableAPI.implementation?.updateCart(
+                            items: convertCommerceItems(from: eventData[JsonKey.Commerce.items] as! [[AnyHashable: Any]]),
+                            createdAt: eventData[JsonKey.Body.createdAt] as? Int ?? 0
+                        )
                         break
                     default:
                         break
@@ -193,15 +170,36 @@ public class AnonymousUserManager: AnonymousUserManagerProtocol {
             localStorage.anonymousUserEvents = nil
             localStorage.anonymousSessions = nil
         }
+        
+        if var userUpdate = localStorage.anonymousUserUpdate {
+            if let eventType = userUpdate[JsonKey.eventType] as? String {
+                userUpdate.removeValue(forKey: JsonKey.eventType)
+            }
+            
+            IterableAPI.implementation?.updateUser(userUpdate, mergeNestedObjects: false)
+            
+            localStorage.anonymousUserUpdate = nil
+        }
+            
     }
 
     // Checks if criterias are being met and returns criteriaId if it matches the criteria.
     private func evaluateCriteriaAndReturnID() -> String? {
-        guard let events = localStorage.anonymousUserEvents, let criteriaData = localStorage.criteriaData  else {
-            return nil
+        guard let criteriaData = localStorage.criteriaData else { return nil }
+        
+        var events: [[AnyHashable: Any]]?
+        
+        if let anonymousUserEvents = localStorage.anonymousUserEvents {
+            events?.append(contentsOf: anonymousUserEvents)
         }
-        let matchedCriteriaId = CriteriaCompletionChecker(anonymousCriteria: criteriaData, anonymousEvents: events).getMatchedCriteria()
-        return matchedCriteriaId
+        
+        if let userUpdate = localStorage.anonymousUserUpdate {
+            events?.append(userUpdate)
+        }
+        
+        guard let events else { return nil }
+        
+        return CriteriaCompletionChecker(anonymousCriteria: criteriaData, anonymousEvents: events).getMatchedCriteria()
     }
     
     // Gets the anonymous criteria
@@ -212,41 +210,60 @@ public class AnonymousUserManager: AnonymousUserManagerProtocol {
     }
     
     // Stores event data locally
-    private func storeEventData(type: String, data: [AnyHashable: Any], shouldOverWrite: Bool? = false) {
+    private func storeEventData(type: String, data: [AnyHashable: Any], shouldOverWrite: Bool = false) {
+        // Early return if no AUT consent was given
         if !self.localStorage.anonymousUsageTrack {
             ITBInfo("AUT CONSENT NOT GIVEN - no events being stored")
             return
         }
-
-        let storedData = localStorage.anonymousUserEvents
-        var eventsDataObjects: [[AnyHashable: Any]] = []
-
-        if let _storedData = storedData {
-            eventsDataObjects = _storedData
-        }
-        var appendData = data
-        appendData.setValue(for: JsonKey.eventType, value: type)
-        appendData.setValue(for: JsonKey.eventTimeStamp, value:IterableUtil.secondsFromEpoch(for: dateProvider.currentDate)) // this we use as unique idenfier too
-
-        if shouldOverWrite == true {
-            let trackingType = type
-                    if let indexToUpdate = eventsDataObjects.firstIndex(where: { $0[JsonKey.eventType] as? String == trackingType }) {
-                        let dataToUpdate = eventsDataObjects[indexToUpdate]
-                        eventsDataObjects[indexToUpdate] = dataToUpdate.merging(data) { (_, new) in new }
-                    } else {
-                        eventsDataObjects.append(appendData)
-                    }
+        
+        if type == EventType.updateUser {
+            processAndStoreUserUpdate(data: data, shouldOverWrite: shouldOverWrite)
         } else {
-            eventsDataObjects.append(appendData)
+            processAndStoreEvent(type: type, data: data, shouldOverWrite: shouldOverWrite)
         }
-
-        let eventDataCount = eventsDataObjects.count
-        if  eventDataCount > config.eventThresholdLimit {
-            eventsDataObjects = eventsDataObjects.suffix(config.eventThresholdLimit)
-        }
-        localStorage.anonymousUserEvents = eventsDataObjects
+        
         if let criteriaId = evaluateCriteriaAndReturnID() {
             createKnownUserIfCriteriaMatched(criteriaId)
         }
+    }
+    
+    // Stores User Update data
+    private func processAndStoreUserUpdate(data: [AnyHashable: Any], shouldOverWrite: Bool) {
+        if shouldOverWrite, var userUpdate = localStorage.anonymousUserUpdate {
+            userUpdate = userUpdate.merging(data) { (_, new) in new }
+        } else {
+            var newEventData = data
+            newEventData.setValue(for: JsonKey.eventType, value: EventType.updateUser)
+            newEventData.setValue(for: JsonKey.eventTimeStamp, value: IterableUtil.secondsFromEpoch(for: dateProvider.currentDate)) // this we use as unique idenfier too
+            
+            localStorage.anonymousUserUpdate = newEventData
+        }
+    }
+    
+    // Stores all other event data
+    private func processAndStoreEvent(type: String, data: [AnyHashable: Any], shouldOverWrite: Bool) {
+        var eventsDataObjects: [[AnyHashable: Any]] = []
+        
+        if let anonymousUserEvents = localStorage.anonymousUserEvents {
+            eventsDataObjects.append(contentsOf: anonymousUserEvents)
+        }
+        
+        if shouldOverWrite, let indexToUpdate = eventsDataObjects.firstIndex(where: { $0[JsonKey.eventType] as? String == type }) {
+            let dataToUpdate = eventsDataObjects[indexToUpdate]
+            eventsDataObjects[indexToUpdate] = dataToUpdate.merging(data) { (_, new) in new }
+        } else {
+            var newEventData = data
+            newEventData.setValue(for: JsonKey.eventType, value: type)
+            newEventData.setValue(for: JsonKey.eventTimeStamp, value: IterableUtil.secondsFromEpoch(for: dateProvider.currentDate)) // this we use as unique idenfier too
+            
+            eventsDataObjects.append(newEventData)
+        }
+        
+        if eventsDataObjects.count > config.eventThresholdLimit {
+            eventsDataObjects = eventsDataObjects.suffix(config.eventThresholdLimit)
+        }
+        
+        localStorage.anonymousUserEvents = eventsDataObjects
     }
 }

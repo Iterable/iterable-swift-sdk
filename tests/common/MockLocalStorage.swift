@@ -31,6 +31,8 @@ class MockLocalStorage: LocalStorageProtocol {
     var offlineMode: Bool = false
 
     var anonymousUsageTrack: Bool = true
+    
+    var anonymousUserUpdate: [AnyHashable : Any]?
 
     func getAttributionInfo(currentDate: Date) -> IterableAttributionInfo? {
         guard !MockLocalStorage.isExpired(expiration: attributionInfoExpiration, currentDate: currentDate) else {
