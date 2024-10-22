@@ -187,17 +187,17 @@ public class AnonymousUserManager: AnonymousUserManagerProtocol {
     private func evaluateCriteriaAndReturnID() -> String? {
         guard let criteriaData = localStorage.criteriaData else { return nil }
         
-        var events: [[AnyHashable: Any]]?
+        var events = [[AnyHashable: Any]]()
         
         if let anonymousUserEvents = localStorage.anonymousUserEvents {
-            events?.append(contentsOf: anonymousUserEvents)
+            events.append(contentsOf: anonymousUserEvents)
         }
         
         if let userUpdate = localStorage.anonymousUserUpdate {
-            events?.append(userUpdate)
+            events.append(userUpdate)
         }
         
-        guard let events else { return nil }
+        guard events.count > 0 else { return nil }
         
         return CriteriaCompletionChecker(anonymousCriteria: criteriaData, anonymousEvents: events).getMatchedCriteria()
     }
