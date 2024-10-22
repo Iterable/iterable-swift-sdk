@@ -305,7 +305,7 @@ class IterableUserDefaults {
         static let deviceId = UserDefaultsKey(value: Const.UserDefault.deviceId)
         static let sdkVersion = UserDefaultsKey(value: Const.UserDefault.sdkVersion)
         static let offlineMode = UserDefaultsKey(value: Const.UserDefault.offlineMode)
-        static let anonymousUserEvents = UserDefaultsKey(value: Const.UserDefault.offlineMode)
+        static let anonymousUserEvents = UserDefaultsKey(value: Const.UserDefault.anonymousUserEvents)
         static let anonymousUserUpdate = UserDefaultsKey(value: Const.UserDefault.anonymousUserUpdate)
         static let criteriaData = UserDefaultsKey(value: Const.UserDefault.criteriaData)
         static let anonymousSessions = UserDefaultsKey(value: Const.UserDefault.anonymousSessions)
