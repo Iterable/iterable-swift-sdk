@@ -74,7 +74,7 @@ class CoffeeListTableViewController: UITableViewController {
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         if indexPath.section == 0 {
             let cell = tableView.dequeueReusableCell(withIdentifier: "anonymousUsageTrackCell", for: indexPath)
-            cell.textLabel?.text = IterableAPI.getAnonymousUsageTracked() ? "Tap to enable Anonymous Usage Track" : "Tap to disable Anonymous Usage Track"
+            cell.textLabel?.text = IterableAPI.getAnonymousUsageTracked() ? "Tap to disable Anonymous Usage Track" : "Tap to enable Anonymous Usage Track"
             cell.textLabel?.numberOfLines = 0
             cell.accessoryType = IterableAPI.getAnonymousUsageTracked() ? .checkmark : .none
             return cell

@@ -12,12 +12,28 @@ import UserNotifications
 import IterableSDK
 
 @UIApplicationMain
-class AppDelegate: UIResponder, UIApplicationDelegate {
+class AppDelegate: UIResponder, UIApplicationDelegate, IterableAuthDelegate {
+    func onAuthTokenRequested(completion: @escaping IterableSDK.AuthTokenRetrievalHandler) {
+        // ITBL: Set your actual secret.
+        let jwt = IterableTokenGenerator.generateJwtForUserId(
+            secret: "",
+            iat: Int(Date().timeIntervalSince1970),
+            exp: Int(Date().timeIntervalSince1970) + (24*60),
+            userId: IterableAPI.userId ?? "")
+        print(jwt)
+        completion(jwt)
+    }
+
+
+    func onAuthFailure(_ authFailure: IterableSDK.AuthFailure) {
+        
+    }
+    
     var window: UIWindow?
     
     // ITBL: Set your actual api key here.
     let iterableApiKey = ""
-    
+
     func application(_: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         // ITBL: Setup Notification
         setupNotifications()
@@ -28,6 +44,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         config.urlDelegate = self
         config.inAppDisplayInterval = 1
         config.anonUserDelegate = self
+        config.enableAnonTracking = true
+        config.authDelegate = self
         IterableAPI.initialize(apiKey: iterableApiKey,
                                launchOptions: launchOptions,
                                config: config)
@@ -177,3 +195,4 @@ extension AppDelegate: IterableCustomActionDelegate {
         return false
     }
 }
+
