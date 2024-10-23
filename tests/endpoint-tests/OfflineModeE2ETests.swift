@@ -81,42 +81,45 @@ class OfflineModeEndpointTests: XCTestCase {
                 "messageId": "msg_1",
             ],
         ]
-        api.trackPushOpen(pushPayload,
-                          dataFields: ["data_field1": "value1"],
-                          onSuccess: { _ in
-                              expectation1.fulfill()
-        }) { reason, _ in
+        api.trackPushOpen(
+            pushPayload,
+            dataFields: ["data_field1": "value1"],
+            onSuccess: { _ in
+                expectation1.fulfill()
+            }
+        ) { reason, _ in
             XCTFail(reason ?? "failed")
         }
-        
+
         wait(for: [expectation1], timeout: 15)
     }
-    
+
     func test04TrackEvent() throws {
         let expectation1 = expectation(description: #function)
         let localStorage = MockLocalStorage()
         localStorage.offlineMode = true
-        let api = InternalIterableAPI.initializeForE2E(apiKey: Self.apiKey,
-                                                       localStorage: localStorage)
+        let api = InternalIterableAPI.initializeForE2E(
+            apiKey: Self.apiKey,
+            localStorage: localStorage
+        )
         api.email = "user@example.com"
-        
-        api.track("event1",
-                  dataFields: ["data_field1": "value1"],
-                  onSuccess: { _ in
-                      expectation1.fulfill()
-        }) { reason, _ in
+
+        api.track(
+            "event1",
+            dataFields: ["data_field1": "value1"],
+            onSuccess: { _ in
+                expectation1.fulfill()
+            }
+        ) { reason, _ in
             XCTFail(reason ?? "failed")
         }
-        
+
         wait(for: [expectation1], timeout: 15)
     }
-    
+
     private static let apiKey = Environment.apiKey!
     private static let pushCampaignId = Environment.pushCampaignId!
     private static let pushTemplateId = Environment.pushTemplateId!
     private static let inAppCampaignId = Environment.inAppCampaignId!
-    private lazy var persistenceContextProvider: IterablePersistenceContextProvider = {
-        let provider = CoreDataPersistenceContextProvider()!
-        return provider
-    }()
+    private lazy var persistenceContextProvider: IterablePersistenceContextProvider = CoreDataPersistenceContextProvider()
 }

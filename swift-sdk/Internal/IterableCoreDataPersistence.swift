@@ -22,7 +22,15 @@ enum PersistenceConst {
 }
 
 let sharedManagedObjectModel: NSManagedObjectModel? = {
-    guard let url = PersistentContainer.dataModelUrl(fromBundles: [Bundle.main, Bundle(for: PersistentContainer.self)]) else {
+    let firstBundleURL: URL? = [Bundle.main, Bundle(for: PersistentContainer.self)].lazy.compactMap { bundle in
+        ResourceHelper.url(
+            forResource: PersistenceConst.dataModelFileName,
+            withExtension: PersistenceConst.dataModelExtension,
+            fromBundle: bundle
+        )
+    }.first
+
+    guard let url = firstBundleURL else {
         ITBError("Could not find \(PersistenceConst.dataModelFileName).\(PersistenceConst.dataModelExtension) in bundle")
         return nil
     }
@@ -39,29 +47,15 @@ final class PersistentContainer: NSPersistentContainer, @unchecked Sendable {
         return backgroundContext
     }
 
-    override init(
-        name: String = PersistenceConst.dataModelFileName,
-        managedObjectModel: NSManagedObjectModel? = sharedManagedObjectModel
-    ) {
-        if let managedObjectModel {
+    init() {
+        let name = PersistenceConst.dataModelFileName
+        if let managedObjectModel = sharedManagedObjectModel {
             super.init(name: name, managedObjectModel: managedObjectModel)
         } else {
             super.init(name: name)
         }
         viewContext.automaticallyMergesChangesFromParent = true
         viewContext.mergePolicy = NSMergePolicy(merge: NSMergePolicyType.mergeByPropertyStoreTrumpMergePolicyType)
-    }
-
-    static func dataModelUrl(fromBundles bundles: [Bundle]) -> URL? {
-        bundles.lazy.compactMap(dataModelUrl(fromBundle:)).first
-    }
-
-    private static func dataModelUrl(fromBundle bundle: Bundle) -> URL? {
-        ResourceHelper.url(
-            forResource: PersistenceConst.dataModelFileName,
-            withExtension: PersistenceConst.dataModelExtension,
-            fromBundle: bundle
-        )
     }
 }
 
