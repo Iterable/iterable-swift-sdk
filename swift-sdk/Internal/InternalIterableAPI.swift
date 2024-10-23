@@ -147,21 +147,21 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
         self._email = email
         self._userId = nil
 
-        self.onLogin(authToken) { [weak self]() -> Void in
-            guard let self = self else {
+        self.onLogin(authToken) { [weak self] in
+            guard let config = self?.config else {
                 return
             }
             let merge = identityResolution?.mergeOnAnonymousToKnown ?? config.identityResolution.mergeOnAnonymousToKnown
             let replay = identityResolution?.replayOnVisitorToKnown ?? config.identityResolution.replayOnVisitorToKnown
             if config.enableAnonTracking, let email = email {
-                attemptAndProcessMerge(
+                self?.attemptAndProcessMerge(
                     merge: merge ?? true,
                     replay: replay ?? true,
                     destinationUser: email,
                     isEmail: true,
                     failureHandler: failureHandler
                 )
-                self.localStorage.userIdAnnon = nil
+                self?.localStorage.userIdAnnon = nil
             }
         }
         
@@ -188,15 +188,15 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
         self._email = nil
         self._userId = userId
         
-        self.onLogin(authToken) { [weak self]() -> Void in
-            guard let self = self else {
+        self.onLogin(authToken) { [weak self] in
+            guard let config = self?.config else {
                 return
             }
             if config.enableAnonTracking {
-                if let userId = userId, userId != localStorage.userIdAnnon {
+                if let userId = userId, userId != (self?.localStorage.userIdAnnon ?? "") {
                     let merge = identityResolution?.mergeOnAnonymousToKnown ?? config.identityResolution.mergeOnAnonymousToKnown
                     let replay = identityResolution?.replayOnVisitorToKnown ?? config.identityResolution.replayOnVisitorToKnown
-                    attemptAndProcessMerge(
+                    self?.attemptAndProcessMerge(
                         merge: merge ?? true,
                         replay: replay ?? true,
                         destinationUser: userId,
@@ -206,7 +206,7 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
                 }
 
                 if !isAnon {
-                    localStorage.userIdAnnon = nil
+                    self?.localStorage.userIdAnnon = nil
                 }
             }
         }
