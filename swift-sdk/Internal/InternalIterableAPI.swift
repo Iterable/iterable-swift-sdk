@@ -734,10 +734,9 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
     private func storeIdentifierData() {
         localStorage.email = _email
         localStorage.userId = _userId
-
     }
     
-    private func onLogin(_ authToken: String? = nil,onloginSuccess onloginSuccessCallBack: (()->())? = nil) {
+    private func onLogin(_ authToken: String? = nil, onloginSuccess onloginSuccessCallBack: (()->())? = nil) {
         ITBInfo()
         
         self.authManager.pauseAuthRetries(false)
