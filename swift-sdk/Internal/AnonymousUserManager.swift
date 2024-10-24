@@ -86,7 +86,7 @@ public class AnonymousUserManager: AnonymousUserManagerProtocol {
     }
     
     // Creates a user after criterias met and login the user and then sync the data through track APIs
-    private func createKnownUserIfCriteriaMatched(_ criteriaId: String) {
+    private func createAnonymousUser(_ criteriaId: String) {
         var anonSessions = convertToDictionary(data: localStorage.anonymousSessions?.itbl_anon_sessions)
         let userId = IterableUtil.generateUUID()
         anonSessions[JsonKey.matchedCriteriaId] = Int(criteriaId)
@@ -224,7 +224,7 @@ public class AnonymousUserManager: AnonymousUserManagerProtocol {
         }
         
         if let criteriaId = evaluateCriteriaAndReturnID() {
-            createKnownUserIfCriteriaMatched(criteriaId)
+            createAnonymousUser(criteriaId)
         }
     }
     
