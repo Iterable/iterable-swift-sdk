@@ -161,15 +161,19 @@ class AuthManager: IterableAuthManagerProtocol {
             let isRefreshQueued = queueAuthTokenExpirationRefresh(retrievedAuthToken, onSuccess: onSuccess)
             if !isRefreshQueued {
                 onSuccess?(authToken)
+                authToken = retrievedAuthToken
+                storeAuthToken()
+            } else {
+                authToken = retrievedAuthToken
+                storeAuthToken()
+                onSuccess?(authToken)
             }
         } else {
             handleAuthFailure(failedAuthToken: nil, reason: .authTokenNull)
             scheduleAuthTokenRefreshTimer(interval: getNextRetryInterval(), successCallback: onSuccess)
+            authToken = retrievedAuthToken
+            storeAuthToken()
         }
-        
-        authToken = retrievedAuthToken
-        
-        storeAuthToken()
     }
     
     func handleAuthFailure(failedAuthToken: String?, reason: AuthFailureReason) {
