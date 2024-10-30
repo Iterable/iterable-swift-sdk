@@ -234,22 +234,22 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
         }
     }
 
-    func setAnonymousUsageTracked(isAnonymousUsageTracked: Bool) {
+    func setVisitorUsageTracked(isVisitorUsageTracked: Bool) {
         ITBInfo("CONSENT CHANGED - local events cleared")
-        self.localStorage.anonymousUsageTrack = isAnonymousUsageTracked
+        self.localStorage.anonymousUsageTrack = isVisitorUsageTracked
         self.localStorage.anonymousUserEvents = nil
         self.localStorage.anonymousSessions = nil
         self.localStorage.anonymousUserUpdate = nil
         self.localStorage.userIdAnnon = nil
         
-        if isAnonymousUsageTracked && config.enableAnonTracking {
+        if isVisitorUsageTracked && config.enableAnonTracking {
             ITBInfo("CONSENT GIVEN and ANON TRACKING ENABLED - Criteria fetched")
             self.anonymousUserManager.getAnonCriteria()
             self.anonymousUserManager.updateAnonSession()
         }
     }
 
-    func getAnonymousUsageTracked() -> Bool {
+    func getVisitorUsageTracked() -> Bool {
         return self.localStorage.anonymousUsageTrack
     }
 
