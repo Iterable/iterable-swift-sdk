@@ -126,21 +126,21 @@ import UIKit
             callback?(false)
         }
         
-        if let implementation, config.enableAnonTracking, !implementation.isSDKInitialized(), implementation.getAnonymousUsageTracked() {
+        if let implementation, config.enableAnonTracking, !implementation.isSDKInitialized(), implementation.getVisitorUsageTracked() {
             ITBInfo("AUT ENABLED AND CONSENT GIVEN - Criteria fetched")
             implementation.anonymousUserManager.getAnonCriteria()
             implementation.anonymousUserManager.updateAnonSession()
         }
     }
 
-    public static func setAnonymousUsageTracked(isAnonymousUsageTracked: Bool) {
+    public static func setVisitorUsageTracked(isVisitorUsageTracked: Bool) {
         if let _implementation = implementation {
-            _implementation.setAnonymousUsageTracked(isAnonymousUsageTracked: isAnonymousUsageTracked)
+            _implementation.setVisitorUsageTracked(isVisitorUsageTracked: isVisitorUsageTracked)
         }
     }
 
-    public static func getAnonymousUsageTracked() -> Bool {
-        return implementation?.getAnonymousUsageTracked() ?? false
+    public static func getVisitorUsageTracked() -> Bool {
+        return implementation?.getVisitorUsageTracked() ?? false
     }
     // MARK: - SDK
     
