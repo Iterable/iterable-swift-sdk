@@ -75,10 +75,12 @@ class AuthManager: IterableAuthManagerProtocol {
         return isLastAuthTokenValid && !shouldIgnoreRetryPolicy
     }
     
-    func setNewToken(_ newToken: String) {
+    func setNewToken(_ newToken: String, onCompletion: @escaping (String?) -> Void) {
         ITBInfo()
         
-        onAuthTokenReceived(retrievedAuthToken: newToken)
+        onAuthTokenReceived(retrievedAuthToken: newToken) { token in
+            onCompletion(token)
+        }
     }
     
     func logoutUser() {

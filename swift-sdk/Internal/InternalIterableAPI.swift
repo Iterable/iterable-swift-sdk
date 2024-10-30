@@ -713,8 +713,11 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
         self.authManager.pauseAuthRetries(false)
         
         if let authToken {
-            self.authManager.setNewToken(authToken)
-            completeUserLogin(with: authToken)
+            self.authManager.setNewToken(authToken) { [weak self] token in
+                guard let self else { return }
+                
+                self.completeUserLogin(with: token)
+            }
         } else if isEitherUserIdOrEmailSet() && config.authDelegate != nil {
             requestNewAuthToken()
         } else {
