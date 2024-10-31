@@ -126,7 +126,7 @@ import UIKit
             callback?(false)
         }
         
-        if let implementation, config.enableAnonTracking, !implementation.isSDKInitialized(), implementation.getVisitorUsageTracked() {
+        if let implementation, config.enableAnonActivation, !implementation.isSDKInitialized(), implementation.getVisitorUsageTracked() {
             ITBInfo("AUT ENABLED AND CONSENT GIVEN - Criteria fetched")
             implementation.anonymousUserManager.getAnonCriteria()
             implementation.anonymousUserManager.updateAnonSession()
