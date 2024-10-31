@@ -85,7 +85,7 @@ class UserMergeScenariosTests: XCTestCase, AuthProvider {
     
     func testCriteriaNotMetUserIdDefault() {  // criteria not met with merge default with setUserId
         let config = IterableConfig()
-        config.enableAnonTracking = true
+        config.enableAnonActivation = true
         IterableAPI.initializeForTesting(apiKey: UserMergeScenariosTests.apiKey,
                                          config: config,
                                          networkSession: mockSession,
@@ -130,7 +130,7 @@ class UserMergeScenariosTests: XCTestCase, AuthProvider {
     
     func testCriteriaNotMetUserIdReplayTrueMergeFalse() {  // criteria not met with merge false with setUserId
         let config = IterableConfig()
-        config.enableAnonTracking = true
+        config.enableAnonActivation = true
         IterableAPI.initializeForTesting(apiKey: UserMergeScenariosTests.apiKey,
                                          config: config,
                                          networkSession: mockSession,
@@ -175,7 +175,7 @@ class UserMergeScenariosTests: XCTestCase, AuthProvider {
     
     func testCriteriaNotMetUserIdReplayFalseMergeFalse() {  // criteria not met with merge true with setUserId
         let config = IterableConfig()
-        config.enableAnonTracking = true
+        config.enableAnonActivation = true
         IterableAPI.initializeForTesting(apiKey: UserMergeScenariosTests.apiKey,
                                          config: config,
                                          networkSession: mockSession,
@@ -223,7 +223,7 @@ class UserMergeScenariosTests: XCTestCase, AuthProvider {
     
     func testCriteriaNotMetUserIdReplayFalseMergeTrue() {  // criteria not met with merge true with setUserId
         let config = IterableConfig()
-        config.enableAnonTracking = true
+        config.enableAnonActivation = true
         IterableAPI.initializeForTesting(apiKey: UserMergeScenariosTests.apiKey,
                                          config: config,
                                          networkSession: mockSession,
@@ -271,7 +271,7 @@ class UserMergeScenariosTests: XCTestCase, AuthProvider {
     
     func testCriteriaMetUserIdDefault() {  // criteria met with merge default with setUserId
         let config = IterableConfig()
-        config.enableAnonTracking = true
+        config.enableAnonActivation = true
         IterableAPI.initializeForTesting(apiKey: UserMergeScenariosTests.apiKey,
                                          config: config,
                                          networkSession: mockSession,
@@ -307,7 +307,7 @@ class UserMergeScenariosTests: XCTestCase, AuthProvider {
     
     func testCriteriaMetUserIdMergeFalse() {  // criteria met with merge false with setUserId
         let config = IterableConfig()
-        config.enableAnonTracking = true
+        config.enableAnonActivation = true
         IterableAPI.initializeForTesting(apiKey: UserMergeScenariosTests.apiKey,
                                          config: config,
                                          networkSession: mockSession,
@@ -343,7 +343,7 @@ class UserMergeScenariosTests: XCTestCase, AuthProvider {
     
     func testCriteriaMetUserIdMergeTrue() {  // criteria met with merge true with setUserId
         let config = IterableConfig()
-        config.enableAnonTracking = true
+        config.enableAnonActivation = true
         IterableAPI.initializeForTesting(apiKey: UserMergeScenariosTests.apiKey,
                                          config: config,
                                          networkSession: mockSession,
@@ -382,7 +382,7 @@ class UserMergeScenariosTests: XCTestCase, AuthProvider {
     
     func testIdentifiedUserIdDefault() {  // current user identified with setUserId default
         let config = IterableConfig()
-        config.enableAnonTracking = true
+        config.enableAnonActivation = true
         IterableAPI.initializeForTesting(apiKey: UserMergeScenariosTests.apiKey,
                                          config: config,
                                          networkSession: mockSession,
@@ -432,7 +432,7 @@ class UserMergeScenariosTests: XCTestCase, AuthProvider {
     
     func testIdentifiedUserIdMergeFalse() {  // current user identified with setUserId merge false
         let config = IterableConfig()
-        config.enableAnonTracking = true
+        config.enableAnonActivation = true
         IterableAPI.initializeForTesting(apiKey: UserMergeScenariosTests.apiKey,
                                          config: config,
                                          networkSession: mockSession,
@@ -483,7 +483,7 @@ class UserMergeScenariosTests: XCTestCase, AuthProvider {
     
     func testIdentifiedUserIdMergeTrue() {  // current user identified with setUserId true
         let config = IterableConfig()
-        config.enableAnonTracking = true
+        config.enableAnonActivation = true
         IterableAPI.initializeForTesting(apiKey: UserMergeScenariosTests.apiKey,
                                          config: config,
                                          networkSession: mockSession,
@@ -535,7 +535,7 @@ class UserMergeScenariosTests: XCTestCase, AuthProvider {
     
     func testCriteriaNotMetEmailDefault() {  // criteria not met with merge default with setEmail
         let config = IterableConfig()
-        config.enableAnonTracking = true
+        config.enableAnonActivation = true
         IterableAPI.initializeForTesting(apiKey: UserMergeScenariosTests.apiKey,
                                          config: config,
                                          networkSession: mockSession,
@@ -580,7 +580,7 @@ class UserMergeScenariosTests: XCTestCase, AuthProvider {
     
     func testCriteriaNotMetEmailReplayTrueMergeFalse() {  // criteria not met with merge false with setEmail
         let config = IterableConfig()
-        config.enableAnonTracking = true
+        config.enableAnonActivation = true
         IterableAPI.initializeForTesting(apiKey: UserMergeScenariosTests.apiKey,
                                          config: config,
                                          networkSession: mockSession,
@@ -624,7 +624,7 @@ class UserMergeScenariosTests: XCTestCase, AuthProvider {
     
     func testCriteriaNotMetEmailReplayFalseMergeFalse() {  // criteria not met with merge true with setEmail
         let config = IterableConfig()
-        config.enableAnonTracking = true
+        config.enableAnonActivation = true
         IterableAPI.initializeForTesting(apiKey: UserMergeScenariosTests.apiKey,
                                          config: config,
                                          networkSession: mockSession,
@@ -670,7 +670,7 @@ class UserMergeScenariosTests: XCTestCase, AuthProvider {
     
     func testCriteriaNotMetEmailReplayFalseMergeTrue() {  // criteria not met with merge true with setEmail
         let config = IterableConfig()
-        config.enableAnonTracking = true
+        config.enableAnonActivation = true
         IterableAPI.initializeForTesting(apiKey: UserMergeScenariosTests.apiKey,
                                          config: config,
                                          networkSession: mockSession,
@@ -716,7 +716,7 @@ class UserMergeScenariosTests: XCTestCase, AuthProvider {
     
     func testCriteriaMetEmailDefault() {  // criteria met with merge default with setEmail
         let config = IterableConfig()
-        config.enableAnonTracking = true
+        config.enableAnonActivation = true
         IterableAPI.initializeForTesting(apiKey: UserMergeScenariosTests.apiKey,
                                          config: config,
                                          networkSession: mockSession,
@@ -751,7 +751,7 @@ class UserMergeScenariosTests: XCTestCase, AuthProvider {
     
     func testCriteriaMetEmailMergeFalse() {  // criteria met with merge false with setEmail
         let config = IterableConfig()
-        config.enableAnonTracking = true
+        config.enableAnonActivation = true
         IterableAPI.initializeForTesting(apiKey: UserMergeScenariosTests.apiKey,
                                          config: config,
                                          networkSession: mockSession,
@@ -786,7 +786,7 @@ class UserMergeScenariosTests: XCTestCase, AuthProvider {
     
     func testCriteriaMetEmailMergeTrue() {  // criteria met with merge true with setEmail
         let config = IterableConfig()
-        config.enableAnonTracking = true
+        config.enableAnonActivation = true
         IterableAPI.initializeForTesting(apiKey: UserMergeScenariosTests.apiKey,
                                          config: config,
                                          networkSession: mockSession,
@@ -822,7 +822,7 @@ class UserMergeScenariosTests: XCTestCase, AuthProvider {
     
     func testIdentifiedEmailDefault() {  // current user identified with setEmail default
         let config = IterableConfig()
-        config.enableAnonTracking = true
+        config.enableAnonActivation = true
         IterableAPI.initializeForTesting(apiKey: UserMergeScenariosTests.apiKey,
                                          config: config,
                                          networkSession: mockSession,
@@ -870,7 +870,7 @@ class UserMergeScenariosTests: XCTestCase, AuthProvider {
     
     func testIdentifiedEmailMergeFalse() {  // current user identified with setEmail merge false
         let config = IterableConfig()
-        config.enableAnonTracking = true
+        config.enableAnonActivation = true
         IterableAPI.initializeForTesting(apiKey: UserMergeScenariosTests.apiKey,
                                          config: config,
                                          networkSession: mockSession,
@@ -920,7 +920,7 @@ class UserMergeScenariosTests: XCTestCase, AuthProvider {
     
     func testIdentifiedEmailMergeTrue() {  // current user identified with setEmail true
         let config = IterableConfig()
-        config.enableAnonTracking = true
+        config.enableAnonActivation = true
         IterableAPI.initializeForTesting(apiKey: UserMergeScenariosTests.apiKey,
                                          config: config,
                                          networkSession: mockSession,

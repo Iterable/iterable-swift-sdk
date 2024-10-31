@@ -138,7 +138,7 @@ final class ValidateTokenForDestinationUserTest: XCTestCase {
         })
 
         let config = IterableConfig()
-        config.enableAnonTracking = true
+        config.enableAnonActivation = true
         config.authDelegate = authDelegate
         IterableAPI.initializeForTesting(apiKey: ValidateTokenForDestinationUserTest.apiKey,
                                                                    config: config,
@@ -242,7 +242,7 @@ final class ValidateTokenForDestinationUserTest: XCTestCase {
         })
 
         let config = IterableConfig()
-        config.enableAnonTracking = true
+        config.enableAnonActivation = true
         config.authDelegate = authDelegate
         IterableAPI.initializeForTesting(apiKey: ValidateTokenForDestinationUserTest.apiKey,
                                                                    config: config,

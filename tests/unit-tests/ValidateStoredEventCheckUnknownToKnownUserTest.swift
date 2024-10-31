@@ -44,7 +44,7 @@ final class ValidateStoredEventCheckUnknownToKnownUserTest: XCTestCase, AuthProv
 
     func testCriteriaCustomEventCheck() {  // criteria not met with merge false with setUserId
         let config = IterableConfig()
-        config.enableAnonTracking = true
+        config.enableAnonActivation = true
         IterableAPI.initializeForTesting(apiKey: ValidateStoredEventCheckUnknownToKnownUserTest.apiKey,
                                                                    config: config,
                                                                    networkSession: mockSession,

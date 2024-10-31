@@ -141,7 +141,7 @@ public class IterableConfig: NSObject {
     public var dataRegion: String = IterableDataRegion.US
     
     /// When set to `true`, IterableSDK will track all events when users are not logged into the application.
-    public var enableAnonTracking = true
+    public var enableAnonActivation = true
     /// Allows for fetching embedded messages.
     public var enableEmbeddedMessaging = false
 
