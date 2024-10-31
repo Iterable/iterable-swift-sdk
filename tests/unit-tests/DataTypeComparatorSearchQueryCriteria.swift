@@ -83,9 +83,12 @@ final class DataTypeComparatorSearchQueryCriteria: XCTestCase {
     func testCompareDataEqualSuccess() {
 
         let eventItems: [[AnyHashable: Any]] = [["dataType":"user",
-                                                 "dataFields":["savings": 19.99,                       "eventTimeStamp": 3,
-                                                          "likes_boba": true,
-                                                          "country":"Chaina"]]]
+                                                 "dataFields":[
+                                                    "savings": 19.99,
+                                                    "eventTimeStamp": 3,
+                                                    "likes_boba": true,
+                                                    "country":"Chaina"]
+                                                ]]
 
         let expectedCriteriaId = "285"
 
@@ -98,9 +101,12 @@ final class DataTypeComparatorSearchQueryCriteria: XCTestCase {
         //let eventItems: [[AnyHashable: Any]] = [["dataType":"user","savings": 10.1]]
 
         let eventItems: [[AnyHashable: Any]] = [["dataType":"user",
-                                                 "dataFields":["savings": 10.99,                       "eventTimeStamp": 30,
-                                                          "likes_boba": false,
-                                                            "country":"Taiwan"]]]
+                                                 "dataFields":[
+                                                    "savings": 10.99,
+                                                    "eventTimeStamp": 30,
+                                                    "likes_boba": false,
+                                                    "country":"Taiwan"]
+                                                ]]
 
         let matchedCriteriaId = CriteriaCompletionChecker(anonymousCriteria: data(from: mockDataEqual)!, anonymousEvents: eventItems).getMatchedCriteria()
         XCTAssertEqual(matchedCriteriaId, nil)
@@ -164,8 +170,10 @@ final class DataTypeComparatorSearchQueryCriteria: XCTestCase {
     func testCompareDataDoesNotEqualSuccess() {
 
         let eventItems: [[AnyHashable: Any]] = [["dataType":"user",
-                                                 "dataFields":["savings": 11.2,                       "eventTimeStamp": 30,
-                                                     "likes_boba": false]
+                                                 "dataFields":[
+                                                    "savings": 11.2,
+                                                    "eventTimeStamp": 30,
+                                                    "likes_boba": false]
                                                  ]]
         let expectedCriteriaId = "285"
 
@@ -176,8 +184,11 @@ final class DataTypeComparatorSearchQueryCriteria: XCTestCase {
     func testCompareDataDoesNotEqualFailed() {
 
         let eventItems: [[AnyHashable: Any]] = [["dataType":"user",
-                                                 "dataFields":["savings": 19.99,                       "eventTimeStamp": 30,
-                                                               "likes_boba": true]]]
+                                                 "dataFields":[
+                                                    "savings": 19.99,
+                                                    "eventTimeStamp": 30,
+                                                    "likes_boba": true]
+                                                ]]
         let matchedCriteriaId = CriteriaCompletionChecker(anonymousCriteria: data(from: mockDataDoesNotEquals)!, anonymousEvents: eventItems).getMatchedCriteria()
         XCTAssertEqual(matchedCriteriaId, nil)
     }
@@ -271,7 +282,9 @@ final class DataTypeComparatorSearchQueryCriteria: XCTestCase {
     func testCompareDataLessThanSuccess() {
 
         let eventItems: [[AnyHashable: Any]] = [["dataType":"user",
-                                                "dataFields":["savings": 10,                       "eventTimeStamp": 14]
+                                                "dataFields":[
+                                                    "savings": 10,
+                                                    "eventTimeStamp": 14]
                                                 ]]
         let expectedCriteriaId = "289"
 
@@ -282,7 +295,10 @@ final class DataTypeComparatorSearchQueryCriteria: XCTestCase {
     func testCompareDataLessThanFailed() {
 
         let eventItems: [[AnyHashable: Any]] = [["dataType":"user",
-                                                 "dataFields":["savings": 18,                       "eventTimeStamp": 18]]]
+                                                 "dataFields":[
+                                                    "savings": 18,
+                                                    "eventTimeStamp": 18]
+                                                ]]
         let matchedCriteriaId = CriteriaCompletionChecker(anonymousCriteria: data(from: mockDataLessThanOrEqual)!, anonymousEvents: eventItems).getMatchedCriteria()
         XCTAssertEqual(matchedCriteriaId, nil)
     }
@@ -290,7 +306,10 @@ final class DataTypeComparatorSearchQueryCriteria: XCTestCase {
     func testCompareDataLessThanOrEqualSuccess() {
 
         let eventItems: [[AnyHashable: Any]] = [["dataType":"user",
-                                                 "dataFields":["savings": 17,                               "eventTimeStamp": 14]]]
+                                                 "dataFields":[
+                                                    "savings": 17,
+                                                    "eventTimeStamp": 14]
+                                                ]]
         let expectedCriteriaId = "290"
 
         let matchedCriteriaId = CriteriaCompletionChecker(anonymousCriteria: data(from: mockDataLessThanOrEqual)!, anonymousEvents: eventItems).getMatchedCriteria()
@@ -300,7 +319,10 @@ final class DataTypeComparatorSearchQueryCriteria: XCTestCase {
     func testCompareDataLessThanOrEqualFailed() {
 
         let eventItems: [[AnyHashable: Any]] = [["dataType":"user",
-                                                 "dataFields":["savings": 18,                               "eventTimeStamp": 12]]]
+                                                 "dataFields":[
+                                                    "savings": 18,
+                                                    "eventTimeStamp": 12]
+                                                ]]
         let matchedCriteriaId = CriteriaCompletionChecker(anonymousCriteria: data(from: mockDataLessThanOrEqual)!, anonymousEvents: eventItems).getMatchedCriteria()
         XCTAssertEqual(matchedCriteriaId, nil)
     }
@@ -394,7 +416,10 @@ final class DataTypeComparatorSearchQueryCriteria: XCTestCase {
     func testCompareDataGreaterThanSuccess() {
 
         let eventItems: [[AnyHashable: Any]] = [["dataType":"user",
-                                                 "dataFields":["savings": 56,                               "eventTimeStamp": 51]]]
+                                                 "dataFields":[
+                                                    "savings": 56,
+                                                    "eventTimeStamp": 51]
+                                                ]]
         let expectedCriteriaId = "290"
 
         let matchedCriteriaId = CriteriaCompletionChecker(anonymousCriteria: data(from: mockDataGreaterThanOrEqual)!, anonymousEvents: eventItems).getMatchedCriteria()
@@ -404,7 +429,10 @@ final class DataTypeComparatorSearchQueryCriteria: XCTestCase {
     func testCompareDataGreaterThanFailed() {
 
         let eventItems: [[AnyHashable: Any]] = [["dataType":"user",
-                                                 "dataFields":["savings": 5,                               "eventTimeStamp": 3]]]
+                                                 "dataFields":[
+                                                    "savings": 5,
+                                                    "eventTimeStamp": 3]
+                                                ]]
         let matchedCriteriaId = CriteriaCompletionChecker(anonymousCriteria: data(from: mockDataGreaterThanOrEqual)!, anonymousEvents: eventItems).getMatchedCriteria()
         XCTAssertEqual(matchedCriteriaId, nil)
     }
@@ -412,7 +440,10 @@ final class DataTypeComparatorSearchQueryCriteria: XCTestCase {
     func testCompareDataGreaterThanOrEqualSuccess() {
 
         let eventItems: [[AnyHashable: Any]] = [["dataType": "user", 
-                                                 "dataFields":["savings": 20,                               "eventTimeStamp": 30]]]
+                                                 "dataFields":[
+                                                    "savings": 20,
+                                                    "eventTimeStamp": 30]
+                                                ]]
         let expectedCriteriaId = "291"
         let matchedCriteriaId = CriteriaCompletionChecker(anonymousCriteria: data(from: mockDataGreaterThanOrEqual)!, anonymousEvents: eventItems).getMatchedCriteria()
         XCTAssertEqual(matchedCriteriaId, expectedCriteriaId)
@@ -420,7 +451,10 @@ final class DataTypeComparatorSearchQueryCriteria: XCTestCase {
 
     func testCompareDataGreaterThanOrEqualFailed() {
         let eventItems: [[AnyHashable: Any]] = [["dataType":"user",
-                                                 "dataFields":["savings": 18,                               "eventTimeStamp":16]]]
+                                                 "dataFields":[
+                                                    "savings": 18,
+                                                    "eventTimeStamp":16]
+                                                ]]
         let matchedCriteriaId = CriteriaCompletionChecker(anonymousCriteria: data(from: mockDataGreaterThanOrEqual)!, anonymousEvents: eventItems).getMatchedCriteria()
         XCTAssertEqual(matchedCriteriaId, nil)
     }
@@ -489,9 +523,12 @@ final class DataTypeComparatorSearchQueryCriteria: XCTestCase {
 
     func testCompareDataIsSetySuccess() {
         let eventItems: [[AnyHashable: Any]] = [["dataType":"user",
-                                                 "dataFields":["savings": 10,                               "eventTimeStamp":20,
-                                                               "saved_cars":"10",
-                                                               "country": "Taiwan"]]]
+                                                 "dataFields":[
+                                                    "savings": 10,
+                                                    "eventTimeStamp":20,
+                                                    "saved_cars":"10",
+                                                    "country": "Taiwan"]
+                                                ]]
         let expectedCriteriaId = "285"
         let matchedCriteriaId = CriteriaCompletionChecker(anonymousCriteria: data(from: mockDataIsSet)!, anonymousEvents: eventItems).getMatchedCriteria()
         XCTAssertEqual(matchedCriteriaId, expectedCriteriaId)
@@ -499,9 +536,12 @@ final class DataTypeComparatorSearchQueryCriteria: XCTestCase {
 
     func testCompareDataIsSetFailure() {
         let eventItems: [[AnyHashable: Any]] = [["dataType":"user",
-                                                 "dataFields":["savings": "",                               "eventTimeStamp":"",
-                                                               "saved_cars":"",
-                                                               "country": ""]]]
+                                                 "dataFields":[
+                                                    "savings": "",
+                                                    "eventTimeStamp":"",
+                                                    "saved_cars":"",
+                                                    "country": ""]
+                                                ]]
         let matchedCriteriaId = CriteriaCompletionChecker(anonymousCriteria: data(from: mockDataIsSet)!, anonymousEvents: eventItems).getMatchedCriteria()
         XCTAssertEqual(matchedCriteriaId, nil)
     }

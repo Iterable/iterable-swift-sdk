@@ -153,7 +153,7 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
             }
             let merge = identityResolution?.mergeOnAnonymousToKnown ?? config.identityResolution.mergeOnAnonymousToKnown
             let replay = identityResolution?.replayOnVisitorToKnown ?? config.identityResolution.replayOnVisitorToKnown
-            if config.enableAnonTracking, let email = email {
+            if config.enableAnonActivation, let email = email {
                 self?.attemptAndProcessMerge(
                     merge: merge ?? true,
                     replay: replay ?? true,
@@ -192,7 +192,7 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
             guard let config = self?.config else {
                 return
             }
-            if config.enableAnonTracking {
+            if config.enableAnonActivation {
                 if let userId = userId, userId != (self?.localStorage.userIdAnnon ?? "") {
                     let merge = identityResolution?.mergeOnAnonymousToKnown ?? config.identityResolution.mergeOnAnonymousToKnown
                     let replay = identityResolution?.replayOnVisitorToKnown ?? config.identityResolution.replayOnVisitorToKnown
@@ -242,7 +242,7 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
         self.localStorage.anonymousUserUpdate = nil
         self.localStorage.userIdAnnon = nil
         
-        if isVisitorUsageTracked && config.enableAnonTracking {
+        if isVisitorUsageTracked && config.enableAnonActivation {
             ITBInfo("CONSENT GIVEN and ANON TRACKING ENABLED - Criteria fetched")
             self.anonymousUserManager.getAnonCriteria()
             self.anonymousUserManager.updateAnonSession()
@@ -268,7 +268,7 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
         }
         
         if !isEitherUserIdOrEmailSet() && localStorage.userIdAnnon == nil {
-            if config.enableAnonTracking {
+            if config.enableAnonActivation {
                 anonymousUserManager.trackAnonTokenRegistration(token: token.hexString())
             }
             onFailure?("Iterable SDK must be initialized with an API key and user email/userId before calling SDK methods", nil)
@@ -330,7 +330,7 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
                     onSuccess: OnSuccessHandler? = nil,
                     onFailure: OnFailureHandler? = nil) -> Pending<SendRequestValue, SendRequestError> {
         if !isEitherUserIdOrEmailSet() && localStorage.userIdAnnon == nil {
-            if config.enableAnonTracking {
+            if config.enableAnonActivation {
                 ITBInfo("AUT ENABLED - anon update user")
                 anonymousUserManager.trackAnonUpdateUser(dataFields)
             }
@@ -362,7 +362,7 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
                     onSuccess: OnSuccessHandler? = nil,
                     onFailure: OnFailureHandler? = nil) -> Pending<SendRequestValue, SendRequestError> {
         if !isEitherUserIdOrEmailSet() && localStorage.userIdAnnon == nil {
-            if config.enableAnonTracking {
+            if config.enableAnonActivation {
                 ITBInfo("AUT ENABLED - anon update cart")
                 anonymousUserManager.trackAnonUpdateCart(items: items)
             }
@@ -395,7 +395,7 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
                        onSuccess: OnSuccessHandler? = nil,
                        onFailure: OnFailureHandler? = nil) -> Pending<SendRequestValue, SendRequestError> {
         if !isEitherUserIdOrEmailSet() {
-            if config.enableAnonTracking {
+            if config.enableAnonActivation {
                 ITBInfo("AUT ENABLED - anon track purchase")
                 anonymousUserManager.trackAnonPurchaseEvent(total: total, items: items, dataFields: dataFields)
             }
@@ -469,7 +469,7 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
                onSuccess: OnSuccessHandler? = nil,
                onFailure: OnFailureHandler? = nil) -> Pending<SendRequestValue, SendRequestError> {
         if !isEitherUserIdOrEmailSet() && localStorage.userIdAnnon == nil {
-            if config.enableAnonTracking {
+            if config.enableAnonActivation {
                 ITBInfo("AUT ENABLED - anon track custom event")
                 anonymousUserManager.trackAnonEvent(name: eventName, dataFields: dataFields)
             }
