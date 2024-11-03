@@ -105,7 +105,7 @@ final class ValidateCustomEventUserUpdateAPITest: XCTestCase, AuthProvider  {
 
     func testCriteriaCustomEventCheck() {  // criteria not met with merge false with setUserId
         let config = IterableConfig()
-        config.enableAnonTracking = true
+        config.enableAnonActivation = true
         IterableAPI.initializeForTesting(apiKey: ValidateCustomEventUserUpdateAPITest.apiKey,
                                                                    config: config,
                                                                    networkSession: mockSession,
