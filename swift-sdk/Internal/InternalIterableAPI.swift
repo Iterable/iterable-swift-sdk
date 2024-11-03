@@ -767,7 +767,7 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
         
         let destinationUser = email ?? userId ?? nil
         
-        if config.enableAnonTracking {
+        if config.enableAnonActivation {
             self.attemptAndProcessMerge(
                 merge: merge ?? true,
                 replay: replay ?? true,
