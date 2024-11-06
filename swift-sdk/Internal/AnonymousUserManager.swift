@@ -158,17 +158,6 @@ public class AnonymousUserManager: AnonymousUserManagerProtocol {
                     }
                 }
             }
-            
-            // commenting this code for now as we need to execute this code in some other place so after all events are suceesfully synced as this code will execute too promptly right after the above loop so we simply clear all the data where or not the APIs were successful or not
-            /* let notSynchedData = filterEvents(excludingTimestamps: successfulSyncedData)
-            if let _ = notSynchedData {
-                localStorage.anonymousUserEvents = notSynchedData
-            } else {
-                localStorage.anonymousUserEvents = nil
-            } */
-            
-            localStorage.anonymousUserEvents = nil
-            localStorage.anonymousSessions = nil
         }
         
         if var userUpdate = localStorage.anonymousUserUpdate {
@@ -177,10 +166,15 @@ public class AnonymousUserManager: AnonymousUserManagerProtocol {
             }
             
             IterableAPI.implementation?.updateUser(userUpdate, mergeNestedObjects: false)
-            
-            localStorage.anonymousUserUpdate = nil
         }
-            
+        
+        clearVisitorEventsAndUserData()
+    }
+    
+    public func clearVisitorEventsAndUserData() {
+        localStorage.anonymousUserEvents = nil
+        localStorage.anonymousSessions = nil
+        localStorage.anonymousUserUpdate = nil
     }
 
     // Checks if criterias are being met and returns criteriaId if it matches the criteria.
