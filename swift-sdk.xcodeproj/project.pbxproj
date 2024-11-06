@@ -185,6 +185,8 @@
 		5B5AA717284F1A6D0093FED4 /* MockNetworkSession.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5B5AA710284F1A6D0093FED4 /* MockNetworkSession.swift */; };
 		5B6C3C1127CE871F00B9A753 /* NavInboxSessionUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5B6C3C1027CE871F00B9A753 /* NavInboxSessionUITests.swift */; };
 		5B88BC482805D09D004016E5 /* NetworkSession.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5B88BC472805D09D004016E5 /* NetworkSession.swift */; };
+		94D8F9D42CDC291000D4CF53 /* ThreadSafeOrderedDictionary.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94D8F9D32CDC291000D4CF53 /* ThreadSafeOrderedDictionary.swift */; };
+		94D8F9D62CDC294300D4CF53 /* ThreadSafeOrderedDictionaryTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94D8F9D52CDC294300D4CF53 /* ThreadSafeOrderedDictionaryTests.swift */; };
 		9F76FFFF2B17884900962526 /* EmbeddedHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F76FFFE2B17884900962526 /* EmbeddedHelper.swift */; };
 		9FF05EAC2AFEA5FA005311F7 /* MockAuthManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FF05EAB2AFEA5FA005311F7 /* MockAuthManager.swift */; };
 		9FF05EAD2AFEA5FA005311F7 /* MockAuthManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FF05EAB2AFEA5FA005311F7 /* MockAuthManager.swift */; };
@@ -609,6 +611,8 @@
 		5B6C3C1027CE871F00B9A753 /* NavInboxSessionUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NavInboxSessionUITests.swift; sourceTree = "<group>"; };
 		5B88BC472805D09D004016E5 /* NetworkSession.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkSession.swift; sourceTree = "<group>"; };
 		5BFC7CED27FC9AF300E77479 /* inbox-ui-tests-app.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = "inbox-ui-tests-app.entitlements"; sourceTree = "<group>"; };
+		94D8F9D32CDC291000D4CF53 /* ThreadSafeOrderedDictionary.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThreadSafeOrderedDictionary.swift; sourceTree = "<group>"; };
+		94D8F9D52CDC294300D4CF53 /* ThreadSafeOrderedDictionaryTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThreadSafeOrderedDictionaryTests.swift; sourceTree = "<group>"; };
 		9F76FFFE2B17884900962526 /* EmbeddedHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmbeddedHelper.swift; sourceTree = "<group>"; };
 		9FF05EAB2AFEA5FA005311F7 /* MockAuthManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockAuthManager.swift; sourceTree = "<group>"; };
 		AC02480722791E2100495FB9 /* IterableInboxNavigationViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IterableInboxNavigationViewController.swift; sourceTree = "<group>"; };
@@ -1153,6 +1157,7 @@
 				5536781E2576FF9000DB3652 /* IterableUtilTests.swift */,
 				ACED4C00213F50B30055A497 /* LoggingTests.swift */,
 				55B37FC5229752DD0042F13A /* OrderedDictionaryTests.swift */,
+				94D8F9D52CDC294300D4CF53 /* ThreadSafeOrderedDictionaryTests.swift */,
 				ACEDF41E2183C436000B9BFE /* PendingTests.swift */,
 			);
 			name = "foundational-tests";
@@ -1280,6 +1285,7 @@
 				AC776DA5211A1B8A00C27C27 /* IterableRequestUtil.swift */,
 				AC72A0AD20CF4C16004D7997 /* IterableUtil.swift */,
 				AC32E16721DD55B900BD4F83 /* OrderedDictionary.swift */,
+				94D8F9D32CDC291000D4CF53 /* ThreadSafeOrderedDictionary.swift */,
 				ACD8BF852757FC4C00C2EAB2 /* UIColor+Extension.swift */,
 			);
 			name = Util;
@@ -2112,6 +2118,7 @@
 				ACD2B83D25B0A74A005D7A90 /* Models.swift in Sources */,
 				55DD2027269E5EA300773CC7 /* InboxViewControllerViewModelView.swift in Sources */,
 				AC1BED9523F1D4C700FDD75F /* MiscInboxClasses.swift in Sources */,
+				94D8F9D42CDC291000D4CF53 /* ThreadSafeOrderedDictionary.swift in Sources */,
 				553449A129C2621E002E4599 /* EmbeddedMessagingProcessor.swift in Sources */,
 				556FB1EA244FAF6A00EDF6BD /* InAppPresenter.swift in Sources */,
 				AC2AED4424EBC905000EE5F3 /* IterableTaskScheduler.swift in Sources */,
@@ -2222,6 +2229,7 @@
 				AC8F35A2239806B500302994 /* InboxViewControllerViewModelTests.swift in Sources */,
 				AC995F9A2166EEB50099A184 /* CommonMocks.swift in Sources */,
 				5588DFE128C046B7000697D7 /* MockLocalStorage.swift in Sources */,
+				94D8F9D62CDC294300D4CF53 /* ThreadSafeOrderedDictionaryTests.swift in Sources */,
 				1CBFFE1B2A97AEEF00ED57EE /* EmbeddedMessagingProcessorTests.swift in Sources */,
 				5588DF8128C04494000697D7 /* MockUrlDelegate.swift in Sources */,
 				5585DF8F22A73390000A32B9 /* IterableInboxViewControllerTests.swift in Sources */,
