@@ -167,8 +167,6 @@ public class AnonymousUserManager: AnonymousUserManagerProtocol {
             
             IterableAPI.implementation?.updateUser(userUpdate, mergeNestedObjects: false)
         }
-        
-        clearVisitorEventsAndUserData()
     }
     
     public func clearVisitorEventsAndUserData() {

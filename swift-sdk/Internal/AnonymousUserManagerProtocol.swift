@@ -14,4 +14,5 @@ import Foundation
     func updateAnonSession()
     func getAnonCriteria()
     func syncEvents()
+    func clearVisitorEventsAndUserData()
 }

@@ -202,19 +202,20 @@ class UserMergeScenariosTests: XCTestCase, AuthProvider {
         }
         waitForDuration(seconds: 5)
         
+        let expectation1 = self.expectation(description: "Events properly cleared")
         if let events = localStorage.anonymousUserEvents {
             XCTAssertFalse(events.isEmpty, "Expected events to be logged")
         } else {
-            XCTFail("Events were incorrectly cleared")
+            expectation1.fulfill()
         }
         
         // Verify "merge user" API call is not made
-        let expectation = self.expectation(description: "No API call is made to merge user")
+        let expectation2 = self.expectation(description: "No API call is made to merge user")
         DispatchQueue.main.async {
             if let _ = self.mockSession.getRequest(withEndPoint: Const.Path.mergeUser) {
                 XCTFail("merge user API call was made unexpectedly")
             } else {
-                expectation.fulfill()
+                expectation2.fulfill()
             }
         }
         
@@ -250,19 +251,20 @@ class UserMergeScenariosTests: XCTestCase, AuthProvider {
         }
         waitForDuration(seconds: 5)
         
+        let expectation1 = self.expectation(description: "Events properly cleared")
         if let events = localStorage.anonymousUserEvents {
             XCTAssertFalse(events.isEmpty, "Expected events to be logged")
         } else {
-            XCTFail("Events were incorrectly cleared")
+            expectation1.fulfill()
         }
         
         // Verify "merge user" API call is not made
-        let expectation = self.expectation(description: "No API call is made to merge user")
+        let expectation2 = self.expectation(description: "No API call is made to merge user")
         DispatchQueue.main.async {
             if let _ = self.mockSession.getRequest(withEndPoint: Const.Path.mergeUser) {
                 XCTFail("merge user API call was made unexpectedly")
             } else {
-                expectation.fulfill()
+                expectation2.fulfill()
             }
         }
         
@@ -649,19 +651,20 @@ class UserMergeScenariosTests: XCTestCase, AuthProvider {
         }
         waitForDuration(seconds: 5)
         
+        let expectation1 = self.expectation(description: "Events properly cleared")
         if let events = localStorage.anonymousUserEvents {
             XCTAssertFalse(events.isEmpty, "Expected events to be logged")
         } else {
-            XCTFail("Events were incorrectly cleared")
+            expectation1.fulfill()
         }
         
         // Verify "merge user" API call is not made
-        let expectation = self.expectation(description: "No API call is made to merge user")
+        let expectation2 = self.expectation(description: "No API call is made to merge user")
         DispatchQueue.main.async {
             if let _ = self.mockSession.getRequest(withEndPoint: Const.Path.mergeUser) {
                 XCTFail("merge user API call was made unexpectedly")
             } else {
-                expectation.fulfill()
+                expectation2.fulfill()
             }
         }
         
@@ -695,19 +698,20 @@ class UserMergeScenariosTests: XCTestCase, AuthProvider {
         }
         waitForDuration(seconds: 5)
         
+        let expectation1 = self.expectation(description: "Events properly cleared")
         if let events = localStorage.anonymousUserEvents {
             XCTAssertFalse(events.isEmpty, "Expected events to be logged")
         } else {
-            XCTFail("Events were incorrectly cleared")
+            expectation1.fulfill()
         }
         
         // Verify "merge user" API call is not made
-        let expectation = self.expectation(description: "No API call is made to merge user")
+        let expectation2 = self.expectation(description: "No API call is made to merge user")
         DispatchQueue.main.async {
             if let _ = self.mockSession.getRequest(withEndPoint: Const.Path.mergeUser) {
                 XCTFail("merge user API call was made unexpectedly")
             } else {
-                expectation.fulfill()
+                expectation2.fulfill()
             }
         }
         
