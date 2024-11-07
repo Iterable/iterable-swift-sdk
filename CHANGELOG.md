@@ -3,6 +3,8 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## [6.6.0-beta1]
+
 ## [6.5.7]
 ### Fixed
 - Fixed deeplink re-routing issue where delegate would only return `false` value. Thanks to @scottasoutherland :) 
