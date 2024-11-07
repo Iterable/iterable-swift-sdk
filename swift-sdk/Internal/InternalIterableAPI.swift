@@ -231,6 +231,7 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
             } else {
                 failureHandler?(error, nil)
             }
+            self.anonymousUserManager.clearVisitorEventsAndUserData()
         }
     }
 
