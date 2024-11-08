@@ -5,6 +5,13 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [6.6.0-beta1]
 
+- This release includes initial support for Anonymous user activation, a feature that allows marketers to convert valuable visitors into customers. With this feature, the SDK can:
+  - Fetch anonymous profile creation criteria from your Iterable project, and then automatically create Iterable user profiles for anonymous users who meet these criteria.
+  - Save information about a user's previous interactions with your application to their anonymous profile, after it's created.
+  - Display personalized messages for anonymous users (in-app, push, and embedded messages).
+  - Merge anonymous profiles into an existing, known user profiles (when needed).
+- Anonymous user activation is currently in private beta. If you'd like to learn more about it or discuss using it, talk to your Iterable customer success manager (who can also provide detailed documentation).
+
 ## [6.5.7]
 ### Fixed
 - Fixed deeplink re-routing issue where delegate would only return `false` value. Thanks to @scottasoutherland :) 
