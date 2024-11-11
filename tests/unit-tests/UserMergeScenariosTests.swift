@@ -101,8 +101,6 @@ class UserMergeScenariosTests: XCTestCase, AuthProvider {
             XCTFail("Expected events to be logged but found nil")
         }
         
-        waitForDuration(seconds: 1)
-
         IterableAPI.setUserId("testuser123")
         if let userId = IterableAPI.userId {
             XCTAssertEqual(userId, "testuser123", "Expected userId to be 'testuser123'")
