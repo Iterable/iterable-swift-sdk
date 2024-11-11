@@ -84,6 +84,7 @@ class UserMergeScenariosTests: XCTestCase, AuthProvider {
     }
     
     func testCriteriaNotMetUserIdDefault() {  // criteria not met with merge default with setUserId
+        // Setup
         let config = IterableConfig()
         config.enableAnonActivation = true
         IterableAPI.initializeForTesting(apiKey: UserMergeScenariosTests.apiKey,
@@ -91,17 +92,24 @@ class UserMergeScenariosTests: XCTestCase, AuthProvider {
                                          networkSession: mockSession,
                                          localStorage: localStorage)
         IterableAPI.logoutUser()
+        
         guard let jsonData = mockData.data(using: .utf8) else { return }
         localStorage.criteriaData = jsonData
+        
+        // trigger custom event
         IterableAPI.track(event: "testEvent123")
         
-        if let events = localStorage.anonymousUserEvents {
-            XCTAssertFalse(events.isEmpty, "Expected events to be logged")
-        } else {
-            XCTFail("Expected events to be logged but found nil")
-        }
+        waitForDuration(seconds: 1)
+        
+        // Verify no purchase or anon session requests were made initially
+        XCTAssertNil(mockSession.getRequest(withEndPoint: Const.Path.trackAnonSession),
+                     "There should not be an anon session request")
+        XCTAssertNil(mockSession.getRequest(withEndPoint: Const.Path.trackPurchase),
+                     "There should not be a purchase request")
+        
         
         IterableAPI.setUserId("testuser123")
+        
         if let userId = IterableAPI.userId {
             XCTAssertEqual(userId, "testuser123", "Expected userId to be 'testuser123'")
         } else {
@@ -109,10 +117,12 @@ class UserMergeScenariosTests: XCTestCase, AuthProvider {
         }
         waitForDuration(seconds: 5)
         
-        if localStorage.anonymousUserEvents != nil {
-            XCTFail("Events are not replayed")
+        // Verify purchase request was made after setting user ID
+        if let purchaseRequest = mockSession.getRequest(withEndPoint: Const.Path.trackPurchase) {
+            XCTAssertNotNil(purchaseRequest, "Expected purchase request on event replay")
+            // Optional: Verify request details if needed
         } else {
-            XCTAssertNil(localStorage.anonymousUserEvents, "Expected events to be nil")
+            XCTFail("No purchase request was made after setting user ID")
         }
         
         // Verify "merge user" API call is not made
