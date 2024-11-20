@@ -206,6 +206,9 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
                                                 onFailure?(reason, data)
                                 }
         )
+        notificationStateProvider.isNotificationsEnabled { isEnabled in
+            self.localStorage.isNotificationsEnabled = isEnabled
+        }
     }
     
     @discardableResult
@@ -500,6 +503,8 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
     private var _userId: String?
     private var _successCallback: OnSuccessHandler? = nil
     private var _failureCallback: OnFailureHandler? = nil
+    
+    private let notificationCenter: NotificationCenterProtocol
 
     
     /// the hex representation of this device token
@@ -666,6 +671,7 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
         localStorage = dependencyContainer.localStorage
         inAppDisplayer = dependencyContainer.inAppDisplayer
         urlOpener = dependencyContainer.urlOpener
+        notificationCenter = dependencyContainer.notificationCenter
         deepLinkManager = DeepLinkManager(redirectNetworkSessionProvider: dependencyContainer)
     }
     
@@ -698,8 +704,27 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
         requestHandler.start()
         
         checkRemoteConfiguration()
+        
+        addForegroundObservers()
                 
         return inAppManager.start()
+    }
+    
+    private func addForegroundObservers() {
+        NotificationCenter.default.addObserver(self,
+                                               selector: #selector(onAppDidBecomeActiveNotification(notification:)),
+                                               name: UIApplication.didBecomeActiveNotification,
+                                               object: nil)
+    }
+    
+    @objc private func onAppDidBecomeActiveNotification(notification: Notification) {
+        self.notificationStateProvider.isNotificationsEnabled { isEnabled in
+            if self.localStorage.isNotificationsEnabled != isEnabled {
+                if self.config.autoPushRegistration {
+                    self.notificationStateProvider.registerForRemoteNotifications()
+                } 
+            }
+        }
     }
     
     private func handle(launchOptions: [UIApplication.LaunchOptionsKey: Any]?) {
