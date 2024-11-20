@@ -706,7 +706,16 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
         guard let launchOptions = launchOptions else {
             return
         }
+        
         if let remoteNotificationPayload = launchOptions[UIApplication.LaunchOptionsKey.remoteNotification] as? [AnyHashable: Any] {
+            
+            if let aps = remoteNotificationPayload["aps"] as? [String: Any],
+               let contentAvailable = aps["content-available"] as? Int,
+               contentAvailable == 1 {
+                ITBInfo("Received push notification with wakey content-available flag")
+                return
+            }
+            
             if let _ = IterableUtil.rootViewController {
                 // we are ready
                 IterableAppIntegration.implementation?.performDefaultNotificationAction(remoteNotificationPayload)
