@@ -411,7 +411,7 @@ class TaskRunnerTests: XCTestCase {
                                                 appPackageName: Bundle.main.appPackageName ?? "")
     
     private lazy var persistenceContextProvider: IterablePersistenceContextProvider = {
-        let provider = CoreDataPersistenceContextProvider()!
+        let provider = CoreDataPersistenceContextProvider()
         return provider
     }()
 }
