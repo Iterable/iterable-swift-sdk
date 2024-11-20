@@ -44,7 +44,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, IterableAuthDelegate {
         config.urlDelegate = self
         config.inAppDisplayInterval = 1
         config.anonUserDelegate = self
-        config.enableAnonTracking = true
+        config.enableAnonActivation = true
         config.authDelegate = self
         IterableAPI.initialize(apiKey: iterableApiKey,
                                launchOptions: launchOptions,

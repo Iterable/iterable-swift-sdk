@@ -77,6 +77,7 @@ enum Const {
         static let matchedCriteria = "itbl_matched_criteria"
         static let eventList = "itbl_event_list"
         static let anonymousUsageTrack = "itbl_anonymous_usage_track"
+        static let isNotificationsEnabled = "isNotificationsEnabled"
         static let attributionInfoExpiration = 24
     }
     
