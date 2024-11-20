@@ -284,7 +284,7 @@ class InAppManager: NSObject, IterableInternalInAppManagerProtocol {
         lastSyncTime = dateProvider.currentDate
     }
     
-    private func getMessagesMap(fromMessagesProcessorResult messagesProcessorResult: MessagesProcessorResult) -> OrderedDictionary<String, IterableInAppMessage> {
+    private func getMessagesMap(fromMessagesProcessorResult messagesProcessorResult: MessagesProcessorResult) -> ThreadSafeOrderedDictionary<String, IterableInAppMessage> {
         switch messagesProcessorResult {
         case let .noShow(messagesMap: messagesMap):
             return messagesMap
@@ -303,7 +303,7 @@ class InAppManager: NSObject, IterableInternalInAppManagerProtocol {
         }
     }
     
-    private func processAndShowMessage(messagesMap: OrderedDictionary<String, IterableInAppMessage>) {
+    private func processAndShowMessage(messagesMap: ThreadSafeOrderedDictionary<String, IterableInAppMessage>) {
         var processor = MessagesProcessor(inAppDelegate: inAppDelegate, inAppDisplayChecker: self, messagesMap: messagesMap)
         let messagesProcessorResult = processor.processMessages()
         self.messagesMap = getMessagesMap(fromMessagesProcessorResult: messagesProcessorResult)
@@ -552,7 +552,7 @@ class InAppManager: NSObject, IterableInternalInAppManagerProtocol {
     private let notificationCenter: NotificationCenterProtocol
     
     private let persister: InAppPersistenceProtocol
-    private var messagesMap = OrderedDictionary<String, IterableInAppMessage>()
+    private var messagesMap = ThreadSafeOrderedDictionary<String, IterableInAppMessage>()
     private let dateProvider: DateProviderProtocol
     private var lastDismissedTime: Date?
     private var lastDisplayTime: Date?
@@ -607,7 +607,7 @@ extension InAppManager: InAppNotifiable {
         ITBInfo()
         
         updateQueue.async { [weak self] in
-            if let _ = self?.messagesMap.filter({ $0.key == messageId }).first {
+            if let _ = self?.messagesMap.keys.filter({ $0 == messageId }).first {
                 if let messagesMap = self?.messagesMap {
                     self?.messagesMap.removeValue(forKey: messageId)
                     self?.persister.persist(messagesMap.values)

@@ -5,14 +5,14 @@
 import Foundation
 
 enum MessagesProcessorResult {
-    case show(message: IterableInAppMessage, messagesMap: OrderedDictionary<String, IterableInAppMessage>)
-    case noShow(messagesMap: OrderedDictionary<String, IterableInAppMessage>)
+    case show(message: IterableInAppMessage, messagesMap: ThreadSafeOrderedDictionary<String, IterableInAppMessage>)
+    case noShow(messagesMap: ThreadSafeOrderedDictionary<String, IterableInAppMessage>)
 }
 
 struct MessagesProcessor {
     init(inAppDelegate: IterableInAppDelegate,
          inAppDisplayChecker: InAppDisplayChecker,
-         messagesMap: OrderedDictionary<String, IterableInAppMessage>) {
+         messagesMap: ThreadSafeOrderedDictionary<String, IterableInAppMessage>) {
         ITBInfo()
         
         self.inAppDelegate = inAppDelegate
@@ -97,18 +97,18 @@ struct MessagesProcessor {
     
     private let inAppDelegate: IterableInAppDelegate
     private let inAppDisplayChecker: InAppDisplayChecker
-    private var messagesMap: OrderedDictionary<String, IterableInAppMessage>
+    private var messagesMap: ThreadSafeOrderedDictionary<String, IterableInAppMessage>
 }
 
 struct MergeMessagesResult {
     let inboxChanged: Bool
-    let messagesMap: OrderedDictionary<String, IterableInAppMessage>
+    let messagesMap: ThreadSafeOrderedDictionary<String, IterableInAppMessage>
     let deliveredMessages: [IterableInAppMessage]
 }
 
 /// Merges the results and determines whether inbox changed needs to be fired.
 struct MessagesObtainedHandler {
-    init(messagesMap: OrderedDictionary<String, IterableInAppMessage>, messages: [IterableInAppMessage]) {
+    init(messagesMap: ThreadSafeOrderedDictionary<String, IterableInAppMessage>, messages: [IterableInAppMessage]) {
         ITBInfo()
         self.messagesMap = messagesMap
         self.messages = messages
@@ -123,7 +123,7 @@ struct MessagesObtainedHandler {
         let addedInboxCount = addedMessages.reduce(0) { $1.saveToInbox ? $0 + 1 : $0 }
         
         var messagesOverwritten = 0
-        var newMessagesMap = OrderedDictionary<String, IterableInAppMessage>()
+        var newMessagesMap = ThreadSafeOrderedDictionary<String, IterableInAppMessage>()
         messages.forEach { serverMessage in
             let messageId = serverMessage.messageId
             if let existingMessage = messagesMap[messageId] {
@@ -145,7 +145,7 @@ struct MessagesObtainedHandler {
                                    deliveredMessages: deliveredMessages)
     }
     
-    private let messagesMap: OrderedDictionary<String, IterableInAppMessage>
+    private let messagesMap: ThreadSafeOrderedDictionary<String, IterableInAppMessage>
     private let messages: [IterableInAppMessage]
 
     // We should only overwrite if the server is read and client is not read.
