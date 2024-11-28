@@ -34,7 +34,7 @@ struct RequestCreator {
     }
     
     func createRegisterTokenRequest(registerTokenInfo: RegisterTokenInfo,
-                                    notificationsEnabled: Bool) -> Result<IterableRequest, IterableError> {
+                                    notificationsEnabled: Bool, isFromFCM: Bool) -> Result<IterableRequest, IterableError> {
         if case .none = auth.emailOrUserId {
             ITBError(Self.authMissingMessage)
             return .failure(IterableError.general(description: Self.authMissingMessage))
@@ -50,8 +50,7 @@ struct RequestCreator {
         
         let deviceDictionary: [String: Any] = [
             JsonKey.token: registerTokenInfo.hexToken,
-            JsonKey.platform: RequestCreator.pushServicePlatformToString(registerTokenInfo.pushServicePlatform,
-                                                                         apnsType: registerTokenInfo.apnsType),
+            JsonKey.platform: RequestCreator.pushServicePlatformToString(registerTokenInfo.pushServicePlatform, apnsType: registerTokenInfo.apnsType, isFromFCM: isFromFCM),
             JsonKey.applicationName: registerTokenInfo.appName,
             JsonKey.dataFields: dataFields
         ]
@@ -595,14 +594,18 @@ struct RequestCreator {
                    args: args)
     }
     
-    private static func pushServicePlatformToString(_ pushServicePlatform: PushServicePlatform, apnsType: APNSType) -> String {
+    private static func pushServicePlatformToString(_ pushServicePlatform: PushServicePlatform, apnsType: APNSType, isFromFCM: Bool) -> String {
         switch pushServicePlatform {
         case .production:
-            return JsonValue.apnsProduction
+            return isFromFCM ? JsonValue.gcmProduction : JsonValue.apnsProduction
         case .sandbox:
-            return JsonValue.apnsSandbox
+            return isFromFCM ? JsonValue.gcmSandbox : JsonValue.apnsSandbox
         case .auto:
-            return apnsType == .sandbox ? JsonValue.apnsSandbox : JsonValue.apnsProduction
+            if apnsType == .sandbox {
+                return isFromFCM ? JsonValue.gcmSandbox : JsonValue.apnsSandbox
+            } else {
+                return isFromFCM ? JsonValue.gcmProduction : JsonValue.apnsProduction
+            }
         }
     }
     
