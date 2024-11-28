@@ -45,6 +45,7 @@ class CoffeeViewController: UIViewController {
         
         // ITBL: Track attribution to purchase
         IterableAPI.track(purchase: 10.0, items: [CommerceItem(id: coffee.name.lowercased(), name: coffee.name, price: 10.0, quantity: 1)], dataFields: dataFields)
+        IterableAPI.updateUser(["firstName":"Leah"], mergeNestedObjects: false)
     }
 }
 

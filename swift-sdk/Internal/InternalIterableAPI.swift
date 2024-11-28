@@ -256,7 +256,8 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
 
     // MARK: - API Request Calls
     
-    func register(token: Data,
+    func register(token: String,
+                  isFromFCM: Bool,
                   onSuccess: OnSuccessHandler? = nil,
                   onFailure: OnFailureHandler? = nil) {
         
@@ -270,14 +271,14 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
         
         if !isEitherUserIdOrEmailSet() && localStorage.userIdAnnon == nil {
             if config.enableAnonActivation {
-                anonymousUserManager.trackAnonTokenRegistration(token: token.hexString())
+                anonymousUserManager.trackAnonTokenRegistration(token: token)
             }
             onFailure?("Iterable SDK must be initialized with an API key and user email/userId before calling SDK methods", nil)
             return
         }
         
-        hexToken = token.hexString()
-        let registerTokenInfo = RegisterTokenInfo(hexToken: token.hexString(),
+        hexToken = token
+        let registerTokenInfo = RegisterTokenInfo(hexToken: token,
                                                   appName: appName,
                                                   pushServicePlatform: config.pushPlatform,
                                                   apnsType: dependencyContainer.apnsTypeChecker.apnsType,
@@ -286,6 +287,7 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
                                                   sdkVersion: localStorage.sdkVersion)
         requestHandler.register(registerTokenInfo: registerTokenInfo,
                                 notificationStateProvider: notificationStateProvider,
+                                isFromFCM: isFromFCM,
                                 onSuccess: { (_ data: [AnyHashable: Any]?) in
                                                 self._successCallback?(data)
                                                 onSuccess?(data)
