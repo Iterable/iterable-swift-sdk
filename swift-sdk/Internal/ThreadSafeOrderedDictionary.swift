@@ -10,7 +10,7 @@ import Foundation
 
 public final class ThreadSafeOrderedDictionary<K: Hashable, V> {
     private var orderedDictionary = OrderedDictionary<K, V>()
-    private let lock = NSLock()
+    private let lock = NSRecursiveLock()
     
     public var keys: [K] {
         lock.withLock {
