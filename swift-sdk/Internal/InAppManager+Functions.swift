@@ -123,7 +123,7 @@ struct MessagesObtainedHandler {
         let addedInboxCount = addedMessages.reduce(0) { $1.saveToInbox ? $0 + 1 : $0 }
         
         var messagesOverwritten = 0
-        var newMessagesMap = ThreadSafeOrderedDictionary<String, IterableInAppMessage>()
+        let newMessagesMap = ThreadSafeOrderedDictionary<String, IterableInAppMessage>()
         messages.forEach { serverMessage in
             let messageId = serverMessage.messageId
             if let existingMessage = messagesMap[messageId] {
