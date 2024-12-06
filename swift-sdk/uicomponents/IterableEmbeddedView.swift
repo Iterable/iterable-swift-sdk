@@ -40,6 +40,15 @@ public class IterableEmbeddedView:UIView {
     @IBOutlet weak public var imageViewWidthConstraint:NSLayoutConstraint!
     @IBOutlet weak public var imageViewHeightConstraint:NSLayoutConstraint!
     
+    // Survey ui elements
+    private let bodyLabel = UILabel()
+    private let ratingStackView = UIStackView()
+    private let submitButton = IterableEMButton()
+    private var ratingButtons: [UIButton] = []
+    private var selectedRating: Int?
+
+    private var surveyStackView: UIStackView?
+    private var surveyStackViewConstraints: [NSLayoutConstraint] = []
 
     // MARK: Embedded Message Content
     /// Title
@@ -314,6 +323,19 @@ public class IterableEmbeddedView:UIView {
                 titleToTopConstraint.isActive = true
                 cardImageTopConstraint?.isActive = false
                 titleToTopConstraint?.isActive = true
+        case .survey:
+            // Hide default views
+            imgView.isHidden = true
+            cardImageView.isHidden = true
+            cardImageTopConstraint?.isActive = false
+            titleToTopConstraint?.isActive = true
+            
+            // Setup survey view
+            setupSurveyView()
+            
+            // Update content
+            bodyLabel.text = message?.elements?.body
+            labelTitle.text = message?.elements?.title
         }
     }
     
@@ -392,6 +414,97 @@ public class IterableEmbeddedView:UIView {
     
     public override func layoutSubviews() {
         super.layoutSubviews()
+    }
+    
+    
+    private func setupSurveyView() {
+        // Main stack view for survey
+        let stackView = UIStackView()
+        stackView.axis = .vertical
+        stackView.spacing = 16
+        stackView.alignment = .center
+        stackView.translatesAutoresizingMaskIntoConstraints = false
+        innerContentView.addSubview(stackView)
+        surveyStackView = stackView
+        
+        // Configure title label
+        labelTitle.textAlignment = .center
+        labelTitle.numberOfLines = 0
+        
+        // Configure body label
+        bodyLabel.textAlignment = .center
+        bodyLabel.numberOfLines = 0
+        bodyLabel.font = .systemFont(ofSize: 16)
+        
+        // Setup rating buttons
+        setupRatingButtons()
+        
+        // Configure submit button
+        submitButton.setTitle("Submit", for: .normal)
+        submitButton.backgroundColor = .purple
+        submitButton.layer.cornerRadius = 25
+        submitButton.contentEdgeInsets = UIEdgeInsets(top: 12, left: 40, bottom: 12, right: 40)
+        submitButton.addTarget(self, action: #selector(submitTapped), for: .touchUpInside)
+        submitButton.isEnabled = false
+        
+        // Add all elements to stack view
+        stackView.addArrangedSubview(labelTitle)
+        stackView.addArrangedSubview(bodyLabel)
+        stackView.addArrangedSubview(ratingStackView)
+        stackView.addArrangedSubview(submitButton)
+        
+        // Setup constraints
+        NSLayoutConstraint.activate([
+            stackView.topAnchor.constraint(equalTo: innerContentView.topAnchor, constant: 24),
+            stackView.leadingAnchor.constraint(equalTo: innerContentView.leadingAnchor, constant: 16),
+            stackView.trailingAnchor.constraint(equalTo: innerContentView.trailingAnchor, constant: -16),
+            stackView.bottomAnchor.constraint(equalTo: innerContentView.bottomAnchor, constant: -24)
+        ])
+    }
+    
+    private func setupRatingButtons() {
+        ratingStackView.axis = .horizontal
+        ratingStackView.spacing = 8
+        ratingStackView.distribution = .fillEqually
+        ratingStackView.alignment = .center
+        
+        // Create rating labels
+        let lowLabel = UILabel()
+        lowLabel.text = "Low"
+        lowLabel.font = .systemFont(ofSize: 14)
+        
+        let highLabel = UILabel()
+        highLabel.text = "High"
+        highLabel.font = .systemFont(ofSize: 14)
+        
+        // Create buttons 0-10
+        for i in 0...10 {
+            let button = UIButton()
+            button.setTitle("\(i)", for: .normal)
+            button.setTitleColor(.black, for: .normal)
+            button.backgroundColor = .systemGray
+            button.layer.cornerRadius = 20
+            button.widthAnchor.constraint(equalToConstant: 40).isActive = true
+            button.heightAnchor.constraint(equalToConstant: 40).isActive = true
+            button.tag = i
+            button.addTarget(self, action: #selector(ratingButtonTapped(_:)), for: .touchUpInside)
+            ratingButtons.append(button)
+            ratingStackView.addArrangedSubview(button)
+        }
+    }
+
+    @objc private func ratingButtonTapped(_ sender: UIButton) {
+        selectedRating = sender.tag
+        ratingButtons.forEach { button in
+            button.backgroundColor = button.tag == selectedRating ? .purple : .systemGray
+            button.setTitleColor(button.tag == selectedRating ? .white : .black, for: .normal)
+        }
+        submitButton.isEnabled = true
+    }
+
+    @objc private func submitTapped() {
+        guard let rating = selectedRating else { return }
+        // Handle submission
     }
 }
 
@@ -492,6 +605,7 @@ public enum IterableEmbeddedViewType: String {
     case banner
     case card
     case notification
+    case survey
 }
 
 
