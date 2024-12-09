@@ -15,7 +15,7 @@ jobs:
 
       - name: Build and test
         run: |
-          xcodebuild test -project swift-sdk.xcodeproj -scheme swift-sdk -sdk iphonesimulator -destination 'platform=iOS Simulator,name=iPhone 13 Pro Max' -enableCodeCoverage YES CODE_SIGNING_REQUIRED=NO | xcpretty && exit ${PIPESTATUS[0]}
+          xcodebuild test -project swift-sdk.xcodeproj -scheme swift-sdk -sdk iphonesimulator -destination 'platform=iOS Simulator,name=iPhone 14 Pro Max' -enableCodeCoverage YES CODE_SIGNING_REQUIRED=NO | xcpretty && exit ${PIPESTATUS[0]}
 
       - name: CocoaPods lint
         run: pod lib lint
