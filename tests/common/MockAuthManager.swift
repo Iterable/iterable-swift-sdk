@@ -55,7 +55,7 @@ class MockAuthManager: IterableAuthManagerProtocol {
 
     }
 
-    func setNewToken(_ newToken: String) {
+    func setNewToken(_ newToken: String, onCompletion: @escaping (String?) -> Void) {
 
     }
 

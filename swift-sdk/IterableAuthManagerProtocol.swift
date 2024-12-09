@@ -9,7 +9,7 @@ import Foundation
     func resetFailedAuthCount()
     func requestNewAuthToken(hasFailedPriorAuth: Bool, onSuccess: ((String?) -> Void)?, shouldIgnoreRetryPolicy: Bool)
     func scheduleAuthTokenRefreshTimer(interval: TimeInterval, isScheduledRefresh: Bool, successCallback: AuthTokenRetrievalHandler?)
-    func setNewToken(_ newToken: String)
+    func setNewToken(_ newToken: String, onCompletion: @escaping (String?) -> Void)
     func logoutUser()
     func handleAuthFailure(failedAuthToken: String?, reason: AuthFailureReason)
     func pauseAuthRetries(_ pauseAuthRetry: Bool)
