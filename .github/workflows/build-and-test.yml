@@ -13,9 +13,19 @@ jobs:
         with:
           xcode-version: latest-stable
 
+      - name: Find iPhone Simulator UUID
+        id: find-simulator
+        run: |
+          SIMULATOR_ID=$(xcrun simctl list devices available | grep "iPhone 14 Pro Max" | head -n 1 | awk -F '[()]' '{print $2}')
+          echo "SIMULATOR_ID=$SIMULATOR_ID" >> $GITHUB_ENV
+
       - name: Build and test
         run: |
-          xcodebuild test -project swift-sdk.xcodeproj -scheme swift-sdk -sdk iphonesimulator -destination 'platform=iOS Simulator,name=iPhone 13 Pro Max' -enableCodeCoverage YES CODE_SIGNING_REQUIRED=NO | xcpretty && exit ${PIPESTATUS[0]}
+          xcodebuild test -project swift-sdk.xcodeproj \
+            -scheme swift-sdk \
+            -sdk iphonesimulator \
+            -destination "id=${SIMULATOR_ID}" \
+            -enableCodeCoverage YES CODE_SIGNING_REQUIRED=NO | xcpretty && exit ${PIPESTATUS[0]}
 
       - name: CocoaPods lint
         run: pod lib lint
