@@ -280,7 +280,6 @@
 		8AAA8C1D2D07310600DF8220 /* IterableTaskResult.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8AAA8B602D07310600DF8220 /* IterableTaskResult.swift */; };
 		8AAA8C1E2D07310600DF8220 /* PersistenceHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8AAA8B922D07310600DF8220 /* PersistenceHelper.swift */; };
 		8AAA8C1F2D07310600DF8220 /* InAppDisplayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8AAA8B782D07310600DF8220 /* InAppDisplayer.swift */; };
-		8AAA8C202D07310600DF8220 /* Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 8AAA8B322D07310600DF8220 /* Info.plist */; };
 		8AAA8C212D07310600DF8220 /* SampleInboxCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 8AAA8BA62D07310600DF8220 /* SampleInboxCell.xib */; };
 		8AAA8C222D07310600DF8220 /* IterableEmbeddedView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 8AAA8BA22D07310600DF8220 /* IterableEmbeddedView.xib */; };
 		9FF05EAC2AFEA5FA005311F7 /* MockAuthManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FF05EAB2AFEA5FA005311F7 /* MockAuthManager.swift */; };
@@ -602,7 +601,6 @@
 		8AAA8B2D2D07310600DF8220 /* AuthFailure.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthFailure.swift; sourceTree = "<group>"; };
 		8AAA8B2E2D07310600DF8220 /* AuthFailureReason.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthFailureReason.swift; sourceTree = "<group>"; };
 		8AAA8B302D07310600DF8220 /* Constants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Constants.swift; sourceTree = "<group>"; };
-		8AAA8B322D07310600DF8220 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		8AAA8B332D07310600DF8220 /* AbstractDiffCalculator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AbstractDiffCalculator.swift; sourceTree = "<group>"; };
 		8AAA8B342D07310600DF8220 /* Dwifft.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Dwifft.swift; sourceTree = "<group>"; };
 		8AAA8B352D07310600DF8220 /* Dwifft+UIKit.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Dwifft+UIKit.swift"; sourceTree = "<group>"; };
@@ -1255,7 +1253,6 @@
 		AC2263E120CF49B8009800EB /* swift-sdk */ = {
 			isa = PBXGroup;
 			children = (
-				8AAA8B322D07310600DF8220 /* Info.plist */,
 				8AAA8B6C2D07310600DF8220 /* IterableSDK.h */,
 				8AAA8B312D07310600DF8220 /* Core */,
 				8AAA8B6B2D07310600DF8220 /* Internal */,
@@ -1922,7 +1919,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				AC219C532260006600B98631 /* Assets.xcassets in Resources */,
-				8AAA8C202D07310600DF8220 /* Info.plist in Resources */,
 				8AAA8C212D07310600DF8220 /* SampleInboxCell.xib in Resources */,
 				8AAA8C222D07310600DF8220 /* IterableEmbeddedView.xib in Resources */,
 				BA2BB8192BADD5A500EA0229 /* PrivacyInfo.xcprivacy in Resources */,
