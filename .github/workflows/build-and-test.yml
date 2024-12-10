@@ -13,38 +13,13 @@ jobs:
         with:
           xcode-version: latest-stable
 
-      - name: Cleanup Simulators
-        run: |
-          xcrun simctl shutdown all || true
-          xcrun simctl erase all || true
-          xcrun simctl delete unavailable
-
-      - name: Create and Boot Simulator
-        run: |
-          RUNTIME=$(xcrun simctl list runtimes | grep "iOS-17-0" | awk '{print $NF}')
-          if [ -z "$RUNTIME" ]; then
-            echo "Error: Required iOS runtime not found!" >&2
-            exit 1
-          fi
-          xcrun simctl create "iPhone-14-Pro-Max-CI" "iPhone 14 Pro Max" "$RUNTIME"
-          xcrun simctl boot "iPhone-14-Pro-Max-CI"
-
-      - name: Verify Simulators
-        run: xcrun simctl list devices
-
-      - name: Get Simulator ID Dynamically
-        id: get-simulator-id
-        run: |
-          SIMULATOR_ID=$(xcrun simctl list devices | grep "iPhone-14-Pro-Max-CI" | grep -oE '[A-F0-9-]{36}')
-          echo "SIMULATOR_ID=$SIMULATOR_ID" >> $GITHUB_ENV
-
       - name: Build and test with parallel testing
         run: |
           xcodebuild test \
             -project swift-sdk.xcodeproj \
             -scheme swift-sdk \
             -sdk iphonesimulator \
-            -destination "platform=iOS Simulator,id=${SIMULATOR_ID}" \
+            -destination 'platform=iOS Simulator,name=iPhone 14 Pro Max' \
             -enableCodeCoverage YES \
             -resultBundlePath TestResults.xcresult \
             CODE_SIGNING_REQUIRED=NO | xcpretty && exit ${PIPESTATUS[0]}
