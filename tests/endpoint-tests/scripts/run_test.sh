@@ -23,5 +23,7 @@ sed -e "s/\(apiKey = \).*$/\1\"$api_key\"/" \
 xcodebuild -project swift-sdk.xcodeproj \
            -scheme endpoint-tests \
            -sdk iphonesimulator \
+           -parellel-testing-enabled \
            -destination 'platform=iOS Simulator,name=iPhone 14' \
+           -resultBundlePath TestResults.xcresult \
            test | xcpretty
