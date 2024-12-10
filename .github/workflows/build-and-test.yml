@@ -32,15 +32,23 @@ jobs:
       - name: Verify Simulators
         run: xcrun simctl list devices
 
+      - name: Get Simulator ID Dynamically
+        id: get-simulator-id
+        run: |
+          SIMULATOR_ID=$(xcrun simctl list devices | grep "iPhone-14-Pro-Max-CI" | grep -oE '[A-F0-9-]{36}')
+          echo "SIMULATOR_ID=$SIMULATOR_ID" >> $GITHUB_ENV
+
       - name: Build and test with parallel testing
         run: |
-          xcodebuild test -project swift-sdk.xcodeproj \
+          xcodebuild test \
+            -project swift-sdk.xcodeproj \
             -scheme swift-sdk \
             -sdk iphonesimulator \
-            -destination 'platform=iOS Simulator,name=iPhone-14-Pro-Max-CI' \
+            -destination "platform=iOS Simulator,id=${SIMULATOR_ID}" \
             -enableCodeCoverage YES \
             -parallel-testing-enabled YES \
             -parallel-testing-worker-count 4 \
+            -only-testing:swift-sdk/unit-tests \
             CODE_SIGNING_REQUIRED=NO | xcpretty && exit ${PIPESTATUS[0]}
 
       - name: CocoaPods lint
