@@ -13,9 +13,16 @@ jobs:
         with:
           xcode-version: latest-stable
 
-      - name: Build and test
+      - name: Build and test with parallel testing
         run: |
-          xcodebuild test -project swift-sdk.xcodeproj -scheme swift-sdk -sdk iphonesimulator -destination 'platform=iOS Simulator,name=iPhone 14 Pro Max' -enableCodeCoverage YES CODE_SIGNING_REQUIRED=NO | xcpretty && exit ${PIPESTATUS[0]}
+          xcodebuild test -project swift-sdk.xcodeproj \
+            -scheme swift-sdk \
+            -sdk iphonesimulator \
+            -destination 'platform=iOS Simulator,name=iPhone 14 Pro Max' \
+            -enableCodeCoverage YES \
+            -parallel-testing-enabled YES \
+            -parallel-testing-worker-count 6 \
+            CODE_SIGNING_REQUIRED=NO | xcpretty && exit ${PIPESTATUS[0]}
 
       - name: CocoaPods lint
         run: pod lib lint
