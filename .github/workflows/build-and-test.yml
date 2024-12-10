@@ -46,8 +46,6 @@ jobs:
             -sdk iphonesimulator \
             -destination "platform=iOS Simulator,id=${SIMULATOR_ID}" \
             -enableCodeCoverage YES \
-            -parallel-testing-enabled YES \
-            -parallel-testing-worker-count 4 \
             -resultBundlePath TestResults.xcresult \
             CODE_SIGNING_REQUIRED=NO | xcpretty && exit ${PIPESTATUS[0]}
 
