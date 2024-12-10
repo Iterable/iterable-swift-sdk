@@ -13,22 +13,27 @@ jobs:
         with:
           xcode-version: latest-stable
 
-      - name: Cleanup and Reset Simulators
+      - name: Cleanup Simulators
         run: |
           xcrun simctl shutdown all || true
           xcrun simctl erase all || true
-          rm -rf ~/Library/Developer/CoreSimulator/Devices
+          xcrun simctl delete unavailable
+          RUNTIME=$(xcrun simctl list runtimes | grep "iOS" | grep -v unavailable | head -n 1 | awk '{print $1}')
+          xcrun simctl create "iPhone-14-Pro-Max-CI" "iPhone 14 Pro Max" "$RUNTIME"
 
-      - name: Boot Required Simulator
+      - name: Verify Simulators
+        run: xcrun simctl list devices
+
+      - name: Boot Simulator
         run: |
-          xcrun simctl boot "iPhone 14 Pro Max"
+          xcrun simctl boot "iPhone-14-Pro-Max-CI"
 
       - name: Build and test with parallel testing
         run: |
           xcodebuild test -project swift-sdk.xcodeproj \
             -scheme swift-sdk \
             -sdk iphonesimulator \
-            -destination 'platform=iOS Simulator,name=iPhone 14 Pro Max' \
+            -destination 'platform=iOS Simulator,name=iPhone-14-Pro-Max-CI' \
             -enableCodeCoverage YES \
             -parallel-testing-enabled YES \
             -parallel-testing-worker-count 4 \
