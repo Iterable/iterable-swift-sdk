@@ -214,7 +214,7 @@ class TasksCRUDTests: XCTestCase {
     private let dateProvider = MockDateProvider()
     
     private lazy var persistenceProvider: IterablePersistenceContextProvider = {
-        let provider = CoreDataPersistenceContextProvider(dateProvider: dateProvider)!
+        let provider = CoreDataPersistenceContextProvider(dateProvider: dateProvider)
         try! provider.mainQueueContext().deleteAllTasks()
         try! provider.mainQueueContext().save()
         return provider
