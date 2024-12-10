@@ -48,6 +48,7 @@ jobs:
             -enableCodeCoverage YES \
             -parallel-testing-enabled YES \
             -parallel-testing-worker-count 4 \
+            -resultBundlePath TestResults.xcresult \
             CODE_SIGNING_REQUIRED=NO | xcpretty && exit ${PIPESTATUS[0]}
 
       - name: CocoaPods lint
@@ -55,3 +56,8 @@ jobs:
 
       - name: Upload coverage report to codecov.io
         run: bash <(curl -s https://codecov.io/bash) -X gcov -J 'IterableSDK' -J 'IterableAppExtensions'
+ 
+      - uses: kishikawakatsumi/xcresulttool@v1
+        with:
+          path: TestResults.xcresult
+        if: success() || failure()
