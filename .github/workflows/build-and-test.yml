@@ -13,7 +13,7 @@ jobs:
         with:
           xcode-version: latest-stable
 
-      - name: Build and test with parallel testing
+      - name: Build and test 
         run: |
           xcodebuild test \
             -project swift-sdk.xcodeproj \
