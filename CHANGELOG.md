@@ -3,7 +3,7 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
-## [6.5.8-beta]
+## [6.5.8-beta1]
 ### Added
 - introduces ThreadSafeOrderedDictionary which is a wrapper around the OrderedDictionary to ensure thread safety. Thanks to @Rspoon3
 
