@@ -13,18 +13,15 @@ jobs:
         with:
           xcode-version: latest-stable
 
-      - name: Cleanup Simulators
+      - name: Cleanup and Reset Simulators
         run: |
-          xcrun simctl shutdown all
-          xcrun simctl erase all
-
-      - name: Restart CoreSimulatorService
-        run: |
-          launchctl kickstart -k "gui/$(id -u)/com.apple.CoreSimulator.CoreSimulatorService"
+          xcrun simctl shutdown all || true
+          xcrun simctl erase all || true
+          rm -rf ~/Library/Developer/CoreSimulator/Devices
 
       - name: Boot Required Simulator
         run: |
-          xcrun simctl boot "iPhone 14 Pro Max" || true
+          xcrun simctl boot "iPhone 14 Pro Max"
 
       - name: Build and test with parallel testing
         run: |
