@@ -8,7 +8,8 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 - introduces ThreadSafeOrderedDictionary which is a wrapper around the OrderedDictionary to ensure thread safety. Thanks to @Rspoon3
 
 ### Fixed
-- Prevents crashes relating to the Core Data's persistent store failing to load. Thanks to @bfahey :) 
+- Prevents crashes relating to the Core Data's persistent store failing to load. Thanks to @bfahey :)
+- Fixed incorrect tracking of pushOpen for push notifications with Wake App enabled. Tracking now happens only when users tap to open the app.
 
 ## [6.5.7]
 ### Fixed
