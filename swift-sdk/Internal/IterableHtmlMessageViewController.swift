@@ -3,7 +3,7 @@
 //
 
 import UIKit
-import WebKit
+@preconcurrency import WebKit
 
 enum IterableMessageLocation: Int {
     case full
