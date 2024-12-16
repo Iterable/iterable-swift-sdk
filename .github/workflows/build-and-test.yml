@@ -13,6 +13,11 @@ jobs:
         with:
           xcode-version: latest-stable
 
+      - name: Setup Ruby and xcpretty
+        run: |
+          gem install erb
+          gem install xcpretty
+
       - name: Build and test
         run: |
           xcodebuild test -project swift-sdk.xcodeproj -scheme swift-sdk -sdk iphonesimulator -destination 'platform=iOS Simulator,name=iPhone 16 Pro' -enableCodeCoverage YES CODE_SIGNING_REQUIRED=NO | xcpretty && exit ${PIPESTATUS[0]}
