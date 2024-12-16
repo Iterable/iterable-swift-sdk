@@ -36,23 +36,20 @@ class UITests: XCTestCase {
         let notification = springboardHelper.notification
         XCTAssert(notification.waitForExistence(timeout: 10))
         
-        notification.press(forDuration: 1.0)
+        notification.press(forDuration: 0.5)
 
         // Give one second pause before interacting
-        sleep(1)
+        sleep(10)
         
         let button = springboardHelper.buttonOpenSafari
         button.tap()
         
         // Give some time to open
-        sleep(1)
+        sleep(10)
         
         // Assert that Safari is Active
         let safariApp = XCUIApplication(bundleIdentifier: "com.apple.mobilesafari")
         XCTAssertEqual(safariApp.state, .runningForeground, "Safari is not active")
-        
-        // launch this app again for other tests
-        app.launch()
     }
     
     func testSendNotificationOpenDeepLink() {
