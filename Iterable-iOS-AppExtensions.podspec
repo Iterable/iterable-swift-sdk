@@ -16,6 +16,8 @@ Pod::Spec.new do |s|
   s.source       = { :git => "https://github.com/Iterable/iterable-swift-sdk.git", :tag => s.version }
   s.source_files = "notification-extension/*.{h,m,swift}"
 
+  s.documentation_url = "https://support.iterable.com/hc/en-us/articles/360035018152-Iterable-s-iOS-SDK"
+
   s.pod_target_xcconfig = {
     'SWIFT_VERSION' => '5.3'
   }
