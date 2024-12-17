@@ -128,59 +128,59 @@ class UITests: XCTestCase {
 //        inAppTest(buttonName: "Show InApp#5", linkName: "Click Me", expectedCallbackUrl: "https://website/resource#something")
 //    }
     
-    private func inAppTest(buttonName: String, linkName: String, expectedCallbackUrl: String) {
-        // tap the inApp button
-        app.buttons[buttonName].tap()
-        
-        // click the link in inApp that shows up
-        let clickMe = app.links[linkName]
-        waitForElementToAppear(clickMe)
-        clickMe.tap()
-        
-        let callbackUrl = app.staticTexts[expectedCallbackUrl]
-        waitForElementToAppear(callbackUrl)
-    }
-    
-    private func waitForElementToAppear(_ element: XCUIElement, fail: Bool = true) {
-        let exists = element.waitForExistence(timeout: UITests.timeout)
-        
-        if fail, !exists {
-            XCTFail("expected element: \(element)")
-        }
-    }
-    
-    private func allowNotificationsIfNeeded() {
-        app.buttons["Setup Notifications"].tap()
-        UITests.monitor = addUIInterruptionMonitor(withDescription: "Getting Notification Permission") { (alert) -> Bool in
-            let okButton = alert.buttons["Allow"]
-            self.waitForElementToAppear(okButton)
-            okButton.tap()
-            if let monitor = UITests.monitor {
-                self.removeUIInterruptionMonitor(monitor)
-            }
-            return true
-        }
-        // Xcode bug?, need to make this app active
-        app.swipeUp()
-    }
+//    private func inAppTest(buttonName: String, linkName: String, expectedCallbackUrl: String) {
+//        // tap the inApp button
+//        app.buttons[buttonName].tap()
+//        
+//        // click the link in inApp that shows up
+//        let clickMe = app.links[linkName]
+//        waitForElementToAppear(clickMe)
+//        clickMe.tap()
+//        
+//        let callbackUrl = app.staticTexts[expectedCallbackUrl]
+//        waitForElementToAppear(callbackUrl)
+//    }
+//    
+//    private func waitForElementToAppear(_ element: XCUIElement, fail: Bool = true) {
+//        let exists = element.waitForExistence(timeout: UITests.timeout)
+//        
+//        if fail, !exists {
+//            XCTFail("expected element: \(element)")
+//        }
+//    }
+//    
+//    private func allowNotificationsIfNeeded() {
+//        app.buttons["Setup Notifications"].tap()
+//        UITests.monitor = addUIInterruptionMonitor(withDescription: "Getting Notification Permission") { (alert) -> Bool in
+//            let okButton = alert.buttons["Allow"]
+//            self.waitForElementToAppear(okButton)
+//            okButton.tap()
+//            if let monitor = UITests.monitor {
+//                self.removeUIInterruptionMonitor(monitor)
+//            }
+//            return true
+//        }
+//        // Xcode bug?, need to make this app active
+//        app.swipeUp()
+//    }
 }
 
-struct SpringBoardNotificationHelper {
-    let springboard: XCUIApplication
-    
-    var notification: XCUIElement {
-        springboard.otherElements["Notification"].descendants(matching: .any)["NotificationShortLookView"]
-    }
-    
-    var buttonOpenSafari: XCUIElement {
-        springboard.buttons["Open Safari"].firstMatch
-    }
-    
-    var buttonOpenDeepLink: XCUIElement {
-        springboard.buttons["Open Deeplink"].firstMatch
-    }
-    
-    var buttonCustomAction: XCUIElement {
-        springboard.buttons["Custom Action"].firstMatch
-    }
-}
+//struct SpringBoardNotificationHelper {
+//    let springboard: XCUIApplication
+//    
+//    var notification: XCUIElement {
+//        springboard.otherElements["Notification"].descendants(matching: .any)["NotificationShortLookView"]
+//    }
+//    
+//    var buttonOpenSafari: XCUIElement {
+//        springboard.buttons["Open Safari"].firstMatch
+//    }
+//    
+//    var buttonOpenDeepLink: XCUIElement {
+//        springboard.buttons["Open Deeplink"].firstMatch
+//    }
+//    
+//    var buttonCustomAction: XCUIElement {
+//        springboard.buttons["Custom Action"].firstMatch
+//    }
+//}
