@@ -31,7 +31,6 @@
 		0C8EE4682CEEF678006F17D6 /* FirebaseStorage in Frameworks */ = {isa = PBXBuildFile; productRef = 0C8EE4672CEEF678006F17D6 /* FirebaseStorage */; };
 		0C8EE46A2CEEF678006F17D6 /* FirebaseStorageCombine-Community in Frameworks */ = {isa = PBXBuildFile; productRef = 0C8EE4692CEEF678006F17D6 /* FirebaseStorageCombine-Community */; };
 		0C8EE46C2CEEF678006F17D6 /* FirebaseVertexAI in Frameworks */ = {isa = PBXBuildFile; productRef = 0C8EE46B2CEEF678006F17D6 /* FirebaseVertexAI */; };
-		0CD4B0562CEF00BD000DD590 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 0CD4B0552CEF00BD000DD590 /* GoogleService-Info.plist */; };
 		0CEAAB3E2CF8BB4F00172B3E /* guitar.wav in Resources */ = {isa = PBXBuildFile; fileRef = 0CEAAB3D2CF8BB4F00172B3E /* guitar.wav */; };
 		37088F332B3C38250000B218 /* IterableAppExtensions in Frameworks */ = {isa = PBXBuildFile; productRef = 37088F322B3C38250000B218 /* IterableAppExtensions */; };
 		37088F352B3C38250000B218 /* IterableSDK in Frameworks */ = {isa = PBXBuildFile; productRef = 37088F342B3C38250000B218 /* IterableSDK */; };
@@ -79,7 +78,6 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
-		0CD4B0552CEF00BD000DD590 /* GoogleService-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		0CEAAB3D2CF8BB4F00172B3E /* guitar.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = guitar.wav; sourceTree = "<group>"; };
 		551A5FEC251AB1510004C9A0 /* swift-sdk */ = {isa = PBXFileReference; lastKnownFileType = folder; name = "swift-sdk"; path = ../..; sourceTree = "<group>"; };
 		AC1BDF5720E30436000010CA /* DeepLinkHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeepLinkHandler.swift; sourceTree = "<group>"; };
@@ -191,7 +189,6 @@
 			isa = PBXGroup;
 			children = (
 				0CEAAB3D2CF8BB4F00172B3E /* guitar.wav */,
-				0CD4B0552CEF00BD000DD590 /* GoogleService-Info.plist */,
 				E9C60B782B3C2061005C4462 /* EmbeddedMessages */,
 				AC5ECD9D20E303F50081E1DA /* ViewControllers */,
 				AC5ECD9B20E3038B0081E1DA /* Deep Link Handling */,
@@ -386,7 +383,6 @@
 				0CEAAB3E2CF8BB4F00172B3E /* guitar.wav in Resources */,
 				ACA3A14320E2F6B100FEF74F /* LaunchScreen.storyboard in Resources */,
 				ACA3A14020E2F6B100FEF74F /* Assets.xcassets in Resources */,
-				0CD4B0562CEF00BD000DD590 /* GoogleService-Info.plist in Resources */,
 				ACA3A13E20E2F6AF00FEF74F /* Main.storyboard in Resources */,
 				E9C60B7B2B3C2061005C4462 /* embeddedmessages.json in Resources */,
 			);
