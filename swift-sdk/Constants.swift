@@ -95,6 +95,11 @@ enum Const {
         static let location = "Location"
         static let setCookie = "Set-Cookie"
     }
+    
+    enum RemoteNotification {
+        static let aps = "aps"
+        static let contentAvailable = "content-available"
+    }
 }
 
 enum JsonKey {
