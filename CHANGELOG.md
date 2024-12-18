@@ -6,12 +6,12 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 ## [6.5.8]
 ### Fixed
 - Fixed incorrect tracking of pushOpen for push notifications with Wake App enabled. Tracking now happens only when users tap to open the app.
-- Fixed the default `notificationsEnabled` value returned when `autoPushRegistration` is set to `false`
+- Fixed the default `notificationsEnabled` value returned when `autoPushRegistration` is set to `false`.
 
 ### Changed
 - Updated repository name on Fastline script and podspec files.
-- Comments out outdated tests that need to be revisited
-- Updated sample app to use generic URLs
+- Comments out outdated tests that need to be revisited.
+- Updated sample app to use generic URLs.
 
 ## [6.5.7]
 ### Fixed
