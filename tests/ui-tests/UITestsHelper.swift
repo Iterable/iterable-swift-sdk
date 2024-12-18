@@ -14,7 +14,7 @@ struct UITestsHelper {
     }
     
     static func deleteSwipe(_ cell: XCUIElement) {
-        let startPoint = cell.coordinate(withNormalizedOffset: CGVector(dx: 1.0, dy: 0.0))
+        let startPoint = cell.coordinate(withNormalizedOffset: CGVector(dx: 1.0, dy: 0.1))
         let endPoint = cell.coordinate(withNormalizedOffset: .zero)
         startPoint.press(forDuration: 0, thenDragTo: endPoint)
     }
