@@ -24,7 +24,7 @@ jobs:
             -project swift-sdk.xcodeproj \
             -scheme swift-sdk \
             -sdk iphonesimulator \
-            -destination 'platform=iOS Simulator,name=iPhone 14 Pro Max' \
+            -destination 'platform=iOS Simulator,name=iPhone 16 Pro' \
             -enableCodeCoverage YES \
             -resultBundlePath TestResults.xcresult \
             CODE_SIGNING_REQUIRED=NO | xcpretty && exit ${PIPESTATUS[0]}
