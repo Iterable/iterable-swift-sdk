@@ -15,6 +15,7 @@ enum InAppContentParseResult {
     case failure(reason: String)
 }
 
+
 struct InAppContentParser {
     static func parse(contentDict: [AnyHashable: Any]) -> InAppContentParseResult {
         let contentType: IterableInAppContentType
@@ -34,6 +35,8 @@ struct InAppContentParser {
             return HtmlContentParser.self
         case .json:
             return JsonContentParser.self
+		default:
+			return HtmlContentParser.self
         }
     }
 }
@@ -266,19 +269,4 @@ struct JsonContentParser: ContentFromJsonParser {
     }
 }
 
-public class IterableJsonInAppContent: IterableInAppContent {
-    public let json: [AnyHashable: Any]
-    
-    init(json: [AnyHashable: Any]) {
-        self.json = json
-        super.init(type: .json)
-    }
-    
-    override public var description: String {
-        IterableUtil.describe("type", type,
-                             "json", json,
-                             pairSeparator: " = ",
-                             separator: ", ")
-    }
-}
 
