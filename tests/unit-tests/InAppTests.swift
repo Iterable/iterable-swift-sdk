@@ -1479,7 +1479,7 @@ class InAppTests: XCTestCase {
         wait(for: [expectation1, expectation2], timeout: testExpectationTimeout)
         XCTAssertEqual(internalApi.inAppManager.getMessages().count, 0)
     }
-	
+
     func testJsonOnlyInAppMessageParsing() {
         let expectation1 = expectation(description: "message parsed")
 
@@ -1632,27 +1632,28 @@ extension IterableInboxMetadata {
 }
 
 extension IterableInAppMessage {
-	override public var description: String {
-		IterableUtil.describe("messageId", messageId,
-							  "campaignId", campaignId ?? "nil",
-							  "saveToInbox", saveToInbox,
-							  "inboxMetadata", inboxMetadata ?? "nil",
-							  "trigger", trigger,
-							  "createdAt", createdAt ?? "nil",
-							  "expiresAt", expiresAt ?? "nil",
-							  "content", content,
-							  "didProcessTrigger", didProcessTrigger,
-							  "consumed", consumed,
-							  "read", read,
-							  pairSeparator: " = ", separator: "\n")
-	}
+    override public var description: String {
+        IterableUtil.describe("messageId", messageId,
+                              "campaignId", campaignId ?? "nil",
+                              "saveToInbox", saveToInbox,
+                              "inboxMetadata", inboxMetadata ?? "nil",
+                              "trigger", trigger,
+                              "createdAt", createdAt ?? "nil",
+                              "expiresAt", expiresAt ?? "nil",
+                              "content", content,
+                              "didProcessTrigger", didProcessTrigger,
+                              "consumed", consumed,
+                              "read", read,
+                              pairSeparator: " = ", separator: "\n")
+    }
 }
+
 
 extension IterableJsonInAppContent {
 	override public var description: String {
 		IterableUtil.describe("type", type,
-							 "json", json,
-							 pairSeparator: " = ",
-							 separator: ", ")
+							  "json", json,
+							  pairSeparator: " = ",
+							  separator: ", ")
 	}
 }
