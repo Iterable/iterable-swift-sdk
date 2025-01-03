@@ -36,7 +36,7 @@ struct InAppContentParser {
         case .json:
             return JsonContentParser.self
 		default:
-			return HtmlContentParser.self
+            return HtmlContentParser.self
         }
     }
 }
