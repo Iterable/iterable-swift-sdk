@@ -316,11 +316,11 @@ class InAppManager: NSObject, IterableInternalInAppManagerProtocol {
                               callback: ITBURLCallback? = nil) {
         ITBInfo()
         
-		if message.content is IterableJsonInAppContent {
+        if message.content is IterableJsonInAppContent {
             if consume {
-				self.requestHandler?.inAppConsume(message.messageId,
-												   onSuccess: nil,
-												   onFailure: nil)
+                self.requestHandler?.inAppConsume(message.messageId,
+                                                   onSuccess: nil,
+                                                   onFailure: nil)
             }
             return
         }
