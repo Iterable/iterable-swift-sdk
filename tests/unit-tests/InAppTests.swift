@@ -1480,7 +1480,7 @@ class InAppTests: XCTestCase {
         wait(for: [expectation1, expectation2], timeout: testExpectationTimeout)
         XCTAssertEqual(internalApi.inAppManager.getMessages().count, 0)
     }
-    /*
+	/*
     func testJsonOnlyInAppMessageParsing() {
         let expectation1 = expectation(description: "message parsed")
 
