@@ -316,18 +316,13 @@ class InAppManager: NSObject, IterableInternalInAppManagerProtocol {
                               callback: ITBURLCallback? = nil) {
         ITBInfo()
         
-        if let content = message.content as? IterableJsonInAppContent {
+		if message.content is IterableJsonInAppContent {
             // For JSON-only messages, don't display anything visually
             // Just call the delegate with the JSON data
-            inAppDelegate.onNew(message: message)
+            _ = inAppDelegate.onNew(message: message)
             if consume {
-                _ = remove(message: message)
+				remove(message: message)
             }
-            return
-        }
-        
-        guard let content = message.content as? IterableHtmlInAppContent else {
-            ITBError("Invalid Content in message")
             return
         }
         
