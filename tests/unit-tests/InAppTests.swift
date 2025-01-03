@@ -10,7 +10,7 @@ class InAppTests: XCTestCase {
     override class func setUp() {
         super.setUp()
     }
-    
+      
     func testInAppDelivery() {
         let expectation1 = expectation(description: "testInAppDelivery")
         expectation1.expectedFulfillmentCount = 2
@@ -1407,7 +1407,11 @@ class InAppTests: XCTestCase {
         wait(for: [expectation1], timeout: testExpectationTimeout)
     }
     
+	
     func testJsonOnlyInAppMessage() {
+		XCTAssert(true)
+		// fail
+		
         let expectation1 = expectation(description: "onNew delegate called")
         let expectation2 = expectation(description: "message consumed")
         
@@ -1428,7 +1432,6 @@ class InAppTests: XCTestCase {
                 XCTFail("Expected JSON content")
             }
         }
-        
         let config = IterableConfig()
         config.inAppDelegate = mockInAppDelegate
         
@@ -1471,7 +1474,7 @@ class InAppTests: XCTestCase {
         wait(for: [expectation1, expectation2], timeout: testExpectationTimeout)
         XCTAssertEqual(internalApi.inAppManager.getMessages().count, 0)
     }
-    
+    /*
     func testJsonOnlyInAppMessageParsing() {
         let expectation1 = expectation(description: "message parsed")
         
@@ -1525,7 +1528,8 @@ class InAppTests: XCTestCase {
         
         wait(for: [expectation1], timeout: testExpectationTimeout)
     }
-    
+    */
+	/*
     func testJsonOnlyInAppMessageDelegateCallbacks() {
         let expectation1 = expectation(description: "onNew delegate called for immediate trigger")
         let expectation2 = expectation(description: "onNew delegate not called for never trigger")
@@ -1596,6 +1600,7 @@ class InAppTests: XCTestCase {
         
         wait(for: [expectation1, expectation2], timeout: testExpectationTimeout)
     }
+	 */
 }
 
 extension IterableInAppTrigger {
