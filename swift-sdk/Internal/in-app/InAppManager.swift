@@ -312,8 +312,8 @@ class InAppManager: NSObject, IterableInternalInAppManagerProtocol {
     }
     
 	private func showInternal(message: IterableInAppMessage,
-							  consume: Bool,
-							  callback: ITBURLCallback? = nil) {
+                              consume: Bool,
+                              callback: ITBURLCallback? = nil) {
         ITBInfo()
         
         if let content = message.content as? IterableJsonInAppContent {
