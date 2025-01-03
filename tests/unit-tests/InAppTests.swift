@@ -1531,6 +1531,77 @@ class InAppTests: XCTestCase {
         
         wait(for: [expectation1], timeout: testExpectationTimeout)
     }
+    
+    func testJsonOnlyInAppMessageDelegateCallbacks() {
+        let expectation1 = expectation(description: "onNew delegate called for immediate trigger")
+        let expectation2 = expectation(description: "onNew delegate not called for never trigger")
+        expectation2.isInverted = true
+        
+        let mockInAppFetcher = MockInAppFetcher()
+        let mockInAppDisplayer = MockInAppDisplayer()
+        
+        // This should never be called since JSON messages don't display
+        mockInAppDisplayer.onShow.onSuccess { _ in
+            XCTFail("JSON-only messages should not be displayed")
+        }
+        
+        let mockInAppDelegate = MockInAppDelegate(showInApp: .show)
+        mockInAppDelegate.onNewMessageCallback = { message in
+            if let jsonContent = message.content as? IterableJsonInAppContent {
+                if message.messageId == "message1" {
+                    // Verify immediate trigger message
+                    XCTAssertEqual(jsonContent.json["key"] as? String, "immediate")
+                    expectation1.fulfill()
+                } else if message.messageId == "message2" {
+                    // Never trigger message should not call onNew
+                    XCTFail("onNew should not be called for never trigger")
+                    expectation2.fulfill()
+                }
+            } else {
+                XCTFail("Expected JSON content")
+            }
+        }
+        
+        let config = IterableConfig()
+        config.inAppDelegate = mockInAppDelegate
+        
+        let internalApi = InternalIterableAPI.initializeForTesting(
+            config: config,
+            inAppFetcher: mockInAppFetcher,
+            inAppDisplayer: mockInAppDisplayer
+        )
+        
+        let payload = """
+        {"inAppMessages":
+        [
+            {
+                "saveToInbox": false,
+                "content": {
+                    "contentType": "json",
+                    "json": {"key": "immediate"}
+                },
+                "trigger": {"type": "immediate"},
+                "messageId": "message1",
+                "campaignId": 1
+            },
+            {
+                "saveToInbox": false,
+                "content": {
+                    "contentType": "json",
+                    "json": {"key": "never"}
+                },
+                "trigger": {"type": "never"},
+                "messageId": "message2",
+                "campaignId": 2
+            }
+        ]
+        }
+        """.toJsonDict()
+        
+        mockInAppFetcher.mockInAppPayloadFromServer(internalApi: internalApi, payload)
+        
+        wait(for: [expectation1, expectation2], timeout: testExpectationTimeout)
+    }
 }
 
 extension IterableInAppTrigger {
