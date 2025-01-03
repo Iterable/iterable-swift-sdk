@@ -1471,16 +1471,15 @@ class InAppTests: XCTestCase {
             }
 
             let messages = internalApi.inAppManager.getMessages()
-            XCTAssertEqual(messages.count, 1)
-
-            internalApi.inAppManager.show(message: messages[0], consume: true, callback: nil)
+			// There should be no message here because json only messages are not shown
+            XCTAssertEqual(messages.count, 0)
             expectation2.fulfill()
         }
 
         wait(for: [expectation1, expectation2], timeout: testExpectationTimeout)
         XCTAssertEqual(internalApi.inAppManager.getMessages().count, 0)
     }
-	/*
+	
     func testJsonOnlyInAppMessageParsing() {
         let expectation1 = expectation(description: "message parsed")
 
@@ -1534,8 +1533,7 @@ class InAppTests: XCTestCase {
 
         wait(for: [expectation1], timeout: testExpectationTimeout)
     }
-    */
-	/*
+
     func testJsonOnlyInAppMessageDelegateCallbacks() {
         let expectation1 = expectation(description: "onNew delegate called for immediate trigger")
         let expectation2 = expectation(description: "onNew delegate not called for never trigger")
@@ -1604,9 +1602,8 @@ class InAppTests: XCTestCase {
 
         mockInAppFetcher.mockInAppPayloadFromServer(internalApi: internalApi, payload)
 
-        wait(for: [expectation1, expectation2], timeout: testExpectationTimeout)
+        wait(for: [expectation1, expectation2], timeout: testExpectationTimeout / 5)
     }
-	 */
 }
 
 extension IterableInAppTrigger {
