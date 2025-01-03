@@ -317,11 +317,10 @@ class InAppManager: NSObject, IterableInternalInAppManagerProtocol {
         ITBInfo()
         
 		if message.content is IterableJsonInAppContent {
-            // For JSON-only messages, don't display anything visually
-            // Just call the delegate with the JSON data
-            _ = inAppDelegate.onNew(message: message)
             if consume {
-				remove(message: message)
+				self.requestHandler?.inAppConsume(message.messageId,
+												   onSuccess: nil,
+												   onFailure: nil)
             }
             return
         }
