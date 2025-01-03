@@ -32,8 +32,22 @@ public extension Notification.Name {
 
 @objc public enum IterableInAppContentType: Int, Codable {
     case html
+	case json
     case alert
     case banner
+	
+	public var description: String {
+		switch self {
+		case .html:
+			return "html"
+		case .alert:
+			return "alert"
+		case .json:
+			return "json"
+		case .banner:
+			return "banner"
+		}
+	}
 }
 
 @objc public protocol IterableInAppContent {
