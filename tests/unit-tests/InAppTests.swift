@@ -1471,7 +1471,7 @@ class InAppTests: XCTestCase {
             }
 
             let messages = internalApi.inAppManager.getMessages()
-            // There should be no message here because json only messages are not shown
+            // There should be no message here because it was consumed immediately
             XCTAssertEqual(messages.count, 0)
             expectation2.fulfill()
         }
