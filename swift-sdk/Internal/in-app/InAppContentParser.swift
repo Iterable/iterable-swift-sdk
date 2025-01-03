@@ -17,13 +17,13 @@ enum InAppContentParseResult {
 
 
 struct InAppContentParser {
-	static func parse(contentDict: [AnyHashable: Any]) -> InAppContentParseResult {
-		let contentType: IterableInAppContentType
-		if let contentTypeStr = contentDict[JsonKey.InApp.type] as? String {
-			contentType = IterableInAppContentType.from(string: contentTypeStr)
-		} else if let contentTypeStr = contentDict[JsonKey.InApp.contentType] as? String {
-			contentType = IterableInAppContentType.from(string: contentTypeStr)
-		} else {
+    static func parse(contentDict: [AnyHashable: Any]) -> InAppContentParseResult {
+        let contentType: IterableInAppContentType
+        if let contentTypeStr = contentDict[JsonKey.InApp.type] as? String {
+            contentType = IterableInAppContentType.from(string: contentTypeStr)
+        } else if let contentTypeStr = contentDict[JsonKey.InApp.contentType] as? String {
+            contentType = IterableInAppContentType.from(string: contentTypeStr)
+        } else {
             contentType = .html
         }
         
@@ -36,7 +36,7 @@ struct InAppContentParser {
             return HtmlContentParser.self
         case .json:
             return JsonContentParser.self
-		default:
+        default:
             return HtmlContentParser.self
         }
     }
