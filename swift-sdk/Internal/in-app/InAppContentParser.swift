@@ -15,22 +15,6 @@ enum InAppContentParseResult {
     case failure(reason: String)
 }
 
-enum IterableInAppContentType {
-    case html
-    case json
-    
-    static func from(string: String) -> IterableInAppContentType {
-        switch string.lowercased() {
-        case "html":
-            return .html
-        case "json":
-            return .json
-        default:
-            return .html
-        }
-    }
-}
-
 struct InAppContentParser {
     static func parse(contentDict: [AnyHashable: Any]) -> InAppContentParseResult {
         let contentType: IterableInAppContentType
@@ -298,21 +282,3 @@ public class IterableJsonInAppContent: IterableInAppContent {
     }
 }
 
-private enum JsonKey {
-    static let html = "html"
-    static let json = "json"
-    static let InApp = InAppJsonKey.self
-    
-    enum InAppJsonKey {
-        static let type = "type"
-        static let content = "content"
-        static let inAppDisplaySettings = "inAppDisplaySettings"
-        static let customPayload = "customPayload"
-        static let trigger = "trigger"
-        static let messageId = "messageId"
-        static let campaignId = "campaignId"
-        static let saveToInbox = "saveToInbox"
-        static let inboxMetadata = "inboxMetadata"
-        static let contentType = "contentType"
-    }
-}

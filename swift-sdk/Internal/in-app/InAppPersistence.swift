@@ -5,21 +5,6 @@
 import Foundation
 import UIKit
 
-/// This is needed because String(describing: ...) returns the
-/// wrong value for this enum when it is exposed to Objective-C
-extension IterableInAppContentType: CustomStringConvertible {
-    public var description: String {
-        switch self {
-        case .html:
-            return "html"
-        case .alert:
-            return "alert"
-        case .banner:
-            return "banner"
-        }
-    }
-}
-
 extension IterableInAppContentType {
     static func from(string: String) -> IterableInAppContentType {
         switch string.lowercased() {
