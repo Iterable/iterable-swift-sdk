@@ -1415,8 +1415,8 @@ class InAppTests: XCTestCase {
 
 
     func testJsonOnlyInAppMessage() {
-		XCTAssert(true)
-		// fail
+        XCTAssert(true)
+        // fail
 
         let expectation1 = expectation(description: "onNew delegate called")
         let expectation2 = expectation(description: "message consumed")
@@ -1471,7 +1471,7 @@ class InAppTests: XCTestCase {
             }
 
             let messages = internalApi.inAppManager.getMessages()
-			// There should be no message here because json only messages are not shown
+            // There should be no message here because json only messages are not shown
             XCTAssertEqual(messages.count, 0)
             expectation2.fulfill()
         }
@@ -1650,10 +1650,10 @@ extension IterableInAppMessage {
 
 
 extension IterableJsonInAppContent {
-	override public var description: String {
-		IterableUtil.describe("type", type,
-							  "json", json,
-							  pairSeparator: " = ",
-							  separator: ", ")
-	}
+    override public var description: String {
+        IterableUtil.describe("type", type,
+                              "json", json,
+                              pairSeparator: " = ",
+                              separator: ", ")
+    }
 }
