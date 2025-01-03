@@ -19,6 +19,7 @@ enum InAppContentParseResult {
 struct InAppContentParser {
     static func parse(contentDict: [AnyHashable: Any]) -> InAppContentParseResult {
         let contentType: IterableInAppContentType
+        
         if let contentTypeStr = contentDict[JsonKey.InApp.type] as? String {
             contentType = IterableInAppContentType.from(string: contentTypeStr)
         } else if let contentTypeStr = contentDict[JsonKey.InApp.contentType] as? String {
