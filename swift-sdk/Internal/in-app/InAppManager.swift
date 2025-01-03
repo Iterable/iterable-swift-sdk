@@ -311,10 +311,23 @@ class InAppManager: NSObject, IterableInternalInAppManagerProtocol {
         showMessage(fromMessagesProcessorResult: messagesProcessorResult)
     }
     
-    private func showInternal(message: IterableInAppMessage,
-                              consume: Bool,
-                              callback: ITBURLCallback? = nil) {
+    private func showInternal(message: IterableInAppMessage, consume: Bool = true, callback: ITBURLCallback? = nil) {
         ITBInfo()
+        
+        if let content = message.content as? IterableJsonInAppContent {
+            // For JSON-only messages, don't display anything visually
+            // Just call the delegate with the JSON data
+            inAppDelegate.onNew(message: message)
+            if consume {
+                _ = remove(message: message)
+            }
+            return
+        }
+        
+        guard let content = message.content as? IterableHtmlInAppContent else {
+            ITBError("Invalid Content in message")
+            return
+        }
         
         guard Thread.isMainThread else {
             ITBError("This must be called from the main thread")
