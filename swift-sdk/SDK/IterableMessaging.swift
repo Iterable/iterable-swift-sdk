@@ -32,7 +32,7 @@ public extension Notification.Name {
 
 @objc public enum IterableInAppContentType: Int, Codable {
     case html
-	case json
+    case json
     case alert
     case banner
 }

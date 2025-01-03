@@ -31,8 +31,8 @@ extension IterableInAppContentType {
             return .alert
         case String(describing: IterableInAppContentType.banner).lowercased():
             return .banner
-		case String(describing: IterableInAppContentType.json).lowercased():
-			return .json
+        case String(describing: IterableInAppContentType.json).lowercased():
+            return .json
         default:
             return .html
         }
