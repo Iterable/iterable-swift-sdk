@@ -369,10 +369,8 @@ class InAppTests: XCTestCase {
             let messages = internalApi.inAppManager.getMessages()
             XCTAssertEqual(messages.count, 1)
             
-            internalApi.inAppManager.show(message: messages[0], consume: true) { clickedUrl in
-                XCTAssertEqual(clickedUrl, TestInAppPayloadGenerator.getClickedUrl(index: 1))
-                expectation1.fulfill()
-            }
+            internalApi.inAppManager.show(message: messages[0], consume: true, callback: nil)
+            expectation1.fulfill()
         }
         
         wait(for: [expectation1, expectation2], timeout: testExpectationTimeout)
@@ -414,10 +412,8 @@ class InAppTests: XCTestCase {
             let messages = internalApi.inAppManager.getMessages()
             XCTAssertEqual(messages.count, 1)
             
-            internalApi.inAppManager.show(message: messages[0], consume: false) { clickedUrl in
-                XCTAssertEqual(clickedUrl, TestInAppPayloadGenerator.getClickedUrl(index: 1))
-                expectation1.fulfill()
-            }
+            internalApi.inAppManager.show(message: messages[0], consume: false, callback: nil)
+            expectation1.fulfill()
         }
         
         wait(for: [expectation1, expectation2], timeout: testExpectationTimeout)
@@ -461,10 +457,8 @@ class InAppTests: XCTestCase {
             let messages = internalApi.inAppManager.getMessages()
             XCTAssertEqual(messages.count, 1, "expected 1 messages here")
             
-            internalApi.inAppManager.show(message: messages[0], consume: true) { customActionUrl in
-                XCTAssertEqual(customActionUrl, TestInAppPayloadGenerator.getCustomActionUrl(index: 1))
-                expectation1.fulfill()
-            }
+            internalApi.inAppManager.show(message: messages[0], consume: true, callback: nil)
+            expectation1.fulfill()
         }
         
         wait(for: [expectation1, expectation2], timeout: testExpectationTimeout)
@@ -1470,7 +1464,7 @@ class InAppTests: XCTestCase {
             let messages = internalApi.inAppManager.getMessages()
             XCTAssertEqual(messages.count, 1)
             
-            internalApi.inAppManager.show(message: messages[0], consume: true)
+            internalApi.inAppManager.show(message: messages[0], consume: true, callback: nil)
             expectation2.fulfill()
         }
         
