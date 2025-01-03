@@ -311,7 +311,7 @@ class InAppManager: NSObject, IterableInternalInAppManagerProtocol {
         showMessage(fromMessagesProcessorResult: messagesProcessorResult)
     }
     
-	private func showInternal(message: IterableInAppMessage,
+    private func showInternal(message: IterableInAppMessage,
                               consume: Bool,
                               callback: ITBURLCallback? = nil) {
         ITBInfo()
