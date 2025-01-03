@@ -15,6 +15,22 @@ enum InAppContentParseResult {
     case failure(reason: String)
 }
 
+enum IterableInAppContentType {
+    case html
+    case json
+    
+    static func from(string: String) -> IterableInAppContentType {
+        switch string.lowercased() {
+        case "html":
+            return .html
+        case "json":
+            return .json
+        default:
+            return .html
+        }
+    }
+}
+
 struct InAppContentParser {
     static func parse(contentDict: [AnyHashable: Any]) -> InAppContentParseResult {
         let contentType: IterableInAppContentType
@@ -32,8 +48,8 @@ struct InAppContentParser {
         switch contentType {
         case .html:
             return HtmlContentParser.self
-        default:
-            return HtmlContentParser.self
+        case .json:
+            return JsonContentParser.self
         }
     }
 }
@@ -253,5 +269,50 @@ extension HtmlContentParser: ContentFromJsonParser {
                                                           html: html,
                                                           shouldAnimate: shouldAnimate,
                                                           backgroundColor: backgroundColor))
+    }
+}
+
+struct JsonContentParser: ContentFromJsonParser {
+    static func tryCreate(from json: [AnyHashable: Any]) -> InAppContentParseResult {
+        guard let jsonData = json[JsonKey.json] as? [AnyHashable: Any] else {
+            return .failure(reason: "no json data")
+        }
+        
+        return .success(content: IterableJsonInAppContent(json: jsonData))
+    }
+}
+
+public class IterableJsonInAppContent: IterableInAppContent {
+    public let json: [AnyHashable: Any]
+    
+    init(json: [AnyHashable: Any]) {
+        self.json = json
+        super.init(type: .json)
+    }
+    
+    override public var description: String {
+        IterableUtil.describe("type", type,
+                             "json", json,
+                             pairSeparator: " = ",
+                             separator: ", ")
+    }
+}
+
+private enum JsonKey {
+    static let html = "html"
+    static let json = "json"
+    static let InApp = InAppJsonKey.self
+    
+    enum InAppJsonKey {
+        static let type = "type"
+        static let content = "content"
+        static let inAppDisplaySettings = "inAppDisplaySettings"
+        static let customPayload = "customPayload"
+        static let trigger = "trigger"
+        static let messageId = "messageId"
+        static let campaignId = "campaignId"
+        static let saveToInbox = "saveToInbox"
+        static let inboxMetadata = "inboxMetadata"
+        static let contentType = "contentType"
     }
 }
