@@ -14,8 +14,8 @@ extension IterableInAppContentType: CustomStringConvertible {
             return "html"
         case .alert:
             return "alert"
-		case .json:
-			return "json"
+        case .json:
+            return "json"
         case .banner:
             return "banner"
         }
