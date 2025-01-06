@@ -86,9 +86,8 @@ struct InAppMessageParser {
         }
         
         let content: IterableInAppContent
-		let jsonOnly = json[JsonKey.InApp.jsonOnly] as? Bool ?? false
-
-		switch InAppContentParser.parse(contentDict: contentDict, jsonOnly: jsonOnly) {
+        
+        switch InAppContentParser.parse(contentDict: contentDict) {
         case let .success(parsedContent):
             content = parsedContent
         case let .failure(reason):
@@ -96,7 +95,7 @@ struct InAppMessageParser {
         }
         
         let campaignId = json[JsonKey.campaignId] as? NSNumber
-
+        
         let saveToInbox = json[JsonKey.saveToInbox] as? Bool ?? false
         let inboxMetadata = parseInboxMetadata(fromPayload: json)
         let trigger = parseTrigger(fromTriggerElement: json[JsonKey.InApp.trigger] as? [AnyHashable: Any])
@@ -116,8 +115,7 @@ struct InAppMessageParser {
                                              inboxMetadata: inboxMetadata,
                                              customPayload: customPayload,
                                              read: read,
-											 priorityLevel: priorityLevel,
-											 jsonOnly: jsonOnly))
+                                             priorityLevel: priorityLevel))
     }
     
     private static func parseTime(withKey key: AnyHashable, fromJson json: [AnyHashable: Any]) -> Date? {
