@@ -52,8 +52,8 @@ import Foundation
     /// the urgency level of this message (nil will be treated as `unassigned` when displaying this message)
     public var priorityLevel: Double
 	
-	/// Whether this message is a JSON-only message
-	public let jsonOnly: Bool
+    /// Whether this message is a JSON-only message
+    public let jsonOnly: Bool
     
     // MARK: - Private/Internal
     
