@@ -110,6 +110,14 @@ class IterableUserDefaults {
         }
     }
     
+    var isNotificationsEnabled: Bool {
+        get {
+            return bool(withKey: .isNotificationsEnabled)
+        } set {
+            save(bool: newValue, withKey: .isNotificationsEnabled)
+        }
+    }
+    
     var body = [AnyHashable: Any]()
     
     private func anonSessionsData(withKey key: UserDefaultsKey) -> IterableAnonSessionsWrapper? {
@@ -310,6 +318,7 @@ class IterableUserDefaults {
         static let criteriaData = UserDefaultsKey(value: Const.UserDefault.criteriaData)
         static let anonymousSessions = UserDefaultsKey(value: Const.UserDefault.anonymousSessions)
         static let anonymousUsageTrack = UserDefaultsKey(value: Const.UserDefault.anonymousUsageTrack)
+        static let isNotificationsEnabled = UserDefaultsKey(value: Const.UserDefault.isNotificationsEnabled)
 
     }
     private struct Envelope: Codable {
