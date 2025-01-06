@@ -250,7 +250,7 @@ class InAppPersistenceTests: XCTestCase {
     private func createJsonOnlyMessage(id: String, payload: [AnyHashable: Any]) -> IterableInAppMessage {
         IterableInAppMessage(
             messageId: id,
-            campaignId: Int.random(in: 1...1000),
+			campaignId: Int.random(in: 1...1000) as NSNumber,
             trigger: .neverTrigger,
             createdAt: Date(),
             expiresAt: Date().addingTimeInterval(86400),
