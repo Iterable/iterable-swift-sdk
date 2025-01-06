@@ -367,7 +367,7 @@ extension IterableInAppMessage: Codable {
             return (try? container.decode(IterableHtmlInAppContent.self, forKey: .content)) ?? createDefaultContent()
         }
     }
-
+    
     private static func encode(content: IterableInAppContent, inContainer container: inout KeyedEncodingContainer<IterableInAppMessage.CodingKeys>) {
         switch content.type {
         case .html:
