@@ -17,7 +17,7 @@ enum InAppContentParseResult {
 
 
 struct InAppContentParser {
-	static func parse(contentDict: [AnyHashable: Any], jsonOnly: Bool) -> InAppContentParseResult {
+    static func parse(contentDict: [AnyHashable: Any], jsonOnly: Bool) -> InAppContentParseResult {
         let contentType: IterableInAppContentType
         
         if jsonOnly {
