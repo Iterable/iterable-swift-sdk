@@ -240,6 +240,8 @@ extension IterableInAppMessage: Codable {
         case content
         case priorityLevel
         case jsonOnly
+        case messageType
+        case typeOfContent
     }
     
     enum ContentCodingKeys: String, CodingKey {
@@ -252,8 +254,8 @@ extension IterableInAppMessage: Codable {
             ITBError("Can not decode, returning default")
             
             self.init(messageId: "",
-                      campaignId: 0,
-                      content: IterableInAppMessage.createDefaultContent())
+                     campaignId: 0,
+                     content: IterableInAppMessage.createDefaultContent())
             
             return
         }
@@ -261,130 +263,61 @@ extension IterableInAppMessage: Codable {
         let saveToInbox = (try? container.decode(Bool.self, forKey: .saveToInbox)) ?? false
         let inboxMetadata = (try? container.decode(IterableInboxMetadata.self, forKey: .inboxMetadata))
         let messageId = (try? container.decode(String.self, forKey: .messageId)) ?? ""
-        let campaignId = (try? container.decode(Int.self, forKey: .campaignId)).map { NSNumber(value: $0) }
-        let createdAt = (try? container.decode(Date.self, forKey: .createdAt))
-        let expiresAt = (try? container.decode(Date.self, forKey: .expiresAt))
-        let customPayloadData = try? container.decode(Data.self, forKey: .customPayload)
-        let customPayload = IterableInAppMessage.deserializeCustomPayload(withData: customPayloadData)
+        let campaignId = try? container.decode(NSNumber.self, forKey: .campaignId)
+        let createdAt = try? container.decode(Date.self, forKey: .createdAt)
+        let expiresAt = try? container.decode(Date.self, forKey: .expiresAt)
+        let customPayload = try? container.decode([AnyHashable: Any].self, forKey: .customPayload)
         let didProcessTrigger = (try? container.decode(Bool.self, forKey: .didProcessTrigger)) ?? false
         let consumed = (try? container.decode(Bool.self, forKey: .consumed)) ?? false
         let read = (try? container.decode(Bool.self, forKey: .read)) ?? false
-        let jsonOnly = (try? container.decode(Int.self, forKey: .jsonOnly)) ?? 0
-		
-        let trigger = (try? container.decode(IterableInAppTrigger.self, forKey: .trigger)) ?? .undefinedTrigger
-        let content = IterableInAppMessage.decodeContent(from: container, isJsonOnly: jsonOnly == 1)
+        let trigger = (try? container.decode(IterableInAppTrigger.self, forKey: .trigger)) ?? .defaultTrigger
+        let content = (try? container.decode(IterableInAppContent.self, forKey: .content)) ?? IterableInAppMessage.createDefaultContent()
         let priorityLevel = (try? container.decode(Double.self, forKey: .priorityLevel)) ?? Const.PriorityLevel.unassigned
+        let jsonOnly = (try? container.decode(Bool.self, forKey: .jsonOnly)) ?? false
+        let messageType = try? container.decode(String.self, forKey: .messageType)
+        let typeOfContent = try? container.decode(String.self, forKey: .typeOfContent)
         
         self.init(messageId: messageId,
-                  campaignId: campaignId,
-                  trigger: trigger,
-                  createdAt: createdAt,
-                  expiresAt: expiresAt,
-                  content: content,
-                  saveToInbox: saveToInbox,
-                  inboxMetadata: inboxMetadata,
-                  customPayload: customPayload,
-                  read: read,
-                  priorityLevel: priorityLevel)
+                 campaignId: campaignId,
+                 trigger: trigger,
+                 createdAt: createdAt,
+                 expiresAt: expiresAt,
+                 content: content,
+                 saveToInbox: saveToInbox,
+                 inboxMetadata: inboxMetadata,
+                 customPayload: customPayload,
+                 read: read,
+                 priorityLevel: priorityLevel,
+                 jsonOnly: jsonOnly,
+                 messageType: messageType,
+                 typeOfContent: typeOfContent)
         
         self.didProcessTrigger = didProcessTrigger
         self.consumed = consumed
     }
     
-    private static func decodeContent(from container: KeyedDecodingContainer<IterableInAppMessage.CodingKeys>, isJsonOnly: Bool) -> IterableInAppContent {
-        guard let contentContainer = try? container.nestedContainer(keyedBy: ContentCodingKeys.self, forKey: .content) else {
-            ITBError()
-            return createDefaultContent()
-        }
-        
-        if isJsonOnly {
-            if let payloadData = try? contentContainer.decode(Data.self, forKey: .payload),
-               let payload = try? JSONSerialization.jsonObject(with: payloadData, options: []) as? [AnyHashable: Any] {
-                return IterableJsonInAppContent(json: payload)
-            }
-        }
-        
-        let contentType = (try? contentContainer.decode(String.self, forKey: .type)).map { IterableInAppContentType.from(string: $0) } ?? .html
-        
-        switch contentType {
-        case .html:
-            return (try? container.decode(IterableHtmlInAppContent.self, forKey: .content)) ?? createDefaultContent()
-        case .json:
-            if let payloadData = try? contentContainer.decode(Data.self, forKey: .payload),
-               let payload = try? JSONSerialization.jsonObject(with: payloadData, options: []) as? [AnyHashable: Any] {
-                return IterableJsonInAppContent(json: payload)
-            }
-            return createDefaultContent()
-        default:
-            return (try? container.decode(IterableHtmlInAppContent.self, forKey: .content)) ?? createDefaultContent()
-        }
-    }
-    
     public func encode(to encoder: Encoder) {
         var container = encoder.container(keyedBy: CodingKeys.self)
-        
-        try? container.encode(trigger, forKey: .trigger)
         try? container.encode(saveToInbox, forKey: .saveToInbox)
+        try? container.encode(inboxMetadata, forKey: .inboxMetadata)
         try? container.encode(messageId, forKey: .messageId)
-        try? container.encode(campaignId as? Int, forKey: .campaignId)
+        try? container.encode(campaignId, forKey: .campaignId)
         try? container.encode(createdAt, forKey: .createdAt)
         try? container.encode(expiresAt, forKey: .expiresAt)
-        try? container.encode(IterableInAppMessage.serialize(customPayload: customPayload), forKey: .customPayload)
+        try? container.encode(customPayload, forKey: .customPayload)
         try? container.encode(didProcessTrigger, forKey: .didProcessTrigger)
         try? container.encode(consumed, forKey: .consumed)
         try? container.encode(read, forKey: .read)
+        try? container.encode(trigger, forKey: .trigger)
+        try? container.encode(content, forKey: .content)
         try? container.encode(priorityLevel, forKey: .priorityLevel)
-        
-        if content is IterableJsonInAppContent {
-            try? container.encode(1, forKey: .jsonOnly)
-        }
-        
-        if let inboxMetadata = inboxMetadata {
-            try? container.encode(inboxMetadata, forKey: .inboxMetadata)
-        }
-        
-        IterableInAppMessage.encode(content: content, inContainer: &container)
-    }
-    
-    private static func encode(content: IterableInAppContent, inContainer container: inout KeyedEncodingContainer<IterableInAppMessage.CodingKeys>) {
-        switch content.type {
-        case .html:
-            if let content = content as? IterableHtmlInAppContent {
-                try? container.encode(content, forKey: .content)
-            }
-        case .json:
-            if let content = content as? IterableJsonInAppContent,
-               let jsonData = try? JSONSerialization.data(withJSONObject: content.json, options: []) {
-                var contentContainer = container.nestedContainer(keyedBy: ContentCodingKeys.self, forKey: .content)
-                try? contentContainer.encode(jsonData, forKey: .payload)
-            }
-        default:
-            if let content = content as? IterableHtmlInAppContent {
-                try? container.encode(content, forKey: .content)
-            }
-        }
+        try? container.encode(jsonOnly, forKey: .jsonOnly)
+        try? container.encode(messageType, forKey: .messageType)
+        try? container.encode(typeOfContent, forKey: .typeOfContent)
     }
     
     private static func createDefaultContent() -> IterableInAppContent {
         IterableHtmlInAppContent(edgeInsets: .zero, html: "")
-    }
-    
-    private static func serialize(customPayload: [AnyHashable: Any]?) -> Data? {
-        guard let customPayload = customPayload else {
-            return nil
-        }
-        
-        return try? JSONSerialization.data(withJSONObject: customPayload, options: [])
-    }
-    
-    private static func deserializeCustomPayload(withData data: Data?) -> [AnyHashable: Any]? {
-        guard let data = data else {
-            return nil
-        }
-        
-        let deserialized = try? JSONSerialization.jsonObject(with: data, options: [])
-        
-        return deserialized as? [AnyHashable: Any]
     }
 }
 

@@ -17,12 +17,14 @@ enum InAppContentParseResult {
 
 
 struct InAppContentParser {
-    static func parse(contentDict: [AnyHashable: Any]) -> InAppContentParseResult {
+	static func parse(contentDict: [AnyHashable: Any], jsonOnly: Bool) -> InAppContentParseResult {
         let contentType: IterableInAppContentType
         
-        if let contentTypeStr = contentDict[JsonKey.InApp.type] as? String {
+        if jsonOnly {
+            contentType = .json
+        } else if let contentTypeStr = contentDict[JsonKey.InApp.type] as? String {
             contentType = IterableInAppContentType.from(string: contentTypeStr)
-		} else if contentDict[JsonKey.InApp.payload] is [AnyHashable: Any] {
+        } else if contentDict[JsonKey.InApp.payload] is [AnyHashable: Any] {
             // If we have a payload field, treat it as a JSON message
             contentType = .json
         } else {
