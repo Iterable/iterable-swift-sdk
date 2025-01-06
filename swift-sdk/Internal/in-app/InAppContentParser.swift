@@ -22,9 +22,7 @@ struct InAppContentParser {
         
         if let contentTypeStr = contentDict[JsonKey.InApp.type] as? String {
             contentType = IterableInAppContentType.from(string: contentTypeStr)
-        } else if let contentTypeStr = contentDict[JsonKey.InApp.contentType] as? String {
-            contentType = IterableInAppContentType.from(string: contentTypeStr)
-        } else if let payload = contentDict[JsonKey.InApp.payload] as? [AnyHashable: Any] {
+		} else if contentDict[JsonKey.InApp.payload] is [AnyHashable: Any] {
             // If we have a payload field, treat it as a JSON message
             contentType = .json
         } else {
