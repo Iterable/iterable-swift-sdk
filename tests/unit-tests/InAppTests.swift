@@ -1636,6 +1636,57 @@ class InAppTests: XCTestCase {
 
         wait(for: [expectation1, expectation2], timeout: testExpectationTimeout / 5)
     }
+
+    func testJsonOnlyInAppMessageRequiresPayload() {
+        let expectation1 = expectation(description: "message parsed")
+
+        let mockInAppFetcher = MockInAppFetcher()
+        let config = IterableConfig()
+
+        let internalApi = InternalIterableAPI.initializeForTesting(
+            config: config,
+            inAppFetcher: mockInAppFetcher
+        )
+
+        let payload = """
+        {"inAppMessages":
+        [
+            {
+                "saveToInbox": false,
+                "jsonOnly": 1,
+                "messageType": "Mobile",
+                "typeOfContent": "Static",
+                "content": {
+                    "html": "<meta name=\\"viewport\\" content=\\"width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no\\">",
+                    "inAppDisplaySettings": {
+                        "left": {"percentage": 0},
+                        "top": {"percentage": 0},
+                        "right": {"percentage": 0},
+                        "bottom": {"percentage": 0}
+                    }
+                },
+                "trigger": {"type": "never"},
+                "messageId": "message1",
+                "campaignId": 1
+            }
+        ]
+        }
+        """.toJsonDict()
+
+        mockInAppFetcher.mockInAppPayloadFromServer(internalApi: internalApi, payload).onSuccess { [weak internalApi] _ in
+            guard let internalApi = internalApi else {
+                XCTFail("Expected internalApi to be not nil")
+                return
+            }
+
+            // Message should be ignored since it's marked as jsonOnly but has no payload
+            let messages = internalApi.inAppManager.getMessages()
+            XCTAssertEqual(messages.count, 0)
+            expectation1.fulfill()
+        }
+
+        wait(for: [expectation1], timeout: testExpectationTimeout)
+    }
 }
 
 extension IterableInAppTrigger {
