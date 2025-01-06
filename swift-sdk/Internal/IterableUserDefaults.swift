@@ -64,9 +64,17 @@ class IterableUserDefaults {
     
     var offlineMode: Bool {
         get {
-            return bool(withKey: .offlineMode)
+            bool(withKey: .offlineMode)
         } set {
             save(bool: newValue, withKey: .offlineMode)
+        }
+    }
+    
+    var isNotificationsEnabled: Bool {
+        get {
+            bool(withKey: .isNotificationsEnabled)
+        } set {
+            save(bool: newValue, withKey: .isNotificationsEnabled)
         }
     }
     
@@ -196,6 +204,7 @@ class IterableUserDefaults {
         static let deviceId = UserDefaultsKey(value: Const.UserDefault.deviceId)
         static let sdkVersion = UserDefaultsKey(value: Const.UserDefault.sdkVersion)
         static let offlineMode = UserDefaultsKey(value: Const.UserDefault.offlineMode)
+        static let isNotificationsEnabled = UserDefaultsKey(value: Const.UserDefault.isNotificationsEnabled)
     }
     
     private struct Envelope: Codable {

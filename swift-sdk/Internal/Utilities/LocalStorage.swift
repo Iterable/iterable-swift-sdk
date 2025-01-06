@@ -67,6 +67,14 @@ struct LocalStorage: LocalStorageProtocol {
         }
     }
     
+    var isNotificationsEnabled: Bool {
+        get {
+            iterableUserDefaults.isNotificationsEnabled
+        } set {
+            iterableUserDefaults.isNotificationsEnabled = newValue
+        }
+    }
+    
     func getAttributionInfo(currentDate: Date) -> IterableAttributionInfo? {
         iterableUserDefaults.getAttributionInfo(currentDate: currentDate)
     }
