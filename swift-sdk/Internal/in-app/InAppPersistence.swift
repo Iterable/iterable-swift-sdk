@@ -298,7 +298,8 @@ extension IterableInAppMessage: Codable {
         }
         
         if isJsonOnly {
-            if let payload = try? contentContainer.decode([AnyHashable: Any].self, forKey: .payload) {
+            if let payloadData = try? contentContainer.decode(Data.self, forKey: .payload),
+               let payload = try? JSONSerialization.jsonObject(with: payloadData, options: []) as? [AnyHashable: Any] {
                 return IterableJsonInAppContent(json: payload)
             }
         }
@@ -309,7 +310,8 @@ extension IterableInAppMessage: Codable {
         case .html:
             return (try? container.decode(IterableHtmlInAppContent.self, forKey: .content)) ?? createDefaultContent()
         case .json:
-            if let payload = try? contentContainer.decode([AnyHashable: Any].self, forKey: .payload) {
+            if let payloadData = try? contentContainer.decode(Data.self, forKey: .payload),
+               let payload = try? JSONSerialization.jsonObject(with: payloadData, options: []) as? [AnyHashable: Any] {
                 return IterableJsonInAppContent(json: payload)
             }
             return createDefaultContent()
@@ -351,9 +353,10 @@ extension IterableInAppMessage: Codable {
                 try? container.encode(content, forKey: .content)
             }
         case .json:
-            if let content = content as? IterableJsonInAppContent {
+            if let content = content as? IterableJsonInAppContent,
+               let jsonData = try? JSONSerialization.data(withJSONObject: content.json, options: []) {
                 var contentContainer = container.nestedContainer(keyedBy: ContentCodingKeys.self, forKey: .content)
-                try? contentContainer.encode(content.json, forKey: .payload)
+                try? contentContainer.encode(jsonData, forKey: .payload)
             }
         default:
             if let content = content as? IterableHtmlInAppContent {
