@@ -1687,6 +1687,132 @@ class InAppTests: XCTestCase {
 
         wait(for: [expectation1], timeout: testExpectationTimeout)
     }
+
+    func testJsonOnlyMessageWithEmptyPayload() {
+        let expectation1 = expectation(description: "message parsed")
+        
+        let mockInAppFetcher = MockInAppFetcher()
+        let config = IterableConfig()
+        
+        let internalApi = InternalIterableAPI.initializeForTesting(
+            config: config,
+            inAppFetcher: mockInAppFetcher
+        )
+        
+        let payload = """
+        {"inAppMessages":
+        [
+            {
+                "saveToInbox": false,
+                "jsonOnly": 1,
+                "messageType": "Mobile",
+                "typeOfContent": "Static",
+                "content": {
+                    "payload": {},
+                    "html": "<meta name=\\"viewport\\" content=\\"width=device-width, initial-scale=1.0\\">",
+                    "inAppDisplaySettings": {
+                        "left": {"percentage": 0},
+                        "top": {"percentage": 0},
+                        "right": {"percentage": 0},
+                        "bottom": {"percentage": 0}
+                    }
+                },
+                "trigger": {"type": "never"},
+                "messageId": "message1",
+                "campaignId": 1
+            }
+        ]
+        }
+        """.toJsonDict()
+        
+        mockInAppFetcher.mockInAppPayloadFromServer(internalApi: internalApi, payload).onSuccess { [weak internalApi] _ in
+            guard let internalApi = internalApi else {
+                XCTFail("Expected internalApi to be not nil")
+                return
+            }
+            
+            let messages = internalApi.inAppManager.getMessages()
+            XCTAssertEqual(messages.count, 1)
+            
+            if let jsonContent = messages[0].content as? IterableJsonInAppContent {
+                XCTAssertTrue(jsonContent.json.isEmpty)
+                expectation1.fulfill()
+            } else {
+                XCTFail("Expected JSON content")
+            }
+        }
+        
+        wait(for: [expectation1], timeout: testExpectationTimeout)
+    }
+    
+    func testJsonOnlyMessageInInbox() {
+        let expectation1 = expectation(description: "message saved to inbox")
+        
+        let mockInAppFetcher = MockInAppFetcher()
+        let config = IterableConfig()
+        
+        let internalApi = InternalIterableAPI.initializeForTesting(
+            config: config,
+            inAppFetcher: mockInAppFetcher
+        )
+        
+        let payload = """
+        {"inAppMessages":
+        [
+            {
+                "saveToInbox": true,
+                "jsonOnly": 1,
+                "messageType": "Mobile",
+                "typeOfContent": "Static",
+                "content": {
+                    "payload": {"key": "value"},
+                    "html": "<meta name=\\"viewport\\" content=\\"width=device-width, initial-scale=1.0\\">",
+                    "inAppDisplaySettings": {
+                        "left": {"percentage": 0},
+                        "top": {"percentage": 0},
+                        "right": {"percentage": 0},
+                        "bottom": {"percentage": 0}
+                    }
+                },
+                "trigger": {"type": "never"},
+                "messageId": "message1",
+                "campaignId": 1,
+                "inboxMetadata": {
+                    "title": "JSON Message",
+                    "subtitle": "Test Subtitle",
+                    "icon": "test-icon.png"
+                }
+            }
+        ]
+        }
+        """.toJsonDict()
+        
+        mockInAppFetcher.mockInAppPayloadFromServer(internalApi: internalApi, payload).onSuccess { [weak internalApi] _ in
+            guard let internalApi = internalApi else {
+                XCTFail("Expected internalApi to be not nil")
+                return
+            }
+            
+            let inboxMessages = internalApi.inAppManager.getInboxMessages()
+            XCTAssertEqual(inboxMessages.count, 1)
+            
+            let message = inboxMessages[0]
+            XCTAssertTrue(message.saveToInbox)
+            XCTAssertEqual(message.inboxMetadata?.title, "JSON Message")
+            XCTAssertEqual(message.inboxMetadata?.subtitle, "Test Subtitle")
+            XCTAssertEqual(message.inboxMetadata?.icon, "test-icon.png")
+            
+            if let jsonContent = message.content as? IterableJsonInAppContent {
+                XCTAssertEqual(jsonContent.json["key"] as? String, "value")
+                expectation1.fulfill()
+            } else {
+                XCTFail("Expected JSON content")
+            }
+        }
+        
+        wait(for: [expectation1], timeout: testExpectationTimeout)
+    }
+
 }
 
 extension IterableInAppTrigger {

@@ -317,6 +317,7 @@ class InAppManager: NSObject, IterableInternalInAppManagerProtocol {
         ITBInfo()
         
         if message.content is IterableJsonInAppContent {
+            // JSON Only messages do not need to be shown
             updateMessage(message, didProcessTrigger: true, consumed: consume)
             if consume {
                 DispatchQueue.main.async {
