@@ -320,54 +320,6 @@ extension IterableInAppMessage: Codable {
     private static func createDefaultContent() -> IterableInAppContent {
         IterableHtmlInAppContent(edgeInsets: .zero, html: "")
     }
-
-    private static func decodeContent(from container: KeyedDecodingContainer<IterableInAppMessage.CodingKeys>, isJsonOnly: Bool) -> IterableInAppContent {
-        guard let contentContainer = try? container.nestedContainer(keyedBy: ContentCodingKeys.self, forKey: .content) else {
-            ITBError()
-            return createDefaultContent()
-        }
-        
-        if isJsonOnly {
-            if let payloadData = try? contentContainer.decode(Data.self, forKey: .payload),
-               let payload = try? JSONSerialization.jsonObject(with: payloadData, options: []) as? [AnyHashable: Any] {
-                return IterableJsonInAppContent(json: payload)
-            }
-        }
-        
-        let contentType = (try? contentContainer.decode(String.self, forKey: .type)).map { IterableInAppContentType.from(string: $0) } ?? .html
-        
-        switch contentType {
-        case .html:
-            return (try? container.decode(IterableHtmlInAppContent.self, forKey: .content)) ?? createDefaultContent()
-        case .json:
-            if let payloadData = try? contentContainer.decode(Data.self, forKey: .payload),
-               let payload = try? JSONSerialization.jsonObject(with: payloadData, options: []) as? [AnyHashable: Any] {
-                return IterableJsonInAppContent(json: payload)
-            }
-            return createDefaultContent()
-        default:
-            return (try? container.decode(IterableHtmlInAppContent.self, forKey: .content)) ?? createDefaultContent()
-        }
-    }
-
-    private static func encode(content: IterableInAppContent, inContainer container: inout KeyedEncodingContainer<IterableInAppMessage.CodingKeys>) {
-        switch content.type {
-        case .html:
-            if let content = content as? IterableHtmlInAppContent {
-                try? container.encode(content, forKey: .content)
-            }
-        case .json:
-            if let content = content as? IterableJsonInAppContent,
-               let jsonData = try? JSONSerialization.data(withJSONObject: content.json, options: []) {
-                var contentContainer = container.nestedContainer(keyedBy: ContentCodingKeys.self, forKey: .content)
-                try? contentContainer.encode(jsonData, forKey: .payload)
-            }
-        default:
-            if let content = content as? IterableHtmlInAppContent {
-                try? container.encode(content, forKey: .content)
-            }
-        }
-    }
     
     private static func serialize(customPayload: [AnyHashable: Any]?) -> Data? {
         guard let customPayload = customPayload else {
