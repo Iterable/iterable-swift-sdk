@@ -291,35 +291,6 @@ extension IterableInAppMessage: Codable {
         self.consumed = consumed
     }
     
-    private static func decodeContent(from container: KeyedDecodingContainer<IterableInAppMessage.CodingKeys>, isJsonOnly: Bool) -> IterableInAppContent {
-        guard let contentContainer = try? container.nestedContainer(keyedBy: ContentCodingKeys.self, forKey: .content) else {
-            ITBError()
-            return createDefaultContent()
-        }
-        
-        if isJsonOnly {
-            if let payloadData = try? contentContainer.decode(Data.self, forKey: .payload),
-               let payload = try? JSONSerialization.jsonObject(with: payloadData, options: []) as? [AnyHashable: Any] {
-                return IterableJsonInAppContent(json: payload)
-            }
-        }
-        
-        let contentType = (try? contentContainer.decode(String.self, forKey: .type)).map { IterableInAppContentType.from(string: $0) } ?? .html
-        
-        switch contentType {
-        case .html:
-            return (try? container.decode(IterableHtmlInAppContent.self, forKey: .content)) ?? createDefaultContent()
-        case .json:
-            if let payloadData = try? contentContainer.decode(Data.self, forKey: .payload),
-               let payload = try? JSONSerialization.jsonObject(with: payloadData, options: []) as? [AnyHashable: Any] {
-                return IterableJsonInAppContent(json: payload)
-            }
-            return createDefaultContent()
-        default:
-            return (try? container.decode(IterableHtmlInAppContent.self, forKey: .content)) ?? createDefaultContent()
-        }
-    }
-    
     public func encode(to encoder: Encoder) {
         var container = encoder.container(keyedBy: CodingKeys.self)
         
@@ -362,6 +333,35 @@ extension IterableInAppMessage: Codable {
             if let content = content as? IterableHtmlInAppContent {
                 try? container.encode(content, forKey: .content)
             }
+        }
+    }
+
+    private static func decodeContent(from container: KeyedDecodingContainer<IterableInAppMessage.CodingKeys>, isJsonOnly: Bool) -> IterableInAppContent {
+        guard let contentContainer = try? container.nestedContainer(keyedBy: ContentCodingKeys.self, forKey: .content) else {
+            ITBError()
+            return createDefaultContent()
+        }
+        
+        if isJsonOnly {
+            if let payloadData = try? contentContainer.decode(Data.self, forKey: .payload),
+               let payload = try? JSONSerialization.jsonObject(with: payloadData, options: []) as? [AnyHashable: Any] {
+                return IterableJsonInAppContent(json: payload)
+            }
+        }
+        
+        let contentType = (try? contentContainer.decode(String.self, forKey: .type)).map { IterableInAppContentType.from(string: $0) } ?? .html
+        
+        switch contentType {
+        case .html:
+            return (try? container.decode(IterableHtmlInAppContent.self, forKey: .content)) ?? createDefaultContent()
+        case .json:
+            if let payloadData = try? contentContainer.decode(Data.self, forKey: .payload),
+               let payload = try? JSONSerialization.jsonObject(with: payloadData, options: []) as? [AnyHashable: Any] {
+                return IterableJsonInAppContent(json: payload)
+            }
+            return createDefaultContent()
+        default:
+            return (try? container.decode(IterableHtmlInAppContent.self, forKey: .content)) ?? createDefaultContent()
         }
     }
     
