@@ -270,9 +270,7 @@ extension IterableInAppMessage: Codable {
         let consumed = (try? container.decode(Bool.self, forKey: .consumed)) ?? false
         let read = (try? container.decode(Bool.self, forKey: .read)) ?? false
         let jsonOnly = (try? container.decode(Int.self, forKey: .jsonOnly)) ?? 0
-        let messageType = (try? container.decode(String.self, forKey: .messageType))
-        let typeOfContent = (try? container.decode(String.self, forKey: .typeOfContent))
-        
+		
         let trigger = (try? container.decode(IterableInAppTrigger.self, forKey: .trigger)) ?? .undefinedTrigger
         let content = IterableInAppMessage.decodeContent(from: container, isJsonOnly: jsonOnly == 1)
         let priorityLevel = (try? container.decode(Double.self, forKey: .priorityLevel)) ?? Const.PriorityLevel.unassigned
