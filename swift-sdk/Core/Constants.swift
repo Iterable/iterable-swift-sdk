@@ -173,7 +173,6 @@ enum JsonKey {
     static let appAlreadyRunning = "appAlreadyRunning"
     
     static let html = "html"
-    static let json = "json"
 
     static let iterableSdkVersion = "iterableSdkVersion"
     
