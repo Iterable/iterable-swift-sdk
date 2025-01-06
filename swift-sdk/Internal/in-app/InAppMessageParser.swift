@@ -86,8 +86,9 @@ struct InAppMessageParser {
         }
         
         let content: IterableInAppContent
-        
-        switch InAppContentParser.parse(contentDict: contentDict) {
+		let jsonOnly = json[JsonKey.InApp.jsonOnly] as? Bool ?? false
+
+		switch InAppContentParser.parse(contentDict: contentDict, jsonOnly: jsonOnly) {
         case let .success(parsedContent):
             content = parsedContent
         case let .failure(reason):
@@ -115,7 +116,8 @@ struct InAppMessageParser {
                                              inboxMetadata: inboxMetadata,
                                              customPayload: customPayload,
                                              read: read,
-                                             priorityLevel: priorityLevel))
+											 priorityLevel: priorityLevel,
+											 jsonOnly: jsonOnly))
     }
     
     private static func parseTime(withKey key: AnyHashable, fromJson json: [AnyHashable: Any]) -> Date? {
