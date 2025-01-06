@@ -95,7 +95,7 @@ struct InAppMessageParser {
         }
         
         let campaignId = json[JsonKey.campaignId] as? NSNumber
-        
+
         let saveToInbox = json[JsonKey.saveToInbox] as? Bool ?? false
         let inboxMetadata = parseInboxMetadata(fromPayload: json)
         let trigger = parseTrigger(fromTriggerElement: json[JsonKey.InApp.trigger] as? [AnyHashable: Any])
@@ -104,6 +104,7 @@ struct InAppMessageParser {
         let expiresAt = parseTime(withKey: JsonKey.inboxExpiresAt, fromJson: json)
         let read = json[JsonKey.read] as? Bool ?? false
         let priorityLevel = json[JsonKey.priorityLevel] as? Double ?? Const.PriorityLevel.unassigned
+        let jsonOnly = json[JsonKey.InApp.jsonOnly] as? Bool ?? false
         
         return .success(IterableInAppMessage(messageId: messageId,
                                              campaignId: campaignId,
@@ -115,7 +116,8 @@ struct InAppMessageParser {
                                              inboxMetadata: inboxMetadata,
                                              customPayload: customPayload,
                                              read: read,
-                                             priorityLevel: priorityLevel))
+											 priorityLevel: priorityLevel,
+											 jsonOnly: jsonOnly))
     }
     
     private static func parseTime(withKey key: AnyHashable, fromJson json: [AnyHashable: Any]) -> Date? {
