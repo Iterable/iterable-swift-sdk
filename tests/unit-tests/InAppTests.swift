@@ -1413,11 +1413,7 @@ class InAppTests: XCTestCase {
         wait(for: [expectation1], timeout: testExpectationTimeout)
     }
 
-
     func testJsonOnlyInAppMessage() {
-        XCTAssert(true)
-        // fail
-
         let expectation1 = expectation(description: "onNew delegate called")
         let expectation2 = expectation(description: "message consumed")
 
@@ -1452,9 +1448,18 @@ class InAppTests: XCTestCase {
         [
             {
                 "saveToInbox": false,
+                "jsonOnly": 1,
+                "messageType": "Mobile",
+                "typeOfContent": "Static",
                 "content": {
-                    "contentType": "json",
-                    "json": {"key": "value"}
+                    "payload": {"key": "value"},
+                    "html": "<meta name=\\"viewport\\" content=\\"width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no\\">",
+                    "inAppDisplaySettings": {
+                        "left": {"percentage": 0},
+                        "top": {"percentage": 0},
+                        "right": {"percentage": 0},
+                        "bottom": {"percentage": 0}
+                    }
                 },
                 "trigger": {"type": "immediate"},
                 "messageId": "message1",
@@ -1496,12 +1501,21 @@ class InAppTests: XCTestCase {
         [
             {
                 "saveToInbox": false,
+                "jsonOnly": 1,
+                "messageType": "Mobile",
+                "typeOfContent": "Static",
                 "content": {
-                    "contentType": "json",
-                    "json": {
+                    "payload": {
                         "key1": "value1",
                         "key2": 42,
                         "key3": {"nested": true}
+                    },
+                    "html": "<meta name=\\"viewport\\" content=\\"width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no\\">",
+                    "inAppDisplaySettings": {
+                        "left": {"percentage": 0},
+                        "top": {"percentage": 0},
+                        "right": {"percentage": 0},
+                        "bottom": {"percentage": 0}
                     }
                 },
                 "trigger": {"type": "never"},
@@ -1578,9 +1592,18 @@ class InAppTests: XCTestCase {
         [
             {
                 "saveToInbox": false,
+                "jsonOnly": 1,
+                "messageType": "Mobile",
+                "typeOfContent": "Static",
                 "content": {
-                    "contentType": "json",
-                    "json": {"key": "immediate"}
+                    "payload": {"key": "immediate"},
+                    "html": "<meta name=\\"viewport\\" content=\\"width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no\\">",
+                    "inAppDisplaySettings": {
+                        "left": {"percentage": 0},
+                        "top": {"percentage": 0},
+                        "right": {"percentage": 0},
+                        "bottom": {"percentage": 0}
+                    }
                 },
                 "trigger": {"type": "immediate"},
                 "messageId": "message1",
@@ -1588,9 +1611,18 @@ class InAppTests: XCTestCase {
             },
             {
                 "saveToInbox": false,
+                "jsonOnly": 1,
+                "messageType": "Mobile",
+                "typeOfContent": "Static",
                 "content": {
-                    "contentType": "json",
-                    "json": {"key": "never"}
+                    "payload": {"key": "never"},
+                    "html": "<meta name=\\"viewport\\" content=\\"width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no\\">",
+                    "inAppDisplaySettings": {
+                        "left": {"percentage": 0},
+                        "top": {"percentage": 0},
+                        "right": {"percentage": 0},
+                        "bottom": {"percentage": 0}
+                    }
                 },
                 "trigger": {"type": "never"},
                 "messageId": "message2",

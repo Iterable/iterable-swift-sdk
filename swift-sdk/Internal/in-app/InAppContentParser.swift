@@ -24,6 +24,9 @@ struct InAppContentParser {
             contentType = IterableInAppContentType.from(string: contentTypeStr)
         } else if let contentTypeStr = contentDict[JsonKey.InApp.contentType] as? String {
             contentType = IterableInAppContentType.from(string: contentTypeStr)
+        } else if let payload = contentDict[JsonKey.InApp.payload] as? [AnyHashable: Any] {
+            // If we have a payload field, treat it as a JSON message
+            contentType = .json
         } else {
             contentType = .html
         }
@@ -263,11 +266,11 @@ extension HtmlContentParser: ContentFromJsonParser {
 
 struct JsonContentParser: ContentFromJsonParser {
     static func tryCreate(from json: [AnyHashable: Any]) -> InAppContentParseResult {
-        guard let jsonData = json[JsonKey.json] as? [AnyHashable: Any] else {
-            return .failure(reason: "no json data")
+        guard let payload = json[JsonKey.InApp.payload] as? [AnyHashable: Any] else {
+            return .failure(reason: "no json payload")
         }
         
-        return .success(content: IterableJsonInAppContent(json: jsonData))
+        return .success(content: IterableJsonInAppContent(json: payload))
     }
 }
 
