@@ -338,7 +338,7 @@ extension IterableInAppMessage: Codable {
         
         return deserialized as? [AnyHashable: Any]
     }
-
+    
     private static func decodeContent(from container: KeyedDecodingContainer<IterableInAppMessage.CodingKeys>, isJsonOnly: Bool) -> IterableInAppContent {
         guard let contentContainer = try? container.nestedContainer(keyedBy: ContentCodingKeys.self, forKey: .content) else {
             ITBError()
