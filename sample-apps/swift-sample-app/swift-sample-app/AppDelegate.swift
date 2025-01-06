@@ -17,7 +17,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, IterableAuthDelegate {
     func onAuthTokenRequested(completion: @escaping IterableSDK.AuthTokenRetrievalHandler) {
         // ITBL: Set your actual secret.
         let jwt = IterableTokenGenerator.generateJwtForUserId(
-            secret: "b766ecf7eb3f4602b3703309d804c0e8",
+            secret: "",
             iat: Int(Date().timeIntervalSince1970),
             exp: Int(Date().timeIntervalSince1970) + (24*60),
             userId: IterableAPI.userId ?? "")
