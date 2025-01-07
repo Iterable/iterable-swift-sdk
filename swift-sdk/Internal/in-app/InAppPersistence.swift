@@ -301,10 +301,6 @@ extension IterableInAppMessage: Codable {
         try? container.encode(read, forKey: .read)
         try? container.encode(priorityLevel, forKey: .priorityLevel)
         
-        if content is IterableJsonInAppContent {
-            try? container.encode(1, forKey: .jsonOnly)
-        }
-        
         if let inboxMetadata = inboxMetadata {
             try? container.encode(inboxMetadata, forKey: .inboxMetadata)
         }
