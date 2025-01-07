@@ -509,7 +509,6 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
     
     /// the hex representation of this device token
     private var hexToken: String?
-    private var isFromFCM: Bool?
     
     private var launchOptions: [UIApplication.LaunchOptionsKey: Any]?
     
@@ -722,11 +721,7 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
         self.notificationStateProvider.isNotificationsEnabled { isEnabled in
             if self.localStorage.isNotificationsEnabled != isEnabled {
                 if self.config.autoPushRegistration {
-                    if let token = self.hexToken, let isFromFCM = self.isFromFCM, isFromFCM {
-                        IterableAPI.registerFCM(token: token)
-                    } else {
-                        self.notificationStateProvider.registerForRemoteNotifications()
-                    }
+                    self.notificationStateProvider.registerForRemoteNotifications()
                 } 
             }
         }
