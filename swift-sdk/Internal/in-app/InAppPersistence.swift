@@ -340,17 +340,20 @@ extension IterableInAppMessage: Codable {
     }
     
     private static func decodeContent(from container: KeyedDecodingContainer<IterableInAppMessage.CodingKeys>, isJsonOnly: Bool) -> IterableInAppContent {
-        guard let contentContainer = try? container.nestedContainer(keyedBy: ContentCodingKeys.self, forKey: .content) else {
-            ITBError()
-            
+        // For JSON-only messages, first try to get customPayload
+        if isJsonOnly {
+            if let customPayloadData = try? container.decode(Data.self, forKey: .customPayload),
+               let customPayload = try? JSONSerialization.jsonObject(with: customPayloadData, options: []) as? [AnyHashable: Any] {
+                return IterableJsonInAppContent(json: customPayload)
+            }
+            // If no customPayload, return default content
             return createDefaultContent()
         }
-        
-        if isJsonOnly {
-            if let payloadData = try? contentContainer.decode(Data.self, forKey: .payload),
-               let payload = try? JSONSerialization.jsonObject(with: payloadData, options: []) as? [AnyHashable: Any] {
-                return IterableJsonInAppContent(json: payload)
-            }
+
+        // Existing logic for non-JSON-only messages
+        guard let contentContainer = try? container.nestedContainer(keyedBy: ContentCodingKeys.self, forKey: .content) else {
+            ITBError()
+            return createDefaultContent()
         }
         
         let contentType = (try? contentContainer.decode(String.self, forKey: .type)).map { IterableInAppContentType.from(string: $0) } ?? .html
