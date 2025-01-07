@@ -282,17 +282,17 @@ extension IterableInAppMessage: Codable {
         let priorityLevel = (try? container.decode(Double.self, forKey: .priorityLevel)) ?? Const.PriorityLevel.unassigned
         
         self.init(messageId: messageId,
-                 campaignId: campaignId,
-                 trigger: trigger,
-                 createdAt: createdAt,
-                 expiresAt: expiresAt,
-                 content: content,
-                 saveToInbox: saveToInbox && jsonOnly != 1,
-                 inboxMetadata: inboxMetadata,
-                 customPayload: customPayload,
-                 read: read,
-                 priorityLevel: priorityLevel,
-                 jsonOnly: jsonOnly == 1)
+                  campaignId: campaignId,
+                  trigger: trigger,
+                  createdAt: createdAt,
+                  expiresAt: expiresAt,
+                  content: content,
+                  saveToInbox: saveToInbox && jsonOnly != 1,
+                  inboxMetadata: inboxMetadata,
+                  customPayload: customPayload,
+                  read: read,
+                  priorityLevel: priorityLevel,
+                  jsonOnly: jsonOnly == 1)
         
         self.didProcessTrigger = didProcessTrigger
         self.consumed = consumed
@@ -364,6 +364,7 @@ extension IterableInAppMessage: Codable {
 
         guard let contentContainer = try? container.nestedContainer(keyedBy: ContentCodingKeys.self, forKey: .content) else {
             ITBError()
+            
             return createDefaultContent()
         }
         
