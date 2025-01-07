@@ -32,7 +32,6 @@ public extension Notification.Name {
 
 @objc public enum IterableInAppContentType: Int, Codable {
     case html
-    case json
     case alert
     case banner
 }
@@ -59,18 +58,6 @@ public extension Notification.Name {
         self.html = html
         self.shouldAnimate = shouldAnimate
         self.backgroundColor = backgroundColor
-    }
-}
-
-@objcMembers public final class IterableJsonInAppContent: NSObject, IterableInAppContent {
-    public let type = IterableInAppContentType.json
-    public let json: [AnyHashable: Any]
-    
-    // MARK: - Private/Internal
-    
-    init(json: [AnyHashable: Any]) {
-        self.json = json
-        super.init()
     }
 }
 

@@ -17,16 +17,11 @@ enum InAppContentParseResult {
 
 
 struct InAppContentParser {
-    static func parse(contentDict: [AnyHashable: Any], jsonOnly: Bool) -> InAppContentParseResult {
+    static func parse(contentDict: [AnyHashable: Any]) -> InAppContentParseResult {
         let contentType: IterableInAppContentType
         
-        if jsonOnly {
-            contentType = .json
-        } else if let contentTypeStr = contentDict[JsonKey.InApp.type] as? String {
+        if let contentTypeStr = contentDict[JsonKey.InApp.type] as? String {
             contentType = IterableInAppContentType.from(string: contentTypeStr)
-        } else if contentDict[JsonKey.InApp.payload] is [AnyHashable: Any] {
-            // If we have a payload field, treat it as a JSON message
-            contentType = .json
         } else {
             contentType = .html
         }
@@ -38,8 +33,6 @@ struct InAppContentParser {
         switch contentType {
         case .html:
             return HtmlContentParser.self
-        case .json:
-            return JsonContentParser.self
         default:
             return HtmlContentParser.self
         }
@@ -261,16 +254,6 @@ extension HtmlContentParser: ContentFromJsonParser {
                                                           html: html,
                                                           shouldAnimate: shouldAnimate,
                                                           backgroundColor: backgroundColor))
-    }
-}
-
-struct JsonContentParser: ContentFromJsonParser {
-    static func tryCreate(from json: [AnyHashable: Any]) -> InAppContentParseResult {
-        guard let payload = json[JsonKey.InApp.payload] as? [AnyHashable: Any] else {
-            return .failure(reason: "no json payload")
-        }
-        
-        return .success(content: IterableJsonInAppContent(json: payload))
     }
 }
 
