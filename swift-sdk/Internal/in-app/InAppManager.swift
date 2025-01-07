@@ -316,7 +316,7 @@ class InAppManager: NSObject, IterableInternalInAppManagerProtocol {
                               callback: ITBURLCallback? = nil) {
         ITBInfo()
         
-        if message.content is IterableJsonInAppContent {
+        if message.isJsonOnly {
             // JSON Only messages do not need to be shown
             updateMessage(message, didProcessTrigger: true, consumed: consume)
             if consume {
