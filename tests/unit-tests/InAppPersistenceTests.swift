@@ -95,7 +95,7 @@ class InAppPersistenceTests: XCTestCase {
     }
     
     func testJsonOnlyMessagePersistence() {
-        let jsonPayload: [AnyHashable: Any] = [
+        let customPayload: [AnyHashable: Any] = [
             "key1": "value1",
             "key2": 42,
             "key3": ["nested": true]
@@ -107,10 +107,10 @@ class InAppPersistenceTests: XCTestCase {
             trigger: .neverTrigger,
             createdAt: nil,
             expiresAt: nil,
-            content: IterableJsonInAppContent(json: jsonPayload),
+            content: IterableJsonInAppContent(json: [:]),
             saveToInbox: false,
             inboxMetadata: nil,
-            customPayload: nil,
+            customPayload: customPayload,
             read: false,
             priorityLevel: 0.0
         )
@@ -127,23 +127,21 @@ class InAppPersistenceTests: XCTestCase {
         
         XCTAssertEqual(message.messageId, decodedMessage.messageId)
         XCTAssertEqual(message.campaignId?.intValue, decodedMessage.campaignId?.intValue)
-        XCTAssertEqual(message.saveToInbox, decodedMessage.saveToInbox)
+        XCTAssertFalse(decodedMessage.saveToInbox)
         XCTAssertEqual(message.read, decodedMessage.read)
         
-        guard let originalContent = message.content as? IterableJsonInAppContent,
-              let decodedContent = decodedMessage.content as? IterableJsonInAppContent else {
+        guard let decodedContent = decodedMessage.content as? IterableJsonInAppContent else {
             XCTFail("Content type mismatch")
             return
         }
         
-        XCTAssertEqual(originalContent.json["key1"] as? String, decodedContent.json["key1"] as? String)
-        XCTAssertEqual(originalContent.json["key2"] as? Int, decodedContent.json["key2"] as? Int)
-        XCTAssertEqual((originalContent.json["key3"] as? [String: Any])?["nested"] as? Bool,
-                      (decodedContent.json["key3"] as? [String: Any])?["nested"] as? Bool)
+        XCTAssertEqual(decodedContent.json["key1"] as? String, "value1")
+        XCTAssertEqual(decodedContent.json["key2"] as? Int, 42)
+        XCTAssertEqual((decodedContent.json["key3"] as? [String: Any])?["nested"] as? Bool, true)
     }
     
     func testJsonOnlyMessagePersistenceWithFilePersister() {
-        let jsonPayload: [AnyHashable: Any] = [
+        let customPayload: [AnyHashable: Any] = [
             "id": 1,
             "score": 42.5,
             "active": true,
@@ -155,11 +153,11 @@ class InAppPersistenceTests: XCTestCase {
             campaignId: 456,
             trigger: .neverTrigger,
             createdAt: Date(),
-            expiresAt: Date().addingTimeInterval(86400), // 1 day from now
-            content: IterableJsonInAppContent(json: jsonPayload),
+            expiresAt: Date().addingTimeInterval(86400),
+            content: IterableJsonInAppContent(json: [:]),
             saveToInbox: false,
             inboxMetadata: nil,
-            customPayload: nil,
+            customPayload: customPayload,
             read: false,
             priorityLevel: 0.0
         )
@@ -184,17 +182,17 @@ class InAppPersistenceTests: XCTestCase {
         
         XCTAssertEqual(message.messageId, retrievedMessage.messageId)
         XCTAssertEqual(message.campaignId?.intValue, retrievedMessage.campaignId?.intValue)
+        XCTAssertFalse(retrievedMessage.saveToInbox)
         
-        guard let originalContent = message.content as? IterableJsonInAppContent,
-              let retrievedContent = retrievedMessage.content as? IterableJsonInAppContent else {
+        guard let retrievedContent = retrievedMessage.content as? IterableJsonInAppContent else {
             XCTFail("Content type mismatch")
             return
         }
         
-        XCTAssertEqual(originalContent.json["id"] as? Int, retrievedContent.json["id"] as? Int)
-        XCTAssertEqual(originalContent.json["score"] as? Double, retrievedContent.json["score"] as? Double)
-        XCTAssertEqual(originalContent.json["active"] as? Bool, retrievedContent.json["active"] as? Bool)
-        XCTAssertEqual(originalContent.json["name"] as? String, retrievedContent.json["name"] as? String)
+        XCTAssertEqual(retrievedContent.json["id"] as? Int, 1)
+        XCTAssertEqual(retrievedContent.json["score"] as? Double, 42.5)
+        XCTAssertEqual(retrievedContent.json["active"] as? Bool, true)
+        XCTAssertEqual(retrievedContent.json["name"] as? String, "Jane Doe")
         
         // Cleanup
         persister.clear()
@@ -261,5 +259,50 @@ class InAppPersistenceTests: XCTestCase {
             read: false,
             priorityLevel: 0.0
         )
+    }
+    
+    func testJsonOnlyMessageCustomPayloadPriority() {
+        let customPayload: [AnyHashable: Any] = [
+            "key1": "customValue",
+            "key2": 42
+        ]
+        
+        let contentPayload: [AnyHashable: Any] = [
+            "key1": "contentValue",
+            "key2": 100
+        ]
+        
+        let message = IterableInAppMessage(
+            messageId: "test-json-priority",
+            campaignId: 789,
+            trigger: .neverTrigger,
+            createdAt: nil,
+            expiresAt: nil,
+            content: IterableJsonInAppContent(json: contentPayload),
+            saveToInbox: false,
+            inboxMetadata: nil,
+            customPayload: customPayload,
+            read: false,
+            priorityLevel: 0.0
+        )
+        
+        guard let encodedMessage = try? JSONEncoder().encode(message) else {
+            XCTFail("Failed to encode JSON-only message")
+            return
+        }
+        
+        guard let decodedMessage = try? JSONDecoder().decode(IterableInAppMessage.self, from: encodedMessage) else {
+            XCTFail("Failed to decode JSON-only message")
+            return
+        }
+        
+        guard let decodedContent = decodedMessage.content as? IterableJsonInAppContent else {
+            XCTFail("Content type mismatch")
+            return
+        }
+        
+        // Verify that customPayload values are used instead of content.payload
+        XCTAssertEqual(decodedContent.json["key1"] as? String, "customValue")
+        XCTAssertEqual(decodedContent.json["key2"] as? Int, 42)
     }
 }
