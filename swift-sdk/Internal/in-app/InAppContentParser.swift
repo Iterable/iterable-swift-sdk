@@ -15,7 +15,6 @@ enum InAppContentParseResult {
     case failure(reason: String)
 }
 
-
 struct InAppContentParser {
     static func parse(contentDict: [AnyHashable: Any]) -> InAppContentParseResult {
         let contentType: IterableInAppContentType
@@ -256,5 +255,3 @@ extension HtmlContentParser: ContentFromJsonParser {
                                                           backgroundColor: backgroundColor))
     }
 }
-
-
