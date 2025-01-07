@@ -1446,8 +1446,6 @@ class InAppTests: XCTestCase {
             {
                 "saveToInbox": false,
                 "jsonOnly": 1,
-                "messageType": "Mobile",
-                "typeOfContent": "Static",
                 "customPayload": {"key": "value"},
                 "content": {
                     "html": "<meta name=\\"viewport\\" content=\\"width=device-width\\">",
