@@ -309,7 +309,7 @@ extension IterableInAppMessage: Codable {
         try? container.encode(isJsonOnly ? 1 : 0, forKey: .jsonOnly)
         
         try? container.encode(trigger, forKey: .trigger)
-        try? container.encode(saveToInbox && !isJsonOnly, forKey: .saveToInbox)
+        try? container.encode(saveToInbox, forKey: .saveToInbox)
         try? container.encode(messageId, forKey: .messageId)
         try? container.encode(campaignId as? Int, forKey: .campaignId)
         try? container.encode(createdAt, forKey: .createdAt)
