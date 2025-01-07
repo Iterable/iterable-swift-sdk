@@ -14,8 +14,6 @@ extension IterableInAppContentType: CustomStringConvertible {
             return "html"
         case .alert:
             return "alert"
-        case .json:
-            return "json"
         case .banner:
             return "banner"
         }
@@ -31,8 +29,6 @@ extension IterableInAppContentType {
             return .alert
         case String(describing: IterableInAppContentType.banner).lowercased():
             return .banner
-        case String(describing: IterableInAppContentType.json).lowercased():
-            return .json
         default:
             return .html
         }
@@ -340,13 +336,8 @@ extension IterableInAppMessage: Codable {
     }
     
     private static func decodeContent(from container: KeyedDecodingContainer<IterableInAppMessage.CodingKeys>, isJsonOnly: Bool) -> IterableInAppContent {
-        // For JSON-only messages, first try to get customPayload
+        // For JSON-only messages, just return default content since we only use customPayload
         if isJsonOnly {
-            if let customPayloadData = try? container.decode(Data.self, forKey: .customPayload),
-               let customPayload = try? JSONSerialization.jsonObject(with: customPayloadData, options: []) as? [AnyHashable: Any] {
-                return IterableJsonInAppContent(json: customPayload)
-            }
-            // If no customPayload, return default content
             return createDefaultContent()
         }
 
@@ -361,36 +352,22 @@ extension IterableInAppMessage: Codable {
         switch contentType {
         case .html:
             return (try? container.decode(IterableHtmlInAppContent.self, forKey: .content)) ?? createDefaultContent()
-        case .json:
-            if let payloadData = try? contentContainer.decode(Data.self, forKey: .payload),
-               let payload = try? JSONSerialization.jsonObject(with: payloadData, options: []) as? [AnyHashable: Any] {
-                return IterableJsonInAppContent(json: payload)
-            }
-            return createDefaultContent()
         default:
             return (try? container.decode(IterableHtmlInAppContent.self, forKey: .content)) ?? createDefaultContent()
         }
     }
     
     private static func encode(content: IterableInAppContent, inContainer container: inout KeyedEncodingContainer<IterableInAppMessage.CodingKeys>) {
-        switch content.type {
-        case .html:
-            if let content = content as? IterableHtmlInAppContent {
-                try? container.encode(content, forKey: .content)
-            }
-        case .json:
-            if let content = content as? IterableJsonInAppContent,
-               let jsonData = try? JSONSerialization.data(withJSONObject: content.json, options: []) {
-                var contentContainer = container.nestedContainer(keyedBy: ContentCodingKeys.self, forKey: .content)
-                try? contentContainer.encode(jsonData, forKey: .payload)
-            }
-        default:
-            if let content = content as? IterableHtmlInAppContent {
-                try? container.encode(content, forKey: .content)
-            }
+        // For JSON-only messages, we don't need to encode content
+        if content is IterableJsonInAppContent {
+            return
+        }
+        
+        // Existing logic for non-JSON-only messages
+        if let content = content as? IterableHtmlInAppContent {
+            try? container.encode(content, forKey: .content)
         }
     }
-    
 }
 
 protocol InAppPersistenceProtocol {
