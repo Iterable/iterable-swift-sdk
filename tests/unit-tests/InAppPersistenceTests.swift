@@ -95,49 +95,91 @@ class InAppPersistenceTests: XCTestCase {
     }
     
     func testJsonOnlyMessagePersistence() {
+        // Test 1: Basic JSON-only message with customPayload
         let customPayload: [AnyHashable: Any] = [
             "key1": "value1",
             "key2": 42,
-            "key3": ["nested": true]
+            "nested": ["active": true]
         ]
         
         let message = IterableInAppMessage(
             messageId: "test-json-1",
             campaignId: 123,
             trigger: .neverTrigger,
-            createdAt: nil,
-            expiresAt: nil,
-            content: IterableJsonInAppContent(json: [:]),
-            saveToInbox: false,
+            createdAt: Date(),
+            expiresAt: Date().addingTimeInterval(86400),
+            content: IterableHtmlInAppContent(edgeInsets: .zero, html: ""),
+            saveToInbox: true, // Should be forced to false for JSON-only
             inboxMetadata: nil,
             customPayload: customPayload,
             read: false,
             priorityLevel: 0.0
         )
         
+        // Test persistence to file
+        let filename = "test_json_persistence"
+        let persister = InAppFilePersister(filename: filename)
+        persister.clear()
+        
+        // Save and retrieve message
+        persister.persist([message])
+        let retrievedMessages = persister.getMessages()
+        XCTAssertEqual(retrievedMessages.count, 1)
+        
+        guard let retrievedMessage = retrievedMessages.first else {
+            XCTFail("No message retrieved")
+            return
+        }
+        
+        // Verify basic properties
+        XCTAssertEqual(message.messageId, retrievedMessage.messageId)
+        XCTAssertEqual(message.campaignId?.intValue, retrievedMessage.campaignId?.intValue)
+        XCTAssertFalse(retrievedMessage.saveToInbox, "JSON-only messages should never be saved to inbox")
+        
+        // Verify customPayload is preserved correctly
+        XCTAssertEqual(retrievedMessage.customPayload?["key1"] as? String, "value1")
+        XCTAssertEqual(retrievedMessage.customPayload?["key2"] as? Int, 42)
+        XCTAssertEqual((retrievedMessage.customPayload?["nested"] as? [String: Any])?["active"] as? Bool, true)
+        
+        // Test 2: Direct encoding/decoding
         guard let encodedMessage = try? JSONEncoder().encode(message) else {
             XCTFail("Failed to encode JSON-only message")
             return
         }
         
-        guard let decodedMessage = try? JSONDecoder().decode(IterableInAppMessage.self, from: encodedMessage) else {
-            XCTFail("Failed to decode JSON-only message")
-            return
+        // Verify encoded data structure
+        if let jsonData = try? JSONSerialization.jsonObject(with: encodedMessage) as? [String: Any] {
+            XCTAssertEqual(jsonData["jsonOnly"] as? Int, 1)
+            XCTAssertFalse(jsonData["saveToInbox"] as? Bool ?? true)
+            XCTAssertNotNil(jsonData["customPayload"])
+            // Content should not be encoded for JSON-only messages
+            if let content = jsonData["content"] as? [String: Any] {
+                XCTAssertEqual(content.count, 0, "Content should be empty for JSON-only messages")
+            }
         }
         
-        XCTAssertEqual(message.messageId, decodedMessage.messageId)
-        XCTAssertEqual(message.campaignId?.intValue, decodedMessage.campaignId?.intValue)
-        XCTAssertFalse(decodedMessage.saveToInbox)
-        XCTAssertEqual(message.read, decodedMessage.read)
+        // Test 3: Message without customPayload
+        let messageWithoutPayload = IterableInAppMessage(
+            messageId: "test-json-2",
+            campaignId: 456,
+            trigger: .neverTrigger,
+            createdAt: nil,
+            expiresAt: nil,
+            content: IterableHtmlInAppContent(edgeInsets: .zero, html: ""),
+            saveToInbox: false,
+            inboxMetadata: nil,
+            customPayload: nil,
+            read: false,
+            priorityLevel: 0.0
+        )
         
-        guard let decodedContent = decodedMessage.content as? IterableJsonInAppContent else {
-            XCTFail("Content type mismatch")
-            return
-        }
+        persister.clear()
+        persister.persist([messageWithoutPayload])
+        let retrievedEmptyMessages = persister.getMessages()
+        XCTAssertEqual(retrievedEmptyMessages.count, 0, "JSON-only messages without customPayload should be ignored")
         
-        XCTAssertEqual(decodedContent.json["key1"] as? String, "value1")
-        XCTAssertEqual(decodedContent.json["key2"] as? Int, 42)
-        XCTAssertEqual((decodedContent.json["key3"] as? [String: Any])?["nested"] as? Bool, true)
+        // Cleanup
+        persister.clear()
     }
     
     func testJsonOnlyMessagePersistenceWithFilePersister() {

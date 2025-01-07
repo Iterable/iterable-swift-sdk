@@ -247,40 +247,49 @@ extension IterableInAppMessage: Codable {
             ITBError("Can not decode, returning default")
             
             self.init(messageId: "",
-                      campaignId: 0,
-                      content: IterableInAppMessage.createDefaultContent())
+                     campaignId: 0,
+                     content: IterableInAppMessage.createDefaultContent())
             
             return
         }
         
+        let jsonOnly = (try? container.decode(Int.self, forKey: .jsonOnly)) ?? 0
+        let customPayloadData = try? container.decode(Data.self, forKey: .customPayload)
+        let customPayload = IterableInAppMessage.deserializeCustomPayload(withData: customPayloadData)
+        
+        // For JSON-only messages, require customPayload
+        if jsonOnly == 1 && customPayload == nil {
+            ITBError("JSON-only message requires customPayload")
+            self.init(messageId: "",
+                     campaignId: 0,
+                     content: IterableInAppMessage.createDefaultContent())
+            return
+        }
+        
         let saveToInbox = (try? container.decode(Bool.self, forKey: .saveToInbox)) ?? false
-        let inboxMetadata = (try? container.decode(IterableInboxMetadata.self, forKey: .inboxMetadata))
         let messageId = (try? container.decode(String.self, forKey: .messageId)) ?? ""
         let campaignId = (try? container.decode(Int.self, forKey: .campaignId)).map { NSNumber(value: $0) }
         let createdAt = (try? container.decode(Date.self, forKey: .createdAt))
         let expiresAt = (try? container.decode(Date.self, forKey: .expiresAt))
-        let customPayloadData = try? container.decode(Data.self, forKey: .customPayload)
-        let customPayload = IterableInAppMessage.deserializeCustomPayload(withData: customPayloadData)
         let didProcessTrigger = (try? container.decode(Bool.self, forKey: .didProcessTrigger)) ?? false
         let consumed = (try? container.decode(Bool.self, forKey: .consumed)) ?? false
         let read = (try? container.decode(Bool.self, forKey: .read)) ?? false
-        let jsonOnly = (try? container.decode(Int.self, forKey: .jsonOnly)) ?? 0
-        
         let trigger = (try? container.decode(IterableInAppTrigger.self, forKey: .trigger)) ?? .undefinedTrigger
         let content = IterableInAppMessage.decodeContent(from: container, isJsonOnly: jsonOnly == 1)
         let priorityLevel = (try? container.decode(Double.self, forKey: .priorityLevel)) ?? Const.PriorityLevel.unassigned
+        let inboxMetadata = (try? container.decode(IterableInboxMetadata.self, forKey: .inboxMetadata))
         
         self.init(messageId: messageId,
-                  campaignId: campaignId,
-                  trigger: trigger,
-                  createdAt: createdAt,
-                  expiresAt: expiresAt,
-                  content: content,
-                  saveToInbox: saveToInbox && jsonOnly != 1, // Force saveToInbox to false for JSON-only messages
-                  inboxMetadata: inboxMetadata,
-                  customPayload: customPayload,
-                  read: read,
-                  priorityLevel: priorityLevel)
+                 campaignId: campaignId,
+                 trigger: trigger,
+                 createdAt: createdAt,
+                 expiresAt: expiresAt,
+                 content: content,
+                 saveToInbox: saveToInbox && jsonOnly != 1, // Force saveToInbox to false for JSON-only
+                 inboxMetadata: inboxMetadata,
+                 customPayload: customPayload,
+                 read: read,
+                 priorityLevel: priorityLevel)
         
         self.didProcessTrigger = didProcessTrigger
         self.consumed = consumed
@@ -289,8 +298,16 @@ extension IterableInAppMessage: Codable {
     public func encode(to encoder: Encoder) {
         var container = encoder.container(keyedBy: CodingKeys.self)
         
+        // Encode jsonOnly first to ensure it's available during decoding
+        try? container.encode(isJsonOnly ? 1 : 0, forKey: .jsonOnly)
+        
+        // Don't encode if JSON-only message without customPayload
+        if isJsonOnly && customPayload == nil {
+            return
+        }
+        
         try? container.encode(trigger, forKey: .trigger)
-        try? container.encode(saveToInbox, forKey: .saveToInbox)
+        try? container.encode(saveToInbox && !isJsonOnly, forKey: .saveToInbox) // Force saveToInbox to false for JSON-only
         try? container.encode(messageId, forKey: .messageId)
         try? container.encode(campaignId as? Int, forKey: .campaignId)
         try? container.encode(createdAt, forKey: .createdAt)
@@ -300,7 +317,6 @@ extension IterableInAppMessage: Codable {
         try? container.encode(consumed, forKey: .consumed)
         try? container.encode(read, forKey: .read)
         try? container.encode(priorityLevel, forKey: .priorityLevel)
-        try? container.encode(isJsonOnly ? 1 : 0, forKey: .jsonOnly)
         
         if let inboxMetadata = inboxMetadata {
             try? container.encode(inboxMetadata, forKey: .inboxMetadata)
