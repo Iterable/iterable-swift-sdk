@@ -1624,7 +1624,7 @@ class InAppTests: XCTestCase {
         wait(for: [expectation1, expectation2], timeout: testExpectationTimeout / 5)
     }
     
-    func testJsonOnlyInAppMessageRequiresCustomPayload() {
+    func testJsonOnlyInAppMessageWithoutCustomPayload() {
         let expectation1 = expectation(description: "message parsed")
 
         let mockInAppFetcher = MockInAppFetcher()
@@ -1666,9 +1666,12 @@ class InAppTests: XCTestCase {
                 return
             }
 
-            // Message should be ignored since it's marked as jsonOnly but has no customPayload
+            // Message should be not be ignored even if they are json only and have no payload
             let messages = internalApi.inAppManager.getMessages()
-            XCTAssertEqual(messages.count, 0)
+            XCTAssertEqual(messages.count, 1)
+            
+            let message = messages[0]
+            XCTAssertTrue(message.customPayload == nil)
             expectation1.fulfill()
         }
 
