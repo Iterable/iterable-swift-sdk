@@ -336,8 +336,13 @@ extension IterableInAppMessage: Codable {
     }
     
     private static func decodeContent(from container: KeyedDecodingContainer<IterableInAppMessage.CodingKeys>, isJsonOnly: Bool) -> IterableInAppContent {
-        // For JSON-only messages, just return default content since we only use customPayload
+        // For JSON-only messages, first try to get customPayload
         if isJsonOnly {
+            if let customPayloadData = try? container.decode(Data.self, forKey: .customPayload),
+               let customPayload = try? JSONSerialization.jsonObject(with: customPayloadData, options: []) as? [AnyHashable: Any] {
+                return IterableJsonInAppContent(json: customPayload)
+            }
+            // If no customPayload, return default content
             return createDefaultContent()
         }
 
@@ -358,16 +363,18 @@ extension IterableInAppMessage: Codable {
     }
     
     private static func encode(content: IterableInAppContent, inContainer container: inout KeyedEncodingContainer<IterableInAppMessage.CodingKeys>) {
-        // For JSON-only messages, we don't need to encode content
-        if content is IterableJsonInAppContent {
-            return
-        }
-        
-        // Existing logic for non-JSON-only messages
-        if let content = content as? IterableHtmlInAppContent {
-            try? container.encode(content, forKey: .content)
+        switch content.type {
+        case .html:
+            if let content = content as? IterableHtmlInAppContent {
+                try? container.encode(content, forKey: .content)
+            }
+        default:
+            if let content = content as? IterableHtmlInAppContent {
+                try? container.encode(content, forKey: .content)
+            }
         }
     }
+    
 }
 
 protocol InAppPersistenceProtocol {
