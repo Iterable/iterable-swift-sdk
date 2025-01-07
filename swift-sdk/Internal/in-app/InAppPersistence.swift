@@ -242,10 +242,6 @@ extension IterableInAppMessage: Codable {
         case type
     }
     
-    private var isJsonOnly: Bool {
-        return jsonOnly
-    }
-    
     public convenience init(from decoder: Decoder) {
         guard let container = try? decoder.container(keyedBy: CodingKeys.self) else {
             ITBError("Can not decode, returning default")
@@ -299,6 +295,10 @@ extension IterableInAppMessage: Codable {
         
         self.didProcessTrigger = didProcessTrigger
         self.consumed = consumed
+    }
+    
+    var isJsonOnly: Bool {
+        return jsonOnly
     }
     
     public func encode(to encoder: Encoder) {
