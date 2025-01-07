@@ -242,6 +242,10 @@ extension IterableInAppMessage: Codable {
         case type
     }
     
+    private var isJsonOnly: Bool {
+        return jsonOnly
+    }
+    
     public convenience init(from decoder: Decoder) {
         guard let container = try? decoder.container(keyedBy: CodingKeys.self) else {
             ITBError("Can not decode, returning default")
@@ -262,7 +266,8 @@ extension IterableInAppMessage: Codable {
             ITBError("JSON-only message requires customPayload")
             self.init(messageId: "",
                      campaignId: 0,
-                     content: IterableInAppMessage.createDefaultContent())
+                     content: IterableInAppMessage.createDefaultContent(),
+                     jsonOnly: false)
             return
         }
         
@@ -285,11 +290,12 @@ extension IterableInAppMessage: Codable {
                  createdAt: createdAt,
                  expiresAt: expiresAt,
                  content: content,
-                 saveToInbox: saveToInbox && jsonOnly != 1, // Force saveToInbox to false for JSON-only
+                 saveToInbox: saveToInbox && jsonOnly != 1,
                  inboxMetadata: inboxMetadata,
                  customPayload: customPayload,
                  read: read,
-                 priorityLevel: priorityLevel)
+                 priorityLevel: priorityLevel,
+                 jsonOnly: jsonOnly == 1)
         
         self.didProcessTrigger = didProcessTrigger
         self.consumed = consumed
@@ -298,7 +304,7 @@ extension IterableInAppMessage: Codable {
     public func encode(to encoder: Encoder) {
         var container = encoder.container(keyedBy: CodingKeys.self)
         
-        // Encode jsonOnly first to ensure it's available during decoding
+        // Encode jsonOnly first
         try? container.encode(isJsonOnly ? 1 : 0, forKey: .jsonOnly)
         
         // Don't encode if JSON-only message without customPayload
@@ -307,7 +313,7 @@ extension IterableInAppMessage: Codable {
         }
         
         try? container.encode(trigger, forKey: .trigger)
-        try? container.encode(saveToInbox && !isJsonOnly, forKey: .saveToInbox) // Force saveToInbox to false for JSON-only
+        try? container.encode(saveToInbox && !isJsonOnly, forKey: .saveToInbox)
         try? container.encode(messageId, forKey: .messageId)
         try? container.encode(campaignId as? Int, forKey: .campaignId)
         try? container.encode(createdAt, forKey: .createdAt)
