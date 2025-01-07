@@ -268,6 +268,7 @@ extension IterableInAppMessage: Codable {
         }
         
         let saveToInbox = (try? container.decode(Bool.self, forKey: .saveToInbox)) ?? false
+        let inboxMetadata = (try? container.decode(IterableInboxMetadata.self, forKey: .inboxMetadata))
         let messageId = (try? container.decode(String.self, forKey: .messageId)) ?? ""
         let campaignId = (try? container.decode(Int.self, forKey: .campaignId)).map { NSNumber(value: $0) }
         let createdAt = (try? container.decode(Date.self, forKey: .createdAt))
@@ -275,10 +276,10 @@ extension IterableInAppMessage: Codable {
         let didProcessTrigger = (try? container.decode(Bool.self, forKey: .didProcessTrigger)) ?? false
         let consumed = (try? container.decode(Bool.self, forKey: .consumed)) ?? false
         let read = (try? container.decode(Bool.self, forKey: .read)) ?? false
+        
         let trigger = (try? container.decode(IterableInAppTrigger.self, forKey: .trigger)) ?? .undefinedTrigger
         let content = IterableInAppMessage.decodeContent(from: container, isJsonOnly: jsonOnly == 1)
         let priorityLevel = (try? container.decode(Double.self, forKey: .priorityLevel)) ?? Const.PriorityLevel.unassigned
-        let inboxMetadata = (try? container.decode(IterableInboxMetadata.self, forKey: .inboxMetadata))
         
         self.init(messageId: messageId,
                  campaignId: campaignId,
