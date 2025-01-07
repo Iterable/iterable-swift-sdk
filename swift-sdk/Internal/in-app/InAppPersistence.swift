@@ -308,11 +308,6 @@ extension IterableInAppMessage: Codable {
         // Encode jsonOnly first
         try? container.encode(isJsonOnly ? 1 : 0, forKey: .jsonOnly)
         
-        // Don't encode if JSON-only message without customPayload
-        if isJsonOnly && customPayload == nil {
-            return
-        }
-        
         try? container.encode(trigger, forKey: .trigger)
         try? container.encode(saveToInbox && !isJsonOnly, forKey: .saveToInbox)
         try? container.encode(messageId, forKey: .messageId)
