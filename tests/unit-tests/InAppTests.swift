@@ -1427,13 +1427,10 @@ class InAppTests: XCTestCase {
 
         let mockInAppDelegate = MockInAppDelegate(showInApp: .show)
         mockInAppDelegate.onNewMessageCallback = { message in
-            if let jsonContent = message.content as? IterableJsonInAppContent {
-                XCTAssertEqual(jsonContent.json["key"] as? String, "value")
-                expectation1.fulfill()
-            } else {
-                XCTFail("Expected JSON content")
-            }
+            XCTAssertEqual(message.customPayload?["key"] as? String, "value")
+            expectation1.fulfill()
         }
+        
         let config = IterableConfig()
         config.inAppDelegate = mockInAppDelegate
 
@@ -1534,15 +1531,12 @@ class InAppTests: XCTestCase {
 
             let messages = internalApi.inAppManager.getMessages()
             XCTAssertEqual(messages.count, 1)
-
-            if let jsonContent = messages[0].content as? IterableJsonInAppContent {
-                XCTAssertEqual(jsonContent.json["key1"] as? String, "value1")
-                XCTAssertEqual(jsonContent.json["key2"] as? Int, 42)
-                XCTAssertEqual((jsonContent.json["key3"] as? [String: Any])?["nested"] as? Bool, true)
-                expectation1.fulfill()
-            } else {
-                XCTFail("Expected JSON content")
-            }
+            
+            let message = messages[0]
+            XCTAssertEqual(message.customPayload?["key1"] as? String, "value1")
+            XCTAssertEqual(message.customPayload?["key2"] as? Int, 42)
+            XCTAssertEqual((message.customPayload?["key3"] as? [String: Any])?["nested"] as? Bool, true)
+            expectation1.fulfill()
         }
 
         wait(for: [expectation1], timeout: testExpectationTimeout)
@@ -1556,25 +1550,20 @@ class InAppTests: XCTestCase {
         let mockInAppFetcher = MockInAppFetcher()
         let mockInAppDisplayer = MockInAppDisplayer()
 
-        // This should never be called since JSON messages don't display
         mockInAppDisplayer.onShow.onSuccess { _ in
             XCTFail("JSON-only messages should not be displayed")
         }
 
         let mockInAppDelegate = MockInAppDelegate(showInApp: .show)
         mockInAppDelegate.onNewMessageCallback = { message in
-            if let jsonContent = message.content as? IterableJsonInAppContent {
-                if message.messageId == "message1" {
-                    // Verify immediate trigger message
-                    XCTAssertEqual(jsonContent.json["key"] as? String, "immediate")
-                    expectation1.fulfill()
-                } else if message.messageId == "message2" {
-                    // Never trigger message should not call onNew
-                    XCTFail("onNew should not be called for never trigger")
-                    expectation2.fulfill()
-                }
-            } else {
-                XCTFail("Expected JSON content")
+            if message.messageId == "message1" {
+                // Verify immediate trigger message
+                XCTAssertEqual(message.customPayload?["key"] as? String, "immediate")
+                expectation1.fulfill()
+            } else if message.messageId == "message2" {
+                // Never trigger message should not call onNew
+                XCTFail("onNew should not be called for never trigger")
+                expectation2.fulfill()
             }
         }
 
@@ -1733,13 +1722,10 @@ class InAppTests: XCTestCase {
 
             let messages = internalApi.inAppManager.getMessages()
             XCTAssertEqual(messages.count, 1)
-
-            if let jsonContent = messages[0].content as? IterableJsonInAppContent {
-                XCTAssertTrue(jsonContent.json.isEmpty)
-                expectation1.fulfill()
-            } else {
-                XCTFail("Expected JSON content")
-            }
+            
+            let message = messages[0]
+            XCTAssertTrue(message.customPayload?.isEmpty ?? false)
+            expectation1.fulfill()
         }
 
         wait(for: [expectation1], timeout: testExpectationTimeout)
@@ -1852,14 +1838,11 @@ class InAppTests: XCTestCase {
 
             let messages = internalApi.inAppManager.getMessages()
             XCTAssertEqual(messages.count, 1)
-
-            if let jsonContent = messages[0].content as? IterableJsonInAppContent {
-                // Verify we use customPayload and ignore content.payload
-                XCTAssertEqual(jsonContent.json["key"] as? String, "customValue")
-                expectation1.fulfill()
-            } else {
-                XCTFail("Expected JSON content")
-            }
+            
+            let message = messages[0]
+            // Verify we use customPayload and ignore content.payload
+            XCTAssertEqual(message.customPayload?["key"] as? String, "customValue")
+            expectation1.fulfill()
         }
 
         wait(for: [expectation1], timeout: testExpectationTimeout)
@@ -1910,11 +1893,3 @@ extension IterableInAppMessage {
 }
 
 
-extension IterableJsonInAppContent {
-    override public var description: String {
-        IterableUtil.describe("type", type,
-                              "json", json,
-                              pairSeparator: " = ",
-                              separator: ", ")
-    }
-}
