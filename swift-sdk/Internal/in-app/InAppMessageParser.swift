@@ -88,7 +88,7 @@ struct InAppMessageParser {
         let content: IterableInAppContent
         let jsonOnly = (json[JsonKey.InApp.jsonOnly] as? Int ?? 0) == 1
 
-        switch InAppContentParser.parse(contentDict: contentDict, jsonOnly: jsonOnly) {
+        switch InAppContentParser.parse(contentDict: contentDict) {
         case let .success(parsedContent):
             content = parsedContent
         case let .failure(reason):
