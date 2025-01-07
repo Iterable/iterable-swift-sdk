@@ -1451,9 +1451,9 @@ class InAppTests: XCTestCase {
                 "jsonOnly": 1,
                 "messageType": "Mobile",
                 "typeOfContent": "Static",
+                "customPayload": {"key": "value"},
                 "content": {
-                    "payload": {"key": "value"},
-                    "html": "<meta name=\\"viewport\\" content=\\"width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no\\">",
+                    "html": "<meta name=\\"viewport\\" content=\\"width=device-width\\">",
                     "inAppDisplaySettings": {
                         "left": {"percentage": 0},
                         "top": {"percentage": 0},
@@ -1504,13 +1504,13 @@ class InAppTests: XCTestCase {
                 "jsonOnly": 1,
                 "messageType": "Mobile",
                 "typeOfContent": "Static",
+                "customPayload": {
+                    "key1": "value1",
+                    "key2": 42,
+                    "key3": {"nested": true}
+                },
                 "content": {
-                    "payload": {
-                        "key1": "value1",
-                        "key2": 42,
-                        "key3": {"nested": true}
-                    },
-                    "html": "<meta name=\\"viewport\\" content=\\"width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no\\">",
+                    "html": "<meta name=\\"viewport\\" content=\\"width=device-width\\">",
                     "inAppDisplaySettings": {
                         "left": {"percentage": 0},
                         "top": {"percentage": 0},
@@ -1595,8 +1595,8 @@ class InAppTests: XCTestCase {
                 "jsonOnly": 1,
                 "messageType": "Mobile",
                 "typeOfContent": "Static",
+                "customPayload": {"key": "immediate"},
                 "content": {
-                    "payload": {"key": "immediate"},
                     "html": "<meta name=\\"viewport\\" content=\\"width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no\\">",
                     "inAppDisplaySettings": {
                         "left": {"percentage": 0},
@@ -1614,8 +1614,8 @@ class InAppTests: XCTestCase {
                 "jsonOnly": 1,
                 "messageType": "Mobile",
                 "typeOfContent": "Static",
+                "customPayload": {"key": "never"},
                 "content": {
-                    "payload": {"key": "never"},
                     "html": "<meta name=\\"viewport\\" content=\\"width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no\\">",
                     "inAppDisplaySettings": {
                         "left": {"percentage": 0},
@@ -1636,8 +1636,8 @@ class InAppTests: XCTestCase {
 
         wait(for: [expectation1, expectation2], timeout: testExpectationTimeout / 5)
     }
-
-    func testJsonOnlyInAppMessageRequiresPayload() {
+    
+    func testJsonOnlyInAppMessageRequiresCustomPayload() {
         let expectation1 = expectation(description: "message parsed")
 
         let mockInAppFetcher = MockInAppFetcher()
@@ -1657,7 +1657,7 @@ class InAppTests: XCTestCase {
                 "messageType": "Mobile",
                 "typeOfContent": "Static",
                 "content": {
-                    "html": "<meta name=\\"viewport\\" content=\\"width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no\\">",
+                    "html": "<meta name=\\"viewport\\" content=\\"width=device-width\\">",
                     "inAppDisplaySettings": {
                         "left": {"percentage": 0},
                         "top": {"percentage": 0},
@@ -1679,7 +1679,7 @@ class InAppTests: XCTestCase {
                 return
             }
 
-            // Message should be ignored since it's marked as jsonOnly but has no payload
+            // Message should be ignored since it's marked as jsonOnly but has no customPayload
             let messages = internalApi.inAppManager.getMessages()
             XCTAssertEqual(messages.count, 0)
             expectation1.fulfill()
@@ -1690,15 +1690,15 @@ class InAppTests: XCTestCase {
 
     func testJsonOnlyMessageWithEmptyPayload() {
         let expectation1 = expectation(description: "message parsed")
-        
+
         let mockInAppFetcher = MockInAppFetcher()
         let config = IterableConfig()
-        
+
         let internalApi = InternalIterableAPI.initializeForTesting(
             config: config,
             inAppFetcher: mockInAppFetcher
         )
-        
+
         let payload = """
         {"inAppMessages":
         [
@@ -1707,8 +1707,8 @@ class InAppTests: XCTestCase {
                 "jsonOnly": 1,
                 "messageType": "Mobile",
                 "typeOfContent": "Static",
+                "customPayload": {},
                 "content": {
-                    "payload": {},
                     "html": "<meta name=\\"viewport\\" content=\\"width=device-width, initial-scale=1.0\\">",
                     "inAppDisplaySettings": {
                         "left": {"percentage": 0},
@@ -1724,16 +1724,16 @@ class InAppTests: XCTestCase {
         ]
         }
         """.toJsonDict()
-        
+
         mockInAppFetcher.mockInAppPayloadFromServer(internalApi: internalApi, payload).onSuccess { [weak internalApi] _ in
             guard let internalApi = internalApi else {
                 XCTFail("Expected internalApi to be not nil")
                 return
             }
-            
+
             let messages = internalApi.inAppManager.getMessages()
             XCTAssertEqual(messages.count, 1)
-            
+
             if let jsonContent = messages[0].content as? IterableJsonInAppContent {
                 XCTAssertTrue(jsonContent.json.isEmpty)
                 expectation1.fulfill()
@@ -1741,12 +1741,12 @@ class InAppTests: XCTestCase {
                 XCTFail("Expected JSON content")
             }
         }
-        
+
         wait(for: [expectation1], timeout: testExpectationTimeout)
     }
-    
-    func testJsonOnlyMessageInInbox() {
-        let expectation1 = expectation(description: "message saved to inbox")
+
+    func testJsonOnlyMessageCannotBeSavedToInbox() {
+        let expectation1 = expectation(description: "message processed")
         
         let mockInAppFetcher = MockInAppFetcher()
         let config = IterableConfig()
@@ -1764,9 +1764,9 @@ class InAppTests: XCTestCase {
                 "jsonOnly": 1,
                 "messageType": "Mobile",
                 "typeOfContent": "Static",
+                "customPayload": {"key": "value"},
                 "content": {
-                    "payload": {"key": "value"},
-                    "html": "<meta name=\\"viewport\\" content=\\"width=device-width, initial-scale=1.0\\">",
+                    "html": "<meta name=\\"viewport\\" content=\\"width=device-width\\">",
                     "inAppDisplaySettings": {
                         "left": {"percentage": 0},
                         "top": {"percentage": 0},
@@ -1793,23 +1793,75 @@ class InAppTests: XCTestCase {
                 return
             }
             
+            // Verify message is not saved to inbox regardless of saveToInbox flag
             let inboxMessages = internalApi.inAppManager.getInboxMessages()
-            XCTAssertEqual(inboxMessages.count, 1)
-            
-            let message = inboxMessages[0]
-            XCTAssertTrue(message.saveToInbox)
-            XCTAssertEqual(message.inboxMetadata?.title, "JSON Message")
-            XCTAssertEqual(message.inboxMetadata?.subtitle, "Test Subtitle")
-            XCTAssertEqual(message.inboxMetadata?.icon, "test-icon.png")
-            
-            if let jsonContent = message.content as? IterableJsonInAppContent {
-                XCTAssertEqual(jsonContent.json["key"] as? String, "value")
+            XCTAssertEqual(inboxMessages.count, 0)
+            expectation1.fulfill()
+        }
+        
+        wait(for: [expectation1], timeout: testExpectationTimeout)
+    }
+
+    func testJsonOnlyMessageIgnoresContentPayload() {
+        let expectation1 = expectation(description: "message parsed")
+
+        let mockInAppFetcher = MockInAppFetcher()
+        let config = IterableConfig()
+
+        let internalApi = InternalIterableAPI.initializeForTesting(
+            config: config,
+            inAppFetcher: mockInAppFetcher
+        )
+
+        let payload = """
+        {"inAppMessages":
+        [
+            {
+                "saveToInbox": false,
+                "jsonOnly": 1,
+                "messageType": "Mobile",
+                "typeOfContent": "Static",
+                "customPayload": {
+                    "key": "customValue"
+                },
+                "content": {
+                    "payload": {
+                        "key": "contentValue"
+                    },
+                    "html": "<meta name=\\"viewport\\" content=\\"width=device-width\\">",
+                    "inAppDisplaySettings": {
+                        "left": {"percentage": 0},
+                        "top": {"percentage": 0},
+                        "right": {"percentage": 0},
+                        "bottom": {"percentage": 0}
+                    }
+                },
+                "trigger": {"type": "never"},
+                "messageId": "message1",
+                "campaignId": 1
+            }
+        ]
+        }
+        """.toJsonDict()
+
+        mockInAppFetcher.mockInAppPayloadFromServer(internalApi: internalApi, payload).onSuccess { [weak internalApi] _ in
+            guard let internalApi = internalApi else {
+                XCTFail("Expected internalApi to be not nil")
+                return
+            }
+
+            let messages = internalApi.inAppManager.getMessages()
+            XCTAssertEqual(messages.count, 1)
+
+            if let jsonContent = messages[0].content as? IterableJsonInAppContent {
+                // Verify we use customPayload and ignore content.payload
+                XCTAssertEqual(jsonContent.json["key"] as? String, "customValue")
                 expectation1.fulfill()
             } else {
                 XCTFail("Expected JSON content")
             }
         }
-        
+
         wait(for: [expectation1], timeout: testExpectationTimeout)
     }
 
