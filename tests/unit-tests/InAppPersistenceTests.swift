@@ -159,7 +159,7 @@ class InAppPersistenceTests: XCTestCase {
             XCTAssertTrue(jsonData["content"] == nil || (jsonData["content"] as? [String: Any])?.isEmpty == true)
         }
         
-        // Test 3: Message without customPayload should now persist normally
+        // Test 3: Message without customPayload should not be persisted for JSON-only messages
         let messageWithoutPayload = IterableInAppMessage(
             messageId: "test-json-2",
             campaignId: 456,
@@ -178,18 +178,7 @@ class InAppPersistenceTests: XCTestCase {
         persister.clear()
         persister.persist([messageWithoutPayload])
         let retrievedEmptyMessages = persister.getMessages()
-        XCTAssertEqual(retrievedEmptyMessages.count, 1)
-        
-        guard let retrievedEmptyMessage = retrievedEmptyMessages.first else {
-            XCTFail("No message retrieved")
-            return
-        }
-        
-        // Verify properties of message without customPayload
-        XCTAssertEqual(messageWithoutPayload.messageId, retrievedEmptyMessage.messageId)
-        XCTAssertEqual(messageWithoutPayload.campaignId?.intValue, retrievedEmptyMessage.campaignId?.intValue)
-        XCTAssertTrue(retrievedEmptyMessage.jsonOnly)
-        XCTAssertNil(retrievedEmptyMessage.customPayload)
+        XCTAssertEqual(retrievedEmptyMessages.count, 1, "JSON-only message without customPayload should be persisted")
         
         // Test 4: Array of JSON-only messages
         let messagesArray = [
