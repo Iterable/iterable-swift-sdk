@@ -247,8 +247,8 @@ extension IterableInAppMessage: Codable {
             ITBError("Can not decode, returning default")
             
             self.init(messageId: "",
-                     campaignId: 0,
-                     content: IterableInAppMessage.createDefaultContent())
+                      campaignId: 0,
+                      content: IterableInAppMessage.createDefaultContent())
             
             return
         }
