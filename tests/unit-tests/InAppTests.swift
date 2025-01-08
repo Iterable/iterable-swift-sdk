@@ -1671,7 +1671,7 @@ class InAppTests: XCTestCase {
             XCTAssertEqual(messages.count, 1)
             
             let message = messages[0]
-            XCTAssertTrue(message.customPayload == nil)
+            XCTAssertTrue(message.customPayload?.isEmpty ?? false)
             expectation1.fulfill()
         }
 

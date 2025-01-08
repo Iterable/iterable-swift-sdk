@@ -255,16 +255,10 @@ extension IterableInAppMessage: Codable {
         
         let jsonOnly = (try? container.decode(Int.self, forKey: .jsonOnly)) ?? 0
         let customPayloadData = try? container.decode(Data.self, forKey: .customPayload)
-        let customPayload = IterableInAppMessage.deserializeCustomPayload(withData: customPayloadData)
+        var customPayload = IterableInAppMessage.deserializeCustomPayload(withData: customPayloadData)
         
-        // For JSON-only messages, require customPayload
         if jsonOnly == 1 && customPayload == nil {
-            ITBError("JSON-only message requires customPayload")
-            self.init(messageId: "",
-                     campaignId: 0,
-                     content: IterableInAppMessage.createDefaultContent(),
-                     jsonOnly: false)
-            return
+            customPayload = [:]
         }
         
         let saveToInbox = (try? container.decode(Bool.self, forKey: .saveToInbox)) ?? false
