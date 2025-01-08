@@ -6,7 +6,7 @@ import Foundation
 
 enum MessagesProcessorResult {
     case show(message: IterableInAppMessage, messagesMap: OrderedDictionary<String, IterableInAppMessage>)
-    case noShow(messagesMap: OrderedDictionary<String, IterableInAppMessage>)
+    case noShow(message: IterableInAppMessage?, messagesMap: OrderedDictionary<String, IterableInAppMessage>)
 }
 
 struct MessagesProcessor {
@@ -32,9 +32,9 @@ struct MessagesProcessor {
             return processMessages()
         case let .skipAndConsume(message):
             updateMessage(message, didProcessTrigger: true, consumed: true)
-            return processMessages()
+            return .noShow(message: message, messagesMap: messagesMap)
         case .none, .wait:
-            return .noShow(messagesMap: messagesMap)
+            return .noShow(message: nil, messagesMap: messagesMap)
         }
     }
     
