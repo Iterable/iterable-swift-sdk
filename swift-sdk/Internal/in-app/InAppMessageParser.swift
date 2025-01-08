@@ -82,7 +82,11 @@ struct InAppMessageParser {
         }
         
         let jsonOnly = (json[JsonKey.InApp.jsonOnly] as? Int ?? 0) == 1
-        let customPayload = parseCustomPayload(fromPayload: json)
+        var customPayload = parseCustomPayload(fromPayload: json)
+        
+        if jsonOnly && customPayload == nil {
+            customPayload = [:]
+        }
         
         // For non-JSON-only messages, we require content
         if !jsonOnly {
