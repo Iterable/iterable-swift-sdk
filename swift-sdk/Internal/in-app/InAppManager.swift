@@ -286,7 +286,7 @@ class InAppManager: NSObject, IterableInternalInAppManagerProtocol {
     
     private func getMessagesMap(fromMessagesProcessorResult messagesProcessorResult: MessagesProcessorResult) -> OrderedDictionary<String, IterableInAppMessage> {
         switch messagesProcessorResult {
-        case let .noShow(messagesMap: messagesMap):
+        case let .noShow(message: _, messagesMap: messagesMap):
             return messagesMap
         case .show(message: _, messagesMap: let messagesMap):
             return messagesMap
@@ -300,13 +300,20 @@ class InAppManager: NSObject, IterableInternalInAppManagerProtocol {
             ITBDebug("Setting last display time: \(String(describing: lastDisplayTime))")
             
             show(message: message, consume: !message.saveToInbox)
-        }
+        } 
     }
     
     private func processAndShowMessage(messagesMap: OrderedDictionary<String, IterableInAppMessage>) {
         var processor = MessagesProcessor(inAppDelegate: inAppDelegate, inAppDisplayChecker: self, messagesMap: messagesMap)
         let messagesProcessorResult = processor.processMessages()
         self.messagesMap = getMessagesMap(fromMessagesProcessorResult: messagesProcessorResult)
+        
+        if case let .noShow(message, _) = messagesProcessorResult,
+            let message = message, message.isJsonOnly {
+            requestHandler?.inAppConsume(message.messageId,
+                                       onSuccess: nil,
+                                       onFailure: nil)
+        }
         
         showMessage(fromMessagesProcessorResult: messagesProcessorResult)
     }
