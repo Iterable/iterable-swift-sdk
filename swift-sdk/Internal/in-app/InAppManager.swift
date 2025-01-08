@@ -317,15 +317,6 @@ class InAppManager: NSObject, IterableInternalInAppManagerProtocol {
         ITBInfo()
         
         if message.isJsonOnly {
-            // JSON Only messages do not need to be shown
-            updateMessage(message, didProcessTrigger: true, consumed: consume)
-            if consume {
-                DispatchQueue.main.async {
-                    self.requestHandler?.inAppConsume(message.messageId,
-                                                       onSuccess: nil,
-                                                       onFailure: nil)
-                }
-            }
             return
         }
         

@@ -30,6 +30,9 @@ struct MessagesProcessor {
         case let .skip(message):
             updateMessage(message, didProcessTrigger: true)
             return processMessages()
+        case let .skipAndConsume(message):
+            updateMessage(message, didProcessTrigger: true, consumed: true)
+            return processMessages()
         case .none, .wait:
             return .noShow(messagesMap: messagesMap)
         }
@@ -38,6 +41,7 @@ struct MessagesProcessor {
     private enum ProcessNextMessageResult {
         case show(IterableInAppMessage)
         case skip(IterableInAppMessage)
+        case skipAndConsume(IterableInAppMessage)
         case none
         case wait
     }
@@ -59,7 +63,11 @@ struct MessagesProcessor {
         
         ITBDebug("isOkToShowNow")
         
-        if inAppDelegate.onNew(message: message) == .show {
+        let returnValue = inAppDelegate.onNew(message: message)
+        if message.isJsonOnly {
+            return .skipAndConsume(message)
+        }
+        if returnValue == .show {
             ITBDebug("delegate returned show")
             return .show(message)
         } else {
