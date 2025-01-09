@@ -81,6 +81,7 @@ struct InAppMessageParser {
             return .failure(.parseFailed(reason: "no messageId", messageId: nil))
         }
         
+        // Check if the jsonOnly key is present and is set to 1 (true)
         let jsonOnly = (json[JsonKey.InApp.jsonOnly] as? Int ?? 0) == 1
         var customPayload = parseCustomPayload(fromPayload: json)
         
