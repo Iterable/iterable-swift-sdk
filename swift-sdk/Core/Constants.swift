@@ -57,7 +57,7 @@ enum Const {
         static let deviceId = "itbl_device_id"
         static let sdkVersion = "itbl_sdk_version"
         static let offlineMode = "itbl_offline_mode"
-        static let isNotificationsEnabled = "itbl_is_Notifications_Enabled"
+        static let isNotificationsEnabled = "itbl_isNotificationsEnabled"
         
         static let attributionInfoExpiration = 24
     }

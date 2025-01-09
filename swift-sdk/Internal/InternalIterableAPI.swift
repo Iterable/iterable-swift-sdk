@@ -711,19 +711,33 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
     }
     
     private func addForegroundObservers() {
-        NotificationCenter.default.addObserver(self,
-                                               selector: #selector(onAppDidBecomeActiveNotification(notification:)),
-                                               name: UIApplication.didBecomeActiveNotification,
-                                               object: nil)
+        notificationCenter.addObserver(self,
+                                     selector: #selector(onAppDidBecomeActiveNotification(notification:)),
+                                     name: UIApplication.didBecomeActiveNotification,
+                                     object: nil)
     }
     
     @objc private func onAppDidBecomeActiveNotification(notification: Notification) {
-        self.notificationStateProvider.isNotificationsEnabled { isEnabled in
-            if self.localStorage.isNotificationsEnabled != isEnabled {
-                if self.config.autoPushRegistration {
+        // Always update the stored notification state
+        notificationStateProvider.isNotificationsEnabled { [weak self] isEnabled in
+            guard let self else { return }
+            
+            let previousState = self.localStorage.isNotificationsEnabled
+            
+            // Update stored state
+            self.localStorage.isNotificationsEnabled = isEnabled
+            
+            // Only attempt registration/deregistration if state changed and auto-registration is enabled
+            if previousState != isEnabled && self.config.autoPushRegistration {
+                if isEnabled {
                     self.notificationStateProvider.registerForRemoteNotifications()
-                } 
+                } else {
+                    self.disableDeviceForCurrentUser()
+                }
             }
+            
+            // Check remote configuration after push registration check
+            self.checkRemoteConfiguration()
         }
     }
     
@@ -797,6 +811,7 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
     
     deinit {
         ITBInfo()
+        notificationCenter.removeObserver(self)
         requestHandler.stop()
     }
 }
