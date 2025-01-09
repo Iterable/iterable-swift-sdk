@@ -23,7 +23,8 @@ jobs:
 
       - name: Build and test
         run: |
-          xcodebuild test -project swift-sdk.xcodeproj -scheme swift-sdk -sdk iphonesimulator -destination 'platform=iOS Simulator,OS=18.1,name=iPhone 16 Pro' -enableCodeCoverage YES CODE_SIGNING_REQUIRED=NO | xcpretty && exit ${PIPESTATUS[0]}
+          DEVICE_ID=$(xcrun simctl list devices | grep "iPhone 16 Pro" | head -1 | awk -F'[()]' '{print $2}')
+          xcodebuild test -project swift-sdk.xcodeproj -scheme swift-sdk -sdk iphonesimulator -destination "id=$DEVICE_ID" -enableCodeCoverage YES CODE_SIGNING_REQUIRED=NO | xcpretty && exit ${PIPESTATUS[0]}
 
       - name: CocoaPods lint
         run: pod lib lint --allow-warnings
