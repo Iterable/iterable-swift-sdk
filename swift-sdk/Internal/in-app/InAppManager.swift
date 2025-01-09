@@ -300,7 +300,7 @@ class InAppManager: NSObject, IterableInternalInAppManagerProtocol {
             ITBDebug("Setting last display time: \(String(describing: lastDisplayTime))")
             
             show(message: message, consume: !message.saveToInbox)
-        } 
+        }
     }
     
     private func processAndShowMessage(messagesMap: OrderedDictionary<String, IterableInAppMessage>) {
