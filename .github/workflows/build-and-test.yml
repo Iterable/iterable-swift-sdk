@@ -18,6 +18,9 @@ jobs:
           gem install erb
           gem install xcpretty
 
+      - name: List Available Simulators
+        run: xcrun simctl list 
+
       - name: Build and test
         run: |
           xcodebuild test \
