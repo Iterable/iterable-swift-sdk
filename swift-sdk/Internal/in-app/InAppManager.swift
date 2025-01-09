@@ -323,7 +323,7 @@ class InAppManager: NSObject, IterableInternalInAppManagerProtocol {
                               callback: ITBURLCallback? = nil) {
         ITBInfo()
         
-        if message.isJsonOnly {
+        guard !message.isJsonOnly else {
             return
         }
         
