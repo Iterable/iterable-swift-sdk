@@ -24,6 +24,7 @@ jobs:
       - name: Build and test
         run: |
           DEVICE_ID=$(xcrun simctl list devices | grep "iPhone 16 Pro" | head -1 | awk -F'[()]' '{print $2}')
+          xcrun simctl boot "$DEVICE_ID"
           xcodebuild test -project swift-sdk.xcodeproj -scheme swift-sdk -sdk iphonesimulator -destination "id=$DEVICE_ID" -enableCodeCoverage YES CODE_SIGNING_REQUIRED=NO | xcpretty && exit ${PIPESTATUS[0]}
 
       - name: CocoaPods lint
