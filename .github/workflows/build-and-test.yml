@@ -4,7 +4,7 @@ on: pull_request
 
 jobs:
   run-tests-job:
-    runs-on: macos-14
+    runs-on: macos-latest
 
     steps:
       - uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
@@ -18,18 +18,9 @@ jobs:
           gem install erb
           gem install xcpretty
 
-      - name: List Available Simulators
-        run: xcrun simctl list 
-
       - name: Build and test
         run: |
-          xcrun simctl create "iPhone 16 Pro" com.apple.CoreSimulator.SimDeviceType.iPhone-16-Pro com.apple.CoreSimulator.SimRuntime.iOS-18-1
-          DEVICE_ROW=$(xcrun simctl list devices | grep "iPhone 16 Pro" | head -1)
-          echo "Found simulator: $DEVICE_ROW"
-          DEVICE_ID=$(echo "$DEVICE_ROW" | awk -F'[()]' '{print $2}')
-          echo "Using device ID: $DEVICE_ID"
-          xcrun simctl boot "$DEVICE_ID"
-          xcodebuild test -project swift-sdk.xcodeproj -scheme swift-sdk -sdk iphonesimulator -destination "id=$DEVICE_ID" -enableCodeCoverage YES CODE_SIGNING_REQUIRED=NO | xcpretty && exit ${PIPESTATUS[0]}
+          xcodebuild test -project swift-sdk.xcodeproj -scheme swift-sdk -sdk iphonesimulator -destination 'platform=iOS Simulator,name=iPhone 16 Pro' -enableCodeCoverage YES CODE_SIGNING_REQUIRED=NO | xcpretty && exit ${PIPESTATUS[0]}
 
       - name: CocoaPods lint
         run: pod lib lint --allow-warnings
