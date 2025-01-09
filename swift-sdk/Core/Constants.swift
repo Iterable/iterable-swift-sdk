@@ -253,6 +253,7 @@ enum JsonKey {
         static let packageName = "packageName"
         static let sdkVersion = "SDKVersion"
         static let content = "content"
+        static let jsonOnly = "jsonOnly"
     }
     
     enum Payload {
