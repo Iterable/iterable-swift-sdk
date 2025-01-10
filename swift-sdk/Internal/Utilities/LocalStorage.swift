@@ -61,7 +61,7 @@ struct LocalStorage: LocalStorageProtocol {
     
     var offlineMode: Bool {
         get {
-            return iterableUserDefaults.offlineMode
+            iterableUserDefaults.offlineMode
         } set {
             iterableUserDefaults.offlineMode = newValue
         }
