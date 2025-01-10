@@ -1445,7 +1445,7 @@ class InAppTests: XCTestCase {
         [
             {
                 "saveToInbox": false,
-                "jsonOnly": 1,
+                "jsonOnly": true,
                 "customPayload": {"key": "value"},
                 "content": {
                     "html": "<meta name=\\"viewport\\" content=\\"width=device-width\\">",
@@ -1496,7 +1496,7 @@ class InAppTests: XCTestCase {
         [
             {
                 "saveToInbox": false,
-                "jsonOnly": 1,
+                "jsonOnly": true,
                 "messageType": "Mobile",
                 "typeOfContent": "Static",
                 "customPayload": {
@@ -1579,7 +1579,7 @@ class InAppTests: XCTestCase {
         [
             {
                 "saveToInbox": false,
-                "jsonOnly": 1,
+                "jsonOnly": true,
                 "messageType": "Mobile",
                 "typeOfContent": "Static",
                 "customPayload": {"key": "immediate"},
@@ -1598,7 +1598,7 @@ class InAppTests: XCTestCase {
             },
             {
                 "saveToInbox": false,
-                "jsonOnly": 1,
+                "jsonOnly": true,
                 "messageType": "Mobile",
                 "typeOfContent": "Static",
                 "customPayload": {"key": "never"},
@@ -1640,7 +1640,7 @@ class InAppTests: XCTestCase {
         [
             {
                 "saveToInbox": false,
-                "jsonOnly": 1,
+                "jsonOnly": true,
                 "messageType": "Mobile",
                 "typeOfContent": "Static",
                 "content": {
@@ -1694,7 +1694,7 @@ class InAppTests: XCTestCase {
         [
             {
                 "saveToInbox": false,
-                "jsonOnly": 1,
+                "jsonOnly": true,
                 "messageType": "Mobile",
                 "typeOfContent": "Static",
                 "customPayload": {},
@@ -1748,7 +1748,7 @@ class InAppTests: XCTestCase {
         [
             {
                 "saveToInbox": true,
-                "jsonOnly": 1,
+                "jsonOnly": true,
                 "messageType": "Mobile",
                 "typeOfContent": "Static",
                 "customPayload": {"key": "value"},
@@ -1805,7 +1805,7 @@ class InAppTests: XCTestCase {
         [
             {
                 "saveToInbox": false,
-                "jsonOnly": 1,
+                "jsonOnly": true,
                 "messageType": "Mobile",
                 "typeOfContent": "Static",
                 "customPayload": {
