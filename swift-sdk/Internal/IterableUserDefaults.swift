@@ -78,6 +78,14 @@ class IterableUserDefaults {
         }
     }
     
+    var hasStoredNotificationSetting: Bool {
+        get {
+            bool(withKey: .hasStoredNotificationSetting)
+        } set {
+            save(bool: newValue, withKey: .hasStoredNotificationSetting)
+        }
+    }
+    
     func getAttributionInfo(currentDate: Date) -> IterableAttributionInfo? {
         (try? codable(withKey: .attributionInfo, currentDate: currentDate)) ?? nil
     }
@@ -205,6 +213,7 @@ class IterableUserDefaults {
         static let sdkVersion = UserDefaultsKey(value: Const.UserDefault.sdkVersion)
         static let offlineMode = UserDefaultsKey(value: Const.UserDefault.offlineMode)
         static let isNotificationsEnabled = UserDefaultsKey(value: Const.UserDefault.isNotificationsEnabled)
+        static let hasStoredNotificationSetting = UserDefaultsKey(value: Const.UserDefault.hasStoredNotificationSetting)
     }
     
     private struct Envelope: Codable {

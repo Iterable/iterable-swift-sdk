@@ -206,9 +206,6 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
                                                 onFailure?(reason, data)
                                 }
         )
-        notificationStateProvider.isNotificationsEnabled { isEnabled in
-            self.localStorage.isNotificationsEnabled = isEnabled
-        }
     }
     
     @discardableResult
@@ -484,7 +481,6 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
     
     private var config: IterableConfig
     private var apiEndPoint: String
-    private var hasHandledFirstForeground = false
     
     /// Following are needed for handling pending notification and deep link.
     static var pendingNotificationResponse: NotificationResponseProtocol?
@@ -719,32 +715,23 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
     }
     
     @objc private func onAppDidBecomeActiveNotification(notification: Notification) {
-        // Track first foreground handling
-        let isFirstForeground = !hasHandledFirstForeground
-        hasHandledFirstForeground = true
-        
+        let storedEnabled = self.localStorage.isNotificationsEnabled
+        let hasStoredPermission = self.localStorage.hasStoredNotificationSetting
+
         // Always check notification state
         notificationStateProvider.isNotificationsEnabled { [weak self] systemEnabled in
-            guard let self else { return }
+            guard let self = self else { return }
             
-            let storedEnabled = self.localStorage.isNotificationsEnabled
-            
-            // Handle push registration/deregistration if needed
-            if self.config.autoPushRegistration && storedEnabled != systemEnabled {
-                if systemEnabled {
-                    self.notificationStateProvider.registerForRemoteNotifications()
-                } else {
+            // Only handle permission changes if we've previously stored a permission state
+            if hasStoredPermission && (storedEnabled != systemEnabled) {
+                if !systemEnabled {
                     self.disableDeviceForCurrentUser()
                 }
             }
             
-            // Only fetch remote configuration on first foreground
-            if isFirstForeground {
-                self.checkRemoteConfiguration()
-            }
-            
-            // Always update stored state
+            // Always store the current state
             self.localStorage.isNotificationsEnabled = systemEnabled
+            self.localStorage.hasStoredNotificationSetting = true
         }
     }
     
