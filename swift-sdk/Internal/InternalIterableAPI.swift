@@ -726,6 +726,8 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
             if hasStoredPermission && (storedEnabled != systemEnabled) {
                 if !systemEnabled {
                     self.disableDeviceForCurrentUser()
+                } else {
+                    notificationStateProvider.registerForRemoteNotifications()
                 }
             }
             
