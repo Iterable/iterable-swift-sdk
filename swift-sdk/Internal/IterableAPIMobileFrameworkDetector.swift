@@ -26,11 +26,14 @@ final class IterableAPIMobileFrameworkDetector {
         
         // Helper function to check for framework classes
         func hasFrameworkClasses(_ classNames: [String]) -> Bool {
-            classNames.contains { className in
-                bundle.classNamed(className) != nil
+            guard !classNames.isEmpty else { return false }
+            return classNames.contains { className in
+                guard !className.isEmpty else { return false }
+                return bundle.classNamed(className) != nil
             }
         }
         
+        // Safely check frameworks
         let hasFlutter = hasFrameworkClasses(FrameworkClasses.flutter)
         let hasReactNative = hasFrameworkClasses(FrameworkClasses.reactNative)
         
@@ -38,7 +41,9 @@ final class IterableAPIMobileFrameworkDetector {
             case (true, true):
                 ITBError("Both Flutter and React Native frameworks detected. This is unexpected.")
                 if let mainBundle = Bundle.main.infoDictionary,
-                   mainBundle["CFBundleExecutable"] as? String == "Runner" {
+                   let executableName = mainBundle["CFBundleExecutable"] as? String,
+                   !executableName.isEmpty,
+                   executableName == "Runner" {
                     return .flutter
                 }
                 return .reactNative
@@ -51,10 +56,10 @@ final class IterableAPIMobileFrameworkDetector {
                 
             case (false, false):
                 if let mainBundle = Bundle.main.infoDictionary {
-                    if mainBundle["FlutterDeploymentTarget"] != nil {
+                    if let _ = mainBundle["FlutterDeploymentTarget"] as? String {
                         return .flutter
                     }
-                    if mainBundle["RNBundleURLProvider"] != nil {
+                    if let _ = mainBundle["RNBundleURLProvider"] as? String {
                         return .reactNative
                     }
                 }
