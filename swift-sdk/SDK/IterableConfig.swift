@@ -4,6 +4,17 @@
 
 import Foundation
 
+public enum IterableAPIMobileFrameworkType: String {
+    case flutter = "Flutter"
+    case reactNative = "ReactNative"
+    case native = "Native"
+}
+
+public struct IterableAPIMobileFrameworkInfo {
+    let frameworkType: IterableAPIMobileFrameworkType
+    let iterableSdkVersion: String?
+}
+
 /// Custom URL handling delegate
 @objc public protocol IterableURLDelegate: AnyObject {
     /// Callback called for a deep link action. Return true to override default behavior
@@ -133,4 +144,8 @@ public class IterableConfig: NSObject {
     
     /// Allows for fetching embedded messages.
     public var enableEmbeddedMessaging = false
+    
+    /// The type of mobile framework we are using.
+    public var mobileFrameworkInfo: IterableAPIMobileFrameworkInfo?
 }
+

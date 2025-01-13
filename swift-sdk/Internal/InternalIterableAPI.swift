@@ -189,7 +189,7 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
         
         hexToken = token.hexString()
         
-        let mobileFrameworkType = MobileFrameworkType.detect()
+        let mobileFrameworkType = IterableAPIMobileFrameworkType.detect()
         let registerTokenInfo = RegisterTokenInfo(hexToken: token.hexString(),
                                                   appName: appName,
                                                   pushServicePlatform: config.pushPlatform,
@@ -197,7 +197,7 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
                                                   deviceId: deviceId,
                                                   deviceAttributes: deviceAttributes,
                                                   sdkVersion: localStorage.sdkVersion,
-                                                  mobileFrameworkInfo: MobileFrameworkInfo(frameworkType: frameworkType, iterableSdkVersion: localStorage.sdkVersion))
+                                                  mobileFrameworkInfo: IterableAPIMobileFrameworkInfo(frameworkType: mobileFrameworkType, iterableSdkVersion: nil))
         requestHandler.register(registerTokenInfo: registerTokenInfo,
                                 notificationStateProvider: notificationStateProvider,
                                 onSuccess: { (_ data: [AnyHashable: Any]?) in
@@ -779,24 +779,67 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
     }
 }
 
-extension MobileFrameworkType {
-
-    static func detect() -> MobileFrameworkType {
+extension IterableAPIMobileFrameworkType {
+    private struct FrameworkClasses {
+        static let flutter = [
+            "FlutterViewController",
+            "GeneratedPluginRegistrant",
+            "FlutterEngine",
+            "FlutterPluginRegistry"
+        ]
+        
+        static let reactNative = [
+            "RCTBridge",
+            "RCTRootView",
+            "RCTBundleURLProvider",
+            "RCTEventEmitter"
+        ]
+    }
+    
+    static func detect() -> IterableAPIMobileFrameworkType {
         let bundle = Bundle.main
         
-        // Check for Flutter
-        if bundle.classNamed("FlutterViewController") != nil ||
-           bundle.classNamed("GeneratedPluginRegistrant") != nil {
-            return .flutter
+        // Helper function to check for framework classes
+        func hasFrameworkClasses(_ classNames: [String]) -> Bool {
+            // Consider framework present if ANY of its core classes are found
+            return classNames.contains { className in
+                bundle.classNamed(className) != nil
+            }
         }
         
-        // Check for React Native
-        if bundle.classNamed("RCTBridge") != nil ||
-           bundle.classNamed("RCTRootView") != nil {
+        // Check for multiple framework classes to increase confidence
+        let hasFlutter = hasFrameworkClasses(FrameworkClasses.flutter)
+        let hasReactNative = hasFrameworkClasses(FrameworkClasses.reactNative)
+        
+        switch (hasFlutter, hasReactNative) {
+        case (true, true):
+            ITBError("Both Flutter and React Native frameworks detected. This is unexpected.")
+            // In case of ambiguity, we could try to determine the primary framework
+            // by checking for more framework-specific indicators
+            if let mainBundle = Bundle.main.infoDictionary,
+               mainBundle["CFBundleExecutable"] as? String == "Runner" {
+                return .flutter // Flutter apps typically use "Runner" as executable name
+            }
             return .reactNative
+            
+        case (true, false):
+            return .flutter
+            
+        case (false, true):
+            return .reactNative
+            
+        case (false, false):
+            // Additional check for framework-specific build settings or Info.plist entries
+            if let mainBundle = Bundle.main.infoDictionary {
+                if mainBundle["FlutterDeploymentTarget"] != nil {
+                    return .flutter
+                }
+                if mainBundle["RNBundleURLProvider"] != nil {
+                    return .reactNative
+                }
+            }
+            
+            return .native
         }
-        
-        // If no framework detected, assume native
-        return .native
     }
 }

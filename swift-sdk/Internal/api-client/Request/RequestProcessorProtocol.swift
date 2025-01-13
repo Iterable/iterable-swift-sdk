@@ -4,16 +4,6 @@
 
 import Foundation
 
-enum MobileFrameworkType: String {
-    case flutter = "Flutter"
-    case reactNative = "ReactNative"
-    case native = "Native"
-}
-
-struct MobileFrameworkInfo {
-    let frameworkType: MobileFrameworkType
-    let iterableSdkVersion: String?
-}
 
 struct RegisterTokenInfo {
     let hexToken: String
@@ -23,7 +13,7 @@ struct RegisterTokenInfo {
     let deviceId: String
     let deviceAttributes: [String: String]
     let sdkVersion: String?
-    let mobileFrameworkInfo: MobileFrameworkInfo?
+    let mobileFrameworkInfo: IterableAPIMobileFrameworkInfo?
 }
 
 struct UpdateSubscriptionsInfo {
