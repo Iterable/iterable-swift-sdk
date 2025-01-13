@@ -13,7 +13,7 @@ struct RegisterTokenInfo {
     let deviceId: String
     let deviceAttributes: [String: String]
     let sdkVersion: String?
-    let mobileFrameworkInfo: IterableAPIMobileFrameworkInfo?
+    let mobileFrameworkInfo: IterableAPIMobileFrameworkInfo
 }
 
 struct UpdateSubscriptionsInfo {

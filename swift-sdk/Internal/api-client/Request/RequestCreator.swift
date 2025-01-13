@@ -53,15 +53,12 @@ struct RequestCreator {
                                                                          apnsType: registerTokenInfo.apnsType),
             JsonKey.applicationName: registerTokenInfo.appName,
             JsonKey.dataFields: dataFields,
+            JsonKey.mobileFramework: [
+                JsonKey.frameworkType: registerTokenInfo.mobileFrameworkInfo.frameworkType,
+                JsonKey.iterableSdkVersion: registerTokenInfo.mobileFrameworkInfo]
+            
         ]
         
-        // Add mobile framework info if available
-        if let frameworkInfo = registerTokenInfo.mobileFrameworkInfo {
-            deviceDictionary[JsonKey.mobileFramework] = [
-                JsonKey.frameworkType: frameworkInfo.frameworkType,
-                JsonKey.iterableSdkVersion: frameworkInfo.iterableSdkVersion
-            ]
-        }
         
         var body = [AnyHashable: Any]()
         
