@@ -47,13 +47,21 @@ struct RequestCreator {
                                                            notificationsEnabled: notificationsEnabled,
                                                            deviceAttributes: registerTokenInfo.deviceAttributes)
         
-        let deviceDictionary: [String: Any] = [
+        var deviceDictionary: [String: Any] = [
             JsonKey.token: registerTokenInfo.hexToken,
             JsonKey.platform: RequestCreator.pushServicePlatformToString(registerTokenInfo.pushServicePlatform,
                                                                          apnsType: registerTokenInfo.apnsType),
             JsonKey.applicationName: registerTokenInfo.appName,
             JsonKey.dataFields: dataFields,
         ]
+        
+        // Add mobile framework info if available
+        if let frameworkInfo = registerTokenInfo.mobileFrameworkInfo {
+            deviceDictionary[JsonKey.mobileFramework] = [
+                JsonKey.frameworkType: frameworkInfo.frameworkType,
+                JsonKey.iterableSdkVersion: frameworkInfo.iterableSdkVersion
+            ]
+        }
         
         var body = [AnyHashable: Any]()
         

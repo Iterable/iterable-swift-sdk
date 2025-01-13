@@ -188,13 +188,16 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
         }
         
         hexToken = token.hexString()
+        
+        let mobileFrameworkType = MobileFrameworkType.detect()
         let registerTokenInfo = RegisterTokenInfo(hexToken: token.hexString(),
                                                   appName: appName,
                                                   pushServicePlatform: config.pushPlatform,
                                                   apnsType: dependencyContainer.apnsTypeChecker.apnsType,
                                                   deviceId: deviceId,
                                                   deviceAttributes: deviceAttributes,
-                                                  sdkVersion: localStorage.sdkVersion)
+                                                  sdkVersion: localStorage.sdkVersion,
+                                                  mobileFrameworkInfo: MobileFrameworkInfo(frameworkType: frameworkType, iterableSdkVersion: localStorage.sdkVersion))
         requestHandler.register(registerTokenInfo: registerTokenInfo,
                                 notificationStateProvider: notificationStateProvider,
                                 onSuccess: { (_ data: [AnyHashable: Any]?) in
@@ -773,5 +776,27 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
     deinit {
         ITBInfo()
         requestHandler.stop()
+    }
+}
+
+extension MobileFrameworkType {
+
+    static func detect() -> MobileFrameworkType {
+        let bundle = Bundle.main
+        
+        // Check for Flutter
+        if bundle.classNamed("FlutterViewController") != nil ||
+           bundle.classNamed("GeneratedPluginRegistrant") != nil {
+            return .flutter
+        }
+        
+        // Check for React Native
+        if bundle.classNamed("RCTBridge") != nil ||
+           bundle.classNamed("RCTRootView") != nil {
+            return .reactNative
+        }
+        
+        // If no framework detected, assume native
+        return .native
     }
 }
