@@ -47,7 +47,7 @@ struct RequestCreator {
                                                            notificationsEnabled: notificationsEnabled,
                                                            deviceAttributes: registerTokenInfo.deviceAttributes)
         
-        var deviceDictionary: [String: Any] = [
+        let deviceDictionary: [String: Any] = [
             JsonKey.token: registerTokenInfo.hexToken,
             JsonKey.platform: RequestCreator.pushServicePlatformToString(registerTokenInfo.pushServicePlatform,
                                                                          apnsType: registerTokenInfo.apnsType),
