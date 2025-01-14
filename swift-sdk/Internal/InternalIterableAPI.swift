@@ -176,7 +176,7 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
     
     // MARK: - API Request Calls
     
-    func register(token: Data,
+    func register(token: String,
                   onSuccess: OnSuccessHandler? = nil,
                   onFailure: OnFailureHandler? = nil) {
         guard let appName = pushIntegrationName else {
@@ -187,8 +187,8 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
             return
         }
         
-        hexToken = token.hexString()
-        let registerTokenInfo = RegisterTokenInfo(hexToken: token.hexString(),
+        hexToken = token
+        let registerTokenInfo = RegisterTokenInfo(hexToken: token,
                                                   appName: appName,
                                                   pushServicePlatform: config.pushPlatform,
                                                   apnsType: dependencyContainer.apnsTypeChecker.apnsType,
@@ -206,6 +206,12 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
                                                 onFailure?(reason, data)
                                 }
         )
+    }
+    
+    func register(token: Data,
+                  onSuccess: OnSuccessHandler? = nil,
+                  onFailure: OnFailureHandler? = nil) {
+        register(token: token.hexString(), onSuccess: onSuccess, onFailure: onFailure)
     }
     
     @discardableResult
