@@ -20,6 +20,7 @@ class AutoRegistrationTests: XCTestCase {
     
     func testCallDisableAndEnable() {
         let expectation1 = expectation(description: "call register device API")
+        expectation1.expectedFulfillmentCount = 2
         let expectation2 = expectation(description: "call registerForRemoteNotifications twice")
         expectation2.expectedFulfillmentCount = 2
         let expectation3 = expectation(description: "call disable on user1@example.com")
