@@ -25,6 +25,8 @@ class NotificationObserverTests: XCTestCase {
     
     func testNotificationStateChangeUpdatesStorage() {
         // Arrange
+        internalAPI.email = "johnappleseed@iterable.com"
+        
         mockLocalStorage.isNotificationsEnabled = false
         mockNotificationStateProvider.enabled = true
         
