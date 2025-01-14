@@ -222,11 +222,14 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
             onFailure?(errorMessage, nil)
             return SendRequestError.createErroredFuture(reason: errorMessage)
         }
+        
         guard userId != nil || email != nil else {
             let errorMessage = "either userId or email must be present"
             onFailure?(errorMessage, nil)
             return SendRequestError.createErroredFuture(reason: errorMessage)
         }
+        
+        register(token: hexToken)
         
         return requestHandler.disableDeviceForCurrentUser(hexToken: hexToken, withOnSuccess: onSuccess, onFailure: onFailure)
     }
@@ -721,25 +724,27 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
     }
     
     @objc private func onAppDidBecomeActiveNotification(notification: Notification) {
-        let storedEnabled = self.localStorage.isNotificationsEnabled
-        let hasStoredPermission = self.localStorage.hasStoredNotificationSetting
-
-        // Always check notification state
+        guard config.autoPushRegistration else { return }
+        
         notificationStateProvider.isNotificationsEnabled { [weak self] systemEnabled in
             guard let self = self else { return }
             
-            // Only handle permission changes if we've previously stored a permission state
-            if hasStoredPermission && (storedEnabled != systemEnabled) {
-                if !systemEnabled {
-                    self.disableDeviceForCurrentUser()
-                } else {
-                    notificationStateProvider.registerForRemoteNotifications()
-                }
-            }
+            let storedEnabled = self.localStorage.isNotificationsEnabled
+            let hasStoredPermission = self.localStorage.hasStoredNotificationSetting
             
-            // Always store the current state
-            self.localStorage.isNotificationsEnabled = systemEnabled
-            self.localStorage.hasStoredNotificationSetting = true
+            if self.isEitherUserIdOrEmailSet() {
+                if hasStoredPermission && (storedEnabled != systemEnabled) {
+                    if !systemEnabled {
+                        self.disableDeviceForCurrentUser()
+                    } else {
+                        self.notificationStateProvider.registerForRemoteNotifications()
+                    }
+                }
+                
+                // Always store the current state
+                self.localStorage.isNotificationsEnabled = systemEnabled
+                self.localStorage.hasStoredNotificationSetting = true
+            }
         }
     }
     
