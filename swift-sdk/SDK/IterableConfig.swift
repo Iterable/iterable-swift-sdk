@@ -6,7 +6,7 @@ import Foundation
 
 public enum IterableAPIMobileFrameworkType: String, Codable {
     case flutter = "flutter"
-    case reactNative = "react-native"
+    case reactNative = "reactnative"
     case native = "native"
 }
 
