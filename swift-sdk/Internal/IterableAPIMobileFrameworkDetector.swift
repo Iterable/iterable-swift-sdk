@@ -17,6 +17,13 @@ final class IterableAPIMobileFrameworkDetector {
         ]
     }
     
+    private struct BundleIdentifiers {
+        static let executableKey = "CFBundleExecutable"
+        static let flutterTargetKey = "FlutterDeploymentTarget"
+        static let reactNativeProviderKey = "RNBundleURLProvider"
+        static let flutterExecutableName = "Runner"
+    }
+    
     private static var cachedFrameworkType: IterableAPIMobileFrameworkType = {
         detectFramework()
     }()
@@ -41,9 +48,9 @@ final class IterableAPIMobileFrameworkDetector {
             case (true, true):
                 ITBError("Both Flutter and React Native frameworks detected. This is unexpected.")
                 if let mainBundle = Bundle.main.infoDictionary,
-                   let executableName = mainBundle["CFBundleExecutable"] as? String,
+                   let executableName = mainBundle[BundleIdentifiers.executableKey] as? String,
                    !executableName.isEmpty,
-                   executableName == "Runner" {
+                   executableName == BundleIdentifiers.flutterExecutableName {
                     return .flutter
                 } else {
                     return .reactNative
@@ -57,10 +64,10 @@ final class IterableAPIMobileFrameworkDetector {
                 
             case (false, false):
                 if let mainBundle = Bundle.main.infoDictionary {
-                    if let _ = mainBundle["FlutterDeploymentTarget"] as? String {
+                    if let _ = mainBundle[BundleIdentifiers.flutterTargetKey] as? String {
                         return .flutter
                     }
-                    if let _ = mainBundle["RNBundleURLProvider"] as? String {
+                    if let _ = mainBundle[BundleIdentifiers.reactNativeProviderKey] as? String {
                         return .reactNative
                     }
                 }
