@@ -28,7 +28,7 @@ final class IterableAPIMobileFrameworkDetector {
         func hasFrameworkClasses(_ classNames: [String]) -> Bool {
             guard !classNames.isEmpty else { return false }
             return classNames.contains { className in
-                guard !className.isEmpty else { return false }
+                guard IterableUtil.isNotNullOrEmpty(string: className) else { return false }
                 return bundle.classNamed(className) != nil
             }
         }
