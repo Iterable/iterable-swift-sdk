@@ -36,7 +36,7 @@ struct DataFieldsHelper {
         
         dataFields[JsonKey.mobileFrameworkInfo] = [
             JsonKey.frameworkType: mobileFrameworkInfo.frameworkType.rawValue,
-            JsonKey.iterableSdkVersion: mobileFrameworkInfo.iterableSdkVersion ?? "Unknown"
+            JsonKey.iterableSdkVersion: mobileFrameworkInfo.iterableSdkVersion ?? "unknown"
         ]
         
         return dataFields
