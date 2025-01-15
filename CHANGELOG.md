@@ -7,6 +7,14 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 ### Added
 - Added `mobileFrameworkInfo` configuration option to `IterableConfig` to identify the mobile framework (Flutter, React Native, or Native) being used with the SDK.
 
+## [6.5.9]
+### Added
+- Support for JSON-only in-app messages, JSON-only messages are now handled by the onNewInApp handler and consumed after retrieval
+- Enhanced notification state tracking to align with system notification permissions changes
+
+### Changed
+- reorganized files and updated documentation url in podspec
+
 ## [6.5.8]
 ### Fixed
 - Fixed incorrect tracking of pushOpen for push notifications with Wake App enabled. Tracking now happens only when users tap to open the app.

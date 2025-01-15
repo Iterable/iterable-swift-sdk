@@ -176,7 +176,7 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
     
     // MARK: - API Request Calls
     
-    func register(token: Data,
+    func register(token: String,
                   onSuccess: OnSuccessHandler? = nil,
                   onFailure: OnFailureHandler? = nil) {
         guard let appName = pushIntegrationName else {
@@ -187,7 +187,7 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
             return
         }
         
-        hexToken = token.hexString()
+        hexToken = token
         
         let frameworkType = IterableAPIMobileFrameworkDetector.frameworkType()
         let mobileFrameworkInfo = config.mobileFrameworkInfo ?? IterableAPIMobileFrameworkInfo(
@@ -195,7 +195,7 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
             iterableSdkVersion: frameworkType == .native ? localStorage.sdkVersion : nil
         )
         
-        let registerTokenInfo = RegisterTokenInfo(hexToken: token.hexString(),
+        let registerTokenInfo = RegisterTokenInfo(hexToken: token,
                                                   appName: appName,
                                                   pushServicePlatform: config.pushPlatform,
                                                   apnsType: dependencyContainer.apnsTypeChecker.apnsType,
@@ -216,6 +216,12 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
         )
     }
     
+    func register(token: Data,
+                  onSuccess: OnSuccessHandler? = nil,
+                  onFailure: OnFailureHandler? = nil) {
+        register(token: token.hexString(), onSuccess: onSuccess, onFailure: onFailure)
+    }
+    
     @discardableResult
     func disableDeviceForCurrentUser(withOnSuccess onSuccess: OnSuccessHandler? = nil,
                                      onFailure: OnFailureHandler? = nil) -> Pending<SendRequestValue, SendRequestError> {
@@ -224,11 +230,17 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
             onFailure?(errorMessage, nil)
             return SendRequestError.createErroredFuture(reason: errorMessage)
         }
+        
         guard userId != nil || email != nil else {
             let errorMessage = "either userId or email must be present"
             onFailure?(errorMessage, nil)
             return SendRequestError.createErroredFuture(reason: errorMessage)
         }
+        
+        // We need to call register token here so that we can trigger the device registration
+        // with the updated notification settings
+        
+        register(token: hexToken)
         
         return requestHandler.disableDeviceForCurrentUser(hexToken: hexToken, withOnSuccess: onSuccess, onFailure: onFailure)
     }
@@ -508,6 +520,8 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
     private var _userId: String?
     private var _successCallback: OnSuccessHandler? = nil
     private var _failureCallback: OnFailureHandler? = nil
+    
+    private let notificationCenter: NotificationCenterProtocol
 
     
     /// the hex representation of this device token
@@ -674,6 +688,7 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
         localStorage = dependencyContainer.localStorage
         inAppDisplayer = dependencyContainer.inAppDisplayer
         urlOpener = dependencyContainer.urlOpener
+        notificationCenter = dependencyContainer.notificationCenter
         deepLinkManager = DeepLinkManager(redirectNetworkSessionProvider: dependencyContainer)
     }
     
@@ -706,8 +721,42 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
         requestHandler.start()
         
         checkRemoteConfiguration()
+        
+        addForegroundObservers()
                 
         return inAppManager.start()
+    }
+    
+    private func addForegroundObservers() {
+        notificationCenter.addObserver(self,
+                                     selector: #selector(onAppDidBecomeActiveNotification(notification:)),
+                                     name: UIApplication.didBecomeActiveNotification,
+                                     object: nil)
+    }
+    
+    @objc private func onAppDidBecomeActiveNotification(notification: Notification) {
+        guard config.autoPushRegistration else { return }
+        
+        notificationStateProvider.isNotificationsEnabled { [weak self] systemEnabled in
+            guard let self = self else { return }
+            
+            let storedEnabled = self.localStorage.isNotificationsEnabled
+            let hasStoredPermission = self.localStorage.hasStoredNotificationSetting
+            
+            if self.isEitherUserIdOrEmailSet() {
+                if hasStoredPermission && (storedEnabled != systemEnabled) {
+                    if !systemEnabled {
+                        self.disableDeviceForCurrentUser()
+                    } else {
+                        self.notificationStateProvider.registerForRemoteNotifications()
+                    }
+                }
+                
+                // Always store the current state
+                self.localStorage.isNotificationsEnabled = systemEnabled
+                self.localStorage.hasStoredNotificationSetting = true
+            }
+        }
     }
     
     private func handle(launchOptions: [UIApplication.LaunchOptionsKey: Any]?) {
@@ -780,6 +829,7 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
     
     deinit {
         ITBInfo()
+        notificationCenter.removeObserver(self)
         requestHandler.stop()
     }
 }
