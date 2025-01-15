@@ -189,20 +189,16 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
         
         hexToken = token
         
-        let frameworkType = IterableAPIMobileFrameworkDetector.frameworkType()
-        let mobileFrameworkInfo = config.mobileFrameworkInfo ?? IterableAPIMobileFrameworkInfo(
-            frameworkType: frameworkType,
-            iterableSdkVersion: frameworkType == .native ? localStorage.sdkVersion : nil
-        )
+        let mobileFrameworkInfo = config.mobileFrameworkInfo ?? createDefaultMobileFrameworkInfo()
         
         let registerTokenInfo = RegisterTokenInfo(hexToken: token,
-                                                  appName: appName,
-                                                  pushServicePlatform: config.pushPlatform,
-                                                  apnsType: dependencyContainer.apnsTypeChecker.apnsType,
-                                                  deviceId: deviceId,
-                                                  deviceAttributes: deviceAttributes,
-                                                  sdkVersion: localStorage.sdkVersion,
-                                                  mobileFrameworkInfo: mobileFrameworkInfo)
+                                                appName: appName,
+                                                pushServicePlatform: config.pushPlatform,
+                                                apnsType: dependencyContainer.apnsTypeChecker.apnsType,
+                                                deviceId: deviceId,
+                                                deviceAttributes: deviceAttributes,
+                                                sdkVersion: localStorage.sdkVersion,
+                                                mobileFrameworkInfo: mobileFrameworkInfo)
         requestHandler.register(registerTokenInfo: registerTokenInfo,
                                 notificationStateProvider: notificationStateProvider,
                                 onSuccess: { (_ data: [AnyHashable: Any]?) in
@@ -827,11 +823,20 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
         }
     }
     
+    private func createDefaultMobileFrameworkInfo() -> IterableAPIMobileFrameworkInfo {
+        let frameworkType = IterableAPIMobileFrameworkDetector.frameworkType()
+        return IterableAPIMobileFrameworkInfo(
+            frameworkType: frameworkType,
+            iterableSdkVersion: frameworkType == .native ? localStorage.sdkVersion : nil
+        )
+    }
+    
     deinit {
         ITBInfo()
         notificationCenter.removeObserver(self)
         requestHandler.stop()
     }
+    
 }
 
 
