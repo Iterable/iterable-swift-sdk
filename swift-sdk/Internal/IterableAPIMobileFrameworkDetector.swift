@@ -45,8 +45,9 @@ final class IterableAPIMobileFrameworkDetector {
                    !executableName.isEmpty,
                    executableName == "Runner" {
                     return .flutter
+                } else {
+                    return .reactNative
                 }
-                return .reactNative
                 
             case (true, false):
                 return .flutter
@@ -63,7 +64,6 @@ final class IterableAPIMobileFrameworkDetector {
                         return .reactNative
                     }
                 }
-                
                 return .native
         }
     }
