@@ -282,6 +282,7 @@
 		8AAA8CDE2D074C2000DF8220 /* EmbeddedMessagingProcessor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8AAA8C5D2D074C2000DF8220 /* EmbeddedMessagingProcessor.swift */; };
 		8AAA8CDF2D074C2000DF8220 /* APNSTypeChecker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8AAA8C532D074C2000DF8220 /* APNSTypeChecker.swift */; };
 		8AAA8CE02D074C2000DF8220 /* Auth.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8AAA8C552D074C2000DF8220 /* Auth.swift */; };
+		8AB8D7D22D3805A900DECFE5 /* IterableAPIMobileFrameworkDetector.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8AB8D7D12D3805A900DECFE5 /* IterableAPIMobileFrameworkDetector.swift */; };
 		9FF05EAC2AFEA5FA005311F7 /* MockAuthManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FF05EAB2AFEA5FA005311F7 /* MockAuthManager.swift */; };
 		9FF05EAD2AFEA5FA005311F7 /* MockAuthManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FF05EAB2AFEA5FA005311F7 /* MockAuthManager.swift */; };
 		9FF05EAE2AFEA5FA005311F7 /* MockAuthManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FF05EAB2AFEA5FA005311F7 /* MockAuthManager.swift */; };
@@ -706,6 +707,7 @@
 		8AAA8C822D074C2000DF8220 /* RequestHandlerProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RequestHandlerProtocol.swift; sourceTree = "<group>"; };
 		8AAA8C832D074C2000DF8220 /* RequestProcessorUtil.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RequestProcessorUtil.swift; sourceTree = "<group>"; };
 		8AAA8C842D074C2000DF8220 /* RequestSender.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RequestSender.swift; sourceTree = "<group>"; };
+		8AB8D7D12D3805A900DECFE5 /* IterableAPIMobileFrameworkDetector.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IterableAPIMobileFrameworkDetector.swift; sourceTree = "<group>"; };
 		9FF05EAB2AFEA5FA005311F7 /* MockAuthManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockAuthManager.swift; sourceTree = "<group>"; };
 		AC02CAA5234E50B5006617E0 /* RegistrationTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegistrationTests.swift; sourceTree = "<group>"; };
 		AC05644A26387B54001FB810 /* MockPersistence.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockPersistence.swift; sourceTree = "<group>"; };
@@ -1174,6 +1176,7 @@
 				8AAA8C672D074C2000DF8220 /* InboxViewControllerViewModel.swift */,
 				8AAA8C682D074C2000DF8220 /* InboxViewControllerViewModelProtocol.swift */,
 				8AAA8C692D074C2000DF8220 /* InboxViewControllerViewModelView.swift */,
+				8AB8D7D12D3805A900DECFE5 /* IterableAPIMobileFrameworkDetector.swift */,
 				8AAA8C6A2D074C2000DF8220 /* InternalIterableAPI.swift */,
 				8AAA8C6B2D074C2000DF8220 /* InternalIterableAppIntegration.swift */,
 				8AAA8C6C2D074C2000DF8220 /* IterableAPICallRequest.swift */,
@@ -2017,6 +2020,7 @@
 				8AAA8BB22D07310600DF8220 /* IterableInboxView.swift in Sources */,
 				8AAA8BB52D07310600DF8220 /* IterableEmbeddedMessage.swift in Sources */,
 				8AAA8BB82D07310600DF8220 /* IterableMessaging.swift in Sources */,
+				8AB8D7D22D3805A900DECFE5 /* IterableAPIMobileFrameworkDetector.swift in Sources */,
 				8AAA8BC32D07310600DF8220 /* IterableInboxViewController.swift in Sources */,
 				8AAA8BC42D07310600DF8220 /* IterableAppIntegration.swift in Sources */,
 				8AAA8BCD2D07310600DF8220 /* RetryPolicy.swift in Sources */,

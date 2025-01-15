@@ -4,13 +4,13 @@
 
 import Foundation
 
-public enum IterableAPIMobileFrameworkType: String {
-    case flutter = "Flutter"
-    case reactNative = "ReactNative"
-    case native = "Native"
+public enum IterableAPIMobileFrameworkType: String, Codable {
+    case flutter = "flutter"
+    case reactNative = "react-native"
+    case native = "native"
 }
 
-public struct IterableAPIMobileFrameworkInfo {
+public struct IterableAPIMobileFrameworkInfo: Codable {
     let frameworkType: IterableAPIMobileFrameworkType
     let iterableSdkVersion: String?
 }

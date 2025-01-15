@@ -53,10 +53,9 @@ struct RequestCreator {
                                                                          apnsType: registerTokenInfo.apnsType),
             JsonKey.applicationName: registerTokenInfo.appName,
             JsonKey.dataFields: dataFields,
-            JsonKey.mobileFramework: [
-                JsonKey.frameworkType: registerTokenInfo.mobileFrameworkInfo.frameworkType,
-                JsonKey.iterableSdkVersion: registerTokenInfo.mobileFrameworkInfo]
-            
+            JsonKey.mobileFrameworkInfo: [
+                JsonKey.frameworkType: registerTokenInfo.mobileFrameworkInfo.frameworkType.rawValue,
+                JsonKey.iterableSdkVersion: registerTokenInfo.mobileFrameworkInfo.iterableSdkVersion ?? "Unknown"]
         ]
         
         

@@ -180,7 +180,7 @@ enum JsonKey {
     
     static let contentType = "Content-Type"
     
-    static let mobileFramework = "mobileFramework"
+    static let mobileFrameworkInfo = "mobileFrameworkInfo"
     
     static let frameworkType = "frameworkType"
     

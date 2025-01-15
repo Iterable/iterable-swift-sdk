@@ -189,10 +189,12 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
         
         hexToken = token.hexString()
         
+        let frameworkType = IterableAPIMobileFrameworkDetector.frameworkType()
         let mobileFrameworkInfo = config.mobileFrameworkInfo ?? IterableAPIMobileFrameworkInfo(
-            frameworkType: IterableAPIMobileFrameworkDetector.frameworkType(),
-            iterableSdkVersion: nil
+            frameworkType: frameworkType,
+            iterableSdkVersion: frameworkType == .native ? localStorage.sdkVersion : nil
         )
+        
         let registerTokenInfo = RegisterTokenInfo(hexToken: token.hexString(),
                                                   appName: appName,
                                                   pushServicePlatform: config.pushPlatform,
