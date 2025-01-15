@@ -495,12 +495,10 @@ class IterableAPITests: XCTestCase {
             TestUtils.validateMatch(keyPath: KeyPath(string: "device.dataFields.reactNativeSDKVersion"), value: "x.xx.xxx", inDictionary: body)
             TestUtils.validateNil(keyPath: KeyPath(string: "device.dataFields.\(attributeToAddAndRemove)"), inDictionary: body)
             
-            TestUtils.validateMatch(keyPath: KeyPath(string: "mobileFrameworkInfo.frameworkType"), 
-                                  value: "native", 
-                                  inDictionary: body)
-            TestUtils.validateMatch(keyPath: KeyPath(string: "mobileFrameworkInfo.iterableSdkVersion"), 
-                                  value: IterableAPI.sdkVersion, 
-                                  inDictionary: body)
+            TestUtils.validateMatch(keyPath: KeyPath(string: "device.dataFields.mobileFrameworkInfo.frameworkType"), value: "native", inDictionary: body)
+
+            
+            TestUtils.validateMatch(keyPath: KeyPath(string: "device.dataFields.mobileFrameworkInfo.iterableSdkVersion"), value:  IterableAPI.sdkVersion, inDictionary: body)
             
             expectation.fulfill()
         }) { reason, _ in
