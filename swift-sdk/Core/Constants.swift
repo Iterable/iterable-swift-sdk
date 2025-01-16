@@ -182,6 +182,9 @@ enum JsonKey {
     
     static let contentType = "Content-Type"
     
+    static let mobileFrameworkInfo = "mobileFrameworkInfo"
+    
+    static let frameworkType = "frameworkType"
     
 //    embedded
     static let embeddedSessionId = "session"
