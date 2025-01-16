@@ -4,6 +4,17 @@
 
 import Foundation
 
+public enum IterableAPIMobileFrameworkType: String, Codable {
+    case flutter = "flutter"
+    case reactNative = "reactnative"
+    case native = "native"
+}
+
+public struct IterableAPIMobileFrameworkInfo: Codable {
+    let frameworkType: IterableAPIMobileFrameworkType
+    let iterableSdkVersion: String?
+}
+
 /// Custom URL handling delegate
 @objc public protocol IterableURLDelegate: AnyObject {
     /// Callback called for a deep link action. Return true to override default behavior
@@ -149,4 +160,8 @@ public class IterableConfig: NSObject {
     public var eventThresholdLimit: Int = 100
     
     public var identityResolution: IterableIdentityResolution = IterableIdentityResolution(replayOnVisitorToKnown: true, mergeOnAnonymousToKnown: true)
+    
+    /// The type of mobile framework we are using.
+    public var mobileFrameworkInfo: IterableAPIMobileFrameworkInfo?
 }
+

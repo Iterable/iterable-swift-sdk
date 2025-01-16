@@ -64,7 +64,7 @@ class IterableUserDefaults {
 
     var offlineMode: Bool {
         get {
-            return bool(withKey: .offlineMode)
+            bool(withKey: .offlineMode)
         } set {
             save(bool: newValue, withKey: .offlineMode)
         }
@@ -144,6 +144,22 @@ class IterableUserDefaults {
     
     private func saveUserUpdate(_ update: [AnyHashable: Any]?, withKey key: UserDefaultsKey) {
         userDefaults.set(update, forKey: key.value)
+    }
+    
+    var isNotificationsEnabled: Bool {
+        get {
+            bool(withKey: .isNotificationsEnabled)
+        } set {
+            save(bool: newValue, withKey: .isNotificationsEnabled)
+        }
+    }
+    
+    var hasStoredNotificationSetting: Bool {
+        get {
+            bool(withKey: .hasStoredNotificationSetting)
+        } set {
+            save(bool: newValue, withKey: .hasStoredNotificationSetting)
+        }
     }
     
     func getAttributionInfo(currentDate: Date) -> IterableAttributionInfo? {
@@ -311,6 +327,8 @@ class IterableUserDefaults {
         static let anonymousSessions = UserDefaultsKey(value: Const.UserDefault.anonymousSessions)
         static let anonymousUsageTrack = UserDefaultsKey(value: Const.UserDefault.anonymousUsageTrack)
 
+        static let isNotificationsEnabled = UserDefaultsKey(value: Const.UserDefault.isNotificationsEnabled)
+        static let hasStoredNotificationSetting = UserDefaultsKey(value: Const.UserDefault.hasStoredNotificationSetting)
     }
     private struct Envelope: Codable {
         let payload: Data

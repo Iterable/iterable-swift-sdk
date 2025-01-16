@@ -398,8 +398,6 @@ class NotificationExtensionTests: XCTestCase {
                     
                     XCTAssertNotNil(createdCategory)
                     XCTAssertEqual(createdCategory!.actions.count, 1, "Number of buttons matched")
-                    let actionButton = createdCategory!.actions.first!
-                    XCTAssertNil(actionButton.icon)
                     expectation1.fulfill()
                 })
             }

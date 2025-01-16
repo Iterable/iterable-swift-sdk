@@ -30,7 +30,8 @@ class RequestHandlerTests: XCTestCase {
                                                   apnsType: .sandbox,
                                                   deviceId: "deviceId",
                                                   deviceAttributes: [:],
-                                                  sdkVersion: "6.x.x")
+                                                  sdkVersion: "6.x.x",
+                                                  mobileFrameworkInfo: IterableAPIMobileFrameworkInfo(frameworkType: .native, iterableSdkVersion: "6.x.x"))
         
         let device = UIDevice.current
         let dataFields: [String: Any] = [

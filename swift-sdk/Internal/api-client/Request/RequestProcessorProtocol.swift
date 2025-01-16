@@ -4,6 +4,7 @@
 
 import Foundation
 
+
 struct RegisterTokenInfo {
     let hexToken: String
     let appName: String
@@ -12,6 +13,7 @@ struct RegisterTokenInfo {
     let deviceId: String
     let deviceAttributes: [String: String]
     let sdkVersion: String?
+    let mobileFrameworkInfo: IterableAPIMobileFrameworkInfo
 }
 
 struct UpdateSubscriptionsInfo {

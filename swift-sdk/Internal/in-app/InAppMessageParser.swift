@@ -81,41 +81,79 @@ struct InAppMessageParser {
             return .failure(.parseFailed(reason: "no messageId", messageId: nil))
         }
         
-        guard let contentDict = json[JsonKey.InApp.content] as? [AnyHashable: Any] else {
-            return .failure(.parseFailed(reason: "no content in json payload", messageId: messageId))
+        // Check if the jsonOnly key is present and is set to 1 (true)
+        let jsonOnly = (json[JsonKey.InApp.jsonOnly] as? Int ?? 0) == 1
+        var customPayload = parseCustomPayload(fromPayload: json)
+        
+        if jsonOnly && customPayload == nil {
+            customPayload = [:]
         }
         
-        let content: IterableInAppContent
-        
-        switch InAppContentParser.parse(contentDict: contentDict) {
-        case let .success(parsedContent):
-            content = parsedContent
-        case let .failure(reason):
-            return .failure(.parseFailed(reason: reason, messageId: messageId))
+        // For non-JSON-only messages, we require content
+        if !jsonOnly {
+            guard let contentDict = json[JsonKey.InApp.content] as? [AnyHashable: Any] else {
+                return .failure(.parseFailed(reason: "no content in json payload", messageId: messageId))
+            }
+            
+            let content: IterableInAppContent
+            switch InAppContentParser.parse(contentDict: contentDict) {
+            case let .success(parsedContent):
+                content = parsedContent
+            case let .failure(reason):
+                return .failure(.parseFailed(reason: reason, messageId: messageId))
+            }
+            
+            return .success(createMessage(
+                messageId: messageId,
+                json: json,
+                content: content,
+                customPayload: customPayload,
+                jsonOnly: jsonOnly
+            ))
+        } else {
+            // For JSON-only messages, use default HTML content
+            let content = IterableHtmlInAppContent(edgeInsets: .zero, html: "")
+            
+            return .success(createMessage(
+                messageId: messageId,
+                json: json,
+                content: content,
+                customPayload: customPayload,
+                jsonOnly: jsonOnly
+            ))
         }
-        
+    }
+    
+    private static func createMessage(
+        messageId: String,
+        json: [AnyHashable: Any],
+        content: IterableInAppContent,
+        customPayload: [AnyHashable: Any]?,
+        jsonOnly: Bool
+    ) -> IterableInAppMessage {
         let campaignId = json[JsonKey.campaignId] as? NSNumber
-        
-        let saveToInbox = json[JsonKey.saveToInbox] as? Bool ?? false
+        let saveToInbox = (json[JsonKey.saveToInbox] as? Bool ?? false) && !jsonOnly // Force false for JSON-only
         let inboxMetadata = parseInboxMetadata(fromPayload: json)
         let trigger = parseTrigger(fromTriggerElement: json[JsonKey.InApp.trigger] as? [AnyHashable: Any])
-        let customPayload = parseCustomPayload(fromPayload: json)
         let createdAt = parseTime(withKey: JsonKey.inboxCreatedAt, fromJson: json)
         let expiresAt = parseTime(withKey: JsonKey.inboxExpiresAt, fromJson: json)
         let read = json[JsonKey.read] as? Bool ?? false
         let priorityLevel = json[JsonKey.priorityLevel] as? Double ?? Const.PriorityLevel.unassigned
         
-        return .success(IterableInAppMessage(messageId: messageId,
-                                             campaignId: campaignId,
-                                             trigger: trigger,
-                                             createdAt: createdAt,
-                                             expiresAt: expiresAt,
-                                             content: content,
-                                             saveToInbox: saveToInbox,
-                                             inboxMetadata: inboxMetadata,
-                                             customPayload: customPayload,
-                                             read: read,
-                                             priorityLevel: priorityLevel))
+        return IterableInAppMessage(
+            messageId: messageId,
+            campaignId: campaignId,
+            trigger: trigger,
+            createdAt: createdAt,
+            expiresAt: expiresAt,
+            content: content,
+            saveToInbox: saveToInbox,
+            inboxMetadata: inboxMetadata,
+            customPayload: customPayload,
+            read: read,
+            priorityLevel: priorityLevel,
+            jsonOnly: jsonOnly
+        )
     }
     
     private static func parseTime(withKey key: AnyHashable, fromJson json: [AnyHashable: Any]) -> Date? {

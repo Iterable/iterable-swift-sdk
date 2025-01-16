@@ -16,6 +16,28 @@ This project adheres to [Semantic Versioning](http://semver.org/).
   - Merge anonymous profiles into an existing, known user profiles (when needed).
 - Anonymous user activation is currently in private beta. If you'd like to learn more about it or discuss using it, talk to your Iterable customer success manager (who can also provide detailed documentation).
 
+## [Unreleased]
+### Added
+- Added `mobileFrameworkInfo` configuration option to `IterableConfig` to identify the mobile framework (Flutter, React Native, or Native) being used with the SDK.
+
+## [6.5.9]
+### Added
+- Support for JSON-only in-app messages, JSON-only messages are now handled by the onNewInApp handler and consumed after retrieval
+- Enhanced notification state tracking to align with system notification permissions changes
+
+### Changed
+- reorganized files and updated documentation url in podspec
+
+## [6.5.8]
+### Fixed
+- Fixed incorrect tracking of pushOpen for push notifications with Wake App enabled. Tracking now happens only when users tap to open the app.
+- Fixed the default `notificationsEnabled` value returned when `autoPushRegistration` is set to `false`.
+
+### Changed
+- Updated repository name on Fastline script and podspec files.
+- Comments out outdated tests that need to be revisited.
+- Updated sample app to use generic URLs.
+
 ## [6.5.7]
 ### Fixed
 - Fixed deeplink re-routing issue where delegate would only return `false` value. Thanks to @scottasoutherland :) 
