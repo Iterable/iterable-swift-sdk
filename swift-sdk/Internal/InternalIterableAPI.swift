@@ -904,6 +904,11 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
     }
     
     @objc private func onAppDidBecomeActiveNotification(notification: Notification) {
+        handlePushNotificationState()
+        handleMatchingCriteriaState()
+    }
+    
+    private func handlePushNotificationState() {
         guard config.autoPushRegistration else { return }
         
         notificationStateProvider.isNotificationsEnabled { [weak self] systemEnabled in
@@ -926,6 +931,12 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
                 self.localStorage.hasStoredNotificationSetting = true
             }
         }
+    }
+    
+    private func handleMatchingCriteriaState() {
+        guard !config.disableOnForegroundCriteriaFetching else { return }
+        
+        // TODO: Implement criteria fetching
     }
     
     private func handle(launchOptions: [UIApplication.LaunchOptionsKey: Any]?) {
