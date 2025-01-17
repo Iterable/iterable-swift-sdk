@@ -3,9 +3,9 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
-## [Unreleased]
-### Added
-- Added `mobileFrameworkInfo` configuration option to `IterableConfig` to identify the mobile framework (Flutter, React Native, or Native) being used with the SDK.
+## [6.5.10]
+### Fixed
+- Fixed notification tracking bug that prevents SDK from receiving push notifications when system notification settings are turned off.
 
 ## [6.5.9]
 ### Added
