@@ -17,6 +17,9 @@ let package = Package(
             targets: ["IterableAppExtensions"]
         ),
     ],
+    dependencies: [
+        .package(url: "https://github.com/iterable/iterable-swift-sdk.git", from: "6.5.9")
+    ],
     targets: [
         .target(name: "IterableSDK",
                 path: "swift-sdk",
