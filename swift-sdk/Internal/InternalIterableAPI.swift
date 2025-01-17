@@ -233,11 +233,6 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
             return SendRequestError.createErroredFuture(reason: errorMessage)
         }
         
-        // We need to call register token here so that we can trigger the device registration
-        // with the updated notification settings
-        
-        register(token: hexToken)
-        
         return requestHandler.disableDeviceForCurrentUser(hexToken: hexToken, withOnSuccess: onSuccess, onFailure: onFailure)
     }
     
@@ -741,11 +736,7 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
             
             if self.isEitherUserIdOrEmailSet() {
                 if hasStoredPermission && (storedEnabled != systemEnabled) {
-                    if !systemEnabled {
-                        self.disableDeviceForCurrentUser()
-                    } else {
-                        self.notificationStateProvider.registerForRemoteNotifications()
-                    }
+                    self.notificationStateProvider.registerForRemoteNotifications()
                 }
                 
                 // Always store the current state
