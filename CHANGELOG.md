@@ -3,6 +3,19 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## [6.6.0-beta2]
+
+- This release fixes beta1 release which was released from the wrong branch.
+
+## [6.6.0-beta1]
+
+- This release includes initial support for Anonymous user activation, a feature that allows marketers to convert valuable visitors into customers. With this feature, the SDK can:
+  - Fetch anonymous profile creation criteria from your Iterable project, and then automatically create Iterable user profiles for anonymous users who meet these criteria.
+  - Save information about a user's previous interactions with your application to their anonymous profile, after it's created.
+  - Display personalized messages for anonymous users (in-app, push, and embedded messages).
+  - Merge anonymous profiles into an existing, known user profiles (when needed).
+- Anonymous user activation is currently in private beta. If you'd like to learn more about it or discuss using it, talk to your Iterable customer success manager (who can also provide detailed documentation).
+
 ## [Unreleased]
 ### Added
 - Added `mobileFrameworkInfo` configuration option to `IterableConfig` to identify the mobile framework (Flutter, React Native, or Native) being used with the SDK.
