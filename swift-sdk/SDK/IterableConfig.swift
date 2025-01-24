@@ -11,8 +11,14 @@ public enum IterableAPIMobileFrameworkType: String, Codable {
 }
 
 public struct IterableAPIMobileFrameworkInfo: Codable {
-    let frameworkType: IterableAPIMobileFrameworkType
-    let iterableSdkVersion: String?
+    public let frameworkType: IterableAPIMobileFrameworkType
+    public let iterableSdkVersion: String?
+    
+    // MARK: - Public Initializer
+    public init(frameworkType: IterableAPIMobileFrameworkType, iterableSdkVersion: String?) {
+        self.frameworkType = frameworkType
+        self.iterableSdkVersion = iterableSdkVersion
+    }
 }
 
 /// Custom URL handling delegate
