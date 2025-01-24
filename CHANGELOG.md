@@ -3,6 +3,10 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## [6.5.11]
+### Fixed
+- Added missing constructor for `IterableAPIMobileFrameworkInfo`
+
 ## [6.5.10]
 ### Added
 - Added `mobileFrameworkInfo` configuration option to `IterableConfig` to identify the mobile framework (Flutter, React Native, or Native) being used with the SDK.
