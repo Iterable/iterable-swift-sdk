@@ -65,7 +65,7 @@ class IterableApiCriteriaFetchTests: XCTestCase {
         )
         
         internalApi.setVisitorUsageTracked(isVisitorUsageTracked: true)
-        sleep(30)
+        sleep(5)
         // Simulate app coming to foreground
         mockNotificationCenter.post(name: UIApplication.didBecomeActiveNotification, object: nil, userInfo: nil)
         
@@ -141,7 +141,7 @@ class IterableApiCriteriaFetchTests: XCTestCase {
         
         internalApi.setVisitorUsageTracked(isVisitorUsageTracked: true)
         
-        sleep(30)
+        sleep(5)
         
         // First foreground
         mockNotificationCenter.post(name: UIApplication.didBecomeActiveNotification, object: nil, userInfo: nil)
