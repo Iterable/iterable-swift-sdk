@@ -720,7 +720,7 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
     }
     
     
-    func isSDKInitialized() -> Bool {
+    public func isSDKInitialized() -> Bool {
         let isInitialized = !apiKey.isEmpty && isEitherUserIdOrEmailSet()
         
         if !isInitialized {
@@ -732,6 +732,10 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
     
     public func isEitherUserIdOrEmailSet() -> Bool {
         IterableUtil.isNotNullOrEmpty(string: _email) || IterableUtil.isNotNullOrEmpty(string: _userId)
+    }
+    
+    public func noUserLoggedIn() -> Bool {
+        IterableUtil.isNullOrEmpty(string: _email) && IterableUtil.isNullOrEmpty(string: _userId)
     }
     
     public func isAnonUserSet() -> Bool {
@@ -939,8 +943,8 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
         let currentTime = Date().timeIntervalSince1970 * 1000  // Convert to milliseconds
         
         // fetching anonymous user criteria on foregrounding
-        if !isSDKInitialized()
-            && localStorage.userIdAnnon == nil
+        if noUserLoggedIn()
+            && !isAnonUserSet()
             && config.enableAnonActivation
             && getVisitorUsageTracked()
             && (currentTime - anonymousUserManager.getLastCriteriaFetch() >= Const.criteriaFetchingCooldown) {
