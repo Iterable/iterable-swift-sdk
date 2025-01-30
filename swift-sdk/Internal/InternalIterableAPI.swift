@@ -227,7 +227,7 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
             return SendRequestError.createErroredFuture(reason: errorMessage)
         }
         
-        guard userId != nil || email != nil else {
+        guard isEitherUserIdOrEmailSet() else {
             let errorMessage = "either userId or email must be present"
             onFailure?(errorMessage, nil)
             return SendRequestError.createErroredFuture(reason: errorMessage)
