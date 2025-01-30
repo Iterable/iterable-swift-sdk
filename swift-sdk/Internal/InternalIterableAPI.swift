@@ -934,9 +934,21 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
     }
     
     private func handleMatchingCriteriaState() {
-        guard !config.disableOnForegroundCriteriaFetching else { return }
+        guard config.enableOnForegroundCriteriaFetching else { return }
         
-        // TODO: Implement criteria fetching
+        let currentTime = Date().timeIntervalSince1970 * 1000  // Convert to milliseconds
+        
+        // fetching anonymous user criteria on foregrounding
+        if !isSDKInitialized()
+            && localStorage.userIdAnnon == nil
+            && config.enableAnonActivation
+            && getVisitorUsageTracked()
+            && (currentTime - anonymousUserManager.getLastCriteriaFetch() >= Const.criteriaFetchingCooldown) {
+            
+            anonymousUserManager.updateLastCriteriaFetch(currentTime: currentTime)
+            anonymousUserManager.getAnonCriteria()
+            ITBInfo("Fetching anonymous user criteria - Foreground")
+        }
     }
     
     private func handle(launchOptions: [UIApplication.LaunchOptionsKey: Any]?) {

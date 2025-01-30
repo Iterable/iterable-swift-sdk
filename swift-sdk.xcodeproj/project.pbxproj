@@ -12,6 +12,7 @@
 		00B6FAD1210E8D90007535CF /* dev-1.mobileprovision in Resources */ = {isa = PBXBuildFile; fileRef = 00B6FAD0210E8D90007535CF /* dev-1.mobileprovision */; };
 		00CB31B621096129004ACDEC /* TestUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 00CB31B4210960C4004ACDEC /* TestUtils.swift */; };
 		092D01942D3038F600E3066A /* NotificationObserverTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 092D01932D3038F600E3066A /* NotificationObserverTests.swift */; };
+		09CAA47B2D4B9AD80057FB72 /* IterableApiCriteriaFetchTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 09CAA47A2D4B9AD80057FB72 /* IterableApiCriteriaFetchTests.swift */; };
 		1802C00F2CA2C99E009DEA2B /* CombinationComplexCriteria.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1802C00E2CA2C99E009DEA2B /* CombinationComplexCriteria.swift */; };
 		181063DB2C9841460078E0ED /* CustomEventUserUpdateTestCaseTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 181063DA2C9841460078E0ED /* CustomEventUserUpdateTestCaseTests.swift */; };
 		181063DD2C994FA40078E0ED /* ValidateCustomEventUserUpdateAPITest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 181063DC2C994FA40078E0ED /* ValidateCustomEventUserUpdateAPITest.swift */; };
@@ -575,6 +576,7 @@
 		00B6FAD0210E8D90007535CF /* dev-1.mobileprovision */ = {isa = PBXFileReference; lastKnownFileType = file; path = "dev-1.mobileprovision"; sourceTree = "<group>"; };
 		00CB31B4210960C4004ACDEC /* TestUtils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestUtils.swift; sourceTree = "<group>"; };
 		092D01932D3038F600E3066A /* NotificationObserverTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationObserverTests.swift; sourceTree = "<group>"; };
+		09CAA47A2D4B9AD80057FB72 /* IterableApiCriteriaFetchTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IterableApiCriteriaFetchTests.swift; sourceTree = "<group>"; };
 		1802C00E2CA2C99E009DEA2B /* CombinationComplexCriteria.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CombinationComplexCriteria.swift; sourceTree = "<group>"; };
 		181063DA2C9841460078E0ED /* CustomEventUserUpdateTestCaseTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomEventUserUpdateTestCaseTests.swift; sourceTree = "<group>"; };
 		181063DC2C994FA40078E0ED /* ValidateCustomEventUserUpdateAPITest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ValidateCustomEventUserUpdateAPITest.swift; sourceTree = "<group>"; };
@@ -1705,6 +1707,7 @@
 		E9EA7CA52C1EE39A00A9D6FB /* anonymous-tracking-tests */ = {
 			isa = PBXGroup;
 			children = (
+				09CAA47A2D4B9AD80057FB72 /* IterableApiCriteriaFetchTests.swift */,
 				E9EA7CA62C1EE3BA00A9D6FB /* AnonymousUserCriteriaMatchTests.swift */,
 				DF97D12A2C2D4A060034D38C /* AnonymousUserCriteriaIsSetTests.swift */,
 				DF7302142C2C176E0002633A /* AnonymousUserComplexCriteriaMatchTests.swift */,
@@ -2371,6 +2374,7 @@
 				DF7302152C2C176E0002633A /* AnonymousUserComplexCriteriaMatchTests.swift in Sources */,
 				18BB8B7A2C64DC8D007EBF23 /* ComparatorTypeDoesNotEqualMatchTest.swift in Sources */,
 				00B6FACC210E8484007535CF /* APNSTypeCheckerTests.swift in Sources */,
+				09CAA47B2D4B9AD80057FB72 /* IterableApiCriteriaFetchTests.swift in Sources */,
 				AC8F35A2239806B500302994 /* InboxViewControllerViewModelTests.swift in Sources */,
 				092D01942D3038F600E3066A /* NotificationObserverTests.swift in Sources */,
 				AC995F9A2166EEB50099A184 /* CommonMocks.swift in Sources */,
