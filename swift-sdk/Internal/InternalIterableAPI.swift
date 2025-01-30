@@ -559,16 +559,28 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
         }
     }
     
-    private func isEitherUserIdOrEmailSet() -> Bool {
+    func isSDKInitialized() -> Bool {
+        let isInitialized = !apiKey.isEmpty && isEitherUserIdOrEmailSet()
+        
+        if !isInitialized {
+            ITBInfo("Iterable SDK must be initialized with an API key and user email/userId before calling SDK methods")
+        }
+        
+        return isInitialized
+    }
+    
+    public func isEitherUserIdOrEmailSet() -> Bool {
         IterableUtil.isNotNullOrEmpty(string: _email) || IterableUtil.isNotNullOrEmpty(string: _userId)
+    }
+    
+    public func noUserLoggedIn() -> Bool {
+        IterableUtil.isNullOrEmpty(string: _email) && IterableUtil.isNullOrEmpty(string: _userId)
     }
     
     private func logoutPreviousUser() {
         ITBInfo()
         
-        guard isEitherUserIdOrEmailSet() else {
-            return
-        }
+        guard isSDKInitialized() else { return }
         
         if config.autoPushRegistration {
             disableDeviceForCurrentUser()
@@ -595,6 +607,8 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
     private func onLogin(_ authToken: String? = nil) {
         ITBInfo()
         
+        guard isSDKInitialized() else { return }
+        
         self.authManager.pauseAuthRetries(false)
         if let authToken = authToken {
             self.authManager.setNewToken(authToken)
@@ -618,10 +632,7 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
     
     private func completeUserLogin() {
         ITBInfo()
-        
-        guard isEitherUserIdOrEmailSet() else {
-            return
-        }
+        guard isSDKInitialized() else { return }
         
         if config.autoPushRegistration {
             notificationStateProvider.registerForRemoteNotifications()
