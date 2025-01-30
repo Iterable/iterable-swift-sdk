@@ -219,6 +219,9 @@ public class IterableEmbeddedView:UIView {
 
         let view = nib.instantiate(withOwner: self, options: nil).first as? UIView
         self.clipsToBounds = false
+        
+        self.imgView.image = UIImage(resource: ImageResource.loading)
+        self.cardImageView.image = UIImage(resource: ImageResource.loading)
         return view
     }
 
