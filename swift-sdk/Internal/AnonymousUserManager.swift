@@ -27,6 +27,7 @@ public class AnonymousUserManager: AnonymousUserManagerProtocol {
     private let dateProvider: DateProviderProtocol
     private let notificationStateProvider: NotificationStateProviderProtocol
     private var config: IterableConfig
+    private(set) var lastCriteriaFetch: Double = 0
 
     // Tracks an anonymous event and store it locally
     public func trackAnonEvent(name: String, dataFields: [AnyHashable: Any]?) {
@@ -82,38 +83,6 @@ public class AnonymousUserManager: AnonymousUserManagerProtocol {
             let initialAnonSessions = IterableAnonSessions(totalAnonSessionCount: 1, lastAnonSession: IterableUtil.secondsFromEpoch(for: dateProvider.currentDate), firstAnonSession: IterableUtil.secondsFromEpoch(for: dateProvider.currentDate))
             let anonSessionWrapper = IterableAnonSessionsWrapper(itbl_anon_sessions: initialAnonSessions)
             localStorage.anonymousSessions = anonSessionWrapper
-        }
-    }
-    
-    // Creates a user after criterias met and login the user and then sync the data through track APIs
-    private func createAnonymousUser(_ criteriaId: String) {
-        var anonSessions = convertToDictionary(data: localStorage.anonymousSessions?.itbl_anon_sessions)
-        let userId = IterableUtil.generateUUID()
-        anonSessions[JsonKey.matchedCriteriaId] = Int(criteriaId)
-        let appName = Bundle.main.appPackageName ?? ""
-        notificationStateProvider.isNotificationsEnabled { isEnabled in
-            if !appName.isEmpty && isEnabled {
-                anonSessions[JsonKey.mobilePushOptIn] = appName
-            }
-           
-            //track anon session for new user
-            IterableAPI.implementation?.apiClient.trackAnonSession(
-                createdAt: IterableUtil.secondsFromEpoch(for: self.dateProvider.currentDate),
-                withUserId: userId,
-                dataFields: self.localStorage.anonymousUserUpdate,
-                requestJson: anonSessions
-            ).onError { error in
-                if error.httpStatusCode == 409 {
-                    self.getAnonCriteria() // refetch the criteria
-                }
-            }.onSuccess { success in
-                self.localStorage.userIdAnnon = userId
-                self.config.anonUserDelegate?.onAnonUserCreated(userId: userId)
-                
-                IterableAPI.implementation?.setUserId(userId, isAnon: true)
-                
-                self.syncNonSyncedEvents()
-            }
         }
     }
     
@@ -174,6 +143,57 @@ public class AnonymousUserManager: AnonymousUserManagerProtocol {
         localStorage.anonymousSessions = nil
         localStorage.anonymousUserUpdate = nil
     }
+    
+    // Gets the anonymous criteria
+    public func getAnonCriteria() {
+        lastCriteriaFetch = Date().timeIntervalSince1970 * 1000
+        
+        IterableAPI.implementation?.getCriteriaData { returnedData in
+            self.localStorage.criteriaData = returnedData
+        };
+    }
+    
+    // Gets the last criteria fetch time in milliseconds
+    public func getLastCriteriaFetch() -> Double {
+        return lastCriteriaFetch
+    }
+    
+    // Sets the last criteria fetch time in milliseconds
+    public func updateLastCriteriaFetch(currentTime: Double) {
+        lastCriteriaFetch = currentTime
+    }
+    
+    // Creates a user after criterias met and login the user and then sync the data through track APIs
+    private func createAnonymousUser(_ criteriaId: String) {
+        var anonSessions = convertToDictionary(data: localStorage.anonymousSessions?.itbl_anon_sessions)
+        let userId = IterableUtil.generateUUID()
+        anonSessions[JsonKey.matchedCriteriaId] = Int(criteriaId)
+        let appName = Bundle.main.appPackageName ?? ""
+        notificationStateProvider.isNotificationsEnabled { isEnabled in
+            if !appName.isEmpty && isEnabled {
+                anonSessions[JsonKey.mobilePushOptIn] = appName
+            }
+           
+            //track anon session for new user
+            IterableAPI.implementation?.apiClient.trackAnonSession(
+                createdAt: IterableUtil.secondsFromEpoch(for: self.dateProvider.currentDate),
+                withUserId: userId,
+                dataFields: self.localStorage.anonymousUserUpdate,
+                requestJson: anonSessions
+            ).onError { error in
+                if error.httpStatusCode == 409 {
+                    self.getAnonCriteria() // refetch the criteria
+                }
+            }.onSuccess { success in
+                self.localStorage.userIdAnnon = userId
+                self.config.anonUserDelegate?.onAnonUserCreated(userId: userId)
+                
+                IterableAPI.implementation?.setUserId(userId, isAnon: true)
+                
+                self.syncNonSyncedEvents()
+            }
+        }
+    }
 
     // Checks if criterias are being met and returns criteriaId if it matches the criteria.
     private func evaluateCriteriaAndReturnID() -> String? {
@@ -192,13 +212,6 @@ public class AnonymousUserManager: AnonymousUserManagerProtocol {
         guard events.count > 0 else { return nil }
         
         return CriteriaCompletionChecker(anonymousCriteria: criteriaData, anonymousEvents: events).getMatchedCriteria()
-    }
-    
-    // Gets the anonymous criteria
-    public func getAnonCriteria() {
-        IterableAPI.implementation?.getCriteriaData { returnedData in
-            self.localStorage.criteriaData = returnedData
-        };
     }
     
     // Stores event data locally

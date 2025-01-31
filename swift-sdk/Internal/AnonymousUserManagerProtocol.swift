@@ -12,6 +12,8 @@ import Foundation
     func trackAnonTokenRegistration(token: String)
     func trackAnonUpdateUser(_ dataFields: [AnyHashable: Any])
     func updateAnonSession()
+    func getLastCriteriaFetch() -> Double
+    func updateLastCriteriaFetch(currentTime: Double)
     func getAnonCriteria()
     func syncEvents()
     func clearVisitorEventsAndUserData()
