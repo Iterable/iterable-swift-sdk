@@ -938,7 +938,7 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
     }
     
     private func handleMatchingCriteriaState() {
-        guard config.enableOnForegroundCriteriaFetching else { return }
+        guard config.enableForegroundCriteriaFetch else { return }
         
         let currentTime = Date().timeIntervalSince1970 * 1000  // Convert to milliseconds
         

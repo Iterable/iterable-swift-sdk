@@ -156,7 +156,7 @@ public class IterableConfig: NSObject {
     
     /// Enables fetching of anonymous user criteria on foreground when set to `true`
     /// By default, the SDK will fetch anonymous user criteria on foreground.
-    public var enableOnForegroundCriteriaFetching = true
+    public var enableForegroundCriteriaFetch = true
     
     /// Allows for fetching embedded messages.
     public var enableEmbeddedMessaging = false
