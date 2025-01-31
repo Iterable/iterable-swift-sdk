@@ -26,7 +26,7 @@ enum Const {
     static let deepLinkRegex = "/a/[a-zA-Z0-9]+"
     static let href = "href"
     static let exponentialFactor = 2.0
-    static let criteriaFetchingCooldown = 120.0 // 120 seconds = 120,000 milliseconds
+    static let criteriaFetchingCooldown = 120000.0 // 120 seconds = 120,000 milliseconds
     
     enum Http {
         static let GET = "GET"
