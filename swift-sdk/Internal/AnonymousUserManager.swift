@@ -147,7 +147,7 @@ public class AnonymousUserManager: AnonymousUserManagerProtocol {
     
     /// Gets the anonymous criteria and updates the last criteria fetch time in milliseconds
     public func getAnonCriteria() {
-        lastCriteriaFetch = Date().timeIntervalSince1970 * 1000
+        updateLastCriteriaFetch(currentTime: Date().timeIntervalSince1970 * 1000)
         
         IterableAPI.implementation?.getCriteriaData { returnedData in
             self.localStorage.criteriaData = returnedData
