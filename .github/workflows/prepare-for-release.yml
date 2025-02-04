@@ -42,8 +42,8 @@ jobs:
             exit 1
           fi
           
-          # Get the current version
-          current_version=$(grep -oP "^## \[\K[0-9]+\.[0-9]+\.[0-9]+(?:-[a-zA-Z0-9]+)?(?=\])" "$changelog_file" | head -n1)
+          # Get the current version - using awk
+          current_version=$(awk '/^## \[[0-9]+\.[0-9]+\.[0-9]+(-[a-zA-Z0-9]+)?\]/ { match($0, /[0-9]+\.[0-9]+\.[0-9]+(-[a-zA-Z0-9]+)?/); print substr($0, RSTART, RLENGTH); exit }' "$changelog_file")
           new_version="${{ github.event.inputs.version }}"
           
           # Validate version format
@@ -64,8 +64,8 @@ jobs:
             echo "## [Unreleased]"
             echo ""
             echo "## [$new_version]"
-            # Remove the "## [Unreleased]" line from unreleased_content if it exists
-            echo "$unreleased_content" | sed '1{/^## \[Unreleased\]/d}'
+            # Remove the "## [Unreleased]" line from unreleased_content using BSD sed
+            echo "$unreleased_content" | sed '1{/^## \[Unreleased\]/d;}'
             echo ""
             # Get the rest of the file starting from the first version entry
             sed -n '/^## \[[0-9]/,$p' "$changelog_file"
