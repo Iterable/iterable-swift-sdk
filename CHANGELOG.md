@@ -3,6 +3,9 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## [Unreleased]
+- Adding section for unreleased changes
+
 ## [6.5.11]
 ### Fixed
 - Added missing constructor for `IterableAPIMobileFrameworkInfo`
