@@ -9,7 +9,7 @@ import Foundation
 import UIKit
 
 @IBDesignable
-public class IterableEmbeddedView:UIView {
+public class IterableEmbeddedView: UIView {
     
     /// Set background color of view in container view.
     @IBOutlet weak public var contentView: UIView!
@@ -290,10 +290,6 @@ public class IterableEmbeddedView:UIView {
                 cardImageTopConstraint.isActive = false
                 titleToTopConstraint.isActive = true
                 titleToTopConstraint?.isActive = true
-                
-                // Remove cardImageView from its superview and release it
-                cardImageView?.removeFromSuperview()
-                cardImageView = nil
             }
         case .banner:
             imgView?.isHidden = EMimage == nil
