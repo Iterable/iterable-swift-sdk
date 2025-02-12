@@ -71,7 +71,7 @@ final class EmbeddedManagerTests: XCTestCase {
             XCTAssertEqual(message.metadata.placementId, 2, "Fetched message should have placementId 2")
         }
     }
-
+    
     // syncMessages
     func testSyncMessagesSuccessful() {
         let syncMessagesExpectation = expectation(description: "syncMessages should complete")
@@ -106,6 +106,40 @@ final class EmbeddedManagerTests: XCTestCase {
         
         wait(for: [syncMessagesExpectation, delegateExpectation], timeout: 2)
     }
+    
+    func testSyncMessagesForSpecifiedPlacement() {
+        let mockApiClient = MockApiClient()
+        mockApiClient.populateMessages([
+            1: [IterableEmbeddedMessage(messageId: "1", placementId: 1)],
+            2: [IterableEmbeddedMessage(messageId: "2", placementId: 2),
+                IterableEmbeddedMessage(messageId: "3", placementId: 2)],
+            3: [IterableEmbeddedMessage(messageId: "4", placementId: 3)],
+        ])
+        let manager = IterableEmbeddedManager(apiClient: mockApiClient,
+                                          urlDelegate: nil,
+                                          customActionDelegate: nil,
+                                          urlOpener: MockUrlOpener(),
+                                          allowedProtocols: [],
+                                          enableEmbeddedMessaging: true)
+        
+        // Sync only placement 2
+        manager.syncMessages(placementIds: [2]) { }
+                
+        // Verify we got updated messages for placement 2
+        let messagesForPlacement2 = manager.getMessages(for: 2)
+        XCTAssertEqual(messagesForPlacement2.count, 2, "Should have 2 messages for placementId 2")
+        for message in messagesForPlacement2 {
+            XCTAssertEqual(message.metadata.placementId, 2, "Fetched message should have placementId 2")
+        }
+        
+        // Verify other placements are not synced
+        let messagesForPlacement1 = manager.getMessages(for: 1)
+        XCTAssertEqual(messagesForPlacement1.count, 0, "Should have no messages for placementId 1")
+        
+        let messagesForPlacement3 = manager.getMessages(for: 3)
+        XCTAssertEqual(messagesForPlacement3.count, 0, "Should have no messages for placementId 3")
+    }
+
     
     func testManagerReset() {
         let syncMessagesExpectation = expectation(description: "syncMessages should complete")
@@ -354,7 +388,8 @@ final class EmbeddedManagerTests: XCTestCase {
         private var newMessages = false
         private var invalidApiKey = false
         private var mockMessages: [Int: [IterableEmbeddedMessage]] = [:]
-
+        private var lastRequestedPlacementIds: [Int]?
+        
         func haveNewEmbeddedMessages() {
             newMessages = true
         }
@@ -369,13 +404,24 @@ final class EmbeddedManagerTests: XCTestCase {
         }
         
         override func getEmbeddedMessages() -> IterableSDK.Pending<IterableSDK.PlacementsPayload, IterableSDK.SendRequestError> {
+            return getEmbeddedMessages(placementIds: nil)
+        }
+        
+        override func getEmbeddedMessages(placementIds: [Int]?) -> IterableSDK.Pending<IterableSDK.PlacementsPayload, IterableSDK.SendRequestError> {
+            lastRequestedPlacementIds = placementIds
+            
             if invalidApiKey {
                 return FailPending(error: IterableSDK.SendRequestError(reason: "Invalid API Key"))
             }
             
             if newMessages {
+                var filteredMessages = mockMessages
+                if let placementIds = placementIds, !placementIds.isEmpty {
+                    filteredMessages = mockMessages.filter { placementIds.contains($0.key) }
+                }
+                
                 var placements: [Placement] = []
-                for (placementId, messages) in mockMessages {
+                for (placementId, messages) in filteredMessages {
                     let placement = Placement(placementId: placementId, embeddedMessages: messages)
                     placements.append(placement)
                 }

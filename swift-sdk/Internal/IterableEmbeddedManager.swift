@@ -153,7 +153,7 @@ class IterableEmbeddedManager: NSObject, IterableInternalEmbeddedManagerProtocol
     }
     
     private func retrieveEmbeddedMessages(placementIds: [Int]?, completion: @escaping () -> Void) {
-        apiClient.getEmbeddedMessages(placementIds: placementIds)
+        apiClient.getEmbeddedMessages(placementIds: placementIds ?? [])
             .onCompletion(
                 receiveValue: { embeddedMessagesPayload in
                     let placements = embeddedMessagesPayload.placements
@@ -227,7 +227,7 @@ class IterableEmbeddedManager: NSObject, IterableInternalEmbeddedManagerProtocol
 
 extension IterableEmbeddedManager: EmbeddedNotifiable {
     public func syncMessages(completion: @escaping () -> Void) {
-        syncMessages(placementsIds: nil, completion: completion)
+        syncMessages(placementIds: nil, completion: completion)
 
     }
     
