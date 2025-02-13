@@ -7,7 +7,7 @@ import IterableSDK
 /// Utility class to encapsulate Iterable specific code.
 class IterableHelper {
     // Please replace with your API key
-    #error("Please add your API Key here")
+#error("Please add your API Key here")
     private static let apiKey = ""
     
     static func initialize(launchOptions: [UIApplication.LaunchOptionsKey : Any]?) {

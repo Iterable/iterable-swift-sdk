@@ -20,7 +20,7 @@ class AppModel: ObservableObject {
             selectedTab = .home
         }
     }
-
+    
     @Published
     var email: String? = IterableAPI.email
 }

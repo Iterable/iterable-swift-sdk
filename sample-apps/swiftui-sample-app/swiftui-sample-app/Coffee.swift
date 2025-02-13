@@ -36,5 +36,5 @@ extension Coffee {
     static let latte = Coffee(id: "latte", title: "Latte", description: "Scrumptious", imageName: "Latte")
     static let mocha = Coffee(id: "mocha", title: "Mocha", description: "Mmm... mocha", imageName: "Mocha")
     static let black = Coffee(id: "black", title: "Black", description: "Strong and goog for your health", imageName: "Black")
-
+    
 }

@@ -740,7 +740,7 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
         guard config.autoPushRegistration else { return }
         
         notificationStateProvider.isNotificationsEnabled { [weak self] systemEnabled in
-            guard let self = self else { return }
+            guard let self else { return }
             
             let storedEnabled = self.localStorage.isNotificationsEnabled
             let hasStoredPermission = self.localStorage.hasStoredNotificationSetting
