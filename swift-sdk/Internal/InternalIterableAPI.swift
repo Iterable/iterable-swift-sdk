@@ -189,6 +189,8 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
         
         hexToken = token
         
+        isFromFCM = isFromFCM
+        
         let mobileFrameworkInfo = config.mobileFrameworkInfo ?? createDefaultMobileFrameworkInfo()
         
         let registerTokenInfo = RegisterTokenInfo(hexToken: token,
@@ -210,6 +212,9 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
                                                 onFailure?(reason, data)
                                 }
         )
+        notificationStateProvider.isNotificationsEnabled { isEnabled in
+            self.localStorage.isNotificationsEnabled = isEnabled
+        }
     }
     
     func register(token: Data,
@@ -517,6 +522,7 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
     
     /// the hex representation of this device token
     private var hexToken: String?
+    private var isFromFCM: Bool?
     
     private var launchOptions: [UIApplication.LaunchOptionsKey: Any]?
     
@@ -747,7 +753,11 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
             
             if self.isEitherUserIdOrEmailSet() {
                 if hasStoredPermission && (storedEnabled != systemEnabled) {
-                    self.notificationStateProvider.registerForRemoteNotifications()
+                    if let token = self.hexToken, let isFromFCM = self.isFromFCM, isFromFCM {
+                        IterableAPI.registerFCM(token: token)
+                    } else {
+                        self.notificationStateProvider.registerForRemoteNotifications()
+                    }
                 }
                 
                 // Always store the current state
