@@ -28,6 +28,7 @@ public class AnonymousUserManager: AnonymousUserManagerProtocol {
     private let notificationStateProvider: NotificationStateProviderProtocol
     private var config: IterableConfig
     private(set) var lastCriteriaFetch: Double = 0
+    private var isCriteriaMatched = false
 
     /// Tracks an anonymous event and store it locally
     public func trackAnonEvent(name: String, dataFields: [AnyHashable: Any]?) {
@@ -182,6 +183,7 @@ public class AnonymousUserManager: AnonymousUserManagerProtocol {
                 dataFields: self.localStorage.anonymousUserUpdate,
                 requestJson: anonSessions
             ).onError { error in
+                self.isCriteriaMatched = false
                 if error.httpStatusCode == 409 {
                     self.getAnonCriteria() // refetch the criteria
                 }
@@ -229,7 +231,8 @@ public class AnonymousUserManager: AnonymousUserManagerProtocol {
             processAndStoreEvent(type: type, data: data)
         }
         
-        if let criteriaId = evaluateCriteriaAndReturnID() {
+        if let criteriaId = evaluateCriteriaAndReturnID(), !isCriteriaMatched {
+            isCriteriaMatched = true
             createAnonymousUser(criteriaId)
         }
     }

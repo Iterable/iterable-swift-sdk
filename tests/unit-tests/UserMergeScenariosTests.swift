@@ -974,6 +974,49 @@ class UserMergeScenariosTests: XCTestCase, AuthProvider {
         
         waitForExpectations(timeout: 5, handler: nil)
     }
+    
+    func testCriteriaMetTwice() {
+        let config = IterableConfig()
+        config.enableAnonActivation = true
+        
+        let mockSession = MockNetworkSession()
+        
+        IterableAPI.initializeForTesting(apiKey: UserMergeScenariosTests.apiKey,
+                                         config: config,
+                                         networkSession: mockSession,
+                                         localStorage: localStorage)
+        
+        IterableAPI.logoutUser()
+        guard let jsonData = mockData.data(using: .utf8) else { return }
+        localStorage.criteriaData = jsonData
+        
+        IterableAPI.track(event: "testEvent")
+        IterableAPI.track(event: "testEvent")
+        
+        waitForDuration(seconds: 3)
+        
+        if let anonUser = localStorage.userIdAnnon {
+            XCTAssertFalse(anonUser.isEmpty, "Expected anon user nil")
+        } else {
+            XCTFail("Expected anon user nil but found")
+        }
+        
+        // Verify that anon session request was made exactly once
+        let anonSessionRequest = mockSession.getRequest(withEndPoint: Const.Path.trackAnonSession)
+        XCTAssertNotNil(anonSessionRequest, "Anonymous session request should not be nil")
+        
+        // Count total requests with anon session endpoint
+        let anonSessionRequests = mockSession.requests.filter { request in
+            request.url?.absoluteString.contains(Const.Path.trackAnonSession) == true
+        }
+        XCTAssertEqual(anonSessionRequests.count, 1, "Anonymous session should be called exactly once")
+
+        // Verify track events were made
+        let trackRequests = mockSession.requests.filter { request in
+            request.url?.absoluteString.contains(Const.Path.trackEvent) == true
+        }
+        XCTAssertEqual(trackRequests.count, 2, "Track event should be called twice")
+    }
 }
 
 

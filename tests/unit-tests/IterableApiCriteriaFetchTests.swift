@@ -49,7 +49,7 @@ class IterableApiCriteriaFetchTests: XCTestCase {
         
         let config = IterableConfig()
         config.enableAnonActivation = true
-        config.enableOnForegroundCriteriaFetching = true
+        config.enableForegroundCriteriaFetch = true
         
         IterableAPI.initializeForTesting(apiKey: IterableApiCriteriaFetchTests.apiKey,
                                          config: config,
@@ -85,7 +85,7 @@ class IterableApiCriteriaFetchTests: XCTestCase {
         
         let config = IterableConfig()
         config.enableAnonActivation = true
-        config.enableOnForegroundCriteriaFetching = false
+        config.enableForegroundCriteriaFetch = false
         
         internalApi = InternalIterableAPI.initializeForTesting(
             config: config,
@@ -124,7 +124,7 @@ class IterableApiCriteriaFetchTests: XCTestCase {
         
         let config = IterableConfig()
         config.enableAnonActivation = true
-        config.enableOnForegroundCriteriaFetching = true
+        config.enableForegroundCriteriaFetch = true
         
         IterableAPI.initializeForTesting(apiKey: IterableApiCriteriaFetchTests.apiKey,
                                          config: config,
