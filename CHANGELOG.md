@@ -17,8 +17,17 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 - Anonymous user activation is currently in private beta. If you'd like to learn more about it or discuss using it, talk to your Iterable customer success manager (who can also provide detailed documentation).
 
 ## [Unreleased]
+- Adding section for unreleased changes
+
+## [6.5.11]
+### Fixed
+- Added missing constructor for `IterableAPIMobileFrameworkInfo`
+
+## [6.5.10]
 ### Added
 - Added `mobileFrameworkInfo` configuration option to `IterableConfig` to identify the mobile framework (Flutter, React Native, or Native) being used with the SDK.
+### Fixed
+- Fixed notification tracking bug that prevents SDK from receiving push notifications when system notification settings are turned off.
 
 ## [6.5.9]
 ### Added
