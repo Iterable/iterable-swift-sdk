@@ -18,12 +18,30 @@ jobs:
           gem install erb
           gem install xcpretty
 
-      - name: List available simulators
-        run: xcrun simctl list devices
+      - name: Print available simulators
+        run: xcrun simctl list devices | cat
+
+      - name: List and select simulator
+        id: select-simulator
+        run: |
+          # List all simulators and find an iPhone 15 or 16 simulator
+          SIMULATOR_INFO=$(xcrun simctl list devices | grep -E 'iPhone (15|16)' | grep -v 'unavailable' | head -n 1)
+          if [ -z "$SIMULATOR_INFO" ]; then
+            echo "No iPhone 15 or 16 simulator found"
+            exit 1
+          fi
+          
+          # Extract device name and runtime version
+          DEVICE_NAME=$(echo $SIMULATOR_INFO | sed -E 's/^[[:space:]]*([^(]+).*/\1/')
+          OS_VERSION=$(echo $SIMULATOR_INFO | grep -oE 'iOS [0-9]+\.[0-9]+' | cut -d' ' -f2)
+          
+          echo "Selected simulator: $DEVICE_NAME (iOS $OS_VERSION)"
+          echo "device_name=$DEVICE_NAME" >> $GITHUB_OUTPUT
+          echo "os_version=$OS_VERSION" >> $GITHUB_OUTPUT
 
       - name: Build and test
         run: |
-          xcodebuild test -project swift-sdk.xcodeproj -scheme swift-sdk -sdk iphonesimulator -destination 'platform=iOS Simulator,name=iPhone 15,OS=17.4' -enableCodeCoverage YES CODE_SIGNING_REQUIRED=NO | xcpretty && exit ${PIPESTATUS[0]}
+          xcodebuild test -project swift-sdk.xcodeproj -scheme swift-sdk -sdk iphonesimulator -destination "platform=iOS Simulator,name=${{ steps.select-simulator.outputs.device_name }},OS=${{ steps.select-simulator.outputs.os_version }}" -enableCodeCoverage YES CODE_SIGNING_REQUIRED=NO | xcpretty && exit ${PIPESTATUS[0]}
 
       - name: CocoaPods lint
         run: pod lib lint --allow-warnings
