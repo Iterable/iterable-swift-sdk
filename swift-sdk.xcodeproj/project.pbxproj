@@ -710,6 +710,7 @@
 		8AAA8C832D074C2000DF8220 /* RequestProcessorUtil.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RequestProcessorUtil.swift; sourceTree = "<group>"; };
 		8AAA8C842D074C2000DF8220 /* RequestSender.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RequestSender.swift; sourceTree = "<group>"; };
 		8AB8D7D12D3805A900DECFE5 /* IterableAPIMobileFrameworkDetector.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IterableAPIMobileFrameworkDetector.swift; sourceTree = "<group>"; };
+		8AC534372D75FDB300F84F44 /* swift-sdk.xctestplan */ = {isa = PBXFileReference; lastKnownFileType = text; path = "swift-sdk.xctestplan"; sourceTree = "<group>"; };
 		9FF05EAB2AFEA5FA005311F7 /* MockAuthManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockAuthManager.swift; sourceTree = "<group>"; };
 		AC02CAA5234E50B5006617E0 /* RegistrationTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegistrationTests.swift; sourceTree = "<group>"; };
 		AC05644A26387B54001FB810 /* MockPersistence.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockPersistence.swift; sourceTree = "<group>"; };
@@ -1222,6 +1223,7 @@
 		AC2263D520CF49B8009800EB = {
 			isa = PBXGroup;
 			children = (
+				8AC534372D75FDB300F84F44 /* swift-sdk.xctestplan */,
 				AC2263E120CF49B8009800EB /* swift-sdk */,
 				AC90C4C520D8632E00EECA5D /* notification-extension */,
 				ACFCA72920EB02DB00BFB277 /* tests */,
