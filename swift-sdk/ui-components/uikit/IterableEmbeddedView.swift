@@ -9,7 +9,7 @@ import Foundation
 import UIKit
 
 @IBDesignable
-public class IterableEmbeddedView:UIView {
+public class IterableEmbeddedView: UIView {
     
     /// Set background color of view in container view.
     @IBOutlet weak public var contentView: UIView!
@@ -32,8 +32,8 @@ public class IterableEmbeddedView:UIView {
     @IBOutlet weak var horizontalButtonStackViewSpacer: UIView!
     
     /// IterableEmbeddedView Image View.
-    @IBOutlet weak public var imgView: UIImageView!
-    @IBOutlet weak public var cardImageView: UIImageView!
+    @IBOutlet weak public var imgView: UIImageView?
+    @IBOutlet weak public var cardImageView: UIImageView?
     @IBOutlet var cardImageTopConstraint: NSLayoutConstraint!
     @IBOutlet var titleToTopConstraint: NSLayoutConstraint!
     
@@ -274,46 +274,42 @@ public class IterableEmbeddedView:UIView {
         
     private func loadViewType(viewType: IterableEmbeddedViewType) {
         switch viewType {
-            case .card:
-                imgView.isHidden = true
-                let shouldShowCardImageView = EMimage != nil
-                if shouldShowCardImageView {
-                    // Show cardImageView
-                    cardImageView.image = EMimage
-                    cardImageView.isHidden = false
-                    cardImageTopConstraint.isActive = true
-                    titleToTopConstraint.isActive = false
-                    titleToTopConstraint?.isActive = false
-                } else {
-                    // Hide cardImageView and deactivate its constraints
-                    cardImageView.isHidden = true
-                    cardImageTopConstraint.isActive = false
-                    titleToTopConstraint.isActive = true
-                    titleToTopConstraint?.isActive = true
-
-                    // Remove cardImageView from its superview and release it
-                    cardImageView.removeFromSuperview()
-                    cardImageView = nil
-                }
-            case .banner:
-                imgView.isHidden = EMimage == nil
-                imgView.isHidden = self.EMimage == nil
-                imgView.image = EMimage
-                if !imgView.isHidden {
-                    imgView.widthAnchor.constraint(equalToConstant: 100).isActive = true
-                }
-                cardImageView.isHidden = true
+        case .card:
+            imgView?.isHidden = true
+            let shouldShowCardImageView = EMimage != nil
+            if shouldShowCardImageView {
+                // Show cardImageView
+                cardImageView?.image = EMimage
+                cardImageView?.isHidden = false
+                cardImageTopConstraint.isActive = true
+                titleToTopConstraint.isActive = false
+                titleToTopConstraint?.isActive = false
+            } else {
+                // Hide cardImageView and deactivate its constraints
+                cardImageView?.isHidden = true
                 cardImageTopConstraint.isActive = false
                 titleToTopConstraint.isActive = true
-                cardImageTopConstraint?.isActive = false
                 titleToTopConstraint?.isActive = true
-            case .notification:
-                imgView.isHidden = true
-                cardImageView.isHidden = true
-                cardImageTopConstraint.isActive = false
-                titleToTopConstraint.isActive = true
-                cardImageTopConstraint?.isActive = false
-                titleToTopConstraint?.isActive = true
+            }
+        case .banner:
+            imgView?.isHidden = EMimage == nil
+            imgView?.isHidden = self.EMimage == nil
+            imgView?.image = EMimage
+            if let imageView = imgView, !imageView.isHidden {
+                imgView?.widthAnchor.constraint(equalToConstant: 100).isActive = true
+            }
+            cardImageView?.isHidden = true
+            cardImageTopConstraint.isActive = false
+            titleToTopConstraint.isActive = true
+            cardImageTopConstraint?.isActive = false
+            titleToTopConstraint?.isActive = true
+        case .notification:
+            imgView?.isHidden = true
+            cardImageView?.isHidden = true
+            cardImageTopConstraint.isActive = false
+            titleToTopConstraint.isActive = true
+            cardImageTopConstraint?.isActive = false
+            titleToTopConstraint?.isActive = true
         }
     }
     
