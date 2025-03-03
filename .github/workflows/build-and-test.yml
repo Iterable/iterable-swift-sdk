@@ -4,7 +4,7 @@ on: pull_request
 
 jobs:
   run-tests-job:
-    runs-on: macos-15
+    runs-on: macos-latest
 
     steps:
       - uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
@@ -21,33 +21,9 @@ jobs:
       - name: Print available simulators
         run: xcrun simctl list devices | cat
 
-      - name: List and select simulator
-        id: select-simulator
-        run: |
-          # First find the iOS version line and the first iPhone 15/16 under it
-          while IFS= read -r line; do
-            if [[ $line =~ ^--[[:space:]]iOS[[:space:]]([0-9]+\.[0-9]+)[[:space:]]--$ ]]; then
-              current_ios="${BASH_REMATCH[1]}"
-            elif [[ $line =~ ^[[:space:]]*(iPhone[[:space:]](15|16)[^()]+) ]]; then
-              device_name="$(echo "${BASH_REMATCH[1]}" | sed 's/[[:space:]]*$//')"
-              found_device="true"
-              found_ios="$current_ios"
-              break
-            fi
-          done < <(xcrun simctl list devices)
-
-          if [ -z "$found_device" ]; then
-            echo "No iPhone 15 or 16 simulator found"
-            exit 1
-          fi
-
-          echo "Selected simulator: $device_name (iOS $found_ios)"
-          echo "device_name=$device_name" >> $GITHUB_OUTPUT
-          echo "os_version=$found_ios" >> $GITHUB_OUTPUT
-
       - name: Build and test
         run: |
-          xcodebuild test -project swift-sdk.xcodeproj -scheme swift-sdk -sdk iphonesimulator -destination "platform=iOS Simulator,name=${{ steps.select-simulator.outputs.device_name }},OS=${{ steps.select-simulator.outputs.os_version }}" -enableCodeCoverage YES CODE_SIGNING_REQUIRED=NO 
+          xcodebuild test -project swift-sdk.xcodeproj -scheme swift-sdk -sdk iphonesimulator -destination 'platform=iOS Simulator,name=iPhone 16 Pro,OS=18.2' -enableCodeCoverage YES CODE_SIGNING_REQUIRED=NO 
 
       - name: CocoaPods lint
         run: pod lib lint --allow-warnings
