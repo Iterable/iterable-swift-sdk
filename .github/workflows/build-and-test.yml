@@ -28,7 +28,7 @@ jobs:
           while IFS= read -r line; do
             if [[ $line =~ ^--[[:space:]]iOS[[:space:]]([0-9]+\.[0-9]+)[[:space:]]--$ ]]; then
               current_ios="${BASH_REMATCH[1]}"
-            elif [[ $line =~ ^[[:space:]]*(iPhone[[:space:]](15|16)[^(]*)[[:space:]]*\((.*)\)[[:space:]]*$ ]] && [ -z "$found_device" ]; then
+            elif [[ $line =~ ^[[:space:]]*(iPhone[[:space:]](15|16)[^(]*)[[:space:]]*\([^)]*\)[[:space:]]*$ ]] && [ -z "$found_device" ]; then
               device_name="${BASH_REMATCH[1]}"
               device_name=$(echo "$device_name" | sed 's/[[:space:]]*$//')  # Trim trailing spaces
               found_device="true"
