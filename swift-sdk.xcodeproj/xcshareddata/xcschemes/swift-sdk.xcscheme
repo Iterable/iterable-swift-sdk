@@ -112,7 +112,7 @@
       </CodeCoverageTargets>
       <TestPlans>
          <TestPlanReference
-            reference = "container:../swift-sdk.xctestplan"
+            reference = "container:tests/swift-sdk.xctestplan"
             default = "YES">
          </TestPlanReference>
       </TestPlans>

@@ -13,7 +13,7 @@
       shouldUseLaunchSchemeArgsEnv = "YES">
       <TestPlans>
          <TestPlanReference
-            reference = "container:../endpoint-tests.xctestplan"
+            reference = "container:tests/endpoint-tests.xctestplan"
             default = "YES">
          </TestPlanReference>
       </TestPlans>
