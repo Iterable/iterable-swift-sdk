@@ -67,15 +67,13 @@ class CoffeeListTableViewController: UITableViewController {
     
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "coffeeCell", for: indexPath)
-
         let coffeeList = filtering ? filteredCoffees : coffees
         let coffee = coffeeList[indexPath.row]
         cell.textLabel?.text = coffee.name
         cell.imageView?.image = coffee.image
-
         return cell
     }
-
+    
     // MARK: Tap Handlers
     
     @IBAction func loginOutBarButtonTapped(_: UIBarButtonItem) {
