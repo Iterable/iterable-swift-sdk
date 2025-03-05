@@ -66,28 +66,14 @@ class CoffeeListTableViewController: UITableViewController {
     }
     
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        if indexPath.section == 0 {
-            let cell = tableView.dequeueReusableCell(withIdentifier: "anonymousUsageTrackCell", for: indexPath)
-            cell.textLabel?.text = IterableAPI.getVisitorUsageTracked() ? "Tap to disable Anonymous Usage Track" : "Tap to enable Anonymous Usage Track"
-            cell.textLabel?.numberOfLines = 0
-            cell.accessoryType = IterableAPI.getVisitorUsageTracked() ? .checkmark : .none
-            return cell
-        } else {
-            let cell = tableView.dequeueReusableCell(withIdentifier: "coffeeCell", for: indexPath)
-            let coffeeList = filtering ? filteredCoffees : coffees
-            let coffee = coffeeList[indexPath.row]
-            cell.textLabel?.text = coffee.name
-            cell.imageView?.image = coffee.image
-            return cell
-        }
-    }
+        let cell = tableView.dequeueReusableCell(withIdentifier: "coffeeCell", for: indexPath)
 
-    override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        if indexPath.section == 0 {
-            let permissionToTrack = IterableAPI.getVisitorUsageTracked()
-            IterableAPI.setVisitorUsageTracked(isVisitorUsageTracked: !permissionToTrack)
-            self.tableView.reloadData()
-        }
+        let coffeeList = filtering ? filteredCoffees : coffees
+        let coffee = coffeeList[indexPath.row]
+        cell.textLabel?.text = coffee.name
+        cell.imageView?.image = coffee.image
+
+        return cell
     }
 
     // MARK: Tap Handlers
