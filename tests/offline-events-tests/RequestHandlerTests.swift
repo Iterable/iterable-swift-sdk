@@ -681,6 +681,7 @@ class RequestHandlerTests: XCTestCase {
     }
     
     func testDeleteAllTasksOnLogout() throws {
+        let expectation1 = expectation(description: "tasks should be deleted")
         let localStorage = MockLocalStorage()
         localStorage.offlineMode = true
         let internalApi = InternalIterableAPI.initializeForTesting(networkSession: MockNetworkSession(),
@@ -695,14 +696,19 @@ class RequestHandlerTests: XCTestCase {
                                                                                     requestedAt: Date()))
         try persistenceContextProvider.mainQueueContext().save()
 
+        // Add observer for task deletion completion
+        let observer = NotificationCenter.default.addObserver(forName: NSNotification.Name("IterableTasksDeleted"), object: nil, queue: nil) { _ in
+            let count = try! self.persistenceContextProvider.mainQueueContext().findAllTasks().count
+            if count == 0 {
+                expectation1.fulfill()
+            }
+        }
+
         internalApi.logoutUser()
         
-        let result = TestUtils.tryUntil(attempts: 10) {
-            let count = try! persistenceContextProvider.mainQueueContext().findAllTasks().count
-            return count == 0
-        }
-        
-        XCTAssertTrue(result)
+        wait(for: [expectation1], timeout: testExpectationTimeout)
+        NotificationCenter.default.removeObserver(observer)
+        XCTAssertEqual(try persistenceContextProvider.mainQueueContext().findAllTasks().count, 0)
     }
     
     func testGetRemoteConfiguration() throws {

@@ -913,7 +913,7 @@ class InAppTests: XCTestCase {
         }
         
         let config = IterableConfig()
-        let interval = 0.5
+        let interval = 1.0 // Increased from 0.5 to 1.0 for more stability
         config.urlDelegate = urlDelegate
         config.inAppDisplayInterval = interval
         

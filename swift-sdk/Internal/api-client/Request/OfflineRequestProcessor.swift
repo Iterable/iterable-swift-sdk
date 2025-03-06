@@ -304,6 +304,7 @@ struct OfflineRequestProcessor: RequestProcessorProtocol {
     func deleteAllTasks() {
         ITBInfo()
         taskScheduler.deleteAllTasks()
+        notificationListener.notificationCenter.post(name: NSNotification.Name("IterableTasksDeleted"), object: nil)
     }
     
     private let apiKey: String

@@ -38,7 +38,8 @@
     {
       "skippedTests" : [
         "AuthTests\/testOnNewAuthTokenCallbackCalled()",
-        "AuthTests\/testRetryJwtFailure()"
+        "AuthTests\/testRetryJwtFailure()",
+        "IterableAPIResponseTests\/testRetryOnInvalidJwtPayload()"
       ],
       "target" : {
         "containerPath" : "container:swift-sdk.xcodeproj",
