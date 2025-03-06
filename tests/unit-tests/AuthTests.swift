@@ -559,33 +559,31 @@ class AuthTests: XCTestCase {
         XCTAssertNil(internalAPI.auth.authToken)
     }
     
-    func testAuthTokenRefreshRetryOnlyOnce() throws {
-        throw XCTSkip("skipping this test - auth token retries should occur more than once")
+    func testAuthTokenRefreshRetryOnlyOnce() throws {        
+        let condition1 = expectation(description: "\(#function) - callback not called correctly in some form")
+        condition1.expectedFulfillmentCount = 2
         
-//        let condition1 = expectation(description: "\(#function) - callback not called correctly in some form")
-//        condition1.expectedFulfillmentCount = 2
-//        
-//        let authDelegate = createAuthDelegate({
-//            condition1.fulfill()
-//            return AuthTests.authToken
-//        })
-//        
-//        let config = IterableConfig()
-//        config.authDelegate = authDelegate
-//        
-//        let mockNetworkSession = MockNetworkSession(statusCode: 401,
-//                                                    json: [JsonKey.Response.iterableCode: JsonValue.Code.invalidJwtPayload])
-//        
-//        let internalAPI = InternalIterableAPI.initializeForTesting(config: config,
-//                                                                   networkSession: mockNetworkSession)
-//        
-//        internalAPI.email = AuthTests.email
-//        
-//        // two calls here to trigger the retry more than once
-//        internalAPI.track("event")
-//        internalAPI.track("event")
-//        
-//        wait(for: [condition1], timeout: testExpectationTimeout)
+        let authDelegate = createAuthDelegate({
+            condition1.fulfill()
+            return AuthTests.authToken
+        })
+        
+        let config = IterableConfig()
+        config.authDelegate = authDelegate
+        
+        let mockNetworkSession = MockNetworkSession(statusCode: 401,
+                                                    json: [JsonKey.Response.iterableCode: JsonValue.Code.invalidJwtPayload])
+        
+        let internalAPI = InternalIterableAPI.initializeForTesting(config: config,
+                                                                   networkSession: mockNetworkSession)
+        
+        internalAPI.email = AuthTests.email
+        
+        // two calls here to trigger the retry more than once
+        internalAPI.track("event")
+        internalAPI.track("event")
+        
+        wait(for: [condition1], timeout: testExpectationTimeout)
     }
     
     func testPriorAuthFailedRetryPrevention() {

@@ -7,33 +7,31 @@ import XCTest
 @testable import IterableSDK
 
 final class EmbeddedManagerTests: XCTestCase {
-    func testManagerSingleDelegateUpdated() throws {
-        throw XCTSkip("skipping this test - manager logic updated, needs to be revisited")
+    func testManagerSingleDelegateUpdated() throws {            
+            let condition1 = expectation(description: #function)
             
-//            let condition1 = expectation(description: #function)
-//            
-//            let mockApiClient = MockApiClient()
-//            
-//            let manager = IterableEmbeddedManager(apiClient: mockApiClient,
-//                                                  urlDelegate: nil,
-//                                                  customActionDelegate: nil,
-//                                                  urlOpener: MockUrlOpener(),
-//                                                  allowedProtocols: [],
-//                                                  enableEmbeddedMessaging: true)
-//            
-//            let view1 = ViewWithUpdateDelegate(
-//                onMessagesUpdatedCallback: {
-//                    condition1.fulfill()
-//                },
-//                onEmbeddedMessagingDisabledCallback: nil
-//            )
-//            
-//            manager.addUpdateListener(view1)
-//            
-//            mockApiClient.haveNewEmbeddedMessages()
-//            manager.syncMessages {}
-//            
-//            wait(for: [condition1], timeout: 2)
+            let mockApiClient = MockApiClient()
+            
+            let manager = IterableEmbeddedManager(apiClient: mockApiClient,
+                                                  urlDelegate: nil,
+                                                  customActionDelegate: nil,
+                                                  urlOpener: MockUrlOpener(),
+                                                  allowedProtocols: [],
+                                                  enableEmbeddedMessaging: true)
+            
+            let view1 = ViewWithUpdateDelegate(
+                onMessagesUpdatedCallback: {
+                    condition1.fulfill()
+                },
+                onEmbeddedMessagingDisabledCallback: nil
+            )
+            
+            manager.addUpdateListener(view1)
+            
+            mockApiClient.haveNewEmbeddedMessages()
+            manager.syncMessages {}
+            
+            wait(for: [condition1], timeout: 2)
     }
 
     // getMessages
