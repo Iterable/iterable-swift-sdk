@@ -203,7 +203,6 @@ class HealthMonitorTests: XCTestCase {
     }
 
     func testDeleteAllTasksException() throws {
-        let expectation1 = expectation(description: "offline mode should change")
         let networkSession = MockNetworkSession(statusCode: 200)
         let localStorage = MockLocalStorage()
         localStorage.email = "user@example.com"
@@ -217,22 +216,11 @@ class HealthMonitorTests: XCTestCase {
                                                                    localStorage: localStorage,
                                                                    persistenceContextProvider: MockPersistenceContextProvider(context: context))
         XCTAssertTrue(internalAPI.requestHandler.offlineMode)
-        
-        // Force the error condition
         internalAPI.email = "user2@example.com"
-        
-        // Add observer for offline mode changes
-        var offlineModeChanges = 0
-        let observer = NotificationCenter.default.addObserver(forName: NSNotification.Name("IterableOfflineModeChanged"), object: nil, queue: nil) { _ in
-            offlineModeChanges += 1
-            if !internalAPI.requestHandler.offlineMode {
-                expectation1.fulfill()
-            }
+        let result = TestUtils.tryUntil(attempts: 10) {
+            internalAPI.requestHandler.offlineMode == false
         }
-        
-        wait(for: [expectation1], timeout: testExpectationTimeout)
-        NotificationCenter.default.removeObserver(observer)
-        XCTAssertFalse(internalAPI.requestHandler.offlineMode)
+        XCTAssertTrue(result)
     }
 
     private let dateProvider = MockDateProvider()

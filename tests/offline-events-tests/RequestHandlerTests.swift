@@ -46,11 +46,7 @@ class RequestHandlerTests: XCTestCase {
             "systemName": device.systemName,
             "systemVersion": device.systemVersion,
             "model": device.model,
-            "identifierForVendor": device.identifierForVendor!.uuidString,
-            "mobileFrameworkInfo": [
-                "frameworkType": "native",
-                "iterableSdkVersion": "6.x.x"
-            ]
+            "identifierForVendor": device.identifierForVendor!.uuidString
         ]
         let deviceDict: [String: Any] = [
             "token": registerTokenInfo.hexToken,
@@ -77,21 +73,7 @@ class RequestHandlerTests: XCTestCase {
             TestUtils.validate(request: request, apiEndPoint: Endpoint.api, path: Const.Path.registerDeviceToken)
             var requestBody = request.bodyDict
             requestBody.removeValue(forKey: "createdAt")
-            
-            // Compare each field individually for better error messages
-            let requestDevice = requestBody["device"] as! [String: Any]
-            let requestDataFields = requestDevice["dataFields"] as! [String: Any]
-            let expectedDevice = deviceDict
-            let expectedDataFields = dataFields
-            
-            XCTAssertEqual(requestDevice["token"] as? String, expectedDevice["token"] as? String, "token mismatch")
-            XCTAssertEqual(requestDevice["applicationName"] as? String, expectedDevice["applicationName"] as? String, "applicationName mismatch")
-            XCTAssertEqual(requestDevice["platform"] as? String, expectedDevice["platform"] as? String, "platform mismatch")
-            
-            for (key, value) in expectedDataFields {
-                XCTAssertEqual(requestDataFields[key] as? String, value as? String, "\(key) mismatch")
-            }
-            
+            XCTAssertTrue(TestUtils.areEqual(dict1: bodyDict, dict2: requestBody))
             expectation1.fulfill()
         }
 
@@ -681,7 +663,6 @@ class RequestHandlerTests: XCTestCase {
     }
     
     func testDeleteAllTasksOnLogout() throws {
-        let expectation1 = expectation(description: "tasks should be deleted")
         let localStorage = MockLocalStorage()
         localStorage.offlineMode = true
         let internalApi = InternalIterableAPI.initializeForTesting(networkSession: MockNetworkSession(),
@@ -696,19 +677,14 @@ class RequestHandlerTests: XCTestCase {
                                                                                     requestedAt: Date()))
         try persistenceContextProvider.mainQueueContext().save()
 
-        // Add observer for task deletion completion
-        let observer = NotificationCenter.default.addObserver(forName: NSNotification.Name("IterableTasksDeleted"), object: nil, queue: nil) { _ in
-            let count = try! self.persistenceContextProvider.mainQueueContext().findAllTasks().count
-            if count == 0 {
-                expectation1.fulfill()
-            }
-        }
-
         internalApi.logoutUser()
         
-        wait(for: [expectation1], timeout: testExpectationTimeout)
-        NotificationCenter.default.removeObserver(observer)
-        XCTAssertEqual(try persistenceContextProvider.mainQueueContext().findAllTasks().count, 0)
+        let result = TestUtils.tryUntil(attempts: 10) {
+            let count = try! persistenceContextProvider.mainQueueContext().findAllTasks().count
+            return count == 0
+        }
+        
+        XCTAssertTrue(result)
     }
     
     func testGetRemoteConfiguration() throws {
@@ -888,43 +864,9 @@ class RequestHandlerTests: XCTestCase {
         }
         let localStorage = MockLocalStorage()
         localStorage.email = "user@example.com"
-        localStorage.offlineMode = true // Set offline mode in localStorage too
         let internalAPI = InternalIterableAPI.initializeForTesting(networkSession: networkSession, localStorage: localStorage)
         wait(for: [expectation1], timeout: testExpectationTimeout)
 
-        // Wait for offline mode to be properly set
-        let offlineModeExpectation = expectation(description: "Wait for offline mode")
-        var retryCount = 0
-        let maxRetries = 5
-        
-        func checkOfflineMode() {
-            if retryCount >= maxRetries {
-                XCTFail("Failed to set offline mode after \(maxRetries) attempts")
-                offlineModeExpectation.fulfill()
-                return
-            }
-            
-            // Make a test track call to check processor type
-            networkSession.requestCallback = { request in
-                if request.url!.absoluteString.contains("track") {
-                    let processor = request.allHTTPHeaderFields?[JsonKey.Header.requestProcessor]!
-                    if processor == Const.ProcessorTypeName.offline {
-                        offlineModeExpectation.fulfill()
-                    } else {
-                        retryCount += 1
-                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-                            checkOfflineMode()
-                        }
-                    }
-                }
-            }
-            internalAPI.track("testEvent\(retryCount)")
-        }
-        
-        checkOfflineMode()
-        wait(for: [offlineModeExpectation], timeout: testExpectationTimeout)
-
-        // Now test the actual event tracking
         let expectation2 = expectation(description: #function)
         networkSession.requestCallback = { request in
             if request.url!.absoluteString.contains("track") {

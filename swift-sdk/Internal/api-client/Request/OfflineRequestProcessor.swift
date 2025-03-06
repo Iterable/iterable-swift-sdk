@@ -304,7 +304,6 @@ struct OfflineRequestProcessor: RequestProcessorProtocol {
     func deleteAllTasks() {
         ITBInfo()
         taskScheduler.deleteAllTasks()
-        notificationListener.postNotification(name: NSNotification.Name("IterableTasksDeleted"))
     }
     
     private let apiKey: String
@@ -442,10 +441,6 @@ struct OfflineRequestProcessor: RequestProcessorProtocol {
                     ITBError("could not find fulfill for taskId: \(taskId)")
                 }
             }
-        }
-
-        func postNotification(name: Notification.Name) {
-            notificationCenter.post(name: name, object: nil, userInfo: nil)
         }
 
         private let notificationCenter: NotificationCenterProtocol
