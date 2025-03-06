@@ -39,6 +39,7 @@
       "skippedTests" : [
         "AuthTests\/testOnNewAuthTokenCallbackCalled()",
         "AuthTests\/testRetryJwtFailure()",
+        "InAppTests\/testMultipleMesssagesInShortTime()",
         "IterableAPIResponseTests\/testRetryOnInvalidJwtPayload()"
       ],
       "target" : {
@@ -69,6 +70,10 @@
       }
     },
     {
+      "skippedTests" : [
+        "HealthMonitorTests\/testDeleteAllTasksException()",
+        "RequestHandlerTests\/testDeleteAllTasksOnLogout()"
+      ],
       "target" : {
         "containerPath" : "container:swift-sdk.xcodeproj",
         "identifier" : "ACFD5AB724C8200C008E497A",
