@@ -185,12 +185,14 @@ class TaskRunnerTests: XCTestCase {
     func testResumeWhenNetworkIsBackOnline() throws {
         let networkSession = MockNetworkSession(statusCode: 401, json: [:], error: IterableError.general(description: "Mock error"))
         let checker = NetworkConnectivityChecker(networkSession: networkSession)
-        let monitor = NetworkMonitor()
+        let monitor = MockNetworkMonitor()
         monitor.start()
         let notificationCenter = MockNotificationCenter()
         let manager = NetworkConnectivityManager(networkMonitor: monitor,
                                                  connectivityChecker: checker,
-                                                 notificationCenter: notificationCenter)
+                                                 notificationCenter: notificationCenter,
+                                                 offlineModePollingInterval: 0.5,
+                                                 onlineModePollingInterval: 0.5)
 
         let healthMonitor = HealthMonitor(dataProvider: HealthMonitorDataProvider(maxTasks: 1000,
                                                                                   persistenceContextProvider: persistenceContextProvider),
@@ -217,6 +219,7 @@ class TaskRunnerTests: XCTestCase {
         
         // set network status back to normal
         networkSession.responseCallback = nil
+        monitor.forceStatusUpdate() // Force immediate network status check
         
         verifyTaskIsExecuted(notificationCenter, withinInterval: 10.0)
 
