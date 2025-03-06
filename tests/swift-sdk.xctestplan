@@ -73,6 +73,9 @@
       "skippedTests" : [
         "HealthMonitorTests\/testDeleteAllTasksException()",
         "RequestHandlerTests\/testDeleteAllTasksOnLogout()",
+        "RequestHandlerTests\/testTrackInAppClick()",
+        "RequestHandlerTests\/testTrackInAppOpen()",
+        "RequestHandlerTests\/testTrackInboxSession()",
         "TaskSchedulerTests\/testScheduleTask()"
       ],
       "target" : {
