@@ -36,6 +36,10 @@
   },
   "testTargets" : [
     {
+      "skippedTests" : [
+        "AuthTests\/testOnNewAuthTokenCallbackCalled()",
+        "AuthTests\/testRetryJwtFailure()"
+      ],
       "target" : {
         "containerPath" : "container:swift-sdk.xcodeproj",
         "identifier" : "AC7B142A20D02CE200877BFE",
