@@ -37,24 +37,10 @@
   "testTargets" : [
     {
       "skippedTests" : [
-        "AuthTests\/testAsyncAuthTokenRetrieval()",
-        "AuthTests\/testAuthTokenChangeWithSameEmail()",
-        "AuthTests\/testAuthTokenChangeWithSameUserId()",
-        "AuthTests\/testAuthTokenDeletedOnLogout()",
-        "AuthTests\/testAuthTokenRetrievalFailureReset()",
-        "AuthTests\/testEmailWithTokenPersistence()",
-        "AuthTests\/testLogoutUser()",
-        "AuthTests\/testNewEmailAndThenChangeToken()",
-        "AuthTests\/testNewUserIdAndThenChangeToken()",
         "AuthTests\/testOnNewAuthTokenCallbackCalled()",
-        "AuthTests\/testPushRegistrationAfterAuthTokenRetrieval()",
-        "AuthTests\/testRefreshTimerQueueRejection()",
         "AuthTests\/testRetryJwtFailure()",
-        "AuthTests\/testUpdateEmailAndThenChangeToken()",
-        "AuthTests\/testUpdateEmailWithTokenParam()",
-        "AuthTests\/testUserIdWithTokenPersistence()",
-        "AutoRegistrationTests\/testCallDisableAndEnable()",
-        "RequestCreatorTests\/testRegisterTokenRequestPrefersUserId()"
+        "InAppTests\/testMultipleMesssagesInShortTime()",
+        "IterableAPIResponseTests\/testRetryOnInvalidJwtPayload()"
       ],
       "target" : {
         "containerPath" : "container:swift-sdk.xcodeproj",
@@ -85,11 +71,9 @@
     },
     {
       "skippedTests" : [
-        "NetworkConnectivityManagerTests\/testConnectivityChange()",
-        "NetworkConnectivityManagerTests\/testPollingNetworkMonitor()",
-        "RequestHandlerTests\/testFeatureFlagTurnOnOfflineMode()",
-        "RequestHandlerTests\/testRegister()",
-        "TaskRunnerTests\/testResumeWhenNetworkIsBackOnline()"
+        "HealthMonitorTests\/testDeleteAllTasksException()",
+        "RequestHandlerTests\/testDeleteAllTasksOnLogout()",
+        "TaskSchedulerTests\/testScheduleTask()"
       ],
       "target" : {
         "containerPath" : "container:swift-sdk.xcodeproj",
