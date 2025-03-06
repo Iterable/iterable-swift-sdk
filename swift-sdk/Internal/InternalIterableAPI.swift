@@ -200,22 +200,7 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
                                                 deviceAttributes: deviceAttributes,
                                                 sdkVersion: localStorage.sdkVersion,
                                                 mobileFrameworkInfo: mobileFrameworkInfo)
-        if !isEitherUserIdOrEmailSet() && localStorage.userIdAnnon == nil {
-            if config.enableAnonActivation {
-                anonymousUserManager.trackAnonTokenRegistration(token: token)
-            }
-            onFailure?("Iterable SDK must be initialized with an API key and user email/userId before calling SDK methods", nil)
-            return
-        }
         
-        hexToken = token
-        let registerTokenInfo = RegisterTokenInfo(hexToken: token,
-                                                  appName: appName,
-                                                  pushServicePlatform: config.pushPlatform,
-                                                  apnsType: dependencyContainer.apnsTypeChecker.apnsType,
-                                                  deviceId: deviceId,
-                                                  deviceAttributes: deviceAttributes,
-                                                  sdkVersion: localStorage.sdkVersion)
         requestHandler.register(registerTokenInfo: registerTokenInfo,
                                 notificationStateProvider: notificationStateProvider,
                                 isFromFCM: isFromFCM,
