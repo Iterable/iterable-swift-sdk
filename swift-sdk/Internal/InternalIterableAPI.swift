@@ -218,7 +218,7 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
     func register(token: Data,
                   onSuccess: OnSuccessHandler? = nil,
                   onFailure: OnFailureHandler? = nil) {
-        register(token: token.hexString(), onSuccess: onSuccess, onFailure: onFailure)
+        register(token: token.hexString(), isFromFCM: false, onSuccess: onSuccess, onFailure: onFailure)
     }
     
     @discardableResult
