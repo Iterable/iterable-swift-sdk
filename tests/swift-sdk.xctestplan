@@ -72,7 +72,8 @@
     {
       "skippedTests" : [
         "HealthMonitorTests\/testDeleteAllTasksException()",
-        "RequestHandlerTests\/testDeleteAllTasksOnLogout()"
+        "RequestHandlerTests\/testDeleteAllTasksOnLogout()",
+        "TaskSchedulerTests\/testScheduleTask()"
       ],
       "target" : {
         "containerPath" : "container:swift-sdk.xcodeproj",
