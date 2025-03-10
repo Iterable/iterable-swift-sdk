@@ -70,6 +70,7 @@ class RequestHandlerTests: XCTestCase {
                                                   selectOffline: false)
         requestHandler.register(registerTokenInfo: registerTokenInfo,
                                 notificationStateProvider: MockNotificationStateProvider(enabled: true),
+                                isFromFCM: false,
                                 onSuccess: nil,
                                 onFailure: nil)
 
