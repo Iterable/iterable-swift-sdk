@@ -99,6 +99,82 @@ class RequestHandlerTests: XCTestCase {
         wait(for: [expectation1], timeout: testExpectationTimeout)
     }
     
+    func testRegisterFCM() throws {
+        let registerTokenInfo = RegisterTokenInfo(hexToken: "zee-token",
+                                                  appName: "zee-app-name",
+                                                  pushServicePlatform: .auto,
+                                                  apnsType: .sandbox,
+                                                  deviceId: "deviceId",
+                                                  deviceAttributes: [:],
+                                                  sdkVersion: "6.x.x",
+                                                  mobileFrameworkInfo: IterableAPIMobileFrameworkInfo(frameworkType: .native, iterableSdkVersion: "6.x.x"))
+        
+        let device = UIDevice.current
+        let dataFields: [String: Any] = [
+            "deviceId": registerTokenInfo.deviceId,
+            "iterableSdkVersion": registerTokenInfo.sdkVersion!,
+            "notificationsEnabled": true,
+            "appPackageName": Bundle.main.appPackageName!,
+            "appVersion": Bundle.main.appVersion!,
+            "appBuild": Bundle.main.appBuild!,
+            "localizedModel": device.localizedModel,
+            "userInterfaceIdiom": "Phone",
+            "systemName": device.systemName,
+            "systemVersion": device.systemVersion,
+            "model": device.model,
+            "identifierForVendor": device.identifierForVendor!.uuidString,
+            "mobileFrameworkInfo": [
+                "frameworkType": "native",
+                "iterableSdkVersion": "6.x.x"
+            ]
+        ]
+        let deviceDict: [String: Any] = [
+            "token": registerTokenInfo.hexToken,
+            "applicationName": registerTokenInfo.appName,
+            "platform": "GCM",
+            "dataFields": dataFields
+        ]
+        let bodyDict: [String: Any] = [
+            "device": deviceDict,
+            "email": "user@example.com"
+        ]
+
+        let expectation1 = expectation(description: #function)
+        let networkSession = MockNetworkSession()
+        let requestHandler = createRequestHandler(networkSession: networkSession,
+                                                  notificationCenter: MockNotificationCenter(),
+                                                  selectOffline: false)
+        requestHandler.register(registerTokenInfo: registerTokenInfo,
+                                notificationStateProvider: MockNotificationStateProvider(enabled: false),
+                                isFromFCM: true,
+                                onSuccess: nil,
+                                onFailure: nil)
+
+        networkSession.requestCallback = { request in
+            TestUtils.validate(request: request, apiEndPoint: Endpoint.api, path: Const.Path.registerDeviceToken)
+            var requestBody = request.bodyDict
+            requestBody.removeValue(forKey: "createdAt")
+            
+            // Compare each field individually for better error messages
+            let requestDevice = requestBody["device"] as! [String: Any]
+            let requestDataFields = requestDevice["dataFields"] as! [String: Any]
+            let expectedDevice = deviceDict
+            let expectedDataFields = dataFields
+            
+            XCTAssertEqual(requestDevice["token"] as? String, expectedDevice["token"] as? String, "token mismatch")
+            XCTAssertEqual(requestDevice["applicationName"] as? String, expectedDevice["applicationName"] as? String, "applicationName mismatch")
+            XCTAssertEqual(requestDevice["platform"] as? String, expectedDevice["platform"] as? String, "platform mismatch")
+            
+            for (key, value) in expectedDataFields {
+                XCTAssertEqual(requestDataFields[key] as? String, value as? String, "\(key) mismatch")
+            }
+            
+            expectation1.fulfill()
+        }
+
+        wait(for: [expectation1], timeout: testExpectationTimeout)
+    }
+    
     func testDisableUserforCurrentUser() throws {
         let hexToken = "zee-token"
         let bodyDict: [String: Any] = [
