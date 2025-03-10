@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Scheme
    LastUpgradeVersion = "1420"
-   version = "1.3">
+   version = "1.7">
    <BuildAction
       parallelizeBuildables = "YES"
       buildImplicitDependencies = "YES">
@@ -110,6 +110,12 @@
             ReferencedContainer = "container:swift-sdk.xcodeproj">
          </BuildableReference>
       </CodeCoverageTargets>
+      <TestPlans>
+         <TestPlanReference
+            reference = "container:tests/swift-sdk.xctestplan"
+            default = "YES">
+         </TestPlanReference>
+      </TestPlans>
       <Testables>
          <TestableReference
             skipped = "NO">
@@ -120,56 +126,6 @@
                BlueprintName = "unit-tests"
                ReferencedContainer = "container:swift-sdk.xcodeproj">
             </BuildableReference>
-            <SkippedTests>
-               <Test
-                  Identifier = "AuthTests/testAsyncAuthTokenRetrieval()">
-               </Test>
-               <Test
-                  Identifier = "AuthTests/testAuthTokenChangeWithSameEmail()">
-               </Test>
-               <Test
-                  Identifier = "AuthTests/testAuthTokenChangeWithSameUserId()">
-               </Test>
-               <Test
-                  Identifier = "AuthTests/testAuthTokenDeletedOnLogout()">
-               </Test>
-               <Test
-                  Identifier = "AuthTests/testAuthTokenRetrievalFailureReset()">
-               </Test>
-               <Test
-                  Identifier = "AuthTests/testEmailWithTokenPersistence()">
-               </Test>
-               <Test
-                  Identifier = "AuthTests/testLogoutUser()">
-               </Test>
-               <Test
-                  Identifier = "AuthTests/testNewEmailAndThenChangeToken()">
-               </Test>
-               <Test
-                  Identifier = "AuthTests/testNewUserIdAndThenChangeToken()">
-               </Test>
-               <Test
-                  Identifier = "AuthTests/testOnNewAuthTokenCallbackCalled()">
-               </Test>
-               <Test
-                  Identifier = "AuthTests/testPushRegistrationAfterAuthTokenRetrieval()">
-               </Test>
-               <Test
-                  Identifier = "AuthTests/testRefreshTimerQueueRejection()">
-               </Test>
-               <Test
-                  Identifier = "AuthTests/testRetryJwtFailure()">
-               </Test>
-               <Test
-                  Identifier = "AuthTests/testUpdateEmailAndThenChangeToken()">
-               </Test>
-               <Test
-                  Identifier = "AuthTests/testUpdateEmailWithTokenParam()">
-               </Test>
-               <Test
-                  Identifier = "AuthTests/testUserIdWithTokenPersistence()">
-               </Test>
-            </SkippedTests>
          </TestableReference>
          <TestableReference
             skipped = "NO">
@@ -210,20 +166,6 @@
                BlueprintName = "offline-events-tests"
                ReferencedContainer = "container:swift-sdk.xcodeproj">
             </BuildableReference>
-            <SkippedTests>
-               <Test
-                  Identifier = "NetworkConnectivityManagerTests/testConnectivityChange()">
-               </Test>
-               <Test
-                  Identifier = "NetworkConnectivityManagerTests/testPollingNetworkMonitor()">
-               </Test>
-               <Test
-                  Identifier = "RequestHandlerTests/testFeatureFlagTurnOnOfflineMode()">
-               </Test>
-               <Test
-                  Identifier = "TaskRunnerTests/testResumeWhenNetworkIsBackOnline()">
-               </Test>
-            </SkippedTests>
          </TestableReference>
       </Testables>
    </TestAction>

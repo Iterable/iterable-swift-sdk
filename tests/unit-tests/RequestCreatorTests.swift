@@ -343,10 +343,10 @@ class RequestCreatorTests: XCTestCase {
         TestUtils.validateMatch(keyPath: KeyPath(keys: JsonKey.preferUserId), value: true, inDictionary: body)
         
         // Add assertions for mobile framework info
-        TestUtils.validateMatch(keyPath: KeyPath(string: "mobileFrameworkInfo.frameworkType"), 
+        TestUtils.validateMatch(keyPath: KeyPath(keys: JsonKey.device, JsonKey.dataFields, JsonKey.mobileFrameworkInfo, JsonKey.frameworkType), 
                               value: "native", 
                               inDictionary: body)
-        TestUtils.validateMatch(keyPath: KeyPath(string: "mobileFrameworkInfo.iterableSdkVersion"), 
+        TestUtils.validateMatch(keyPath: KeyPath(keys: JsonKey.device, JsonKey.dataFields, JsonKey.mobileFrameworkInfo, JsonKey.iterableSdkVersion), 
                               value: testSdkVersion, 
                               inDictionary: body)
     }

@@ -4,7 +4,7 @@ on: pull_request
 
 jobs:
   run-tests-job:
-    runs-on: macos-14
+    runs-on: macos-15
 
     steps:
       - uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
@@ -18,10 +18,13 @@ jobs:
           gem install erb
           gem install xcpretty
 
+      - name: Print available simulators
+        run: xcrun simctl list devices | cat
+
       - name: Build and test
         run: |
-          xcodebuild test -project swift-sdk.xcodeproj -scheme swift-sdk -sdk iphonesimulator -destination 'platform=iOS Simulator,name=iPhone 16 Pro' -enableCodeCoverage YES CODE_SIGNING_REQUIRED=NO | xcpretty && exit ${PIPESTATUS[0]}
-
+          xcodebuild test -project swift-sdk.xcodeproj -scheme swift-sdk -sdk iphonesimulator -destination 'platform=iOS Simulator,name=iPhone 16 Pro,OS=18.2' -enableCodeCoverage YES -resultBundlePath TestResults.xcresult CODE_SIGNING_REQUIRED=NO | xcpretty && exit ${PIPESTATUS[0]}
+ 
       - name: CocoaPods lint
         run: pod lib lint --allow-warnings
 
