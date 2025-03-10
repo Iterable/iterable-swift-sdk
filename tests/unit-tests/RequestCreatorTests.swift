@@ -334,7 +334,7 @@ class RequestCreatorTests: XCTestCase {
                                                   mobileFrameworkInfo: IterableAPIMobileFrameworkInfo(frameworkType: .native, iterableSdkVersion: testSdkVersion))
         
         let urlRequest = convertToUrlRequest(userIdRequestCreator.createRegisterTokenRequest(registerTokenInfo: registerTokenInfo,
-                                                                                             notificationsEnabled: true))
+                                                                                             notificationsEnabled: true, isFromFCM: false),
         TestUtils.validateHeader(urlRequest, apiKey)
         TestUtils.validate(request: urlRequest, requestType: .post, apiEndPoint: Endpoint.api, path: Const.Path.registerDeviceToken)
         
