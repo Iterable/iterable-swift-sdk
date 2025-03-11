@@ -177,6 +177,7 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
     // MARK: - API Request Calls
     
     func register(token: String,
+                  isFromFCM: Bool,
                   onSuccess: OnSuccessHandler? = nil,
                   onFailure: OnFailureHandler? = nil) {
         guard let appName = pushIntegrationName else {
@@ -199,8 +200,10 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
                                                 deviceAttributes: deviceAttributes,
                                                 sdkVersion: localStorage.sdkVersion,
                                                 mobileFrameworkInfo: mobileFrameworkInfo)
+        
         requestHandler.register(registerTokenInfo: registerTokenInfo,
                                 notificationStateProvider: notificationStateProvider,
+                                isFromFCM: isFromFCM,
                                 onSuccess: { (_ data: [AnyHashable: Any]?) in
                                                 self._successCallback?(data)
                                                 onSuccess?(data)
@@ -215,7 +218,7 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
     func register(token: Data,
                   onSuccess: OnSuccessHandler? = nil,
                   onFailure: OnFailureHandler? = nil) {
-        register(token: token.hexString(), onSuccess: onSuccess, onFailure: onFailure)
+        register(token: token.hexString(), isFromFCM: false, onSuccess: onSuccess, onFailure: onFailure)
     }
     
     @discardableResult

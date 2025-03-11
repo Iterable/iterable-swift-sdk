@@ -39,10 +39,12 @@ class RequestHandler: RequestHandlerProtocol {
     
     func register(registerTokenInfo: RegisterTokenInfo,
                   notificationStateProvider: NotificationStateProviderProtocol,
+                  isFromFCM: Bool,
                   onSuccess: OnSuccessHandler?,
                   onFailure: OnFailureHandler?) {
         onlineProcessor.register(registerTokenInfo: registerTokenInfo,
                                  notificationStateProvider: notificationStateProvider,
+                                 isFromFCM: isFromFCM,
                                  onSuccess: onSuccess,
                                  onFailure: onFailure)
     }

@@ -8,8 +8,9 @@
 
 import UIKit
 import UserNotifications
-
 import IterableSDK
+import Firebase
+import FirebaseMessaging
 
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
@@ -21,6 +22,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     func application(_: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         // ITBL: Setup Notification
         setupNotifications()
+        FirebaseApp.configure()
+        Messaging.messaging().delegate = self
         
         // ITBL: Initialize API
         let config = IterableConfig()
@@ -86,6 +89,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     
     func application(_ application: UIApplication, didReceiveRemoteNotification userInfo: [AnyHashable: Any], fetchCompletionHandler completionHandler: @escaping (UIBackgroundFetchResult) -> Void) {
         IterableAppIntegration.application(application, didReceiveRemoteNotification: userInfo, fetchCompletionHandler: completionHandler)
+        Messaging.messaging().appDidReceiveMessage(userInfo)
+        completionHandler(.noData)
     }
     
     // MARK: Deep link
@@ -103,7 +108,12 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     
     // ITBL:
     func application(_: UIApplication, didRegisterForRemoteNotificationsWithDeviceToken deviceToken: Data) {
-        IterableAPI.register(token: deviceToken)
+//        For Firebase Notification Intigration
+        if !deviceToken.hexString.isEmpty {
+            Messaging.messaging().apnsToken = deviceToken
+        }
+//        For APNS
+//        IterableAPI.register(token: deviceToken)
     }
     
     func application(_: UIApplication, didFailToRegisterForRemoteNotificationsWithError _: Error) {}
@@ -130,6 +140,14 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
                     UIApplication.shared.registerForRemoteNotifications()
                 }
             }
+        }
+    }
+}
+
+extension AppDelegate : MessagingDelegate {
+    func messaging(_ messaging: Messaging, didReceiveRegistrationToken fcmToken: String?) {
+        if let token = fcmToken {
+            IterableAPI.registerFCM(token: token)
         }
     }
 }
@@ -169,5 +187,12 @@ extension AppDelegate: IterableCustomActionDelegate {
             }
         }
         return false
+    }
+}
+
+
+extension Data {
+    public var hexString: String {
+        return map { String(format: "%02.2hhx", arguments: [$0]) }.joined()
     }
 }

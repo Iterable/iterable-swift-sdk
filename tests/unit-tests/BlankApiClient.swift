@@ -7,7 +7,7 @@ import Foundation
 @testable import IterableSDK
 
 class BlankApiClient: ApiClientProtocol {
-    func register(registerTokenInfo: RegisterTokenInfo, notificationsEnabled: Bool) -> Pending<SendRequestValue, SendRequestError> {
+    func register(registerTokenInfo: IterableSDK.RegisterTokenInfo, notificationsEnabled: Bool, isFromFCM: Bool) -> Pending<SendRequestValue, SendRequestError> {
         Pending()
     }
     
