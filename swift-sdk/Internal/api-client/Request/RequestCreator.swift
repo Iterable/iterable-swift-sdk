@@ -34,7 +34,7 @@ struct RequestCreator {
     }
     
     func createRegisterTokenRequest(registerTokenInfo: RegisterTokenInfo,
-                                    notificationsEnabled: Bool) -> Result<IterableRequest, IterableError> {
+                                    notificationsEnabled: Bool, fcmEnabled: Bool) -> Result<IterableRequest, IterableError> {
         if case .none = auth.emailOrUserId {
             ITBError(Self.authMissingMessage)
             return .failure(IterableError.general(description: Self.authMissingMessage))
