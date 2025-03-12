@@ -595,7 +595,7 @@ struct RequestCreator {
                    args: args)
     }
     
-    private static func pushServicePlatformToString(_ pushServicePlatform: PushServicePlatform, apnsType: APNSType) -> String {
+    private static func pushServicePlatformToString(_ pushServicePlatform: PushServicePlatform, apnsType: APNSType, fcmEnabled: Bool) -> String {
         switch pushServicePlatform {
         case .production:
             return fcmEnabled ? JsonValue.gcmProduction : JsonValue.apnsProduction
@@ -603,9 +603,9 @@ struct RequestCreator {
             return fcmEnabled ? JsonValue.gcmSandbox : JsonValue.apnsSandbox
         case .auto:
             if apnsType == .sandbox {
-                return isFromFCM ? JsonValue.gcmSandbox : JsonValue.apnsSandbox
+                return fcmEnabled ? JsonValue.gcmSandbox : JsonValue.apnsSandbox
             } else {
-                return isFromFCM ? JsonValue.gcmProduction : JsonValue.apnsProduction
+                return fcmEnabled ? JsonValue.gcmProduction : JsonValue.apnsProduction
             }
         }
     }
