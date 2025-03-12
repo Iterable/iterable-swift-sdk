@@ -51,7 +51,7 @@ struct RequestCreator {
         let deviceDictionary: [String: Any] = [
             JsonKey.token: registerTokenInfo.hexToken,
             JsonKey.platform: RequestCreator.pushServicePlatformToString(registerTokenInfo.pushServicePlatform,
-                                                                         apnsType: registerTokenInfo.apnsType),
+                                                                         apnsType: registerTokenInfo.apnsType, fcmEnabled: fcmEnabled),
             JsonKey.applicationName: registerTokenInfo.appName,
             JsonKey.dataFields: dataFields
         ]
@@ -598,11 +598,15 @@ struct RequestCreator {
     private static func pushServicePlatformToString(_ pushServicePlatform: PushServicePlatform, apnsType: APNSType) -> String {
         switch pushServicePlatform {
         case .production:
-            return JsonValue.apnsProduction
+            return fcmEnabled ? JsonValue.gcmProduction : JsonValue.apnsProduction
         case .sandbox:
-            return JsonValue.apnsSandbox
+            return fcmEnabled ? JsonValue.gcmSandbox : JsonValue.apnsSandbox
         case .auto:
-            return apnsType == .sandbox ? JsonValue.apnsSandbox : JsonValue.apnsProduction
+            if apnsType == .sandbox {
+                return isFromFCM ? JsonValue.gcmSandbox : JsonValue.apnsSandbox
+            } else {
+                return isFromFCM ? JsonValue.gcmProduction : JsonValue.apnsProduction
+            }
         }
     }
     
