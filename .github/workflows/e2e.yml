@@ -24,4 +24,9 @@ jobs:
         run: |
           ./tests/endpoint-tests/scripts/run_test.sh
 
+      - uses: sumeruchat/xcresulttool@v1
+        with:
+          path: TestResults.xcresult
+        if: success() || failure()
+
       
