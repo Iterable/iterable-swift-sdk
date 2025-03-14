@@ -152,5 +152,8 @@ public class IterableConfig: NSObject {
     
     /// The type of mobile framework we are using.
     public var mobileFrameworkInfo: IterableAPIMobileFrameworkInfo?
+
+    /// Sets whether firebase messaging is used
+    public var useFirebaseMessaging = false
 }
 
