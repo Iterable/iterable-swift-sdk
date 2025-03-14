@@ -83,6 +83,10 @@ class BlankApiClient: ApiClientProtocol {
         Pending()
     }
     
+    func getEmbeddedMessages(placementIds: [Int]?) -> Pending<PlacementsPayload, SendRequestError> {
+        return Pending()
+    }
+    
     func track(embeddedMessageReceived message: IterableEmbeddedMessage) -> Pending<SendRequestValue, SendRequestError> {
         Pending()
     }
