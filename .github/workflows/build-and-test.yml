@@ -28,5 +28,10 @@ jobs:
       - name: CocoaPods lint
         run: pod lib lint --allow-warnings
 
+      - uses: sumeruchat/xcresulttool@v1
+        with:
+          path: TestResults.xcresult
+        if: success() || failure()
+
       - name: Upload coverage report to codecov.io
         run: bash <(curl -s https://codecov.io/bash) -X gcov -J 'IterableSDK' -J 'IterableAppExtensions'
