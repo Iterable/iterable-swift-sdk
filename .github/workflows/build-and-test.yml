@@ -28,7 +28,7 @@ jobs:
       - name: CocoaPods lint
         run: pod lib lint --allow-warnings
 
-      - uses: sumeruchat/xcresulttool@v1
+      - uses: sumeruchat/xcresulttool@main
         with:
           path: TestResults.xcresult
         if: success() || failure()
