@@ -99,6 +99,19 @@ jobs:
               reportDetail = reportDetail.substring(0, charactersLimit);
             }
             
+            // Determine conclusion based on test results
+            // Count failed tests using same method as in process test results step
+            const totalTests = parseInt(
+              require('child_process').execSync('grep -c "<tr id=" test-results.html').toString().trim() || '0'
+            );
+            const passedTests = parseInt(
+              require('child_process').execSync('grep -c "✅" test-results.html').toString().trim() || '0'
+            );
+            const failedTests = totalTests - passedTests;
+            
+            // Set conclusion based on failed tests count
+            const conclusion = failedTests > 0 ? 'failure' : 'success';
+            
             // Create the check
             await github.rest.checks.create({
               owner: context.repo.owner,
@@ -106,9 +119,9 @@ jobs:
               name: 'Xcode Test Results',
               head_sha: sha,
               status: 'completed',
-              conclusion: 'success', // Or determine based on test results
+              conclusion: conclusion,
               output: {
-                title: 'Xcode Test Results',
+                title: `Xcode Test Results: ${passedTests}/${totalTests} tests passed`,
                 summary: reportSummary,
                 text: reportDetail
               }
