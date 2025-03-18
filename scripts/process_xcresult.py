@@ -673,14 +673,91 @@ class XCResultProcessor:
         return html
 
 
+def generate_summary_json(xcresult_path, output_path):
+    """Generate a JSON file with test summary statistics"""
+    try:
+        # First generate the HTML report to get the same data
+        processor = XCResultProcessor(xcresult_path, debug=False)
+        html_report = processor.generate_html_report()
+        
+        # Extract test counts from the HTML table
+        total_tests_match = re.search(r'<tr>\s*<td>(\d+)</td>\s*<td>(\d+)</td>\s*<td>(\d+)</td>\s*<td>(\d+)</td>\s*<td>(\d+)</td>\s*<td>([\d\.]+)s</td>', html_report)
+        
+        if total_tests_match:
+            total_tests = int(total_tests_match.group(1))
+            passed_tests = int(total_tests_match.group(2))
+            failed_tests = int(total_tests_match.group(3))
+            skipped_tests = int(total_tests_match.group(4))
+            expected_failures = int(total_tests_match.group(5))
+            duration = float(total_tests_match.group(6))
+            
+            # Calculate success rate
+            success_rate = 0
+            if total_tests > 0:
+                success_rate = round((passed_tests / total_tests) * 100, 1)
+            
+            # Create summary stats
+            summary_stats = {
+                "total_tests": total_tests,
+                "passed_tests": passed_tests,
+                "failed_tests": failed_tests,
+                "skipped_tests": skipped_tests,
+                "expected_failures": expected_failures,
+                "success_rate": success_rate,
+                "duration": duration
+            }
+        else:
+            print("Warning: Could not extract test counts from HTML table. Using fallback method.")
+            # Use fallback method
+            summary_stats = {
+                "total_tests": 0,
+                "passed_tests": 0,
+                "failed_tests": 0,
+                "skipped_tests": 0,
+                "expected_failures": 0,
+                "success_rate": 0,
+                "duration": 0
+            }
+        
+        # Write summary to JSON file
+        with open(output_path, 'w') as f:
+            json.dump(summary_stats, f, indent=2)
+        
+        print(f"Summary statistics saved to {os.path.abspath(output_path)}")
+        return summary_stats
+        
+    except Exception as e:
+        print(f"Error generating summary JSON: {str(e)}")
+        traceback.print_exc()
+        # Return default values on error
+        return {
+            "total_tests": 0,
+            "passed_tests": 0,
+            "failed_tests": 0,
+            "skipped_tests": 0,
+            "expected_failures": 0,
+            "success_rate": 0,
+            "duration": 0
+        }
+
+def collect_tests_recursively(tests, result):
+    """Helper function to collect tests recursively from nested structure"""
+    for test in tests:
+        if 'subtests' in test:
+            collect_tests_recursively(test['subtests'], result)
+        else:
+            result.append(test)
+
 def main():
-    parser = argparse.ArgumentParser(description="Process Xcode test results from an xcresult bundle")
-    parser.add_argument("--path", required=True, help="Path to the xcresult bundle")
-    parser.add_argument("--output", required=True, help="Path to save the HTML output file")
-    parser.add_argument("--open-in-browser", action="store_true", help="Open the generated report in the default web browser")
-    parser.add_argument("--debug", action="store_true", help="Show debug information")
-    parser.add_argument("--hide-passed-tests", action="store_true", help="Hide passed tests in the report")
-    parser.add_argument("--hide-code-coverage", action="store_true", help="Hide code coverage in the report")
+    parser = argparse.ArgumentParser(description='Process Xcode test results')
+    parser.add_argument('--path', required=True, help='Path to .xcresult bundle')
+    parser.add_argument('--output', required=True, help='Path to output HTML report')
+    parser.add_argument('--open', action='store_true', help='Open the report in a web browser after generation')
+    parser.add_argument('--open-in-browser', action='store_true', help='Open the report in a web browser after generation')
+    parser.add_argument('--summary-json', help='Path to output summary statistics as JSON')
+    parser.add_argument('--debug', action='store_true', help='Show debug information')
+    parser.add_argument('--hide-passed-tests', action='store_true', help='Hide passed tests in the report')
+    parser.add_argument('--hide-code-coverage', action='store_true', help='Hide code coverage in the report')
     
     args = parser.parse_args()
     
@@ -705,10 +782,14 @@ def main():
         
         print(f"Report successfully generated and saved to {output_path}")
         
+        # Generate summary statistics JSON if requested
+        if args.summary_json:
+            summary_stats = generate_summary_json(args.path, args.summary_json)
+        
         # Open the report in the browser if requested
-        if args.open_in_browser:
+        if args.open or args.open_in_browser:
+            webbrowser.open('file://' + os.path.abspath(args.output))
             print(f"Opening report in default web browser...")
-            webbrowser.open(f"file://{output_path}")
         
     except Exception as e:
         print(f"Error: {str(e)}")

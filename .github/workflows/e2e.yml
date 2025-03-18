@@ -13,6 +13,15 @@ jobs:
         with:
           xcode-version: latest-stable
 
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+
+      - name: Install dependencies
+        run: |
+          brew install jq
+
       - name: Build and test
         env:
           api_key: ${{secrets.E2E_API_KEY}}
@@ -24,9 +33,35 @@ jobs:
         run: |
           ./tests/endpoint-tests/scripts/run_test.sh
 
-      - uses: sumeruchat/xcresulttool@main
+      - name: Process test results
+        run: |
+          ./scripts/github-actions/process-test-results.sh TestResults.xcresult "E2E Tests" .
+        if: success() || failure()
+
+      - name: Create Test Report Check
+        uses: actions/github-script@v7
+        if: success() || failure()
         with:
-          path: TestResults.xcresult
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const createCheck = require('./scripts/github-actions/create-test-check.js');
+            await createCheck({
+              github, 
+              context, 
+              core, 
+              reportDir: '.', 
+              testType: 'E2E Tests'
+            });
+
+      - name: Add to Job Summary
+        run: cat report-summary.md >> $GITHUB_STEP_SUMMARY
+        if: success() || failure()
+
+      - name: Upload test results as artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: e2e-test-results
+          path: test-results.html
         if: success() || failure()
 
       

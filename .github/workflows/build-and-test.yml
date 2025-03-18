@@ -22,6 +22,7 @@ jobs:
         run: |
           gem install erb
           gem install xcpretty
+          brew install jq
 
       - name: Print available simulators
         run: xcrun simctl list devices | cat
@@ -32,42 +33,7 @@ jobs:
  
       - name: Process test results
         run: |
-          # Process XCResult into HTML files
-          python scripts/process_xcresult.py --path TestResults.xcresult --output test-results.html
-          
-          # Split the HTML into summary and details for GitHub Checks
-          # First 10000 chars for summary, rest for details (just an example approach)
-          cat test-results.html | head -c 10000 > report-summary.html
-          cat test-results.html > report-detail.html
-          
-          # Create a simple markdown summary for the job summary
-          echo "# Test Results Summary" > report-summary.md
-          echo "Test run completed. See GitHub Checks for full HTML report." >> report-summary.md
-          
-          # Extract test statistics
-          echo "## Test Statistics" >> report-summary.md
-          
-          # Count table rows with test IDs as proxy for total tests
-          TOTAL_TESTS=$(grep -c "<tr id=" test-results.html)
-          echo "* Total Tests: $TOTAL_TESTS" >> report-summary.md
-          
-          # Count passed tests (using checkmark emoji)
-          PASSED_TESTS=$(grep -c "✅" test-results.html)
-          echo "* Tests Passed: $PASSED_TESTS" >> report-summary.md
-          
-          # Assume rest are failed (though likely zero in your case)
-          FAILED_TESTS=$(( $TOTAL_TESTS - $PASSED_TESTS ))
-          echo "* Tests Failed: $FAILED_TESTS" >> report-summary.md
-          
-          # Calculate success rate
-          if [ $TOTAL_TESTS -gt 0 ]; then
-            SUCCESS_RATE=$(( $PASSED_TESTS * 100 / $TOTAL_TESTS ))
-            echo "* Success Rate: ${SUCCESS_RATE}%" >> report-summary.md
-          fi
-          
-          # Include a link to the full report
-          echo "" >> report-summary.md
-          echo "For complete details, see the Check Run or download the test-results artifact." >> report-summary.md
+          ./scripts/github-actions/process-test-results.sh TestResults.xcresult "Unit Tests" .
         if: success() || failure()
 
       - name: Create Test Report Check
@@ -76,55 +42,13 @@ jobs:
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
-            const fs = require('fs');
-            
-            // Get PR information or commit SHA
-            const pr = context.payload.pull_request;
-            const sha = pr.head.sha;
-            
-            // Read the generated HTML
-            let reportSummary = fs.readFileSync('report-summary.html', 'utf8');
-            let reportDetail = fs.readFileSync('report-detail.html', 'utf8');
-            
-            // GitHub Checks has a character limit of 65535
-            const charactersLimit = 65535;
-            
-            if (reportSummary.length > charactersLimit) {
-              console.warn(`Summary will be truncated (exceeded ${charactersLimit} characters)`);
-              reportSummary = reportSummary.substring(0, charactersLimit);
-            }
-            
-            if (reportDetail.length > charactersLimit) {
-              console.warn(`Detail will be truncated (exceeded ${charactersLimit} characters)`);
-              reportDetail = reportDetail.substring(0, charactersLimit);
-            }
-            
-            // Determine conclusion based on test results
-            // Count failed tests using same method as in process test results step
-            const totalTests = parseInt(
-              require('child_process').execSync('grep -c "<tr id=" test-results.html').toString().trim() || '0'
-            );
-            const passedTests = parseInt(
-              require('child_process').execSync('grep -c "✅" test-results.html').toString().trim() || '0'
-            );
-            const failedTests = totalTests - passedTests;
-            
-            // Set conclusion based on failed tests count
-            const conclusion = failedTests > 0 ? 'failure' : 'success';
-            
-            // Create the check
-            await github.rest.checks.create({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              name: 'Xcode Test Results',
-              head_sha: sha,
-              status: 'completed',
-              conclusion: conclusion,
-              output: {
-                title: `Xcode Test Results: ${passedTests}/${totalTests} tests passed`,
-                summary: reportSummary,
-                text: reportDetail
-              }
+            const createCheck = require('./scripts/github-actions/create-test-check.js');
+            await createCheck({
+              github, 
+              context, 
+              core, 
+              reportDir: '.', 
+              testType: 'Unit Tests'
             });
 
       - name: Add to Job Summary
