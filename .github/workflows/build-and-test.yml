@@ -39,6 +39,35 @@ jobs:
           # First 10000 chars for summary, rest for details (just an example approach)
           cat test-results.html | head -c 10000 > report-summary.html
           cat test-results.html > report-detail.html
+          
+          # Create a simple markdown summary for the job summary
+          echo "# Test Results Summary" > report-summary.md
+          echo "Test run completed. See GitHub Checks for full HTML report." >> report-summary.md
+          
+          # Extract test statistics
+          echo "## Test Statistics" >> report-summary.md
+          
+          # Count table rows with test IDs as proxy for total tests
+          TOTAL_TESTS=$(grep -c "<tr id=" test-results.html)
+          echo "* Total Tests: $TOTAL_TESTS" >> report-summary.md
+          
+          # Count passed tests (using checkmark emoji)
+          PASSED_TESTS=$(grep -c "✅" test-results.html)
+          echo "* Tests Passed: $PASSED_TESTS" >> report-summary.md
+          
+          # Count failed class elements - adjust if needed
+          FAILED_TESTS=$(grep "<td[^>]*>Failed</td>" test-results.html | wc -l)
+          echo "* Tests Failed: $FAILED_TESTS" >> report-summary.md
+          
+          # Calculate success rate
+          if [ $TOTAL_TESTS -gt 0 ]; then
+            SUCCESS_RATE=$(echo "scale=2; $PASSED_TESTS * 100 / $TOTAL_TESTS" | bc)
+            echo "* Success Rate: ${SUCCESS_RATE}%" >> report-summary.md
+          fi
+          
+          # Include a link to the full report
+          echo "" >> report-summary.md
+          echo "For complete details, see the Check Run or download the test-results artifact." >> report-summary.md
         if: success() || failure()
 
       - name: Create Test Report Check
@@ -86,7 +115,7 @@ jobs:
             });
 
       - name: Add to Job Summary
-        run: cat report-summary.html >> $GITHUB_STEP_SUMMARY
+        run: cat report-summary.md >> $GITHUB_STEP_SUMMARY
         if: success() || failure()
 
       - name: Upload test results as artifact
