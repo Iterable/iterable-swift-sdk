@@ -55,13 +55,13 @@ jobs:
           PASSED_TESTS=$(grep -c "✅" test-results.html)
           echo "* Tests Passed: $PASSED_TESTS" >> report-summary.md
           
-          # Count failed class elements - adjust if needed
-          FAILED_TESTS=$(grep "<td[^>]*>Failed</td>" test-results.html | wc -l)
+          # Assume rest are failed (though likely zero in your case)
+          FAILED_TESTS=$(( $TOTAL_TESTS - $PASSED_TESTS ))
           echo "* Tests Failed: $FAILED_TESTS" >> report-summary.md
           
           # Calculate success rate
           if [ $TOTAL_TESTS -gt 0 ]; then
-            SUCCESS_RATE=$(echo "scale=2; $PASSED_TESTS * 100 / $TOTAL_TESTS" | bc)
+            SUCCESS_RATE=$(( $PASSED_TESTS * 100 / $TOTAL_TESTS ))
             echo "* Success Rate: ${SUCCESS_RATE}%" >> report-summary.md
           fi
           
