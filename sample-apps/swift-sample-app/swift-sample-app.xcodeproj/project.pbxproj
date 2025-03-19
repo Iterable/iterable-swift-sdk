@@ -14,6 +14,8 @@
 		9F5874072D8B894300163424 /* FirebaseAnalyticsWithoutAdIdSupport in Frameworks */ = {isa = PBXBuildFile; productRef = 9F5874062D8B894300163424 /* FirebaseAnalyticsWithoutAdIdSupport */; };
 		9F5874092D8B894300163424 /* FirebaseAppCheck in Frameworks */ = {isa = PBXBuildFile; productRef = 9F5874082D8B894300163424 /* FirebaseAppCheck */; };
 		9F58740B2D8B894300163424 /* FirebaseAppDistribution-Beta in Frameworks */ = {isa = PBXBuildFile; productRef = 9F58740A2D8B894300163424 /* FirebaseAppDistribution-Beta */; };
+		9F58740D2D8B8BB500163424 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 9F58740C2D8B8BB500163424 /* GoogleService-Info.plist */; };
+		9F58740E2D8B8BB500163424 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 9F58740C2D8B8BB500163424 /* GoogleService-Info.plist */; };
 		AC1BDF5820E304BC000010CA /* CoffeeListTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC5ECD9E20E304000081E1DA /* CoffeeListTableViewController.swift */; };
 		AC1BDF5920E304BF000010CA /* DeepLinkHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC1BDF5720E30436000010CA /* DeepLinkHandler.swift */; };
 		AC1BDF5A20E304CC000010CA /* CoffeeViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC5ECD9F20E304070081E1DA /* CoffeeViewController.swift */; };
@@ -57,6 +59,7 @@
 
 /* Begin PBXFileReference section */
 		551A5FEC251AB1510004C9A0 /* swift-sdk */ = {isa = PBXFileReference; lastKnownFileType = folder; name = "swift-sdk"; path = ../..; sourceTree = "<group>"; };
+		9F58740C2D8B8BB500163424 /* GoogleService-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		AC1BDF5720E30436000010CA /* DeepLinkHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeepLinkHandler.swift; sourceTree = "<group>"; };
 		AC5ECD9C20E303D20081E1DA /* UIViewController+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIViewController+Extension.swift"; sourceTree = "<group>"; };
 		AC5ECD9E20E304000081E1DA /* CoffeeListTableViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoffeeListTableViewController.swift; sourceTree = "<group>"; };
@@ -152,6 +155,7 @@
 				ACFA148420E3033700AF4A5A /* Model */,
 				ACFA148720E3036200AF4A5A /* Storyboards */,
 				ACA3A13820E2F6AF00FEF74F /* AppDelegate.swift */,
+				9F58740C2D8B8BB500163424 /* GoogleService-Info.plist */,
 			);
 			path = "swift-sample-app";
 			sourceTree = "<group>";
@@ -316,6 +320,7 @@
 			files = (
 				ACA3A14320E2F6B100FEF74F /* LaunchScreen.storyboard in Resources */,
 				ACA3A14020E2F6B100FEF74F /* Assets.xcassets in Resources */,
+				9F58740E2D8B8BB500163424 /* GoogleService-Info.plist in Resources */,
 				ACA3A13E20E2F6AF00FEF74F /* Main.storyboard in Resources */,
 				E9C60B7B2B3C2061005C4462 /* embeddedmessages.json in Resources */,
 			);
@@ -325,6 +330,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				9F58740D2D8B8BB500163424 /* GoogleService-Info.plist in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

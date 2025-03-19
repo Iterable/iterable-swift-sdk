@@ -10,17 +10,19 @@ import UIKit
 import UserNotifications
 
 import IterableSDK
+import Firebase
 
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
     var window: UIWindow?
     
     // ITBL: Set your actual api key here.
-    let iterableApiKey = ""
+    let iterableApiKey = "d75bedca52b24b2e820146bc3ade5d94"
     
     func application(_: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         // ITBL: Setup Notification
         setupNotifications()
+        FirebaseApp.configure()
         
         // ITBL: Initialize API
         let config = IterableConfig()
