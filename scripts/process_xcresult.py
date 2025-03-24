@@ -588,8 +588,174 @@ class XCResultProcessor:
         except (subprocess.SubprocessError, FileNotFoundError) as e:
             raise ValueError(f"Failed to detect Xcode version: {str(e)}")
 
+    def generate_test_report(self):
+        """Generate test report HTML without code coverage"""
+        formatter = Formatter(self.xcresult_path)
+        
+        report = formatter.format({
+            'showPassedTests': self.show_passed_tests,
+            'showCodeCoverage': self.show_code_coverage
+        })
+        
+        # Combine test report parts
+        html = f"""<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Xcode Test Results</title>
+    <style>
+        body {{
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }}
+        h1, h2, h3, h4 {{
+            margin-top: 1.5em;
+            margin-bottom: 0.5em;
+        }}
+        pre {{
+            background-color: #f5f5f5;
+            padding: 15px;
+            border-radius: 5px;
+            overflow: auto;
+            font-family: SFMono-Regular, Consolas, "Liberation Mono", Menlo, monospace;
+        }}
+        .success {{
+            color: #28a745;
+        }}
+        .failure {{
+            color: #dc3545;
+        }}
+        table {{
+            border-collapse: collapse;
+            width: 100%;
+            margin-bottom: 20px;
+        }}
+        th, td {{
+            text-align: left;
+            padding: 8px;
+            border-bottom: 1px solid #ddd;
+        }}
+        th {{
+            background-color: #f5f5f5;
+        }}
+        tr:hover {{
+            background-color: #f5f5f5;
+        }}
+        ul {{
+            list-style-type: none;
+            padding-left: 20px;
+        }}
+        code {{
+            background-color: #f5f5f5;
+            padding: 2px 4px;
+            border-radius: 3px;
+            font-family: SFMono-Regular, Consolas, "Liberation Mono", Menlo, monospace;
+        }}
+    </style>
+</head>
+<body>
+    <h1>Xcode Test Results</h1>
+    <p>Results from {self.xcresult_path}</p>
+    
+    {report['reportSummary']}
+    
+    {report['reportDetail']}
+</body>
+</html>
+"""
+        return html
+
+    def generate_coverage_report(self):
+        """Generate code coverage HTML report"""
+        formatter = Formatter(self.xcresult_path)
+        
+        report = formatter.format({
+            'showPassedTests': self.show_passed_tests,
+            'showCodeCoverage': self.show_code_coverage
+        })
+        
+        # Skip if no code coverage data
+        if not report['codeCoverage']:
+            return None
+            
+        # Create coverage report
+        html = f"""<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Code Coverage Results</title>
+    <style>
+        body {{
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }}
+        h1, h2, h3, h4 {{
+            margin-top: 1.5em;
+            margin-bottom: 0.5em;
+        }}
+        pre {{
+            background-color: #f5f5f5;
+            padding: 15px;
+            border-radius: 5px;
+            overflow: auto;
+            font-family: SFMono-Regular, Consolas, "Liberation Mono", Menlo, monospace;
+        }}
+        .success {{
+            color: #28a745;
+        }}
+        .failure {{
+            color: #dc3545;
+        }}
+        table {{
+            border-collapse: collapse;
+            width: 100%;
+            margin-bottom: 20px;
+        }}
+        th, td {{
+            text-align: left;
+            padding: 8px;
+            border-bottom: 1px solid #ddd;
+        }}
+        th {{
+            background-color: #f5f5f5;
+        }}
+        tr:hover {{
+            background-color: #f5f5f5;
+        }}
+        ul {{
+            list-style-type: none;
+            padding-left: 20px;
+        }}
+        code {{
+            background-color: #f5f5f5;
+            padding: 2px 4px;
+            border-radius: 3px;
+            font-family: SFMono-Regular, Consolas, "Liberation Mono", Menlo, monospace;
+        }}
+    </style>
+</head>
+<body>
+    <h1>Code Coverage Results</h1>
+    <p>Coverage for {self.xcresult_path}</p>
+    
+    {report['codeCoverage']}
+</body>
+</html>
+"""
+        return html
+
     def generate_html_report(self):
-        """Generate a complete HTML report using the new Formatter"""
+        """Generate a complete HTML report (for backward compatibility)"""
         formatter = Formatter(self.xcresult_path)
         
         report = formatter.format({
@@ -726,7 +892,9 @@ def generate_summary_json(xcresult_path, output_path):
 def main():
     parser = argparse.ArgumentParser(description='Process Xcode test results')
     parser.add_argument('--path', required=True, help='Path to .xcresult bundle')
-    parser.add_argument('--output', required=True, help='Path to output HTML report')
+    parser.add_argument('--output', required=False, help='Path to output HTML report (combined report, for backward compatibility)')
+    parser.add_argument('--test-output', required=False, help='Path to output test report HTML')
+    parser.add_argument('--coverage-output', required=False, help='Path to output code coverage HTML')
     parser.add_argument('--open', action='store_true', help='Open the report in a web browser after generation')
     parser.add_argument('--open-in-browser', action='store_true', help='Open the report in a web browser after generation')
     parser.add_argument('--summary-json', help='Path to output summary statistics as JSON')
@@ -744,25 +912,67 @@ def main():
         processor.show_passed_tests = True
         processor.show_code_coverage = True
         
-        html_report = processor.generate_html_report()
+        # Determine which reports to generate
+        generate_combined = args.output is not None
+        generate_test = args.test_output is not None
+        generate_coverage = args.coverage_output is not None
         
-        # Get the absolute path for the output file
-        output_path = os.path.abspath(args.output)
+        # If no specific outputs are requested, default to combined report
+        if not generate_combined and not generate_test and not generate_coverage:
+            print("No output paths specified. Please specify at least one of --output, --test-output, or --coverage-output")
+            sys.exit(1)
         
-        # Save the report to the output file
-        with open(output_path, 'w') as f:
-            f.write(html_report)
+        # Generate combined report if requested (backward compatibility)
+        if generate_combined:
+            html_report = processor.generate_html_report()
+            output_path = os.path.abspath(args.output)
+            
+            with open(output_path, 'w') as f:
+                f.write(html_report)
+            
+            print(f"Combined report successfully generated and saved to {output_path}")
+            
+            # Open in browser if requested
+            if args.open or args.open_in_browser:
+                webbrowser.open('file://' + output_path)
+                print(f"Opening combined report in default web browser...")
         
-        print(f"Report successfully generated and saved to {output_path}")
+        # Generate test report if requested
+        if generate_test:
+            test_report = processor.generate_test_report()
+            test_output_path = os.path.abspath(args.test_output)
+            
+            with open(test_output_path, 'w') as f:
+                f.write(test_report)
+            
+            print(f"Test report successfully generated and saved to {test_output_path}")
+            
+            # Open in browser if requested and combined report wasn't opened
+            if (args.open or args.open_in_browser) and not generate_combined:
+                webbrowser.open('file://' + test_output_path)
+                print(f"Opening test report in default web browser...")
+        
+        # Generate coverage report if requested
+        if generate_coverage:
+            coverage_report = processor.generate_coverage_report()
+            if coverage_report:
+                coverage_output_path = os.path.abspath(args.coverage_output)
+                
+                with open(coverage_output_path, 'w') as f:
+                    f.write(coverage_report)
+                
+                print(f"Coverage report successfully generated and saved to {coverage_output_path}")
+                
+                # Open in browser if requested and no other reports were opened
+                if (args.open or args.open_in_browser) and not generate_combined and not generate_test:
+                    webbrowser.open('file://' + coverage_output_path)
+                    print(f"Opening coverage report in default web browser...")
+            else:
+                print("No code coverage data found. Coverage report not generated.")
         
         # Generate summary statistics JSON if requested
         if args.summary_json:
             summary_stats = generate_summary_json(args.path, args.summary_json)
-        
-        # Open the report in the browser if requested
-        if args.open or args.open_in_browser:
-            webbrowser.open('file://' + os.path.abspath(args.output))
-            print(f"Opening report in default web browser...")
         
     except Exception as e:
         print(f"Error: {str(e)}")

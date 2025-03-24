@@ -51,21 +51,6 @@ jobs:
               testType: 'Unit Tests'
             });
 
-      - name: Add to Job Summary
-        run: cat report-summary.md >> $GITHUB_STEP_SUMMARY
-        if: success() || failure()
-        
-      - name: Upload test results as artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: unit-test-report
-          path: |
-            test-results.html
-            test-results-only.html
-            report-summary.md
-            test-summary.json
-        if: success() || failure()
-        
       - name: CocoaPods lint
         run: pod lib lint --allow-warnings
 
