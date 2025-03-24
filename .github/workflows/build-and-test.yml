@@ -78,6 +78,20 @@ jobs:
             } catch (error) {
               core.warning(`Error reading test summary: ${error.message}`);
             }
+
+             
+            // Extract just the main content from the HTML - removing the HTML tags
+            function stripHtml(html) {
+              // Simple regex to extract text content from HTML
+              return html
+                .replace(/<head>[\s\S]*?<\/head>/gi, '')
+                .replace(/<style>[\s\S]*?<\/style>/gi, '')
+                .replace(/<script>[\s\S]*?<\/script>/gi, '')
+                .replace(/<[^>]*>/g, ' ')
+                .replace(/\s{2,}/g, ' ')
+                .replace(/<h2>[\s\S]*?<\/h2>/gi, '')
+                .trim();
+            }
             
             // Create the check with test results as summary and coverage as details
             await github.rest.checks.create({
@@ -89,8 +103,8 @@ jobs:
               conclusion: testStats.failed_tests > 0 ? 'failure' : 'success',
               output: {
                 title: `Tests: ${testStats.passed_tests}/${testStats.passed_tests + testStats.failed_tests} passed (${(testStats.success_rate).toFixed(1)}%)`,
-                summary: testReport.substring(0, 65000),
-                text: coverageReport.substring(0, 65000)
+                summary: stripHtml(testReport.substring(0, 65000)),
+                text: stripHtml(coverageReport.substring(0, 65000))
               }
             });
 
