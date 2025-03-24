@@ -15,8 +15,6 @@ dev.config
 build/
 build2/
 
-test-output/
-
 # needed integration testing
 env_vars.sh
 CI.swift
