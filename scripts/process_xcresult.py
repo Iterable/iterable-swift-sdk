@@ -121,9 +121,10 @@ class Parser:
 
 
 class Formatter:
-    def __init__(self, bundle_path):
+    def __init__(self, bundle_path, test_stats=None):
         self.bundle_path = bundle_path
         self.parser = Parser(bundle_path)
+        self.test_stats = test_stats
         
         # Define status icons similar to TypeScript version
         self.passed_icon = "✅"  # In TypeScript this is an image
@@ -256,53 +257,149 @@ class Formatter:
                 
             lines.append(f"<h2>{title}</h2>")
             
-            # Process test statistics
-            total_tests = 0
-            passed_tests = 0
-            failed_tests = 0
-            skipped_tests = 0
-            expected_failures = 0
-            total_duration = 0
-            
-            # Collect statistics from all sections
-            for section_name, section in chapter['sections'].items():
-                for test in section['details']:
-                    if isinstance(test, dict) and 'testStatus' in test:
-                        total_tests += 1
-                        status = test['testStatus']
-                        if status == 'Success':
-                            passed_tests += 1
-                        elif status == 'Failure':
-                            failed_tests += 1
-                        elif status == 'Skipped':
-                            skipped_tests += 1
-                        elif status == 'Expected Failure':
-                            expected_failures += 1
-                        
-                        # Add duration
-                        if 'duration' in test:
+            # If we have test stats from xcresulttool, use those instead of trying to
+            # count from the XCResult structure, which is often incomplete
+            if self.test_stats:
+                total_tests = self.test_stats['total_tests']
+                passed_tests = self.test_stats['passed_tests']
+                failed_tests = self.test_stats['failed_tests']
+                skipped_tests = self.test_stats['skipped_tests']
+                expected_failures = 0  # Not tracked in the summary stats
+                
+                # Duration is not in the summary JSON but we can estimate
+                total_duration = 0
+                for section_name, section in chapter['sections'].items():
+                    for test in section.get('details', []):
+                        if isinstance(test, dict) and 'duration' in test:
                             total_duration += test['duration']
+                
+                # Generate summary table with accurate test counts
+                lines.append("<table>")
+                lines.append("<tr>")
+                lines.append("<th>Total</th>")
+                lines.append("<th>Passed</th>")
+                lines.append("<th>Failed</th>")
+                lines.append("<th>Skipped</th>")
+                lines.append("<th>Expected Failures</th>")
+                lines.append("<th>Duration</th>")
+                lines.append("</tr>")
+                
+                lines.append("<tr>")
+                lines.append(f"<td>{total_tests}</td>")
+                lines.append(f"<td>{passed_tests}</td>")
+                lines.append(f"<td>{failed_tests}</td>")
+                lines.append(f"<td>{skipped_tests}</td>")
+                lines.append(f"<td>{expected_failures}</td>")
+                lines.append(f"<td>{total_duration:.2f}s</td>")
+                lines.append("</tr>")
+                lines.append("</table>")
+                
+            else:
+                # Process test statistics the old way
+                total_tests = 0
+                passed_tests = 0
+                failed_tests = 0
+                skipped_tests = 0
+                expected_failures = 0
+                total_duration = 0
+                
+                # Collect statistics from all sections
+                for section_name, section in chapter['sections'].items():
+                    # Check if the summary has more direct test counts (often more reliable)
+                    if 'summary' in section and isinstance(section['summary'], dict):
+                        summary = section['summary']
+                        if 'tests' in summary:
+                            # Some XCResults provide test counts directly in summary
+                            # Handle case where 'tests' might be a list instead of a number
+                            tests_value = summary.get('tests', 0)
+                            if isinstance(tests_value, list):
+                                # If it's a list, try to get the length or first value
+                                if len(tests_value) > 0:
+                                    if isinstance(tests_value[0], dict) and '_value' in tests_value[0]:
+                                        total_tests += tests_value[0]['_value']
+                                    else:
+                                        total_tests += len(tests_value)
+                            else:
+                                total_tests += tests_value
+                            
+                            # Handle failures which might also be lists
+                            failures_value = summary.get('failures', 0)
+                            if isinstance(failures_value, list):
+                                if len(failures_value) > 0:
+                                    if isinstance(failures_value[0], dict) and '_value' in failures_value[0]:
+                                        failed_tests += failures_value[0]['_value']
+                                    else:
+                                        failed_tests += len(failures_value)
+                            else:
+                                failed_tests += failures_value
+                            
+                            # Handle skipped tests which might also be lists
+                            skipped_value = summary.get('skippedTests', 0)
+                            if isinstance(skipped_value, list):
+                                if len(skipped_value) > 0:
+                                    if isinstance(skipped_value[0], dict) and '_value' in skipped_value[0]:
+                                        skipped_tests += skipped_value[0]['_value']
+                                    else:
+                                        skipped_tests += len(skipped_value)
+                            else:
+                                skipped_tests += skipped_value
+                            
+                            # Duration may be directly available too
+                            if 'duration' in summary:
+                                duration_value = summary.get('duration', 0)
+                                if not isinstance(duration_value, (int, float)):
+                                    # Try to convert non-numeric types to float
+                                    try:
+                                        duration_value = float(duration_value)
+                                    except (ValueError, TypeError):
+                                        duration_value = 0
+                                total_duration += duration_value
+                            
+                            # If we found summary data, don't double-count via details
+                            continue
+                    
+                    # If no summary data was found, try counting from details
+                    for test in section.get('details', []):
+                        if isinstance(test, dict) and 'testStatus' in test:
+                            total_tests += 1
+                            status = test['testStatus']
+                            if status == 'Success':
+                                passed_tests += 1
+                            elif status == 'Failure':
+                                failed_tests += 1
+                            elif status == 'Skipped':
+                                skipped_tests += 1
+                            elif status == 'Expected Failure':
+                                expected_failures += 1
+                            
+                            # Add duration
+                            if 'duration' in test:
+                                total_duration += test['duration']
+                
+                # If we got total tests from summaries but not passed tests, calculate it
+                if total_tests > 0 and passed_tests == 0:
+                    passed_tests = total_tests - failed_tests - skipped_tests - expected_failures
             
-            # Generate summary table
-            lines.append("<table>")
-            lines.append("<tr>")
-            lines.append("<th>Total</th>")
-            lines.append("<th>Passed</th>")
-            lines.append("<th>Failed</th>")
-            lines.append("<th>Skipped</th>")
-            lines.append("<th>Expected Failures</th>")
-            lines.append("<th>Duration</th>")
-            lines.append("</tr>")
-            
-            lines.append("<tr>")
-            lines.append(f"<td>{total_tests}</td>")
-            lines.append(f"<td>{passed_tests}</td>")
-            lines.append(f"<td>{failed_tests}</td>")
-            lines.append(f"<td>{skipped_tests}</td>")
-            lines.append(f"<td>{expected_failures}</td>")
-            lines.append(f"<td>{total_duration:.2f}s</td>")
-            lines.append("</tr>")
-            lines.append("</table>")
+                # Generate summary table
+                lines.append("<table>")
+                lines.append("<tr>")
+                lines.append("<th>Total</th>")
+                lines.append("<th>Passed</th>")
+                lines.append("<th>Failed</th>")
+                lines.append("<th>Skipped</th>")
+                lines.append("<th>Expected Failures</th>")
+                lines.append("<th>Duration</th>")
+                lines.append("</tr>")
+                
+                lines.append("<tr>")
+                lines.append(f"<td>{total_tests}</td>")
+                lines.append(f"<td>{passed_tests}</td>")
+                lines.append(f"<td>{failed_tests}</td>")
+                lines.append(f"<td>{skipped_tests}</td>")
+                lines.append(f"<td>{expected_failures}</td>")
+                lines.append(f"<td>{total_duration:.2f}s</td>")
+                lines.append("</tr>")
+                lines.append("</table>")
             
             # Process test environment
             if 'runDestination' in chapter and 'targetArchitecture' in chapter['runDestination']:
@@ -554,11 +651,12 @@ class Formatter:
 
 
 class XCResultProcessor:
-    def __init__(self, xcresult_path, debug=False):
+    def __init__(self, xcresult_path, debug=False, test_stats=None):
         self.xcresult_path = xcresult_path
         self.debug = debug
         self.show_passed_tests = True
         self.show_code_coverage = True
+        self.test_stats = test_stats
         
         # Verify the xcresult bundle exists
         if not os.path.exists(xcresult_path):
@@ -590,7 +688,7 @@ class XCResultProcessor:
 
     def generate_test_report(self):
         """Generate test report HTML without code coverage"""
-        formatter = Formatter(self.xcresult_path)
+        formatter = Formatter(self.xcresult_path, self.test_stats)
         
         report = formatter.format({
             'showPassedTests': self.show_passed_tests,
@@ -672,7 +770,7 @@ class XCResultProcessor:
 
     def generate_coverage_report(self):
         """Generate code coverage HTML report"""
-        formatter = Formatter(self.xcresult_path)
+        formatter = Formatter(self.xcresult_path, self.test_stats)
         
         report = formatter.format({
             'showPassedTests': self.show_passed_tests,
@@ -756,7 +854,7 @@ class XCResultProcessor:
 
     def generate_html_report(self):
         """Generate a complete HTML report (for backward compatibility)"""
-        formatter = Formatter(self.xcresult_path)
+        formatter = Formatter(self.xcresult_path, self.test_stats)
         
         report = formatter.format({
             'showPassedTests': self.show_passed_tests,
@@ -842,33 +940,76 @@ class XCResultProcessor:
 def generate_summary_json(xcresult_path, output_path):
     """Generate JSON summary of test results"""
     try:
-        formatter = Formatter(xcresult_path)
-        report = formatter.format()
+        print(f"Extracting test summary from {xcresult_path}")
+        
+        # Use xcrun xcresulttool directly to get test summary
+        result = subprocess.run(
+            ['xcrun', 'xcresulttool', 'get', '--legacy', '--format', 'json', '--path', xcresult_path],
+            capture_output=True, text=True, check=True
+        )
+        
+        # Parse the JSON output
+        xcresult_json = json.loads(result.stdout)
         
         # Initialize counters
-        total_tests = 0
         passed_tests = 0
         failed_tests = 0
         skipped_tests = 0
         
-        # Process all chapters and sections
-        for chapter in report.get('chapters', []):
-            for section_name, section in chapter.get('sections', {}).items():
-                details = section.get('details', [])
-                for test in details:
-                    total_tests += 1
-                    status = test.get('testStatus', '')
-                    if status == 'Success':
-                        passed_tests += 1
-                    elif status == 'Failure':
-                        failed_tests += 1
-                    elif status == 'Skipped':
-                        skipped_tests += 1
+        # Extract test counts from actions (test runs)
+        if 'actions' in xcresult_json:
+            for action in xcresult_json.get('actions', {}).get('_values', []):
+                if 'actionResult' in action and 'testsRef' in action['actionResult']:
+                    # Get the ID of the test summaries
+                    test_ref_id = action['actionResult']['testsRef']['id']['_value']
+                    
+                    # Get detailed test results using the ID
+                    test_result = subprocess.run(
+                        ['xcrun', 'xcresulttool', 'get', '--legacy', '--format', 'json', '--path', xcresult_path, '--id', test_ref_id],
+                        capture_output=True, text=True, check=True
+                    )
+                    test_json = json.loads(test_result.stdout)
+                    
+                    # Process summaries to get test counts
+                    if 'summaries' in test_json:
+                        for summary in test_json['summaries'].get('_values', []):
+                            if 'testableSummaries' in summary:
+                                for testable in summary['testableSummaries'].get('_values', []):
+                                    # Extract test counts from testable summaries
+                                    if 'tests' in testable:
+                                        # Count tests recursively
+                                        counts = count_tests_recursively(testable['tests'])
+                                        passed_tests += counts['passed']
+                                        failed_tests += counts['failed']
+                                        skipped_tests += counts['skipped']
         
-        # Calculate success rate
+        # Fallback: try to extract from the summary directly
+        if passed_tests == 0 and failed_tests == 0:
+            # Try to find summary directly in the action results
+            for action in xcresult_json.get('actions', {}).get('_values', []):
+                if 'actionResult' in action:
+                    result = action['actionResult']
+                    if 'summaryRef' in result:
+                        summary_id = result['summaryRef']['id']['_value']
+                        summary_result = subprocess.run(
+                            ['xcrun', 'xcresulttool', 'get', '--legacy', '--format', 'json', '--path', xcresult_path, '--id', summary_id],
+                            capture_output=True, text=True, check=True
+                        )
+                        summary_json = json.loads(summary_result.stdout)
+                        
+                        if 'totals' in summary_json:
+                            failed_tests = summary_json['totals'].get('failedCount', {}).get('_value', 0)
+                            skipped_tests = summary_json['totals'].get('skippedCount', {}).get('_value', 0)
+                            passed_tests = summary_json['totals'].get('testsCount', {}).get('_value', 0) - failed_tests - skipped_tests
+        
+        # Total includes all tests (passed, failed, and skipped)
+        total_tests = passed_tests + failed_tests + skipped_tests
+        
+        # Calculate success rate (excluding skipped tests)
         success_rate = 0
-        if total_tests > 0:
-            success_rate = (passed_tests / total_tests) * 100
+        denominator = passed_tests + failed_tests
+        if denominator > 0:
+            success_rate = (passed_tests / denominator) * 100
         
         # Create summary JSON
         summary = {
@@ -879,6 +1020,8 @@ def generate_summary_json(xcresult_path, output_path):
             'success_rate': round(success_rate, 1)
         }
         
+        print(f"Final test summary: {summary}")
+        
         # Write to file
         with open(output_path, 'w') as f:
             json.dump(summary, f)
@@ -888,6 +1031,41 @@ def generate_summary_json(xcresult_path, output_path):
         print(f"Error generating summary JSON: {str(e)}")
         traceback.print_exc()
         return None
+
+def count_tests_recursively(tests_array):
+    """Count tests recursively from the test hierarchy"""
+    counts = {'total': 0, 'passed': 0, 'failed': 0, 'skipped': 0}
+    
+    if not tests_array or '_values' not in tests_array:
+        return counts
+    
+    for test in tests_array.get('_values', []):
+        # If this is a test group with subtests, process them recursively
+        if 'subtests' in test:
+            sub_counts = count_tests_recursively(test['subtests'])
+            counts['passed'] += sub_counts['passed']
+            counts['failed'] += sub_counts['failed']
+            counts['skipped'] += sub_counts['skipped']
+            counts['total'] += sub_counts['passed'] + sub_counts['failed'] + sub_counts['skipped']
+        else:
+            # This is an actual test case
+            # Get test status
+            test_status = None
+            if 'testStatus' in test:
+                test_status = test['testStatus'].get('_value', '')
+            
+            if test_status == 'Success':
+                counts['passed'] += 1
+                counts['total'] += 1
+            elif test_status == 'Failure':
+                counts['failed'] += 1
+                counts['total'] += 1
+            elif test_status == 'Skipped' or test_status == 'Expected Failure':
+                # Count both skipped and expected failures as skipped tests
+                counts['skipped'] += 1
+                counts['total'] += 1  # Skipped tests count in the total
+    
+    return counts
 
 def main():
     parser = argparse.ArgumentParser(description='Process Xcode test results')
@@ -903,9 +1081,16 @@ def main():
     args = parser.parse_args()
     
     try:
+        # First, generate the JSON summary to ensure we have accurate test counts
+        test_stats = None
+        if args.summary_json:
+            test_stats = generate_summary_json(args.path, args.summary_json)
+        
+        # Create processor with test stats if available
         processor = XCResultProcessor(
             args.path, 
-            debug=args.debug
+            debug=args.debug,
+            test_stats=test_stats
         )
         
         # Always show passed tests and code coverage
@@ -969,10 +1154,6 @@ def main():
                     print(f"Opening coverage report in default web browser...")
             else:
                 print("No code coverage data found. Coverage report not generated.")
-        
-        # Generate summary statistics JSON if requested
-        if args.summary_json:
-            summary_stats = generate_summary_json(args.path, args.summary_json)
         
     except Exception as e:
         print(f"Error: {str(e)}")

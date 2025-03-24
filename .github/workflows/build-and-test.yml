@@ -68,10 +68,10 @@ jobs:
               testStats = JSON.parse(summaryJson);
               
               // Generate simple markdown summary
-              fs.writeFileSync("report-summary.md", 
+              fs.writeFileSync("report-summary.md",
                 `# Test Results\n\n` +
                 `- Total: ${testStats.total_tests}\n` +
-                `- Passed: ${testStats.passed_tests}\n` + 
+                `- Passed: ${testStats.passed_tests}\n` +
                 `- Failed: ${testStats.failed_tests}\n` +
                 `- Success: ${(testStats.success_rate).toFixed(1)}%\n`
               );
@@ -88,7 +88,7 @@ jobs:
               status: 'completed',
               conclusion: testStats.failed_tests > 0 ? 'failure' : 'success',
               output: {
-                title: `Tests: ${testStats.passed_tests}/${testStats.total_tests} passed (${(testStats.success_rate).toFixed(1)}%)`,
+                title: `Tests: ${testStats.passed_tests}/${testStats.passed_tests + testStats.failed_tests} passed (${(testStats.success_rate).toFixed(1)}%)`,
                 summary: testReport.substring(0, 65000),
                 text: coverageReport.substring(0, 65000)
               }
