@@ -33,7 +33,7 @@ jobs:
  
       - name: Process test results
         run: |
-          ./scripts/github-actions/process-test-results.sh TestResults.xcresult "Unit Tests" .
+          python3 scripts/process_xcresult.py --path TestResults.xcresult --test-output test-results.html --coverage-output coverage-results.html --summary-json test-summary.json
         if: success() || failure()
 
       - name: Create Test Report Check
@@ -42,14 +42,122 @@ jobs:
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
-            const createCheck = require('./scripts/github-actions/create-test-check.js');
-            await createCheck({
-              github, 
-              context, 
-              core, 
-              reportDir: '.', 
-              testType: 'Unit Tests'
-            });
+            const fs = require('fs');
+            
+            const reportDir = '.';
+            const testType = 'Unit Tests';
+            
+            // Get PR information or commit SHA
+            const pr = context.payload.pull_request;
+            const sha = pr && pr.head.sha ? pr.head.sha : context.sha;
+            
+            // Read the generated HTML files
+            let testReportHtml = "";
+            let coverageReportHtml = "";
+            
+            try {
+              testReportHtml = fs.readFileSync(`${reportDir}/test-results.html`, 'utf8');
+              
+              try {
+                coverageReportHtml = fs.readFileSync(`${reportDir}/coverage-results.html`, 'utf8');
+              } catch (error) {
+                core.warning(`No coverage report found: ${error.message}`);
+              }
+              
+              // Generate markdown summary for GitHub
+              let summaryMarkdown = `# ${testType} Results\n\n`;
+              
+              // Read test statistics from JSON summary
+              let testStats;
+              try {
+                const summaryJson = fs.readFileSync(`${reportDir}/test-summary.json`, 'utf8');
+                testStats = JSON.parse(summaryJson);
+                
+                // Add test statistics to summary
+                summaryMarkdown += `- **Total Tests**: ${testStats.total_tests}\n`;
+                summaryMarkdown += `- **Passed**: ${testStats.passed_tests}\n`;
+                summaryMarkdown += `- **Failed**: ${testStats.failed_tests}\n`;
+                if (testStats.skipped_tests) {
+                  summaryMarkdown += `- **Skipped**: ${testStats.skipped_tests}\n`;
+                }
+                summaryMarkdown += `- **Success Rate**: ${typeof testStats.success_rate === 'number' ? testStats.success_rate.toFixed(1) : parseFloat(testStats.success_rate).toFixed(1)}%\n\n`;
+                
+              } catch (error) {
+                core.warning(`Error reading test summary JSON: ${error.message}`);
+                // Fallback to zero values
+                testStats = {
+                  total_tests: 0,
+                  passed_tests: 0,
+                  failed_tests: 0,
+                  success_rate: 0
+                };
+                
+                summaryMarkdown += "Failed to load test statistics.\n\n";
+              }
+              
+              // Write summary markdown to file
+              fs.writeFileSync(`${reportDir}/report-summary.md`, summaryMarkdown);
+              
+            } catch (error) {
+              core.error(`Error reading report files: ${error.message}`);
+              throw error;
+            }
+            
+            // GitHub Checks has a character limit of 65535
+            const charactersLimit = 65535;
+            
+            // Use test report as summary
+            const reportSummary = testReportHtml.substring(0, charactersLimit);
+            
+            // Use coverage report as detail, falling back to test report if coverage isn't available
+            const reportDetail = coverageReportHtml 
+              ? coverageReportHtml.substring(0, charactersLimit) 
+              : reportSummary;
+            
+            // Set conclusion based on failed tests count
+            const conclusion = testStats.failed_tests > 0 ? 'failure' : 'success';
+            
+            // Format the success rate to 1 decimal place
+            const successRate = typeof testStats.success_rate === 'number' 
+              ? testStats.success_rate.toFixed(1) 
+              : parseFloat(testStats.success_rate).toFixed(1);
+            
+            // Create the check
+            try {
+              await github.rest.checks.create({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                name: `${testType} Results`,
+                head_sha: sha,
+                status: 'completed',
+                conclusion: conclusion,
+                output: {
+                  title: `${testType} Results: ${testStats.passed_tests}/${testStats.total_tests} tests passed (${successRate}%)`,
+                  summary: reportSummary,
+                  text: reportDetail
+                }
+              });
+              
+              core.info(`Created GitHub Check for ${testType} with ${testStats.passed_tests}/${testStats.total_tests} tests passed (${successRate}%)`);
+            } catch (error) {
+              core.error(`Error creating GitHub Check: ${error.message}`);
+              throw error;
+            }
+
+      - name: Add to Job Summary
+        run: cat report-summary.md >> $GITHUB_STEP_SUMMARY
+        if: success() || failure()
+        
+      - name: Upload test results as artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: unit-test-report
+          path: |
+            test-results.html
+            coverage-results.html
+            report-summary.md
+            test-summary.json
+        if: success() || failure()
 
       - name: CocoaPods lint
         run: pod lib lint --allow-warnings
