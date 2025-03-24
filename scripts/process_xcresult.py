@@ -723,126 +723,6 @@ def generate_summary_json(xcresult_path, output_path):
         traceback.print_exc()
         return None
 
-def generate_markdown_report(xcresult_path, output_path):
-    """Generate Markdown summary of test results"""
-    try:
-        formatter = Formatter(xcresult_path)
-        report = formatter.format()
-        
-        # Initialize counters
-        total_tests = 0
-        passed_tests = 0
-        failed_tests = 0
-        skipped_tests = 0
-        
-        # Process all chapters and sections
-        failed_tests_by_section = {}
-        for chapter in report.get('chapters', []):
-            for section_name, section in chapter.get('sections', {}).items():
-                details = section.get('details', [])
-                
-                # Track failed tests in this section
-                section_failures = []
-                
-                for test in details:
-                    total_tests += 1
-                    status = test.get('testStatus', '')
-                    if status == 'Success':
-                        passed_tests += 1
-                    elif status == 'Failure':
-                        failed_tests += 1
-                        section_failures.append({
-                            'name': test.get('testName', 'Unknown Test'),
-                            'message': test.get('failureMessage', '')
-                        })
-                    elif status == 'Skipped':
-                        skipped_tests += 1
-                
-                if section_failures:
-                    failed_tests_by_section[section_name] = section_failures
-        
-        # Calculate success rate
-        success_rate = 0
-        if total_tests > 0:
-            success_rate = (passed_tests / total_tests) * 100
-        
-        # Create markdown report
-        lines = []
-        lines.append(f"# Xcode Test Results")
-        lines.append("")
-        lines.append(f"## Summary")
-        lines.append("")
-        lines.append(f"* **Total Tests:** {total_tests}")
-        lines.append(f"* **Passed:** {passed_tests}")
-        lines.append(f"* **Failed:** {failed_tests}")
-        if skipped_tests > 0:
-            lines.append(f"* **Skipped:** {skipped_tests}")
-        lines.append(f"* **Success Rate:** {round(success_rate, 1)}%")
-        lines.append("")
-        
-        # Add failed test details if any
-        if failed_tests > 0:
-            lines.append("## Failed Tests")
-            lines.append("")
-            
-            for section_name, failures in failed_tests_by_section.items():
-                lines.append(f"### {section_name}")
-                lines.append("")
-                
-                for failure in failures:
-                    lines.append(f"* ❌ **{failure['name']}**")
-                    if failure['message']:
-                        lines.append(f"  * Error: {failure['message']}")
-                
-                lines.append("")
-        
-        # Add code coverage information if available
-        code_coverage_json = formatter.parser.export_code_coverage()
-        if code_coverage_json:
-            try:
-                code_coverage = json.loads(code_coverage_json)
-                if code_coverage:
-                    lines.append("## Code Coverage")
-                    lines.append("")
-                    
-                    # Overall coverage
-                    total_covered = code_coverage.get('coveredLines', 0)
-                    total_executable = code_coverage.get('executableLines', 0)
-                    total_coverage = code_coverage.get('lineCoverage', 0) * 100
-                    
-                    lines.append(f"**Total Coverage:** {total_coverage:.2f}% ({total_covered}/{total_executable} lines)")
-                    lines.append("")
-                    
-                    # Per-target coverage
-                    if 'targets' in code_coverage and code_coverage['targets']:
-                        lines.append("| Target | Coverage | Covered Lines | Executable Lines |")
-                        lines.append("|--------|----------|---------------|-----------------|")
-                        
-                        sorted_targets = sorted(code_coverage['targets'], key=lambda t: t.get('name', '').lower())
-                        for target in sorted_targets:
-                            name = target.get('name', 'Unknown')
-                            coverage = target.get('lineCoverage', 0) * 100
-                            covered = target.get('coveredLines', 0)
-                            executable = target.get('executableLines', 0)
-                            
-                            # Skip targets with no executable lines
-                            if executable == 0:
-                                continue
-                                
-                            lines.append(f"| {name} | {coverage:.2f}% | {covered} | {executable} |")
-            except Exception as e:
-                print(f"Error adding code coverage to markdown: {str(e)}")
-        
-        # Write to file
-        with open(output_path, 'w') as f:
-            f.write("\n".join(lines))
-        
-        return True
-    except Exception as e:
-        print(f"Error generating markdown report: {str(e)}")
-        traceback.print_exc()
-        return False
-
 def main():
     parser = argparse.ArgumentParser(description='Process Xcode test results')
     parser.add_argument('--path', required=True, help='Path to .xcresult bundle')
@@ -850,10 +730,7 @@ def main():
     parser.add_argument('--open', action='store_true', help='Open the report in a web browser after generation')
     parser.add_argument('--open-in-browser', action='store_true', help='Open the report in a web browser after generation')
     parser.add_argument('--summary-json', help='Path to output summary statistics as JSON')
-    parser.add_argument('--markdown-output', help='Path to output markdown report')
     parser.add_argument('--debug', action='store_true', help='Show debug information')
-    parser.add_argument('--hide-passed-tests', action='store_true', help='Hide passed tests in the report')
-    parser.add_argument('--hide-code-coverage', action='store_true', help='Hide code coverage in the report')
     
     args = parser.parse_args()
     
@@ -863,9 +740,9 @@ def main():
             debug=args.debug
         )
         
-        # Set options based on arguments
-        processor.show_passed_tests = not args.hide_passed_tests
-        processor.show_code_coverage = not args.hide_code_coverage
+        # Always show passed tests and code coverage
+        processor.show_passed_tests = True
+        processor.show_code_coverage = True
         
         html_report = processor.generate_html_report()
         
@@ -881,11 +758,6 @@ def main():
         # Generate summary statistics JSON if requested
         if args.summary_json:
             summary_stats = generate_summary_json(args.path, args.summary_json)
-        
-        # Generate markdown report if requested
-        if args.markdown_output:
-            generate_markdown_report(args.path, args.markdown_output)
-            print(f"Markdown report generated and saved to {args.markdown_output}")
         
         # Open the report in the browser if requested
         if args.open or args.open_in_browser:
