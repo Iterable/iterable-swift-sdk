@@ -94,10 +94,6 @@ jobs:
               }
             });
 
-      - name: Add to Job Summary
-        run: cat report-summary.md >> $GITHUB_STEP_SUMMARY
-        if: success() || failure()
-
       - name: CocoaPods lint
         run: pod lib lint --allow-warnings
 
