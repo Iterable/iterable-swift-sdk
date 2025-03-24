@@ -83,7 +83,7 @@ jobs:
             await github.rest.checks.create({
               owner: context.repo.owner,
               repo: context.repo.repo,
-              name: 'Unit Tests Results',
+              name: 'Unit Test Results',
               head_sha: context.payload.pull_request?.head.sha || context.sha,
               status: 'completed',
               conclusion: testStats.failed_tests > 0 ? 'failure' : 'success',
