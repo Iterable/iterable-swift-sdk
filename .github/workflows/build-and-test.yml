@@ -32,7 +32,7 @@ jobs:
  
       - name: Process test results
         run: |
-          python3 scripts/process_xcresult.py --path TestResults.xcresult --test-output test-results.html --coverage-output coverage-results.html --test-plan tests/swift-sdk.xctestplan --summary-json test-summary.json
+          python3 scripts/process_xcresult.py --path TestResults.xcresult --test-output test-results.html --coverage-output coverage-results.html --test-plan tests/swift-sdk.xctestplan --summary-json test-summary.json --commit-sha ${{ github.sha }}
         if: success() || failure()
 
       - name: Create Test Report Check

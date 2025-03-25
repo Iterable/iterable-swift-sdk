@@ -606,8 +606,9 @@ class Formatter:
                         if '/Users/runner/work/iterable-swift-sdk/iterable-swift-sdk/' in file_path:
                             file_path = file_path.replace('/Users/runner/work/iterable-swift-sdk/iterable-swift-sdk/', '')
                         
-                        # Generate GitHub URL with correct format
-                        github_url = f"https://github.com/Iterable/iterable-swift-sdk/blob/master/{file_path}"
+                        # Generate GitHub URL with correct format and commit hash
+                        commit_sha = self.commit_sha or 'master'  # Fallback to 'master' if no SHA provided
+                        github_url = f"https://github.com/Iterable/iterable-swift-sdk/blob/{commit_sha}/{file_path}"
                         
                         file_coverage = file.get('lineCoverage', 0) * 100
                         file_covered = file.get('coveredLines', 0)
@@ -618,7 +619,7 @@ class Formatter:
                             continue
                         
                         lines.append("<tr>")
-                        lines.append(f"<td>&nbsp;&nbsp;<a href=\"{github_url}\">{file_name}</a></td>")
+                        lines.append(f"<td>&nbsp;&nbsp;<a href=\"{github_url}\" target=\"_blank\">{file_name}</a></td>")
                         
                         # Coverage bar using Unicode blocks
                         covered_blocks = int(coverage_width * (file_coverage / 100))
@@ -657,13 +658,14 @@ class Formatter:
 
 
 class XCResultProcessor:
-    def __init__(self, xcresult_path, debug=False, test_stats=None, test_plan_path=None):
+    def __init__(self, xcresult_path, debug=False, test_stats=None, test_plan_path=None, commit_sha=None):
         self.xcresult_path = xcresult_path
         self.debug = debug
         self.show_passed_tests = True
         self.show_code_coverage = True
         self.test_stats = test_stats
         self.test_plan_path = test_plan_path
+        self.commit_sha = commit_sha
         self.skipped_tests_from_plan = self._load_skipped_tests_from_plan()
         
         # Verify the xcresult bundle exists
@@ -900,6 +902,7 @@ def main():
     parser.add_argument('--summary-json', help='Path to output summary statistics as JSON')
     parser.add_argument('--test-plan', help='Path to the test plan file (.xctestplan)')
     parser.add_argument('--debug', action='store_true', help='Show debug information')
+    parser.add_argument('--commit-sha', help='Git commit SHA for generating GitHub URLs')
     
     args = parser.parse_args()
     
@@ -908,7 +911,8 @@ def main():
         processor = XCResultProcessor(
             args.path, 
             debug=args.debug,
-            test_plan_path=args.test_plan
+            test_plan_path=args.test_plan,
+            commit_sha=args.commit_sha
         )
         
         # Generate the JSON summary with the processor
