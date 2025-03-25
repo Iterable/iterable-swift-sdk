@@ -600,6 +600,12 @@ class Formatter:
                     for file in sorted_files:
                         file_name = file.get('name', 'Unknown')
                         file_path = file.get('path', '')
+                        
+                        # Transform the file path to be relative to the repository root
+                        # Remove the GitHub Actions workspace path prefix
+                        if '/Users/runner/work/iterable-swift-sdk/iterable-swift-sdk/' in file_path:
+                            file_path = file_path.replace('/Users/runner/work/iterable-swift-sdk/iterable-swift-sdk/', '')
+                        
                         file_coverage = file.get('lineCoverage', 0) * 100
                         file_covered = file.get('coveredLines', 0)
                         file_executable = file.get('executableLines', 0)
