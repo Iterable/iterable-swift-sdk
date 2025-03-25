@@ -18,18 +18,18 @@ jobs:
         with:
           python-version: '3.x'
 
-      # - name: Setup Ruby and xcpretty
-      #   run: |
-      #     gem install erb
-      #     gem install xcpretty
-      #     brew install jq
+      - name: Setup Ruby and xcpretty
+        run: |
+          gem install erb
+          gem install xcpretty
+          brew install jq
 
-      # - name: Print available simulators
-      #   run: xcrun simctl list devices | cat
+      - name: Print available simulators
+        run: xcrun simctl list devices | cat
 
-      # - name: Build and test
-      #   run: |
-      #     xcodebuild test -project swift-sdk.xcodeproj -scheme swift-sdk -sdk iphonesimulator -destination 'platform=iOS Simulator,name=iPhone 16 Pro,OS=18.2' -enableCodeCoverage YES -resultBundlePath TestResults.xcresult CODE_SIGNING_REQUIRED=NO | xcpretty && exit ${PIPESTATUS[0]}
+      - name: Build and test
+        run: |
+          xcodebuild test -project swift-sdk.xcodeproj -scheme swift-sdk -sdk iphonesimulator -destination 'platform=iOS Simulator,name=iPhone 16 Pro,OS=18.2' -enableCodeCoverage YES -resultBundlePath TestResults.xcresult CODE_SIGNING_REQUIRED=NO | xcpretty && exit ${PIPESTATUS[0]}
  
       - name: Process test results
         run: |
@@ -103,8 +103,8 @@ jobs:
               }
             });
 
-      # - name: CocoaPods lint
-      #   run: pod lib lint --allow-warnings
+      - name: CocoaPods lint
+        run: pod lib lint --allow-warnings
 
-      # - name: Upload coverage report to codecov.io
-      #   run: bash <(curl -s https://codecov.io/bash) -X gcov -J 'IterableSDK' -J 'IterableAppExtensions'
+      - name: Upload coverage report to codecov.io
+        run: bash <(curl -s https://codecov.io/bash) -X gcov -J 'IterableSDK' -J 'IterableAppExtensions'

@@ -549,14 +549,13 @@ class Formatter:
         lines.append("<tr>")
         lines.append("<td>Total</td>")
         
-        # Coverage bar
-        coverage_width = 200  # Width of the coverage bar in pixels
-        covered_width = int(coverage_width * (total_coverage / 100))
-        uncovered_width = coverage_width - covered_width
+        # Coverage bar using Unicode blocks for better compatibility
+        coverage_width = 20  # Width of the coverage bar in Unicode blocks
+        covered_blocks = int(coverage_width * (total_coverage / 100))
+        uncovered_blocks = coverage_width - covered_blocks
         
         lines.append("<td>")
-        lines.append(f"<span style='display:inline-block;width:{covered_width}px;height:12px;background-color:#28a745'></span>")
-        lines.append(f"<span style='display:inline-block;width:{uncovered_width}px;height:12px;background-color:#dc3545'></span>")
+        lines.append(f"{'█' * covered_blocks}{'░' * uncovered_blocks}")
         lines.append("</td>")
         
         lines.append(f"<td>{total_coverage:.2f}%</td>")
@@ -581,13 +580,12 @@ class Formatter:
                 lines.append("<tr>")
                 lines.append(f"<td>{name}</td>")
                 
-                # Coverage bar
-                covered_width = int(coverage_width * (coverage / 100))
-                uncovered_width = coverage_width - covered_width
+                # Coverage bar using Unicode blocks
+                covered_blocks = int(coverage_width * (coverage / 100))
+                uncovered_blocks = coverage_width - covered_blocks
                 
                 lines.append("<td>")
-                lines.append(f"<span style='display:inline-block;width:{covered_width}px;height:12px;background-color:#28a745'></span>")
-                lines.append(f"<span style='display:inline-block;width:{uncovered_width}px;height:12px;background-color:#dc3545'></span>")
+                lines.append(f"{'█' * covered_blocks}{'░' * uncovered_blocks}")
                 lines.append("</td>")
                 
                 lines.append(f"<td>{coverage:.2f}%</td>")
@@ -613,13 +611,12 @@ class Formatter:
                         lines.append("<tr>")
                         lines.append(f"<td>&nbsp;&nbsp;<a href=\"{file_path}\">{file_name}</a></td>")
                         
-                        # Coverage bar for file
-                        covered_width = int(coverage_width * (file_coverage / 100))
-                        uncovered_width = coverage_width - covered_width
+                        # Coverage bar using Unicode blocks
+                        covered_blocks = int(coverage_width * (file_coverage / 100))
+                        uncovered_blocks = coverage_width - covered_blocks
                         
                         lines.append("<td>")
-                        lines.append(f"<span style='display:inline-block;width:{covered_width}px;height:12px;background-color:#28a745'></span>")
-                        lines.append(f"<span style='display:inline-block;width:{uncovered_width}px;height:12px;background-color:#dc3545'></span>")
+                        lines.append(f"{'█' * covered_blocks}{'░' * uncovered_blocks}")
                         lines.append("</td>")
                         
                         lines.append(f"<td>{file_coverage:.2f}%</td>")
