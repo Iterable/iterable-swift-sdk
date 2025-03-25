@@ -651,12 +651,14 @@ class Formatter:
 
 
 class XCResultProcessor:
-    def __init__(self, xcresult_path, debug=False, test_stats=None):
+    def __init__(self, xcresult_path, debug=False, test_stats=None, test_plan_path=None):
         self.xcresult_path = xcresult_path
         self.debug = debug
         self.show_passed_tests = True
         self.show_code_coverage = True
         self.test_stats = test_stats
+        self.test_plan_path = test_plan_path
+        self.skipped_tests_from_plan = self._load_skipped_tests_from_plan()
         
         # Verify the xcresult bundle exists
         if not os.path.exists(xcresult_path):
@@ -685,6 +687,28 @@ class XCResultProcessor:
                 
         except (subprocess.SubprocessError, FileNotFoundError) as e:
             raise ValueError(f"Failed to detect Xcode version: {str(e)}")
+
+    def _load_skipped_tests_from_plan(self):
+        """Load skipped tests from the test plan file"""
+        if not self.test_plan_path or not os.path.exists(self.test_plan_path):
+            return set()
+            
+        try:
+            print(f"Loading Test Plan details from {self.test_plan_path}")
+            with open(self.test_plan_path, 'r') as f:
+                test_plan = json.load(f)
+                
+            skipped_tests = set()
+            for test_target in test_plan.get('testTargets', []):
+                if 'skippedTests' in test_target:
+                    for test in test_target['skippedTests']:
+                        test = test.replace('()', '')
+                        skipped_tests.add(test)
+            print(f"Found {len(skipped_tests)} skipped tests in test plan")
+            return skipped_tests
+        except Exception as e:
+            print(f"Error loading test plan: {str(e)}")
+            return set()
 
     def generate_test_report(self):
         """Generate test report HTML without code coverage"""
@@ -773,81 +797,49 @@ class XCResultProcessor:
         return html
 
 
-def generate_summary_json(xcresult_path, output_path):
+def generate_summary_json(xcresult_path, output_path, processor=None):
     """Generate JSON summary of test results"""
     try:
         print(f"Extracting test summary from {xcresult_path}")
         
-        # Use xcrun xcresulttool directly to get test summary
         result = subprocess.run(
             ['xcrun', 'xcresulttool', 'get', '--legacy', '--format', 'json', '--path', xcresult_path],
             capture_output=True, text=True, check=True
         )
         
-        # Parse the JSON output
         xcresult_json = json.loads(result.stdout)
         
-        # Initialize counters
         passed_tests = 0
         failed_tests = 0
-        skipped_tests = 0
+        skipped_tests = len(processor.skipped_tests_from_plan) if processor else 0
         
-        # Extract test counts from actions (test runs)
         if 'actions' in xcresult_json:
             for action in xcresult_json.get('actions', {}).get('_values', []):
                 if 'actionResult' in action and 'testsRef' in action['actionResult']:
-                    # Get the ID of the test summaries
                     test_ref_id = action['actionResult']['testsRef']['id']['_value']
                     
-                    # Get detailed test results using the ID
                     test_result = subprocess.run(
                         ['xcrun', 'xcresulttool', 'get', '--legacy', '--format', 'json', '--path', xcresult_path, '--id', test_ref_id],
                         capture_output=True, text=True, check=True
                     )
                     test_json = json.loads(test_result.stdout)
                     
-                    # Process summaries to get test counts
                     if 'summaries' in test_json:
                         for summary in test_json['summaries'].get('_values', []):
                             if 'testableSummaries' in summary:
                                 for testable in summary['testableSummaries'].get('_values', []):
-                                    # Extract test counts from testable summaries
                                     if 'tests' in testable:
-                                        # Count tests recursively
                                         counts = count_tests_recursively(testable['tests'])
                                         passed_tests += counts['passed']
                                         failed_tests += counts['failed']
-                                        skipped_tests += counts['skipped']
         
-        # Fallback: try to extract from the summary directly
-        if passed_tests == 0 and failed_tests == 0:
-            # Try to find summary directly in the action results
-            for action in xcresult_json.get('actions', {}).get('_values', []):
-                if 'actionResult' in action:
-                    result = action['actionResult']
-                    if 'summaryRef' in result:
-                        summary_id = result['summaryRef']['id']['_value']
-                        summary_result = subprocess.run(
-                            ['xcrun', 'xcresulttool', 'get', '--legacy', '--format', 'json', '--path', xcresult_path, '--id', summary_id],
-                            capture_output=True, text=True, check=True
-                        )
-                        summary_json = json.loads(summary_result.stdout)
-                        
-                        if 'totals' in summary_json:
-                            failed_tests = summary_json['totals'].get('failedCount', {}).get('_value', 0)
-                            skipped_tests = summary_json['totals'].get('skippedCount', {}).get('_value', 0)
-                            passed_tests = summary_json['totals'].get('testsCount', {}).get('_value', 0) - failed_tests - skipped_tests
-        
-        # Total includes all tests (passed, failed, and skipped)
         total_tests = passed_tests + failed_tests + skipped_tests
         
-        # Calculate success rate (excluding skipped tests)
         success_rate = 0
         denominator = passed_tests + failed_tests
         if denominator > 0:
             success_rate = (passed_tests / denominator) * 100
         
-        # Create summary JSON
         summary = {
             'total_tests': total_tests,
             'passed_tests': passed_tests,
@@ -858,7 +850,6 @@ def generate_summary_json(xcresult_path, output_path):
         
         print(f"Final test summary: {summary}")
         
-        # Write to file
         with open(output_path, 'w') as f:
             json.dump(summary, f)
         
@@ -870,36 +861,25 @@ def generate_summary_json(xcresult_path, output_path):
 
 def count_tests_recursively(tests_array):
     """Count tests recursively from the test hierarchy"""
-    counts = {'total': 0, 'passed': 0, 'failed': 0, 'skipped': 0}
+    counts = {'passed': 0, 'failed': 0}
     
     if not tests_array or '_values' not in tests_array:
         return counts
     
     for test in tests_array.get('_values', []):
-        # If this is a test group with subtests, process them recursively
         if 'subtests' in test:
             sub_counts = count_tests_recursively(test['subtests'])
             counts['passed'] += sub_counts['passed']
             counts['failed'] += sub_counts['failed']
-            counts['skipped'] += sub_counts['skipped']
-            counts['total'] += sub_counts['passed'] + sub_counts['failed'] + sub_counts['skipped']
         else:
-            # This is an actual test case
-            # Get test status
-            test_status = None
-            if 'testStatus' in test:
-                test_status = test['testStatus'].get('_value', '')
+            test_status = test.get('testStatus', '')
+            if isinstance(test_status, dict):
+                test_status = test_status.get('_value', '')
             
             if test_status == 'Success':
                 counts['passed'] += 1
-                counts['total'] += 1
             elif test_status == 'Failure':
                 counts['failed'] += 1
-                counts['total'] += 1
-            elif test_status == 'Skipped' or test_status == 'Expected Failure':
-                # Count both skipped and expected failures as skipped tests
-                counts['skipped'] += 1
-                counts['total'] += 1  # Skipped tests count in the total
     
     return counts
 
@@ -912,22 +892,24 @@ def main():
     parser.add_argument('--open', action='store_true', help='Open the report in a web browser after generation')
     parser.add_argument('--open-in-browser', action='store_true', help='Open the report in a web browser after generation')
     parser.add_argument('--summary-json', help='Path to output summary statistics as JSON')
+    parser.add_argument('--test-plan', help='Path to the test plan file (.xctestplan)')
     parser.add_argument('--debug', action='store_true', help='Show debug information')
     
     args = parser.parse_args()
     
     try:
-        # First, generate the JSON summary to ensure we have accurate test counts
-        test_stats = None
-        if args.summary_json:
-            test_stats = generate_summary_json(args.path, args.summary_json)
-        
-        # Create processor with test stats if available
+        # Create processor first to get skipped tests info
         processor = XCResultProcessor(
             args.path, 
             debug=args.debug,
-            test_stats=test_stats
+            test_plan_path=args.test_plan
         )
+        
+        # Generate the JSON summary with the processor
+        test_stats = None
+        if args.summary_json:
+            test_stats = generate_summary_json(args.path, args.summary_json, processor)
+            processor.test_stats = test_stats  # Update processor with test stats
         
         # Always show passed tests and code coverage
         processor.show_passed_tests = True

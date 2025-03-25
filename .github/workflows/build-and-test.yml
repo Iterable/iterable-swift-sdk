@@ -33,7 +33,7 @@ jobs:
  
       - name: Process test results
         run: |
-          python3 scripts/process_xcresult.py --path scripts/MyTests.xcresult --test-output test-results.html --coverage-output coverage-results.html --summary-json test-summary.json
+          python3 scripts/process_xcresult.py --path scripts/MyTests.xcresult --test-output test-results.html --coverage-output coverage-results.html --test-plan tests/swift-sdk.xctestplan --summary-json test-summary.json
         if: success() || failure()
 
       - name: Create Test Report Check
