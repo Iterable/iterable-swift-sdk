@@ -22,7 +22,6 @@ jobs:
         run: |
           gem install erb
           gem install xcpretty
-          brew install jq
 
       - name: Print available simulators
         run: xcrun simctl list devices | cat
