@@ -639,7 +639,17 @@ class Formatter:
                         url_parts = [
                             'Internal' if p.lower() == 'internal' else
                             'Core' if p.lower() == 'core' else
-                            'SDK' if p.lower() == 'sdk' else p 
+                            'SDK' if p.lower() == 'sdk' else
+                            'ui-components' if p.lower() == 'ui-components' else
+                            'Resources' if p.lower() == 'resources' else
+                            'Dwifft' if p.lower() == 'dwifft' else
+                            'Network' if p.lower() == 'network' else
+                            'Utilities' if p.lower() == 'utilities' else
+                            'Models' if p.lower() == 'models' else
+                            'Protocols' if p.lower() == 'protocols' else
+                            'Keychain' if p.lower() == 'keychain' else
+                            'Request' if p.lower() == 'request' else
+                            p 
                             for p in url_parts
                         ]
                         encoded_file_path = '/'.join(url_parts)
