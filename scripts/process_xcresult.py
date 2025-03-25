@@ -702,59 +702,6 @@ class XCResultProcessor:
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Xcode Test Results</title>
-    <style>
-        body {{
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-            line-height: 1.6;
-            color: #333;
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 20px;
-        }}
-        h1, h2, h3, h4 {{
-            margin-top: 1.5em;
-            margin-bottom: 0.5em;
-        }}
-        pre {{
-            background-color: #f5f5f5;
-            padding: 15px;
-            border-radius: 5px;
-            overflow: auto;
-            font-family: SFMono-Regular, Consolas, "Liberation Mono", Menlo, monospace;
-        }}
-        .success {{
-            color: #28a745;
-        }}
-        .failure {{
-            color: #dc3545;
-        }}
-        table {{
-            border-collapse: collapse;
-            width: 100%;
-            margin-bottom: 20px;
-        }}
-        th, td {{
-            text-align: left;
-            padding: 8px;
-            border-bottom: 1px solid #ddd;
-        }}
-        th {{
-            background-color: #f5f5f5;
-        }}
-        tr:hover {{
-            background-color: #f5f5f5;
-        }}
-        ul {{
-            list-style-type: none;
-            padding-left: 20px;
-        }}
-        code {{
-            background-color: #f5f5f5;
-            padding: 2px 4px;
-            border-radius: 3px;
-            font-family: SFMono-Regular, Consolas, "Liberation Mono", Menlo, monospace;
-        }}
-    </style>
 </head>
 <body>
     <h1>Xcode Test Results</h1>
@@ -788,59 +735,6 @@ class XCResultProcessor:
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Code Coverage Results</title>
-    <style>
-        body {{
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-            line-height: 1.6;
-            color: #333;
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 20px;
-        }}
-        h1, h2, h3, h4 {{
-            margin-top: 1.5em;
-            margin-bottom: 0.5em;
-        }}
-        pre {{
-            background-color: #f5f5f5;
-            padding: 15px;
-            border-radius: 5px;
-            overflow: auto;
-            font-family: SFMono-Regular, Consolas, "Liberation Mono", Menlo, monospace;
-        }}
-        .success {{
-            color: #28a745;
-        }}
-        .failure {{
-            color: #dc3545;
-        }}
-        table {{
-            border-collapse: collapse;
-            width: 100%;
-            margin-bottom: 20px;
-        }}
-        th, td {{
-            text-align: left;
-            padding: 8px;
-            border-bottom: 1px solid #ddd;
-        }}
-        th {{
-            background-color: #f5f5f5;
-        }}
-        tr:hover {{
-            background-color: #f5f5f5;
-        }}
-        ul {{
-            list-style-type: none;
-            padding-left: 20px;
-        }}
-        code {{
-            background-color: #f5f5f5;
-            padding: 2px 4px;
-            border-radius: 3px;
-            font-family: SFMono-Regular, Consolas, "Liberation Mono", Menlo, monospace;
-        }}
-    </style>
 </head>
 <body>
     <h1>Code Coverage Results</h1>
@@ -868,59 +762,6 @@ class XCResultProcessor:
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Xcode Test Results</title>
-    <style>
-        body {{
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-            line-height: 1.6;
-            color: #333;
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 20px;
-        }}
-        h1, h2, h3, h4 {{
-            margin-top: 1.5em;
-            margin-bottom: 0.5em;
-        }}
-        pre {{
-            background-color: #f5f5f5;
-            padding: 15px;
-            border-radius: 5px;
-            overflow: auto;
-            font-family: SFMono-Regular, Consolas, "Liberation Mono", Menlo, monospace;
-        }}
-        .success {{
-            color: #28a745;
-        }}
-        .failure {{
-            color: #dc3545;
-        }}
-        table {{
-            border-collapse: collapse;
-            width: 100%;
-            margin-bottom: 20px;
-        }}
-        th, td {{
-            text-align: left;
-            padding: 8px;
-            border-bottom: 1px solid #ddd;
-        }}
-        th {{
-            background-color: #f5f5f5;
-        }}
-        tr:hover {{
-            background-color: #f5f5f5;
-        }}
-        ul {{
-            list-style-type: none;
-            padding-left: 20px;
-        }}
-        code {{
-            background-color: #f5f5f5;
-            padding: 2px 4px;
-            border-radius: 3px;
-            font-family: SFMono-Regular, Consolas, "Liberation Mono", Menlo, monospace;
-        }}
-    </style>
 </head>
 <body>
     <h1>Xcode Test Results</h1>
