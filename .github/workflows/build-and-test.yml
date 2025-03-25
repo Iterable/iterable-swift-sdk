@@ -97,7 +97,7 @@ jobs:
               status: 'completed',
               conclusion: testStats.failed_tests > 0 ? 'failure' : 'success',
               output: {
-                title: `Tests: ${testStats.passed_tests}/${testStats.passed_tests + testStats.failed_tests} passed (${(testStats.success_rate).toFixed(1)}%)`,
+                title: `Tests: ${testStats.passed_tests}/${testStats.passed_tests + testStats.failed_tests} passed (${(testStats.success_rate).toFixed(1)}%) Skipped: ${testStats.skipped_tests}`,
                 summary: stripHtml(testReport.substring(0, 65000)),
                 text: stripHtml(coverageReport.substring(0, 65000))
               }
