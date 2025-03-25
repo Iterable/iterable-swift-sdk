@@ -121,11 +121,12 @@ class Parser:
 
 
 class Formatter:
-    def __init__(self, bundle_path, test_stats=None, commit_sha=None):
+    def __init__(self, bundle_path, test_stats=None, commit_sha=None, skipped_tests=None):
         self.bundle_path = bundle_path
         self.parser = Parser(bundle_path)
         self.test_stats = test_stats
         self.commit_sha = commit_sha
+        self.skipped_tests = skipped_tests or set()
         
         # Define status icons similar to TypeScript version
         self.passed_icon = "✅"  # In TypeScript this is an image
@@ -294,7 +295,7 @@ class Formatter:
                 lines.append(f"<td>{total_duration:.2f}s</td>")
                 lines.append("</tr>")
                 lines.append("</table>")
-                
+            
             else:
                 # Process test statistics the old way
                 total_tests = 0
@@ -685,6 +686,56 @@ class Formatter:
         
         return "\n".join(lines)
 
+    def _generate_skipped_tests_html(self):
+        """Generate HTML for skipped tests"""
+        if not self.skipped_tests:
+            return ""
+            
+        lines = []
+        
+        # Group tests by class
+        skipped_by_class = {}
+        for test in self.skipped_tests:
+            # Split by period to get class name
+            parts = test.split('.')
+            if len(parts) >= 2:
+                class_name = parts[0]
+                test_name = '.'.join(parts[1:])
+            else:
+                class_name = "Skipped"
+                test_name = test
+                
+            if class_name not in skipped_by_class:
+                skipped_by_class[class_name] = []
+            skipped_by_class[class_name].append(test_name)
+        
+        # Create styled table for skipped tests
+        lines.append('<div style="margin-bottom: 20px;">')
+        lines.append('<table style="width: 100%; border-collapse: collapse;">')
+        
+        # Sort classes alphabetically
+        for class_name in sorted(skipped_by_class.keys()):
+            tests = skipped_by_class[class_name]
+            
+            # Header row for class - replace "Unknown" with "Skipped"
+            display_name = "Skipped" if class_name == "Unknown" else class_name
+            
+            lines.append(f'<tr style="background-color: #f2f2f2;">')
+            lines.append(f'<th colspan="2" style="text-align: left; padding: 8px; border: 1px solid #ddd;">{display_name}</th>')
+            lines.append('</tr>')
+            
+            # Test rows
+            for test_name in sorted(tests):
+                lines.append('<tr>')
+                lines.append(f'<td style="padding: 8px; border: 1px solid #ddd; width: 30px;">{self.skipped_icon}</td>')
+                lines.append(f'<td style="padding: 8px; border: 1px solid #ddd;">{test_name}</td>')
+                lines.append('</tr>')
+        
+        lines.append('</table>')
+        lines.append('</div>')
+        
+        return "\n".join(lines)
+
     def _determine_test_status(self, report):
         """Determine the overall test status"""
         # Check if any test failed
@@ -761,12 +812,22 @@ class XCResultProcessor:
 
     def generate_test_report(self):
         """Generate test report HTML without code coverage"""
-        formatter = Formatter(self.xcresult_path, self.test_stats, self.commit_sha)
+        formatter = Formatter(
+            self.xcresult_path, 
+            self.test_stats, 
+            self.commit_sha,
+            self.skipped_tests_from_plan
+        )
         
         report = formatter.format({
             'showPassedTests': self.show_passed_tests,
             'showCodeCoverage': self.show_code_coverage
         })
+        
+        # Generate skipped tests HTML if we have any
+        skipped_tests_html = ""
+        if self.test_stats and self.test_stats.get('skipped_tests', 0) > 0 and self.skipped_tests_from_plan:
+            skipped_tests_html = formatter._generate_skipped_tests_html()
         
         # Combine test report parts
         html = f"""<!DOCTYPE html>
@@ -774,6 +835,13 @@ class XCResultProcessor:
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        body {{ font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }}
+        table {{ border-collapse: collapse; width: 100%; margin-bottom: 20px; }}
+        th, td {{ text-align: left; padding: 8px; border: 1px solid #ddd; }}
+        th {{ background-color: #f2f2f2; }}
+        .failure {{ background-color: #ffebee; padding: 10px; border-radius: 4px; margin-top: 5px; }}
+    </style>
 </head>
 <body>
     <h1>Xcode Test Results</h1>
@@ -781,6 +849,8 @@ class XCResultProcessor:
     {report['reportSummary']}
     
     {report['reportDetail']}
+    
+    {skipped_tests_html}
 </body>
 </html>
 """
@@ -788,7 +858,12 @@ class XCResultProcessor:
 
     def generate_coverage_report(self):
         """Generate code coverage HTML report"""
-        formatter = Formatter(self.xcresult_path, self.test_stats, self.commit_sha)
+        formatter = Formatter(
+            self.xcresult_path, 
+            self.test_stats, 
+            self.commit_sha,
+            self.skipped_tests_from_plan
+        )
         
         report = formatter.format({
             'showPassedTests': self.show_passed_tests,
@@ -805,6 +880,12 @@ class XCResultProcessor:
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        body {{ font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }}
+        table {{ border-collapse: collapse; width: 100%; margin-bottom: 20px; }}
+        th, td {{ text-align: left; padding: 8px; border: 1px solid #ddd; }}
+        th {{ background-color: #f2f2f2; }}
+    </style>
 </head>
 <body>
     <h1>Code Coverage Results</h1>
@@ -818,12 +899,22 @@ class XCResultProcessor:
 
     def generate_html_report(self):
         """Generate a complete HTML report (for backward compatibility)"""
-        formatter = Formatter(self.xcresult_path, self.test_stats, self.commit_sha)
+        formatter = Formatter(
+            self.xcresult_path, 
+            self.test_stats, 
+            self.commit_sha,
+            self.skipped_tests_from_plan
+        )
         
         report = formatter.format({
             'showPassedTests': self.show_passed_tests,
             'showCodeCoverage': self.show_code_coverage
         })
+        
+        # Generate skipped tests HTML if we have any
+        skipped_tests_html = ""
+        if self.test_stats and self.test_stats.get('skipped_tests', 0) > 0 and self.skipped_tests_from_plan:
+            skipped_tests_html = formatter._generate_skipped_tests_html()
         
         # Combine all parts of the report
         html = f"""<!DOCTYPE html>
@@ -831,6 +922,13 @@ class XCResultProcessor:
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        body {{ font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }}
+        table {{ border-collapse: collapse; width: 100%; margin-bottom: 20px; }}
+        th, td {{ text-align: left; padding: 8px; border: 1px solid #ddd; }}
+        th {{ background-color: #f2f2f2; }}
+        .failure {{ background-color: #ffebee; padding: 10px; border-radius: 4px; margin-top: 5px; }}
+    </style>
 </head>
 <body>
     <h1>Xcode Test Results</h1>
@@ -838,6 +936,8 @@ class XCResultProcessor:
     {report['reportSummary']}
     
     {report['reportDetail']}
+    
+    {skipped_tests_html}
     
     {report['codeCoverage']}
 </body>
