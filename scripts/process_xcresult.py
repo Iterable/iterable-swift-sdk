@@ -606,6 +606,9 @@ class Formatter:
                         if '/Users/runner/work/iterable-swift-sdk/iterable-swift-sdk/' in file_path:
                             file_path = file_path.replace('/Users/runner/work/iterable-swift-sdk/iterable-swift-sdk/', '')
                         
+                        # Generate GitHub URL with correct format
+                        github_url = f"https://github.com/Iterable/iterable-swift-sdk/blob/master/{file_path}"
+                        
                         file_coverage = file.get('lineCoverage', 0) * 100
                         file_covered = file.get('coveredLines', 0)
                         file_executable = file.get('executableLines', 0)
@@ -615,7 +618,7 @@ class Formatter:
                             continue
                         
                         lines.append("<tr>")
-                        lines.append(f"<td>&nbsp;&nbsp;<a href=\"{file_path}\">{file_name}</a></td>")
+                        lines.append(f"<td>&nbsp;&nbsp;<a href=\"{github_url}\">{file_name}</a></td>")
                         
                         # Coverage bar using Unicode blocks
                         covered_blocks = int(coverage_width * (file_coverage / 100))
