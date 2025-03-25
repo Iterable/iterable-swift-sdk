@@ -627,6 +627,10 @@ class Formatter:
                                     # Join back together
                                     file_path = '/'.join(path_parts)
                         
+                        # Additional check for CI paths that might contain the project name
+                        if 'iterable-swift-sdk' in file_path:
+                            file_path = file_path.replace('iterable-swift-sdk/', '')
+                        
                         # Encode spaces in file path
                         encoded_file_path = file_path.replace(' ', '%20')
 
