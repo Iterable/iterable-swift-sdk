@@ -77,6 +77,7 @@
         "RequestHandlerTests\/testTrackInAppClick()",
         "RequestHandlerTests\/testTrackInAppOpen()",
         "RequestHandlerTests\/testTrackInboxSession()",
+        "TaskRunnerTests\/testCreatedAtInBody()",
         "TaskSchedulerTests\/testScheduleTask()"
       ],
       "target" : {
