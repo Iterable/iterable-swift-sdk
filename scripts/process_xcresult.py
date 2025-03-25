@@ -613,13 +613,25 @@ class Formatter:
                                 # Find the exact case of the project root in the path
                                 start_idx = file_path.lower().find(project_root.lower())
                                 if start_idx != -1:
-                                    # Use the original case from the path
-                                    project_root = file_path[start_idx:start_idx + len(project_root)]
-                                    file_path = file_path[start_idx + len(project_root):].lstrip('/')
+                                    # Extract the path after project root to preserve case
+                                    path_after_root = file_path[start_idx + len(project_root):]
+                                    # Split by directory separator and remove empty parts
+                                    path_parts = [p for p in path_after_root.split('/') if p]
+                                    # Fix casing for known directories
+                                    path_parts = [
+                                        'Internal' if p.lower() == 'internal' else
+                                        'Core' if p.lower() == 'core' else
+                                        'SDK' if p.lower() == 'sdk' else p 
+                                        for p in path_parts
+                                    ]
+                                    # Join back together
+                                    file_path = '/'.join(path_parts)
                         
-                        # Generate GitHub URL with correct format and commit hash
-                        commit_sha = self.commit_sha or 'master'  # Fallback to 'master' if no SHA provided
-                        github_url = f"https://github.com/Iterable/iterable-swift-sdk/blob/{commit_sha}/{file_path}"
+                        # Encode spaces in file path
+                        encoded_file_path = file_path.replace(' ', '%20')
+
+                        # Generate GitHub URL
+                        github_url = f"https://github.com/Iterable/iterable-swift-sdk/blob/{self.commit_sha}/{encoded_file_path}"
                         
                         file_coverage = file.get('lineCoverage', 0) * 100
                         file_covered = file.get('coveredLines', 0)
@@ -697,10 +709,6 @@ class XCResultProcessor:
                 if major_version < 16:
                     print(f"Detected Xcode version: {xcodebuild_output.strip()}")
                     raise ValueError("This script requires Xcode 16 or higher to function properly")
-                
-                if self.debug:
-                    print(f"Detected Xcode version: {xcodebuild_output.strip()}")
-                    print("Using Xcode 16+ command format")
             else:
                 raise ValueError("Could not determine Xcode version from output")
                 
@@ -713,7 +721,6 @@ class XCResultProcessor:
             return set()
             
         try:
-            print(f"Loading Test Plan details from {self.test_plan_path}")
             with open(self.test_plan_path, 'r') as f:
                 test_plan = json.load(f)
                 
@@ -723,7 +730,6 @@ class XCResultProcessor:
                     for test in test_target['skippedTests']:
                         test = test.replace('()', '')
                         skipped_tests.add(test)
-            print(f"Found {len(skipped_tests)} skipped tests in test plan")
             return skipped_tests
         except Exception as e:
             print(f"Error loading test plan: {str(e)}")
