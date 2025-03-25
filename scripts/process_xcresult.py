@@ -121,10 +121,11 @@ class Parser:
 
 
 class Formatter:
-    def __init__(self, bundle_path, test_stats=None):
+    def __init__(self, bundle_path, test_stats=None, commit_sha=None):
         self.bundle_path = bundle_path
         self.parser = Parser(bundle_path)
         self.test_stats = test_stats
+        self.commit_sha = commit_sha
         
         # Define status icons similar to TypeScript version
         self.passed_icon = "✅"  # In TypeScript this is an image
@@ -602,9 +603,26 @@ class Formatter:
                         file_path = file.get('path', '')
                         
                         # Transform the file path to be relative to the repository root
-                        # Remove the GitHub Actions workspace path prefix
+                        # Remove the GitHub Actions workspace path prefix or local path prefix
                         if '/Users/runner/work/iterable-swift-sdk/iterable-swift-sdk/' in file_path:
                             file_path = file_path.replace('/Users/runner/work/iterable-swift-sdk/iterable-swift-sdk/', '')
+                        else:
+                            # For local paths, find the project root directory name in the path
+                            project_root = 'swift-sdk'
+                            if project_root in file_path:
+                                # Find the exact case of the project root in the path
+                                start_idx = file_path.lower().find(project_root.lower())
+                                if start_idx != -1:
+                                    # Use the original case from the path
+                                    project_root = file_path[start_idx:start_idx + len(project_root)]
+                                    file_path = file_path[start_idx + len(project_root):].lstrip('/')
+                                    
+                                    # Split the path into components and convert all to lowercase
+                                    path_components = file_path.split('/')
+                                    path_components = [component.lower() for component in path_components]
+                                    
+                                    # Join the components back together
+                                    file_path = '/'.join(path_components)
                         
                         # Generate GitHub URL with correct format and commit hash
                         commit_sha = self.commit_sha or 'master'  # Fallback to 'master' if no SHA provided
@@ -720,7 +738,7 @@ class XCResultProcessor:
 
     def generate_test_report(self):
         """Generate test report HTML without code coverage"""
-        formatter = Formatter(self.xcresult_path, self.test_stats)
+        formatter = Formatter(self.xcresult_path, self.test_stats, self.commit_sha)
         
         report = formatter.format({
             'showPassedTests': self.show_passed_tests,
@@ -747,7 +765,7 @@ class XCResultProcessor:
 
     def generate_coverage_report(self):
         """Generate code coverage HTML report"""
-        formatter = Formatter(self.xcresult_path, self.test_stats)
+        formatter = Formatter(self.xcresult_path, self.test_stats, self.commit_sha)
         
         report = formatter.format({
             'showPassedTests': self.show_passed_tests,
@@ -777,7 +795,7 @@ class XCResultProcessor:
 
     def generate_html_report(self):
         """Generate a complete HTML report (for backward compatibility)"""
-        formatter = Formatter(self.xcresult_path, self.test_stats)
+        formatter = Formatter(self.xcresult_path, self.test_stats, self.commit_sha)
         
         report = formatter.format({
             'showPassedTests': self.show_passed_tests,
@@ -912,6 +930,13 @@ def main():
             args.path, 
             debug=args.debug,
             test_plan_path=args.test_plan,
+            commit_sha=args.commit_sha
+        )
+        
+        # Create formatter with the same commit_sha
+        formatter = Formatter(
+            args.path,
+            test_stats=processor.test_stats,
             commit_sha=args.commit_sha
         )
         
