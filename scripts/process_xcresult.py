@@ -616,13 +616,6 @@ class Formatter:
                                     # Use the original case from the path
                                     project_root = file_path[start_idx:start_idx + len(project_root)]
                                     file_path = file_path[start_idx + len(project_root):].lstrip('/')
-                                    
-                                    # Split the path into components and convert all to lowercase
-                                    path_components = file_path.split('/')
-                                    path_components = [component.lower() for component in path_components]
-                                    
-                                    # Join the components back together
-                                    file_path = '/'.join(path_components)
                         
                         # Generate GitHub URL with correct format and commit hash
                         commit_sha = self.commit_sha or 'master'  # Fallback to 'master' if no SHA provided
