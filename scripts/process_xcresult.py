@@ -835,13 +835,6 @@ class XCResultProcessor:
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <style>
-        body {{ font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }}
-        table {{ border-collapse: collapse; width: 100%; margin-bottom: 20px; }}
-        th, td {{ text-align: left; padding: 8px; border: 1px solid #ddd; }}
-        th {{ background-color: #f2f2f2; }}
-        .failure {{ background-color: #ffebee; padding: 10px; border-radius: 4px; margin-top: 5px; }}
-    </style>
 </head>
 <body>
     <h1>Xcode Test Results</h1>
@@ -922,13 +915,6 @@ class XCResultProcessor:
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <style>
-        body {{ font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }}
-        table {{ border-collapse: collapse; width: 100%; margin-bottom: 20px; }}
-        th, td {{ text-align: left; padding: 8px; border: 1px solid #ddd; }}
-        th {{ background-color: #f2f2f2; }}
-        .failure {{ background-color: #ffebee; padding: 10px; border-radius: 4px; margin-top: 5px; }}
-    </style>
 </head>
 <body>
     <h1>Xcode Test Results</h1>
