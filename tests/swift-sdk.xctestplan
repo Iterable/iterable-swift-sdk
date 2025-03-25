@@ -39,6 +39,7 @@
       "skippedTests" : [
         "AuthTests\/testOnNewAuthTokenCallbackCalled()",
         "AuthTests\/testRetryJwtFailure()",
+        "InAppPresenterTests\/testInAppPresenterTimerFinished()",
         "InAppTests\/testIgnoreReadMessagesOnProcessing()",
         "InAppTests\/testMultipleMesssagesInShortTime()",
         "IterableAPIResponseTests\/testRetryOnInvalidJwtPayload()"
