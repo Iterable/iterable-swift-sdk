@@ -704,7 +704,6 @@ class XCResultProcessor:
 </head>
 <body>
     <h1>Xcode Test Results</h1>
-    <p>Results from {self.xcresult_path}</p>
     
     {report['reportSummary']}
     
@@ -762,7 +761,6 @@ class XCResultProcessor:
 </head>
 <body>
     <h1>Xcode Test Results</h1>
-    <p>Results from {self.xcresult_path}</p>
     
     {report['reportSummary']}
     
