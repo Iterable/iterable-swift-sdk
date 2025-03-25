@@ -11,9 +11,10 @@ import UserNotifications
 
 import IterableSDK
 import Firebase
+import FirebaseMessaging
 
 @UIApplicationMain
-class AppDelegate: UIResponder, UIApplicationDelegate {
+class AppDelegate: UIResponder, UIApplicationDelegate, MessagingDelegate {
     var window: UIWindow?
     
     // ITBL: Set your actual api key here.
@@ -23,12 +24,14 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         // ITBL: Setup Notification
         setupNotifications()
         FirebaseApp.configure()
+        Messaging.messaging().delegate = self
         
         // ITBL: Initialize API
         let config = IterableConfig()
         config.customActionDelegate = self
         config.urlDelegate = self
         config.inAppDisplayInterval = 1
+        config.useFirebaseMessaging = true
         
         IterableAPI.initialize(apiKey: iterableApiKey,
                                launchOptions: launchOptions,
@@ -105,7 +108,13 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     
     // ITBL:
     func application(_: UIApplication, didRegisterForRemoteNotificationsWithDeviceToken deviceToken: Data) {
-        IterableAPI.register(token: deviceToken)
+//        IterableAPI.register(token: deviceToken)
+        //        For Firebase Notification Intigration
+                if !deviceToken.hexString.isEmpty {
+                    Messaging.messaging().apnsToken = deviceToken
+                }
+        //        For APNS
+        //        IterableAPI.register(token: deviceToken)
     }
     
     func application(_: UIApplication, didFailToRegisterForRemoteNotificationsWithError _: Error) {}
@@ -134,7 +143,17 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             }
         }
     }
+    
+    @objc func messaging(_ messaging: Messaging, didReceiveRegistrationToken fcmToken: String?) {
+        print("Firebase token: \(String(describing: fcmToken))")
+        if let token = fcmToken {
+            if let tokenData = token.data(using: .utf8) {
+                IterableAPI.register(token: tokenData)
+            }
+        }
+    }
 }
+
 
 // MARK: UNUserNotificationCenterDelegate
 
@@ -171,5 +190,11 @@ extension AppDelegate: IterableCustomActionDelegate {
             }
         }
         return false
+    }
+}
+
+extension Data {
+    public var hexString: String {
+        return map { String(format: "%02.2hhx", arguments: [$0]) }.joined()
     }
 }
