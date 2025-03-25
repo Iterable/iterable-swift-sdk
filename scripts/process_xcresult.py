@@ -701,7 +701,6 @@ class XCResultProcessor:
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Xcode Test Results</title>
 </head>
 <body>
     <h1>Xcode Test Results</h1>
@@ -734,7 +733,6 @@ class XCResultProcessor:
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Code Coverage Results</title>
 </head>
 <body>
     <h1>Code Coverage Results</h1>
@@ -761,7 +759,6 @@ class XCResultProcessor:
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Xcode Test Results</title>
 </head>
 <body>
     <h1>Xcode Test Results</h1>
