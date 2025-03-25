@@ -633,6 +633,16 @@ class Formatter:
                         
                         # Encode spaces in file path
                         encoded_file_path = file_path.replace(' ', '%20')
+                        
+                        # Fix path casing for GitHub URL
+                        url_parts = encoded_file_path.split('/')
+                        url_parts = [
+                            'Internal' if p.lower() == 'internal' else
+                            'Core' if p.lower() == 'core' else
+                            'SDK' if p.lower() == 'sdk' else p 
+                            for p in url_parts
+                        ]
+                        encoded_file_path = '/'.join(url_parts)
 
                         # Generate GitHub URL
                         github_url = f"https://github.com/Iterable/iterable-swift-sdk/blob/{self.commit_sha}/{encoded_file_path}"
