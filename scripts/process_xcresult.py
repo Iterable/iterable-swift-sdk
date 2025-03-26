@@ -710,7 +710,6 @@ class Formatter:
             skipped_by_class[class_name].append(test_name)
         
         # Create styled table for skipped tests
-        lines.append('<div style="margin-bottom: 20px;">')
         lines.append('<table style="width: 100%; border-collapse: collapse;">')
         
         # Sort classes alphabetically
@@ -732,7 +731,6 @@ class Formatter:
                 lines.append('</tr>')
         
         lines.append('</table>')
-        lines.append('</div>')
         
         return "\n".join(lines)
 
