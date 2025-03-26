@@ -692,12 +692,11 @@ class Formatter:
             return ""
             
         lines = []
-        lines.append("<h2>Skipped Tests</h2>")
+        lines.append("<h3>Skipped Tests</h3>")
         lines.append("<table>")
         
         # Add table headers
         lines.append("<tr>")
-        lines.append("<th>Status</th>")
         lines.append("<th>Test Name</th>")
         lines.append("<th>Duration</th>")
         lines.append("</tr>")
@@ -708,7 +707,6 @@ class Formatter:
         # Add test rows
         for test in sorted_tests:
             lines.append("<tr>")
-            lines.append(f"<td>{self.skipped_icon}</td>")
             lines.append(f"<td>{test}</td>")
             lines.append("<td>0.00s</td>")
             lines.append("</tr>")
