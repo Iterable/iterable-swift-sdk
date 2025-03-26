@@ -18,7 +18,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, MessagingDelegate {
     var window: UIWindow?
     
     // ITBL: Set your actual api key here.
-    let iterableApiKey = "d75bedca52b24b2e820146bc3ade5d94"
+    let iterableApiKey = ""
     
     func application(_: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         // ITBL: Setup Notification
@@ -108,13 +108,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate, MessagingDelegate {
     
     // ITBL:
     func application(_: UIApplication, didRegisterForRemoteNotificationsWithDeviceToken deviceToken: Data) {
-//        IterableAPI.register(token: deviceToken)
-        //        For Firebase Notification Intigration
-                if !deviceToken.hexString.isEmpty {
-                    Messaging.messaging().apnsToken = deviceToken
-                }
-        //        For APNS
-        //        IterableAPI.register(token: deviceToken)
+        if !deviceToken.hexString.isEmpty {
+            Messaging.messaging().apnsToken = deviceToken
+        }
     }
     
     func application(_: UIApplication, didFailToRegisterForRemoteNotificationsWithError _: Error) {}
@@ -147,9 +143,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, MessagingDelegate {
     @objc func messaging(_ messaging: Messaging, didReceiveRegistrationToken fcmToken: String?) {
         print("Firebase token: \(String(describing: fcmToken))")
         if let token = fcmToken {
-            if let tokenData = token.data(using: .utf8) {
-                IterableAPI.register(token: tokenData)
-            }
+            IterableAPI.registerFCM(token: token)
         }
     }
 }
