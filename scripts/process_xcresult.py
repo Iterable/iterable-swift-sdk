@@ -452,10 +452,6 @@ class Formatter:
                         # Skip passed tests if not showing them
                         if not show_passed_tests and test.get('testStatus') == 'Success':
                             continue
-                        
-                        # Skip expected failures (warning icon tests)
-                        if test.get('testStatus') == 'Expected Failure':
-                            continue
                             
                         # Extract test class and name
                         test_class = None
@@ -735,7 +731,6 @@ class Formatter:
                 lines.append('</tr>')
         
         lines.append('</table>')
-        lines.append('</div>')
         
         return "\n".join(lines)
 
