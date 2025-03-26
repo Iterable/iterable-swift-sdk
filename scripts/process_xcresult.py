@@ -692,46 +692,28 @@ class Formatter:
             return ""
             
         lines = []
+        lines.append("<h2>Skipped Tests</h2>")
+        lines.append("<table>")
         
-        # Group tests by class
-        skipped_by_class = {}
-        for test in self.skipped_tests:
-            # Split by period to get class name
-            parts = test.split('.')
-            if len(parts) >= 2:
-                class_name = parts[0]
-                test_name = '.'.join(parts[1:])
-            else:
-                class_name = "Skipped"
-                test_name = test
-                
-            if class_name not in skipped_by_class:
-                skipped_by_class[class_name] = []
-            skipped_by_class[class_name].append(test_name)
+        # Add table headers
+        lines.append("<tr>")
+        lines.append("<th>Status</th>")
+        lines.append("<th>Test Name</th>")
+        lines.append("<th>Duration</th>")
+        lines.append("</tr>")
         
-        # Create table for skipped tests
-        lines.append('<table>')
+        # Sort tests alphabetically
+        sorted_tests = sorted(self.skipped_tests)
         
-        # Sort classes alphabetically
-        for class_name in sorted(skipped_by_class.keys()):
-            tests = skipped_by_class[class_name]
-            
-            # Header row for class - replace "Unknown" with "Skipped"
-            display_name = "Skipped" if class_name == "Unknown" else class_name
-            
-            lines.append('<tr>')
-            lines.append(f'<th colspan="2">{display_name}</th>')
-            lines.append('</tr>')
-            
-            # Test rows
-            for test_name in sorted(tests):
-                lines.append('<tr>')
-                lines.append(f'<td>{self.skipped_icon}</td>')
-                lines.append(f'<td>{test_name}</td>')
-                lines.append('</tr>')
+        # Add test rows
+        for test in sorted_tests:
+            lines.append("<tr>")
+            lines.append(f"<td>{self.skipped_icon}</td>")
+            lines.append(f"<td>{test}</td>")
+            lines.append("<td>0.00s</td>")
+            lines.append("</tr>")
         
-        lines.append('</table>')
-        
+        lines.append("</table>")
         return "\n".join(lines)
 
     def _determine_test_status(self, report):
