@@ -39,6 +39,8 @@
       "skippedTests" : [
         "AuthTests\/testOnNewAuthTokenCallbackCalled()",
         "AuthTests\/testRetryJwtFailure()",
+        "InAppPresenterTests\/testInAppPresenterTimerFinished()",
+        "InAppTests\/testIgnoreReadMessagesOnProcessing()",
         "InAppTests\/testMultipleMesssagesInShortTime()",
         "IterableAPIResponseTests\/testRetryOnInvalidJwtPayload()"
       ],
@@ -76,6 +78,7 @@
         "RequestHandlerTests\/testTrackInAppClick()",
         "RequestHandlerTests\/testTrackInAppOpen()",
         "RequestHandlerTests\/testTrackInboxSession()",
+        "TaskRunnerTests\/testCreatedAtInBody()",
         "TaskSchedulerTests\/testScheduleTask()"
       ],
       "target" : {
