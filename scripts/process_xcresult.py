@@ -709,9 +709,8 @@ class Formatter:
                 skipped_by_class[class_name] = []
             skipped_by_class[class_name].append(test_name)
         
-        # Create styled table for skipped tests
-        lines.append('<div class="skipped-tests">')
-        lines.append('<table style="width: 100%; border-collapse: collapse;">')
+        # Create table for skipped tests
+        lines.append('<table>')
         
         # Sort classes alphabetically
         for class_name in sorted(skipped_by_class.keys()):
@@ -720,19 +719,18 @@ class Formatter:
             # Header row for class - replace "Unknown" with "Skipped"
             display_name = "Skipped" if class_name == "Unknown" else class_name
             
-            lines.append(f'<tr style="background-color: #f2f2f2;">')
-            lines.append(f'<th colspan="2" style="text-align: left; padding: 8px; border: 1px solid #ddd;">{display_name}</th>')
+            lines.append('<tr>')
+            lines.append(f'<th colspan="2">{display_name}</th>')
             lines.append('</tr>')
             
             # Test rows
             for test_name in sorted(tests):
                 lines.append('<tr>')
-                lines.append(f'<td style="padding: 8px; border: 1px solid #ddd; width: 30px;">{self.skipped_icon}</td>')
-                lines.append(f'<td style="padding: 8px; border: 1px solid #ddd;">{test_name}</td>')
+                lines.append(f'<td>{self.skipped_icon}</td>')
+                lines.append(f'<td>{test_name}</td>')
                 lines.append('</tr>')
         
         lines.append('</table>')
-        lines.append('</div>')
         
         return "\n".join(lines)
 
