@@ -717,7 +717,7 @@ class Formatter:
             tests = skipped_by_class[class_name]
             
             # Header row for class - replace "Unknown" with "Skipped"
-            display_name = "Skipped" if class_name == "Unknown" else class_name
+            display_name = "Skipped" 
             
             lines.append(f'<tr style="background-color: #f2f2f2;">')
             lines.append(f'<th colspan="2" style="text-align: left; padding: 8px; border: 1px solid #ddd;">{display_name}</th>')
