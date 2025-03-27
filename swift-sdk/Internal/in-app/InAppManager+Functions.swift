@@ -136,8 +136,9 @@ struct MessagesObtainedHandler {
         // Mark messages that have been removed from the server response as consumed
         // This ensures recalled campaigns won't be shown
         removedMessages.forEach { message in
-            message.consumed = true
-            newMessagesMap[message.messageId] = message
+            var mutableMessage = message
+            mutableMessage.consumed = true
+            newMessagesMap[message.messageId] = mutableMessage
         }
         
         messages.forEach { serverMessage in
