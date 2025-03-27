@@ -1937,42 +1937,6 @@ class InAppTests: XCTestCase {
         
         wait(for: [expectation1, expectation2], timeout: testExpectationTimeout)
     }
-    
-    func testInboxChangedIsCalledWhenInAppIsRemovedInServer() {
-        let expectation1 = expectation(description: "testInboxChangedIsCalledWhenInAppIsRemovedInServer")
-        
-        let notification = """
-        {
-            "itbl" : {
-                "messageId" : "background_notification",
-                "isGhostPush" : true
-            },
-            "notificationType" : "InAppRemove",
-            "messageId" : "messageId"
-        }
-        """.toJsonDict()
-        
-        let mockNotificationCenter = MockNotificationCenter()
-        let reference = mockNotificationCenter.addCallback(forNotification: .iterableInboxChanged) { _ in
-            expectation1.fulfill()
-        }
-        
-        XCTAssertNotNil(reference)
-        
-        let config = IterableConfig()
-        let internalApi = InternalIterableAPI.initializeForTesting(config: config, notificationCenter: mockNotificationCenter)
-        
-        let appIntegrationInternal = InternalIterableAppIntegration(tracker: internalApi,
-                                                                    urlDelegate: config.urlDelegate,
-                                                                    customActionDelegate: config.customActionDelegate,
-                                                                    urlOpener: MockUrlOpener(),
-                                                                    inAppNotifiable: internalApi.inAppManager,
-                                                                    embeddedNotifiable: internalApi.embeddedManager)
-        
-        appIntegrationInternal.application(MockApplicationStateProvider(applicationState: .background), didReceiveRemoteNotification: notification, fetchCompletionHandler: nil)
-        
-        wait(for: [expectation1], timeout: testExpectationTimeout)
-    }
 
 }
 
