@@ -10,8 +10,8 @@ class LocalStorageTests: XCTestCase {
     override func setUp() {
         super.setUp()
         
-        LocalStorageTests.clearTestUserDefaults()
-        LocalStorageTests.clearTestKeychain()
+        Self.clearTestUserDefaults()
+        Self.clearTestKeychain()
     }
     
     static let localStorageTestSuiteName = "localstorage.tests"
@@ -37,7 +37,7 @@ class LocalStorageTests: XCTestCase {
     }
     
     func testUserIdAndEmail() throws {
-        var localStorage = LocalStorage(userDefaults: LocalStorageTests.getTestUserDefaults())
+        var localStorage = LocalStorage(userDefaults: Self.getTestUserDefaults())
         let userId = "zeeUserId"
         let email = "user@example.com"
         localStorage.userId = userId
@@ -48,7 +48,7 @@ class LocalStorageTests: XCTestCase {
     }
     
     func testAuthDataInKeychain() {
-        let testUserDefaults = LocalStorageTests.getTestUserDefaults()
+        let testUserDefaults = Self.getTestUserDefaults()
         let testKeychain = IterableKeychain.init(wrapper: KeychainWrapper.init(serviceName: "test-localstorage"))
         
         var localStorage = LocalStorage(userDefaults: testUserDefaults,
@@ -80,7 +80,7 @@ class LocalStorageTests: XCTestCase {
     }
     
     func testDDLChecked() throws {
-        var localStorage = LocalStorage(userDefaults: LocalStorageTests.getTestUserDefaults())
+        var localStorage = LocalStorage(userDefaults: Self.getTestUserDefaults())
         localStorage.ddlChecked = true
         XCTAssertTrue(localStorage.ddlChecked)
         
@@ -90,7 +90,7 @@ class LocalStorageTests: XCTestCase {
     
     func testAttributionInfo() throws {
         let mockDateProvider = MockDateProvider()
-        let localStorage = LocalStorage(userDefaults: LocalStorageTests.getTestUserDefaults())
+        let localStorage = LocalStorage(userDefaults: Self.getTestUserDefaults())
         let attributionInfo = IterableAttributionInfo(campaignId: 1, templateId: 2, messageId: "3")
         let currentDate = Date()
         let expiration = Calendar.current.date(byAdding: Calendar.Component.hour, value: 24, to: currentDate)!
@@ -109,21 +109,27 @@ class LocalStorageTests: XCTestCase {
     }
     
     func testDeviceId() {
-        var localStorage = LocalStorage(userDefaults: LocalStorageTests.getTestUserDefaults())
-        let deviceId = UUID().uuidString
-        localStorage.deviceId = deviceId
+        let localStorage = LocalStorage(userDefaults: Self.getTestUserDefaults())
+        let deviceId = "AAAABBBB-CCCC-DDDD-EEEE-FFFFGGGGHHHH"
+        IterableUserDefaults(userDefaults: Self.getTestUserDefaults()).deviceId = deviceId
+        XCTAssertEqual(localStorage.deviceId, deviceId)
+    }
+    
+    func testKeychainDeviceId() {
+        let localStorage = LocalStorage(userDefaults: Self.getTestUserDefaults())
+        let deviceId = IterableKeychain().deviceId
         XCTAssertEqual(localStorage.deviceId, deviceId)
     }
     
     func testSdkVersion() {
-        var localStorage = LocalStorage(userDefaults: LocalStorageTests.getTestUserDefaults())
+        var localStorage = LocalStorage(userDefaults: Self.getTestUserDefaults())
         let sdkVersion = "6.0.2"
         localStorage.sdkVersion = sdkVersion
         XCTAssertEqual(localStorage.sdkVersion, sdkVersion)
     }
     
     func testAuthToken() {
-        var localStorage = LocalStorage(userDefaults: LocalStorageTests.getTestUserDefaults())
+        var localStorage = LocalStorage(userDefaults: Self.getTestUserDefaults())
         let authToken = "03.10.11"
         localStorage.authToken = authToken
         XCTAssertEqual(localStorage.authToken, authToken)
@@ -151,7 +157,7 @@ class LocalStorageTests: XCTestCase {
     
     private func testLocalStorage<T>(saver: (LocalStorageProtocol, T) -> Void,
                                      retriever: (LocalStorageProtocol) -> T?, value: T) where T: Equatable {
-        let localStorage = LocalStorage(userDefaults: LocalStorageTests.getTestUserDefaults())
+        let localStorage = LocalStorage(userDefaults: Self.getTestUserDefaults())
         saver(localStorage, value)
         let retrievedLocalStorage = LocalStorage(userDefaults: LocalStorageTests.getTestUserDefaults())
         let retrieved = retriever(retrievedLocalStorage)
