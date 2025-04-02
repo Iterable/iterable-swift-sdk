@@ -15,7 +15,7 @@ class MockLocalStorage: LocalStorageProtocol {
     
     var ddlChecked: Bool = false
     
-    var deviceId: String? = nil
+    var deviceId: String = "AAAABBBB-CCCC-DDDD-EEEE-FFFFGGGGHHHH"
     
     var sdkVersion: String? = nil
     
