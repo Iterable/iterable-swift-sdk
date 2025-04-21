@@ -323,13 +323,15 @@ class RequestCreatorTests: XCTestCase {
         let userIdRequestCreator = RequestCreator(auth: userIdAuth,
                                                   deviceMetadata: deviceMetadata)
         
+        let testSdkVersion = "1.2.3"
         let registerTokenInfo = RegisterTokenInfo(hexToken: "hex-token",
                                                   appName: "tester",
                                                   pushServicePlatform: .auto,
                                                   apnsType: .production,
                                                   deviceId: IterableUtil.generateUUID(),
                                                   deviceAttributes: [:],
-                                                  sdkVersion: nil)
+                                                  sdkVersion: testSdkVersion,
+                                                  mobileFrameworkInfo: IterableAPIMobileFrameworkInfo(frameworkType: .native, iterableSdkVersion: testSdkVersion))
         
         let urlRequest = convertToUrlRequest(userIdRequestCreator.createRegisterTokenRequest(registerTokenInfo: registerTokenInfo,
                                                                                              notificationsEnabled: true))
@@ -339,6 +341,14 @@ class RequestCreatorTests: XCTestCase {
         let body = urlRequest.bodyDict
         TestUtils.validateMatch(keyPath: KeyPath(keys: JsonKey.userId), value: userIdAuth.userId, inDictionary: body)
         TestUtils.validateMatch(keyPath: KeyPath(keys: JsonKey.preferUserId), value: true, inDictionary: body)
+        
+        // Add assertions for mobile framework info
+        TestUtils.validateMatch(keyPath: KeyPath(keys: JsonKey.device, JsonKey.dataFields, JsonKey.mobileFrameworkInfo, JsonKey.frameworkType), 
+                              value: "native", 
+                              inDictionary: body)
+        TestUtils.validateMatch(keyPath: KeyPath(keys: JsonKey.device, JsonKey.dataFields, JsonKey.mobileFrameworkInfo, JsonKey.iterableSdkVersion), 
+                              value: testSdkVersion, 
+                              inDictionary: body)
     }
     
     func testProcessorTypeOfflineInHeader() throws {

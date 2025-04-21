@@ -235,6 +235,7 @@ extension IterableInAppMessage: Codable {
         case trigger
         case content
         case priorityLevel
+        case jsonOnly
     }
     
     enum ContentCodingKeys: String, CodingKey {
@@ -252,20 +253,26 @@ extension IterableInAppMessage: Codable {
             return
         }
         
+        let jsonOnly = (try? container.decode(Int.self, forKey: .jsonOnly)) ?? 0
+        let customPayloadData = try? container.decode(Data.self, forKey: .customPayload)
+        var customPayload = IterableInAppMessage.deserializeCustomPayload(withData: customPayloadData)
+        
+        if jsonOnly == 1 && customPayload == nil {
+            customPayload = [:]
+        }
+        
         let saveToInbox = (try? container.decode(Bool.self, forKey: .saveToInbox)) ?? false
         let inboxMetadata = (try? container.decode(IterableInboxMetadata.self, forKey: .inboxMetadata))
         let messageId = (try? container.decode(String.self, forKey: .messageId)) ?? ""
         let campaignId = (try? container.decode(Int.self, forKey: .campaignId)).map { NSNumber(value: $0) }
         let createdAt = (try? container.decode(Date.self, forKey: .createdAt))
         let expiresAt = (try? container.decode(Date.self, forKey: .expiresAt))
-        let customPayloadData = try? container.decode(Data.self, forKey: .customPayload)
-        let customPayload = IterableInAppMessage.deserializeCustomPayload(withData: customPayloadData)
         let didProcessTrigger = (try? container.decode(Bool.self, forKey: .didProcessTrigger)) ?? false
         let consumed = (try? container.decode(Bool.self, forKey: .consumed)) ?? false
         let read = (try? container.decode(Bool.self, forKey: .read)) ?? false
         
         let trigger = (try? container.decode(IterableInAppTrigger.self, forKey: .trigger)) ?? .undefinedTrigger
-        let content = IterableInAppMessage.decodeContent(from: container)
+        let content = IterableInAppMessage.decodeContent(from: container, isJsonOnly: jsonOnly == 1)
         let priorityLevel = (try? container.decode(Double.self, forKey: .priorityLevel)) ?? Const.PriorityLevel.unassigned
         
         self.init(messageId: messageId,
@@ -274,21 +281,29 @@ extension IterableInAppMessage: Codable {
                   createdAt: createdAt,
                   expiresAt: expiresAt,
                   content: content,
-                  saveToInbox: saveToInbox,
+                  saveToInbox: saveToInbox && jsonOnly != 1,
                   inboxMetadata: inboxMetadata,
                   customPayload: customPayload,
                   read: read,
-                  priorityLevel: priorityLevel)
+                  priorityLevel: priorityLevel,
+                  jsonOnly: jsonOnly == 1)
         
         self.didProcessTrigger = didProcessTrigger
         self.consumed = consumed
     }
     
+    var isJsonOnly: Bool {
+        return jsonOnly
+    }
+    
     public func encode(to encoder: Encoder) {
         var container = encoder.container(keyedBy: CodingKeys.self)
         
+        // Encode jsonOnly first
+        try? container.encode(isJsonOnly ? 1 : 0, forKey: .jsonOnly)
+        
         try? container.encode(trigger, forKey: .trigger)
-        try? container.encode(saveToInbox, forKey: .saveToInbox)
+        try? container.encode(saveToInbox && !isJsonOnly, forKey: .saveToInbox)
         try? container.encode(messageId, forKey: .messageId)
         try? container.encode(campaignId as? Int, forKey: .campaignId)
         try? container.encode(createdAt, forKey: .createdAt)
@@ -303,7 +318,10 @@ extension IterableInAppMessage: Codable {
             try? container.encode(inboxMetadata, forKey: .inboxMetadata)
         }
         
-        IterableInAppMessage.encode(content: content, inContainer: &container)
+        // Only encode content if not JSON-only
+        if !isJsonOnly {
+            IterableInAppMessage.encode(content: content, inContainer: &container)
+        }
     }
     
     private static func createDefaultContent() -> IterableInAppContent {
@@ -328,7 +346,11 @@ extension IterableInAppMessage: Codable {
         return deserialized as? [AnyHashable: Any]
     }
     
-    private static func decodeContent(from container: KeyedDecodingContainer<IterableInAppMessage.CodingKeys>) -> IterableInAppContent {
+    private static func decodeContent(from container: KeyedDecodingContainer<IterableInAppMessage.CodingKeys>, isJsonOnly: Bool) -> IterableInAppContent {
+        if isJsonOnly {
+            return createDefaultContent()
+        }
+
         guard let contentContainer = try? container.nestedContainer(keyedBy: ContentCodingKeys.self, forKey: .content) else {
             ITBError()
             
@@ -357,6 +379,7 @@ extension IterableInAppMessage: Codable {
             }
         }
     }
+    
 }
 
 protocol InAppPersistenceProtocol {

@@ -57,7 +57,9 @@ enum Const {
         static let deviceId = "itbl_device_id"
         static let sdkVersion = "itbl_sdk_version"
         static let offlineMode = "itbl_offline_mode"
-        
+        static let isNotificationsEnabled = "itbl_isNotificationsEnabled"
+        static let hasStoredNotificationSetting = "itbl_hasStoredNotificationSetting"
+
         static let attributionInfoExpiration = 24
     }
     
@@ -94,6 +96,11 @@ enum Const {
     enum HttpHeader {
         static let location = "Location"
         static let setCookie = "Set-Cookie"
+    }
+    
+    enum RemoteNotification {
+        static let aps = "aps"
+        static let contentAvailable = "content-available"
     }
 }
 
@@ -175,6 +182,9 @@ enum JsonKey {
     
     static let contentType = "Content-Type"
     
+    static let mobileFrameworkInfo = "mobileFrameworkInfo"
+    
+    static let frameworkType = "frameworkType"
     
 //    embedded
     static let embeddedSessionId = "session"
@@ -248,6 +258,7 @@ enum JsonKey {
         static let packageName = "packageName"
         static let sdkVersion = "SDKVersion"
         static let content = "content"
+        static let jsonOnly = "jsonOnly"
     }
     
     enum Payload {

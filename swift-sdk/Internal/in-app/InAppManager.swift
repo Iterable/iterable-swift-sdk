@@ -286,7 +286,7 @@ class InAppManager: NSObject, IterableInternalInAppManagerProtocol {
     
     private func getMessagesMap(fromMessagesProcessorResult messagesProcessorResult: MessagesProcessorResult) -> OrderedDictionary<String, IterableInAppMessage> {
         switch messagesProcessorResult {
-        case let .noShow(messagesMap: messagesMap):
+        case let .noShow(message: _, messagesMap: messagesMap):
             return messagesMap
         case .show(message: _, messagesMap: let messagesMap):
             return messagesMap
@@ -308,6 +308,13 @@ class InAppManager: NSObject, IterableInternalInAppManagerProtocol {
         let messagesProcessorResult = processor.processMessages()
         self.messagesMap = getMessagesMap(fromMessagesProcessorResult: messagesProcessorResult)
         
+        if case let .noShow(message, _) = messagesProcessorResult,
+            let message = message, message.isJsonOnly {
+            requestHandler?.inAppConsume(message.messageId,
+                                       onSuccess: nil,
+                                       onFailure: nil)
+        }
+        
         showMessage(fromMessagesProcessorResult: messagesProcessorResult)
     }
     
@@ -315,6 +322,10 @@ class InAppManager: NSObject, IterableInternalInAppManagerProtocol {
                               consume: Bool,
                               callback: ITBURLCallback? = nil) {
         ITBInfo()
+        
+        guard !message.isJsonOnly else {
+            return
+        }
         
         guard Thread.isMainThread else {
             ITBError("This must be called from the main thread")

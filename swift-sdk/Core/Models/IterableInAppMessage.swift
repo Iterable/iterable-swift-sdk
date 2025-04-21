@@ -51,6 +51,9 @@ import Foundation
     
     /// the urgency level of this message (nil will be treated as `unassigned` when displaying this message)
     public var priorityLevel: Double
+	
+    /// Whether this message is a JSON-only message
+    public let jsonOnly: Bool
     
     // MARK: - Private/Internal
     
@@ -64,7 +67,8 @@ import Foundation
          inboxMetadata: IterableInboxMetadata? = nil,
          customPayload: [AnyHashable: Any]? = nil,
          read: Bool = false,
-         priorityLevel: Double = Const.PriorityLevel.unassigned) {
+         priorityLevel: Double = Const.PriorityLevel.unassigned,
+         jsonOnly: Bool = false) {
         self.messageId = messageId
         self.campaignId = campaignId
         self.trigger = trigger
@@ -76,5 +80,6 @@ import Foundation
         self.customPayload = customPayload
         self.read = read
         self.priorityLevel = priorityLevel
+        self.jsonOnly = jsonOnly
     }
 }

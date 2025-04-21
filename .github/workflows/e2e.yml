@@ -4,7 +4,7 @@ on: pull_request
 
 jobs:
   run-e2e-job:
-    runs-on: macos-12
+    runs-on: macos-15
 
     steps:
       - uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
@@ -23,3 +23,5 @@ jobs:
           in_app_template_id: ${{secrets.E2E_IN_APP_TEMPLATE_ID}}
         run: |
           ./tests/endpoint-tests/scripts/run_test.sh
+
+      

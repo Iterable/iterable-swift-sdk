@@ -176,7 +176,7 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
     
     // MARK: - API Request Calls
     
-    func register(token: Data,
+    func register(token: String,
                   onSuccess: OnSuccessHandler? = nil,
                   onFailure: OnFailureHandler? = nil) {
         guard let appName = pushIntegrationName else {
@@ -187,14 +187,18 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
             return
         }
         
-        hexToken = token.hexString()
-        let registerTokenInfo = RegisterTokenInfo(hexToken: token.hexString(),
-                                                  appName: appName,
-                                                  pushServicePlatform: config.pushPlatform,
-                                                  apnsType: dependencyContainer.apnsTypeChecker.apnsType,
-                                                  deviceId: deviceId,
-                                                  deviceAttributes: deviceAttributes,
-                                                  sdkVersion: localStorage.sdkVersion)
+        hexToken = token
+        
+        let mobileFrameworkInfo = config.mobileFrameworkInfo ?? createDefaultMobileFrameworkInfo()
+        
+        let registerTokenInfo = RegisterTokenInfo(hexToken: token,
+                                                appName: appName,
+                                                pushServicePlatform: config.pushPlatform,
+                                                apnsType: dependencyContainer.apnsTypeChecker.apnsType,
+                                                deviceId: deviceId,
+                                                deviceAttributes: deviceAttributes,
+                                                sdkVersion: localStorage.sdkVersion,
+                                                mobileFrameworkInfo: mobileFrameworkInfo)
         requestHandler.register(registerTokenInfo: registerTokenInfo,
                                 notificationStateProvider: notificationStateProvider,
                                 onSuccess: { (_ data: [AnyHashable: Any]?) in
@@ -208,6 +212,12 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
         )
     }
     
+    func register(token: Data,
+                  onSuccess: OnSuccessHandler? = nil,
+                  onFailure: OnFailureHandler? = nil) {
+        register(token: token.hexString(), onSuccess: onSuccess, onFailure: onFailure)
+    }
+    
     @discardableResult
     func disableDeviceForCurrentUser(withOnSuccess onSuccess: OnSuccessHandler? = nil,
                                      onFailure: OnFailureHandler? = nil) -> Pending<SendRequestValue, SendRequestError> {
@@ -216,7 +226,8 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
             onFailure?(errorMessage, nil)
             return SendRequestError.createErroredFuture(reason: errorMessage)
         }
-        guard userId != nil || email != nil else {
+        
+        guard isEitherUserIdOrEmailSet() else {
             let errorMessage = "either userId or email must be present"
             onFailure?(errorMessage, nil)
             return SendRequestError.createErroredFuture(reason: errorMessage)
@@ -500,6 +511,8 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
     private var _userId: String?
     private var _successCallback: OnSuccessHandler? = nil
     private var _failureCallback: OnFailureHandler? = nil
+    
+    private let notificationCenter: NotificationCenterProtocol
 
     
     /// the hex representation of this device token
@@ -546,16 +559,28 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
         }
     }
     
-    private func isEitherUserIdOrEmailSet() -> Bool {
+    func isSDKInitialized() -> Bool {
+        let isInitialized = !apiKey.isEmpty && isEitherUserIdOrEmailSet()
+        
+        if !isInitialized {
+            ITBInfo("Iterable SDK must be initialized with an API key and user email/userId before calling SDK methods")
+        }
+        
+        return isInitialized
+    }
+    
+    public func isEitherUserIdOrEmailSet() -> Bool {
         IterableUtil.isNotNullOrEmpty(string: _email) || IterableUtil.isNotNullOrEmpty(string: _userId)
+    }
+    
+    public func noUserLoggedIn() -> Bool {
+        IterableUtil.isNullOrEmpty(string: _email) && IterableUtil.isNullOrEmpty(string: _userId)
     }
     
     private func logoutPreviousUser() {
         ITBInfo()
         
-        guard isEitherUserIdOrEmailSet() else {
-            return
-        }
+        guard isSDKInitialized() else { return }
         
         if config.autoPushRegistration {
             disableDeviceForCurrentUser()
@@ -582,6 +607,8 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
     private func onLogin(_ authToken: String? = nil) {
         ITBInfo()
         
+        guard isSDKInitialized() else { return }
+        
         self.authManager.pauseAuthRetries(false)
         if let authToken = authToken {
             self.authManager.setNewToken(authToken)
@@ -605,10 +632,7 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
     
     private func completeUserLogin() {
         ITBInfo()
-        
-        guard isEitherUserIdOrEmailSet() else {
-            return
-        }
+        guard isSDKInitialized() else { return }
         
         if config.autoPushRegistration {
             notificationStateProvider.registerForRemoteNotifications()
@@ -666,6 +690,7 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
         localStorage = dependencyContainer.localStorage
         inAppDisplayer = dependencyContainer.inAppDisplayer
         urlOpener = dependencyContainer.urlOpener
+        notificationCenter = dependencyContainer.notificationCenter
         deepLinkManager = DeepLinkManager(redirectNetworkSessionProvider: dependencyContainer)
     }
     
@@ -698,15 +723,54 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
         requestHandler.start()
         
         checkRemoteConfiguration()
+        
+        addForegroundObservers()
                 
         return inAppManager.start()
+    }
+    
+    private func addForegroundObservers() {
+        notificationCenter.addObserver(self,
+                                     selector: #selector(onAppDidBecomeActiveNotification(notification:)),
+                                     name: UIApplication.didBecomeActiveNotification,
+                                     object: nil)
+    }
+    
+    @objc private func onAppDidBecomeActiveNotification(notification: Notification) {
+        guard config.autoPushRegistration else { return }
+        
+        notificationStateProvider.isNotificationsEnabled { [weak self] systemEnabled in
+            guard let self = self else { return }
+            
+            let storedEnabled = self.localStorage.isNotificationsEnabled
+            let hasStoredPermission = self.localStorage.hasStoredNotificationSetting
+            
+            if self.isEitherUserIdOrEmailSet() {
+                if hasStoredPermission && (storedEnabled != systemEnabled) {
+                    self.notificationStateProvider.registerForRemoteNotifications()
+                }
+                
+                // Always store the current state
+                self.localStorage.isNotificationsEnabled = systemEnabled
+                self.localStorage.hasStoredNotificationSetting = true
+            }
+        }
     }
     
     private func handle(launchOptions: [UIApplication.LaunchOptionsKey: Any]?) {
         guard let launchOptions = launchOptions else {
             return
         }
+        
         if let remoteNotificationPayload = launchOptions[UIApplication.LaunchOptionsKey.remoteNotification] as? [AnyHashable: Any] {
+            
+            if let aps = remoteNotificationPayload[Const.RemoteNotification.aps] as? [String: Any],
+               let contentAvailable = aps[Const.RemoteNotification.contentAvailable] as? Int,
+               contentAvailable == 1 {
+                ITBInfo("Received push notification with wakey content-available flag")
+                return
+            }
+            
             if let _ = IterableUtil.rootViewController {
                 // we are ready
                 IterableAppIntegration.implementation?.performDefaultNotificationAction(remoteNotificationPayload)
@@ -761,8 +825,20 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
         }
     }
     
+    private func createDefaultMobileFrameworkInfo() -> IterableAPIMobileFrameworkInfo {
+        let frameworkType = IterableAPIMobileFrameworkDetector.frameworkType()
+        return IterableAPIMobileFrameworkInfo(
+            frameworkType: frameworkType,
+            iterableSdkVersion: frameworkType == .native ? localStorage.sdkVersion : nil
+        )
+    }
+    
     deinit {
         ITBInfo()
+        notificationCenter.removeObserver(self)
         requestHandler.stop()
     }
+    
 }
+
+

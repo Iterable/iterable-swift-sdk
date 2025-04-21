@@ -2,6 +2,8 @@
 //
 
 import Foundation
+import UIKit
+
 @testable import IterableSDK
 
 

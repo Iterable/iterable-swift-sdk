@@ -150,19 +150,19 @@ class AuthManager: IterableAuthManagerProtocol {
         
         pendingAuth = false
         
+        // Set the new token first
+        authToken = retrievedAuthToken
+        storeAuthToken()
+        
         if retrievedAuthToken != nil {
             let isRefreshQueued = queueAuthTokenExpirationRefresh(retrievedAuthToken, onSuccess: onSuccess)
             if !isRefreshQueued {
-                onSuccess?(authToken)
+                onSuccess?(retrievedAuthToken)  // Use retrievedAuthToken instead of authToken
             }
         } else {
             handleAuthFailure(failedAuthToken: nil, reason: .authTokenNull)
             scheduleAuthTokenRefreshTimer(interval: getNextRetryInterval(), successCallback: onSuccess)
         }
-        
-        authToken = retrievedAuthToken
-        
-        storeAuthToken()
     }
     
     func handleAuthFailure(failedAuthToken: String?, reason: AuthFailureReason) {
@@ -180,13 +180,13 @@ class AuthManager: IterableAuthManagerProtocol {
             /// schedule a default timer of 10 seconds if we fall into this case
             scheduleAuthTokenRefreshTimer(interval: getNextRetryInterval(), successCallback: onSuccess)
             
-            return true
+            return false  // Return false since we couldn't queue a valid refresh
         }
         
         let timeIntervalToRefresh = TimeInterval(expirationDate) - dateProvider.currentDate.timeIntervalSince1970 - expirationRefreshPeriod
         if timeIntervalToRefresh > 0 {
             scheduleAuthTokenRefreshTimer(interval: timeIntervalToRefresh, isScheduledRefresh: true, successCallback: onSuccess)
-            return true
+            return true  // Only return true when we successfully queue a refresh
         }
         return false
     }

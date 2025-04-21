@@ -45,14 +45,15 @@ struct RequestCreator {
                                                            device: UIDevice.current,
                                                            bundle: Bundle.main,
                                                            notificationsEnabled: notificationsEnabled,
-                                                           deviceAttributes: registerTokenInfo.deviceAttributes)
+                                                           deviceAttributes: registerTokenInfo.deviceAttributes,
+                                                           mobileFrameworkInfo: registerTokenInfo.mobileFrameworkInfo)
         
         let deviceDictionary: [String: Any] = [
             JsonKey.token: registerTokenInfo.hexToken,
             JsonKey.platform: RequestCreator.pushServicePlatformToString(registerTokenInfo.pushServicePlatform,
                                                                          apnsType: registerTokenInfo.apnsType),
             JsonKey.applicationName: registerTokenInfo.appName,
-            JsonKey.dataFields: dataFields,
+            JsonKey.dataFields: dataFields
         ]
         
         var body = [AnyHashable: Any]()

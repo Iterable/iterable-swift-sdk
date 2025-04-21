@@ -19,6 +19,10 @@ protocol LocalStorageProtocol {
     
     var offlineMode: Bool { get set }
     
+    var isNotificationsEnabled: Bool { get set }
+    
+    var hasStoredNotificationSetting: Bool { get set }
+    
     func getAttributionInfo(currentDate: Date) -> IterableAttributionInfo?
     
     func save(attributionInfo: IterableAttributionInfo?, withExpiration expiration: Date?)

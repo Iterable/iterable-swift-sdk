@@ -1,0 +1,109 @@
+name: Prepare For Release
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version number (e.g., 6.5.0)'
+        required: true
+        type: string
+      jira_ticket:
+        description: 'JIRA ticket MOB number (e.g., 1234)'
+        required: true
+        type: string
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  prepare-release:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Update Changelog
+        id: update_changelog
+        run: |
+          changelog_file="CHANGELOG.md"
+          
+          # Function to extract content between two patterns, including the first pattern
+          extract_between() {
+            awk "/^## \[$1\]/{p=1;print;next} /^## \[/{p=0} p" "$3"
+          }
+          
+          # Get the unreleased content
+          unreleased_content=$(extract_between "Unreleased" "[0-9]" "$changelog_file")
+          
+          if [ -z "$unreleased_content" ]; then
+            echo "No unreleased changes found in $changelog_file"
+            exit 1
+          fi
+          
+          # Get the current version - using awk
+          current_version=$(awk '/^## \[[0-9]+\.[0-9]+\.[0-9]+(-[a-zA-Z0-9]+)?\]/ { match($0, /[0-9]+\.[0-9]+\.[0-9]+(-[a-zA-Z0-9]+)?/); print substr($0, RSTART, RLENGTH); exit }' "$changelog_file")
+          new_version="${{ github.event.inputs.version }}"
+          
+          # Validate version format
+          if ! [[ $new_version =~ ^[0-9]+\.[0-9]+\.[0-9]+(-[a-zA-Z0-9]+)?$ ]]; then
+            echo "Invalid version format. Please use semantic versioning (e.g., 6.5.0 or 6.5.0-beta1)"
+            exit 1
+          fi
+          
+          echo "new_version=${new_version}" >> $GITHUB_OUTPUT
+          
+          # Create temporary file
+          temp_file=$(mktemp)
+          
+          # Preserve header and write new content
+          {
+            # Preserve the header (first 4 lines)
+            head -n 4 "$changelog_file"
+            echo "## [Unreleased]"
+            echo ""
+            echo "## [$new_version]"
+            # Remove the "## [Unreleased]" line from unreleased_content using BSD sed
+            echo "$unreleased_content" | sed '1{/^## \[Unreleased\]/d;}'
+            echo ""
+            # Get the rest of the file starting from the first version entry
+            sed -n '/^## \[[0-9]/,$p' "$changelog_file"
+          } > "$temp_file"
+          
+          # Replace original file
+          mv "$temp_file" "$changelog_file"
+
+      - name: Update Version Numbers
+        run: |
+          # Update Iterable-iOS-SDK.podspec
+          sed -i '' "s/\(s\.version[[:space:]]*=[[:space:]]*\)\".*\"/\1\"${{ github.event.inputs.version }}\"/" Iterable-iOS-SDK.podspec
+          
+          # Update Iterable-iOS-AppExtensions.podspec
+          sed -i '' "s/\(s\.version[[:space:]]*=[[:space:]]*\)\".*\"/\1\"${{ github.event.inputs.version }}\"/" Iterable-iOS-AppExtensions.podspec
+          
+          # Update sdkVersion in IterableAPI.swift
+          find . -name "IterableAPI.swift" -type f -exec sed -i '' "s/\(static let sdkVersion[[:space:]]*=[[:space:]]*\)\".*\"/\1\"${{ github.event.inputs.version }}\"/" {} \;
+
+      - name: Create Pull Request
+        uses: peter-evans/create-pull-request@v5
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          title: "MOB-${{ github.event.inputs.jira_ticket }}: Prepare for Release ${{ steps.update_changelog.outputs.new_version }}"
+          body: |
+            # Prepare for Release ${{ steps.update_changelog.outputs.new_version }}
+            
+            ## SDK Release Checklist
+            - [ ] CHANGELOG.md updated with correct version
+            - [ ] Version numbers updated:
+              - [ ] Iterable-iOS-SDK.podspec
+              - [ ] Iterable-iOS-AppExtensions.podspec
+              - [ ] sdkVersion in IterableAPI.swift
+            - [ ] README.md reviewed (if needed)
+            - [ ] All tests passing
+            - [ ] Documentation updated (if needed)
+            
+          branch: "MOB-${{ github.event.inputs.jira_ticket }}-prepare-for-release-${{ steps.update_changelog.outputs.new_version }}"
+          commit-message: "[MOB-${{ github.event.inputs.jira_ticket }}]: Prepare for release ${{ steps.update_changelog.outputs.new_version }}"
+          labels: release
+          delete-branch: true

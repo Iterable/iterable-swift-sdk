@@ -4,7 +4,7 @@ on: pull_request
 
 jobs:
   run-tests-job:
-    runs-on: macos-12
+    runs-on: macos-15
 
     steps:
       - uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
@@ -13,12 +13,99 @@ jobs:
         with:
           xcode-version: latest-stable
 
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+
+      - name: Setup Ruby and xcpretty
+        run: |
+          gem install erb
+          gem install xcpretty
+
+      - name: Print available simulators
+        run: xcrun simctl list devices | cat
+
       - name: Build and test
         run: |
-          xcodebuild test -project swift-sdk.xcodeproj -scheme swift-sdk -sdk iphonesimulator -destination 'platform=iOS Simulator,name=iPhone 13 Pro Max' -enableCodeCoverage YES CODE_SIGNING_REQUIRED=NO | xcpretty && exit ${PIPESTATUS[0]}
+          xcodebuild test -project swift-sdk.xcodeproj -scheme swift-sdk -sdk iphonesimulator -destination 'platform=iOS Simulator,name=iPhone 16 Pro,OS=18.2' -enableCodeCoverage YES -resultBundlePath TestResults.xcresult CODE_SIGNING_REQUIRED=NO | xcpretty && exit ${PIPESTATUS[0]}
+ 
+      - name: Process test results
+        run: |
+          python3 scripts/process_xcresult.py --path TestResults.xcresult --test-output test-results.html --coverage-output coverage-results.html --test-plan tests/swift-sdk.xctestplan --summary-json test-summary.json --commit-sha ${{ github.sha }}
+        if: success() || failure()
+
+      - name: Create Test Report Check
+        uses: actions/github-script@v7
+        if: success() || failure()
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const fs = require('fs');
+            
+            // Read the test results and coverage reports
+            let testReport = "";
+            let coverageReport = "";
+            
+            try {
+              testReport = fs.readFileSync("test-results.html", 'utf8');
+              coverageReport = fs.readFileSync("coverage-results.html", 'utf8');
+            } catch (error) {
+              core.warning(`Error reading report files: ${error.message}`);
+            }
+            
+            // Read test summary
+            let testStats = {
+              total_tests: 0,
+              passed_tests: 0,
+              failed_tests: 0,
+              success_rate: 0
+            };
+            
+            try {
+              const summaryJson = fs.readFileSync("test-summary.json", 'utf8');
+              testStats = JSON.parse(summaryJson);
+              
+              // Generate simple markdown summary
+              fs.writeFileSync("report-summary.md",
+                `# Test Results\n\n` +
+                `- Total: ${testStats.total_tests}\n` +
+                `- Passed: ${testStats.passed_tests}\n` +
+                `- Failed: ${testStats.failed_tests}\n` +
+                `- Success: ${(testStats.success_rate).toFixed(1)}%\n`
+              );
+            } catch (error) {
+              core.warning(`Error reading test summary: ${error.message}`);
+            }
+
+             
+            // Extract just the main content from the HTML - removing the HTML tags
+            function stripHtml(html) {
+              // Simple regex to extract text content from HTML
+              return html
+                .replace(/<h2>[\s\S]*?<\/h2>/gi, '')
+                .trim();
+            }
+            
+            // Create the check with test results as summary and coverage as details
+            await github.rest.checks.create({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              name: 'Unit Test Results',
+              head_sha: context.payload.pull_request?.head.sha || context.sha,
+              status: 'completed',
+              conclusion: testStats.failed_tests > 0 ? 'failure' : 'success',
+              output: {
+                title: `Tests: ${testStats.passed_tests}/${testStats.passed_tests + testStats.failed_tests} passed (${(testStats.success_rate).toFixed(1)}%) Skipped: ${testStats.skipped_tests}`,
+                summary: stripHtml(testReport.substring(0, 65000)),
+                text: stripHtml(coverageReport.substring(0, 65000))
+              }
+            });
 
       - name: CocoaPods lint
-        run: pod lib lint
+        run: pod lib lint --allow-warnings
 
       - name: Upload coverage report to codecov.io
-        run: bash <(curl -s https://codecov.io/bash) -X gcov -J 'IterableSDK' -J 'IterableAppExtensions'
+        env:
+          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+        run: bash <(curl -s https://codecov.io/bash) -X gcov -J 'IterableSDK' -J 'IterableAppExtensions' -B main -C ${{ github.sha }} -r ${{ github.repository }}

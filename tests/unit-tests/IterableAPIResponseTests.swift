@@ -101,53 +101,52 @@ class IterableAPIResponseTests: XCTestCase {
     }
     
     func testRetryOnInvalidJwtPayload() throws {
-        throw XCTSkip("skipping this test - retry logic updated, needs to be revisited")
-           let xpectation = expectation(description: "retry on 401 with invalidJWTPayload")
-
-           // Mock the dependencies and requestProvider for your test
-           let authManager = MockAuthManager()
-
-           let networkErrorSession = MockNetworkSession() { _ in
-               MockNetworkSession.MockResponse(statusCode: 401,
-                                               data: ["code":"InvalidJwtPayload"].toJsonData(),
-                                               delay: 1)
-           }
-
-           let networkSuccessSession = MockNetworkSession() { _ in
-               MockNetworkSession.MockResponse(statusCode: 200,
-                                               data: ["msg": "success"].toJsonData(),
-                                               delay: 1)
-           }
-
-           let urlErrorRequest = createApiClient(networkSession: networkErrorSession).convertToURLRequest(iterableRequest: IterableRequest.post(PostRequest(path: "", args: nil, body: [:])))!
-
-
-           let urlSuccessRequest = createApiClient(networkSession: networkSuccessSession).convertToURLRequest(iterableRequest: IterableRequest.post(PostRequest(path: "", args: nil, body: [:])))!
-
-           let requestProvider: () -> Pending<SendRequestValue, SendRequestError> = {
-               if authManager.retryWasRequested {
-                   return RequestSender.sendRequest(urlSuccessRequest, usingSession: networkSuccessSession)
-               }
-               return RequestSender.sendRequest(urlErrorRequest, usingSession: networkErrorSession)
-           }
-
-           let result = RequestProcessorUtil.sendRequest(
-               requestProvider: requestProvider,
-               authManager: authManager,
-               requestIdentifier: "TestIdentifier"
-           )
-
-           result.onSuccess { value in
-               xpectation.fulfill()
-               XCTAssert(true)
-           }.onError { error in
-               if authManager.retryWasRequested {
-                   xpectation.fulfill()
-               }
-           }
-
-           waitForExpectations(timeout: testExpectationTimeout)
-       }
+        let xpectation = expectation(description: "retry on 401 with invalidJWTPayload")
+        
+        // Mock the dependencies and requestProvider for your test
+        let authManager = MockAuthManager()
+        
+        let networkErrorSession = MockNetworkSession() { _ in
+            MockNetworkSession.MockResponse(statusCode: 401,
+                                            data: ["code":"InvalidJwtPayload"].toJsonData(),
+                                            delay: 1)
+        }
+        
+        let networkSuccessSession = MockNetworkSession() { _ in
+            MockNetworkSession.MockResponse(statusCode: 200,
+                                            data: ["msg": "success"].toJsonData(),
+                                            delay: 1)
+        }
+        
+        let urlErrorRequest = createApiClient(networkSession: networkErrorSession).convertToURLRequest(iterableRequest: IterableRequest.post(PostRequest(path: "", args: nil, body: [:])))!
+        
+        
+        let urlSuccessRequest = createApiClient(networkSession: networkSuccessSession).convertToURLRequest(iterableRequest: IterableRequest.post(PostRequest(path: "", args: nil, body: [:])))!
+        
+        let requestProvider: () -> Pending<SendRequestValue, SendRequestError> = {
+            if authManager.retryWasRequested {
+                return RequestSender.sendRequest(urlSuccessRequest, usingSession: networkSuccessSession)
+            }
+            return RequestSender.sendRequest(urlErrorRequest, usingSession: networkErrorSession)
+        }
+        
+        let result = RequestProcessorUtil.sendRequest(
+            requestProvider: requestProvider,
+            authManager: authManager,
+            requestIdentifier: "TestIdentifier"
+        )
+        
+        result.onSuccess { value in
+            xpectation.fulfill()
+            XCTAssert(true)
+        }.onError { error in
+            if authManager.retryWasRequested {
+                xpectation.fulfill()
+            }
+        }
+        
+        waitForExpectations(timeout: testExpectationTimeout)
+    }
     
     func testResponseCode401() { // 401 = unauthorized
         let xpectation = expectation(description: "401")
@@ -215,7 +214,7 @@ class IterableAPIResponseTests: XCTestCase {
         let apiClient = createApiClient(networkSession: networkSession)
         var urlRequest = apiClient.convertToURLRequest(iterableRequest: iterableRequest)!
         urlRequest.timeoutInterval = 1
-                
+        
         RequestSender.sendRequest(urlRequest, usingSession: networkSession).onError { sendError in
             xpectation.fulfill()
             XCTAssert(sendError.reason!.lowercased().contains("internal server error"))
@@ -223,7 +222,7 @@ class IterableAPIResponseTests: XCTestCase {
         
         wait(for: [xpectation], timeout: testExpectationTimeout)
     }
-
+    
     
     func testNetworkTimeoutResponse() {
         let xpectation = expectation(description: "timeout network response")
@@ -251,7 +250,7 @@ class IterableAPIResponseTests: XCTestCase {
         
         wait(for: [xpectation], timeout: testExpectationTimeout)
     }
-
+    
     
     private func verifyIterableHeaders(_ urlRequest: URLRequest) {
         XCTAssertEqual(urlRequest.value(forHTTPHeaderField: JsonKey.Header.sdkPlatform), JsonValue.iOS)
