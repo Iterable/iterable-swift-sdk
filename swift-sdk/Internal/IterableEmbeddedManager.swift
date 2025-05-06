@@ -198,7 +198,10 @@ class IterableEmbeddedManager: NSObject, IterableInternalEmbeddedManagerProtocol
     private func setMessages(_ processor: EmbeddedMessagingProcessor) {
         messageProcessingQueue.sync {
             messages = processor.processedMessagesList()
-            cleanUpTrackedMessageIds(messages)
+            let currentUniqueKeys = Set(messages.flatMap { placement, messages in
+                messages.map { "\(placement)-\($0.metadata.messageId)" }
+            })
+            trackedMessageIds = trackedMessageIds.intersection(currentUniqueKeys)
         }
     }
     
