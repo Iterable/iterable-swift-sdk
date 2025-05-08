@@ -238,6 +238,11 @@ import UIKit
         implementation?.register(token: token)
     }
     
+    @objc(registerFCMToken:)
+    public static func registerFCM(token: String) {
+        implementation?.register(token: token)
+    }
+    
     /// Register this device's token with Iterable
     ///
     /// Push integration name and platform are read from `IterableConfig`. If platform is set to `auto`, it will
@@ -254,6 +259,12 @@ import UIKit
     @objc(registerToken:onSuccess:OnFailure:)
     public static func register(token: Data, onSuccess: OnSuccessHandler? = nil, onFailure: OnFailureHandler? = nil) {
         implementation?.register(token: token, onSuccess: onSuccess, onFailure: onFailure)
+    }
+    
+    @objc(registerFCMToken:onSuccess:OnFailure:)
+    public static func registerFCM(token: String, onSuccess: OnSuccessHandler? = nil, onFailure: OnFailureHandler? = nil) {
+        guard let implementation, implementation.isSDKInitialized() else { return }
+        implementation.register(token: token, onSuccess: onSuccess, onFailure: onFailure)
     }
     
     @objc(pauseAuthRetries:)
