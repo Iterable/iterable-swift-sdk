@@ -303,7 +303,7 @@ enum JsonValue {
     }
 }
 
-public enum IterableDataRegion {
+@objc public enum IterableDataRegion: Int {
     public static let US = "https://api.iterable.com/api/"
     public static let EU = "https://api.eu.iterable.com/api/"
 }
