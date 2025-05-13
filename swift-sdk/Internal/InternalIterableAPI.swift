@@ -199,8 +199,10 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
                                                 deviceAttributes: deviceAttributes,
                                                 sdkVersion: localStorage.sdkVersion,
                                                 mobileFrameworkInfo: mobileFrameworkInfo)
+        
         requestHandler.register(registerTokenInfo: registerTokenInfo,
                                 notificationStateProvider: notificationStateProvider,
+                                fcmEnabled: config.useFirebaseMessaging,
                                 onSuccess: { (_ data: [AnyHashable: Any]?) in
                                                 self._successCallback?(data)
                                                 onSuccess?(data)
