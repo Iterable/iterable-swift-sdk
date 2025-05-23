@@ -38,11 +38,19 @@ class IterableEmbeddedManager: NSObject, IterableInternalEmbeddedManagerProtocol
     }
     
     public func getMessages() -> [IterableEmbeddedMessage] {
-        return Array(messages.values.flatMap { $0 })
+        var result: [IterableEmbeddedMessage] = []
+        messageProcessingQueue.sync {
+            result = Array(messages.values.flatMap { $0 })
+        }
+        return result
     }
     
     public func getMessages(for placementId: Int) -> [IterableEmbeddedMessage] {
-        return messages[placementId] ?? []
+        var result: [IterableEmbeddedMessage] = []
+        messageProcessingQueue.sync {
+            result = messages[placementId] ?? []
+        }
+        return result
     }
     
     public func addUpdateListener(_ listener: IterableEmbeddedUpdateDelegate) {
@@ -130,6 +138,7 @@ class IterableEmbeddedManager: NSObject, IterableInternalEmbeddedManagerProtocol
     private let urlOpener: UrlOpenerProtocol
     private let allowedProtocols: [String]
     private var messages: [Int: [IterableEmbeddedMessage]] = [:]
+    private let messageProcessingQueue = DispatchQueue(label: "com.iterable.embedded.messages", qos: .userInitiated)
     private var listeners: NSHashTable<IterableEmbeddedUpdateDelegate> = NSHashTable(options: [.weakMemory])
     private var trackedMessageIds: Set<String> = Set()
     private var enableEmbeddedMessaging: Bool
@@ -187,15 +196,22 @@ class IterableEmbeddedManager: NSObject, IterableInternalEmbeddedManagerProtocol
     }
     
     private func setMessages(_ processor: EmbeddedMessagingProcessor) {
-        messages = processor.processedMessagesList()
-        cleanUpTrackedMessageIds(messages)
+        messageProcessingQueue.sync {
+            messages = processor.processedMessagesList()
+            let currentUniqueKeys = Set(messages.flatMap { placement, messages in
+                messages.map { "\(placement)-\($0.metadata.messageId)" }
+            })
+            trackedMessageIds = trackedMessageIds.intersection(currentUniqueKeys)
+        }
     }
     
     private func cleanUpTrackedMessageIds(_ currentMessages: [Int: [IterableEmbeddedMessage]]) {
         let currentUniqueKeys = Set(currentMessages.flatMap { placement, messages in
             messages.map { "\(placement)-\($0.metadata.messageId)" }
         })
-        trackedMessageIds = trackedMessageIds.intersection(currentUniqueKeys)
+        messageProcessingQueue.sync {
+            trackedMessageIds = trackedMessageIds.intersection(currentUniqueKeys)
+        }
     }
 
     private func trackNewlyRetrieved(_ processor: EmbeddedMessagingProcessor) {
@@ -204,9 +220,11 @@ class IterableEmbeddedManager: NSObject, IterableInternalEmbeddedManagerProtocol
                 let messageId = message.metadata.messageId
                 let uniqueKey = "\(placementId)-\(messageId)"
                 
-                if !trackedMessageIds.contains(uniqueKey) {
-                    IterableAPI.track(embeddedMessageReceived: message)
-                    trackedMessageIds.insert(uniqueKey)
+                messageProcessingQueue.sync {
+                    if !trackedMessageIds.contains(uniqueKey) {
+                        IterableAPI.track(embeddedMessageReceived: message)
+                        trackedMessageIds.insert(uniqueKey)
+                    }
                 }
             }
         }
