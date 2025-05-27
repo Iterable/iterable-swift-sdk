@@ -12,6 +12,7 @@ Pods/
 
 dev.config
 
+.build/
 build/
 build2/
 

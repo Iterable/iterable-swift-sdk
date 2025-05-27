@@ -105,6 +105,10 @@ struct InAppCalculations {
                                          location: IterableMessageLocation,
                                          inAppHeight: CGFloat) -> ViewPosition {
         var position = ViewPosition()
+        
+        // Get the current interface orientation
+        let orientation = UIApplication.shared.windows.first?.windowScene?.interfaceOrientation ?? .portrait
+        
         // set the height
         position.height = inAppHeight
         
@@ -121,13 +125,57 @@ struct InAppCalculations {
         // set center y
         switch location {
         case .top:
-            position.height = position.height + safeAreaInsets.top
-            let halfWebViewHeight = position.height / 2
-            position.center.y = halfWebViewHeight
+            switch orientation {
+            case .landscapeLeft:
+                // Dynamic island is on the right side
+                position.height = position.height + safeAreaInsets.right
+                let halfWebViewHeight = position.height / 2
+                position.center.y = halfWebViewHeight
+            case .landscapeRight:
+                // Dynamic island is on the left side
+                position.height = position.height + safeAreaInsets.left
+                let halfWebViewHeight = position.height / 2
+                position.center.y = halfWebViewHeight
+            default:
+                // Portrait mode
+                position.height = position.height + safeAreaInsets.top
+                let halfWebViewHeight = position.height / 2
+                position.center.y = halfWebViewHeight
+            }
         case .bottom:
             let halfWebViewHeight = position.height / 2
+            // Add safe area bottom inset to account for home indicator
             position.center.y = parentPosition.height - halfWebViewHeight - safeAreaInsets.bottom
-        default: break
+        case .center:
+            switch orientation {
+            case .landscapeLeft:
+                // Dynamic island is on the right side
+                let availableHeight = parentPosition.height - safeAreaInsets.right - safeAreaInsets.bottom
+                position.center.y = safeAreaInsets.right + (availableHeight / 2)
+            case .landscapeRight:
+                // Dynamic island is on the left side
+                let availableHeight = parentPosition.height - safeAreaInsets.left - safeAreaInsets.bottom
+                position.center.y = safeAreaInsets.left + (availableHeight / 2)
+            default:
+                // Portrait mode
+                let availableHeight = parentPosition.height - safeAreaInsets.top - safeAreaInsets.bottom
+                position.center.y = safeAreaInsets.top + (availableHeight / 2)
+            }
+        case .full:
+            switch orientation {
+            case .landscapeLeft:
+                // Dynamic island is on the right side
+                position.height = parentPosition.height - safeAreaInsets.right - safeAreaInsets.bottom
+                position.center.y = safeAreaInsets.right + (position.height / 2)
+            case .landscapeRight:
+                // Dynamic island is on the left side
+                position.height = parentPosition.height - safeAreaInsets.left - safeAreaInsets.bottom
+                position.center.y = safeAreaInsets.left + (position.height / 2)
+            default:
+                // Portrait mode
+                position.height = parentPosition.height - safeAreaInsets.top - safeAreaInsets.bottom
+                position.center.y = safeAreaInsets.top + (position.height / 2)
+            }
         }
         
         return position
