@@ -98,6 +98,18 @@ struct InAppCalculations {
             return view.safeAreaInsets
     }
     
+    static var interfaceOrientation: UIInterfaceOrientation {
+        if #available(iOS 13.0, *) {
+            return UIApplication.shared
+                .connectedScenes
+                .compactMap { $0 as? UIWindowScene }
+                .first?
+                .interfaceOrientation ?? .portrait
+        } else {
+            return UIApplication.shared.statusBarOrientation
+        }
+    }
+    
     static func calculateWebViewPosition(safeAreaInsets: UIEdgeInsets,
                                          parentPosition: ViewPosition,
                                          paddingLeft: CGFloat,
@@ -105,9 +117,6 @@ struct InAppCalculations {
                                          location: IterableMessageLocation,
                                          inAppHeight: CGFloat) -> ViewPosition {
         var position = ViewPosition()
-        
-        // Get the current interface orientation
-        let orientation = UIApplication.shared.windows.first?.windowScene?.interfaceOrientation ?? .portrait
         
         // set the height
         position.height = inAppHeight
@@ -125,7 +134,7 @@ struct InAppCalculations {
         // set center y
         switch location {
         case .top:
-            switch orientation {
+            switch interfaceOrientation {
             case .landscapeLeft:
                 // Dynamic island is on the right side
                 position.height = position.height + safeAreaInsets.right
@@ -147,7 +156,7 @@ struct InAppCalculations {
             // Add safe area bottom inset to account for home indicator
             position.center.y = parentPosition.height - halfWebViewHeight - safeAreaInsets.bottom
         case .center:
-            switch orientation {
+            switch interfaceOrientation {
             case .landscapeLeft:
                 // Dynamic island is on the right side
                 let availableHeight = parentPosition.height - safeAreaInsets.right - safeAreaInsets.bottom
@@ -162,7 +171,7 @@ struct InAppCalculations {
                 position.center.y = safeAreaInsets.top + (availableHeight / 2)
             }
         case .full:
-            switch orientation {
+            switch interfaceOrientation {
             case .landscapeLeft:
                 // Dynamic island is on the right side
                 position.height = parentPosition.height - safeAreaInsets.right - safeAreaInsets.bottom
