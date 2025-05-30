@@ -162,6 +162,7 @@
 		5B5AA716284F1A6D0093FED4 /* MockNetworkSession.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5B5AA710284F1A6D0093FED4 /* MockNetworkSession.swift */; };
 		5B5AA717284F1A6D0093FED4 /* MockNetworkSession.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5B5AA710284F1A6D0093FED4 /* MockNetworkSession.swift */; };
 		5B6C3C1127CE871F00B9A753 /* NavInboxSessionUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5B6C3C1027CE871F00B9A753 /* NavInboxSessionUITests.swift */; };
+		8A272FD02DD3775800634559 /* IterableDataRegionObjCTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 8A272FCF2DD3775800634559 /* IterableDataRegionObjCTests.m */; };
 		8AAA8BA92D07310600DF8220 /* IterableSDK.h in Headers */ = {isa = PBXBuildFile; fileRef = 8AAA8B6C2D07310600DF8220 /* IterableSDK.h */; };
 		8AAA8BAB2D07310600DF8220 /* IterableAction.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8AAA8B1F2D07310600DF8220 /* IterableAction.swift */; };
 		8AAA8BB12D07310600DF8220 /* IterableActionContext.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8AAA8B202D07310600DF8220 /* IterableActionContext.swift */; };
@@ -588,6 +589,8 @@
 		5B5AA710284F1A6D0093FED4 /* MockNetworkSession.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockNetworkSession.swift; sourceTree = "<group>"; };
 		5B6C3C1027CE871F00B9A753 /* NavInboxSessionUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NavInboxSessionUITests.swift; sourceTree = "<group>"; };
 		5BFC7CED27FC9AF300E77479 /* inbox-ui-tests-app.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = "inbox-ui-tests-app.entitlements"; sourceTree = "<group>"; };
+		8A272FCF2DD3775800634559 /* IterableDataRegionObjCTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = IterableDataRegionObjCTests.m; sourceTree = "<group>"; };
+		8A272FD12DD3775900634559 /* unit-tests-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "unit-tests-Bridging-Header.h"; sourceTree = "<group>"; };
 		8AAA8B1E2D07310600DF8220 /* CommerceItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommerceItem.swift; sourceTree = "<group>"; };
 		8AAA8B1F2D07310600DF8220 /* IterableAction.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IterableAction.swift; sourceTree = "<group>"; };
 		8AAA8B202D07310600DF8220 /* IterableActionContext.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IterableActionContext.swift; sourceTree = "<group>"; };
@@ -1363,6 +1366,7 @@
 		AC7B142C20D02CE200877BFE /* unit-tests */ = {
 			isa = PBXGroup;
 			children = (
+				8A272FCF2DD3775800634559 /* IterableDataRegionObjCTests.m */,
 				1CBFFE152A97AEDC00ED57EE /* embedded-messaging-tests */,
 				552A0AAA280E24E400A80963 /* api-tests */,
 				AC3A3029262EE04400425435 /* deep-linking-tests */,
@@ -1377,6 +1381,7 @@
 				AC2C668620D3435700D46CC9 /* ActionRunnerTests.swift */,
 				55B9F15024B3D33700E8198A /* AuthTests.swift */,
 				ACB37AAF240268A60093A8EA /* SampleInboxViewDelegateImplementations.swift */,
+				8A272FD12DD3775900634559 /* unit-tests-Bridging-Header.h */,
 			);
 			path = "unit-tests";
 			sourceTree = "<group>";
@@ -1844,6 +1849,7 @@
 					};
 					AC7B142A20D02CE200877BFE = {
 						CreatedOnToolsVersion = 9.4;
+						LastSwiftMigration = 1620;
 						TestTargetID = ACF560D220E443BF000AAC23;
 					};
 					AC90C4C320D8632D00EECA5D = {
@@ -2223,6 +2229,7 @@
 				ACAA816E231163660035C743 /* RequestCreatorTests.swift in Sources */,
 				ACE34AB5213776CB00691224 /* LocalStorageTests.swift in Sources */,
 				55B37FEE229F59290042F13A /* InAppPersistenceTests.swift in Sources */,
+				8A272FD02DD3775800634559 /* IterableDataRegionObjCTests.m in Sources */,
 				AC6FDD8C20F56309005D811E /* InAppParsingTests.swift in Sources */,
 				5531CDAE22A9C992000D05E2 /* ClassExtensionsTests.swift in Sources */,
 				AC995F9E2167E9FD0099A184 /* CommonExtensions.swift in Sources */,
@@ -2822,6 +2829,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
+				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = BP98Z28R86;
 				INFOPLIST_FILE = "Tests/unit-tests/Info.plist";
@@ -2833,6 +2841,8 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = "iterable.unit-tests";
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_OBJC_BRIDGING_HEADER = "tests/unit-tests/unit-tests-Bridging-Header.h";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				TARGETED_DEVICE_FAMILY = "1,2";
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/host-app.app/host-app";
 			};
@@ -2842,6 +2852,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
+				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = BP98Z28R86;
 				INFOPLIST_FILE = "Tests/unit-tests/Info.plist";
@@ -2853,6 +2864,7 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = "iterable.unit-tests";
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_OBJC_BRIDGING_HEADER = "tests/unit-tests/unit-tests-Bridging-Header.h";
 				TARGETED_DEVICE_FAMILY = "1,2";
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/host-app.app/host-app";
 			};
