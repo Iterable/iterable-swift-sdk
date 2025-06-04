@@ -24,11 +24,13 @@ struct OnlineRequestProcessor: RequestProcessorProtocol {
     
     func register(registerTokenInfo: RegisterTokenInfo,
                   notificationStateProvider: NotificationStateProviderProtocol,
+                  fcmEnabled: Bool,
                   onSuccess: OnSuccessHandler? = nil,
                   onFailure: OnFailureHandler? = nil) {
         notificationStateProvider.isNotificationsEnabled { enabled in
             self.register(registerTokenInfo: registerTokenInfo,
                           notificationsEnabled: enabled,
+                          fcmEnabled: fcmEnabled,
                           onSuccess: onSuccess,
                           onFailure: onFailure)
         }
@@ -293,10 +295,11 @@ struct OnlineRequestProcessor: RequestProcessorProtocol {
     @discardableResult
     private func register(registerTokenInfo: RegisterTokenInfo,
                           notificationsEnabled: Bool,
+                          fcmEnabled: Bool,
                           onSuccess: OnSuccessHandler? = nil,
                           onFailure: OnFailureHandler? = nil) -> Pending<SendRequestValue, SendRequestError> {
         sendRequest(requestProvider: { apiClient.register(registerTokenInfo: registerTokenInfo,
-                                                          notificationsEnabled: notificationsEnabled) },
+                                                          notificationsEnabled: notificationsEnabled, fcmEnabled: fcmEnabled) },
                     successHandler: onSuccess,
                     failureHandler: onFailure,
                     requestIdentifier: "registerToken")

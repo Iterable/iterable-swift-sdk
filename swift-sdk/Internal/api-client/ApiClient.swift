@@ -96,9 +96,9 @@ class ApiClient {
 // MARK: - API REQUEST CALLS
 
 extension ApiClient: ApiClientProtocol {
-    func register(registerTokenInfo: RegisterTokenInfo, notificationsEnabled: Bool) -> Pending<SendRequestValue, SendRequestError> {
+    func register(registerTokenInfo: RegisterTokenInfo, notificationsEnabled: Bool, fcmEnabled: Bool) -> Pending<SendRequestValue, SendRequestError> {
         let result = createRequestCreator().flatMap { $0.createRegisterTokenRequest(registerTokenInfo: registerTokenInfo,
-                                                                                    notificationsEnabled: notificationsEnabled) }
+                                                                                    notificationsEnabled: notificationsEnabled, fcmEnabled: fcmEnabled) }
         return send(iterableRequestResult: result)
     }
     
