@@ -133,7 +133,7 @@ extension RedirectNetworkSession: URLSessionDelegate, URLSessionTaskDelegate {
         }
         
         delegate?.onRedirect(deepLinkLocation: deepLinkLocation, campaignId: campaignId, templateId: templateId, messageId: messageId)
-        completionHandler(nil)
+        completionHandler(request)
     }
     
     private func number(fromString str: String) -> NSNumber {
