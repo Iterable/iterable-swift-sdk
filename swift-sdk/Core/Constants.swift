@@ -280,6 +280,8 @@ enum JsonValue {
     static let applicationJson = "application/json"
     static let apnsSandbox = "APNS_SANDBOX"
     static let apnsProduction = "APNS"
+    static let gcmSandbox = "GCM"
+    static let gcmProduction = "GCM"
     static let iOS = "iOS"
     static let bearer = "Bearer"
 
@@ -363,6 +365,12 @@ extension Int: JsonValueRepresentable {
 extension String: JsonValueRepresentable {
     public var jsonValue: Any {
         self
+    }
+}
+
+extension String {
+    func toJsonDict() -> [AnyHashable: Any] {
+        try! JSONSerialization.jsonObject(with: data(using: .utf8)!, options: []) as! [AnyHashable: Any]
     }
 }
 

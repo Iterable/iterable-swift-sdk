@@ -315,7 +315,14 @@ struct InternalIterableAppIntegration {
     // Normally itblValue would be the value stored in "itbl" key inside of userInfo.
     // But it is possible to save them at root level for debugging purpose.
     private static func itblValue(fromUserInfo userInfo: [AnyHashable: Any]) -> [AnyHashable: Any]? {
-        let itbl = userInfo[JsonKey.Payload.metadata] as? [AnyHashable: Any]
+        var itbl: [AnyHashable: Any]? = nil
+        if let itblData = userInfo[JsonKey.Payload.metadata] as? [AnyHashable: Any] {
+            itbl = itblData
+        } else if let itblString = userInfo[JsonKey.Payload.metadata] as? String {
+            itbl = itblString.toJsonDict()
+        } else {
+            return nil
+        }
         
         #if DEBUG
             guard let value = itbl else {

@@ -14,6 +14,7 @@ protocol RequestHandlerProtocol: AnyObject {
     
     func register(registerTokenInfo: RegisterTokenInfo,
                   notificationStateProvider: NotificationStateProviderProtocol,
+                  fcmEnabled: Bool,
                   onSuccess: OnSuccessHandler?,
                   onFailure: OnFailureHandler?)
     
