@@ -424,6 +424,10 @@ struct RequestCreator {
     // MARK: - Embedded Messaging Request Calls
     
     func createGetEmbeddedMessagesRequest() -> Result<IterableRequest, IterableError> {
+        return createGetEmbeddedMessagesRequest(placementIds: [])
+    }
+    
+    func createGetEmbeddedMessagesRequest(placementIds: [Int]) -> Result<IterableRequest, IterableError> {
         if case .none = auth.emailOrUserId {
             ITBError(Self.authMissingMessage)
             return .failure(IterableError.general(description: Self.authMissingMessage))
@@ -435,6 +439,10 @@ struct RequestCreator {
         
         if let packageName = Bundle.main.appPackageName {
             args[JsonKey.Embedded.packageName] = packageName
+        }
+        
+        if !placementIds.isEmpty {
+            args["placementIds"] = placementIds
         }
         
         setCurrentUser(inDict: &args)
