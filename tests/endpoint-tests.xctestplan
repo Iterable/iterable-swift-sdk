@@ -1,0 +1,29 @@
+{
+  "configurations" : [
+    {
+      "id" : "D4401795-4D16-4709-9480-E9D329384AB3",
+      "name" : "Configuration 1",
+      "options" : {
+
+      }
+    }
+  ],
+  "defaultOptions" : {
+    "codeCoverage" : false,
+    "targetForVariableExpansion" : {
+      "containerPath" : "container:swift-sdk.xcodeproj",
+      "identifier" : "ACF560D220E443BF000AAC23",
+      "name" : "host-app"
+    }
+  },
+  "testTargets" : [
+    {
+      "target" : {
+        "containerPath" : "container:swift-sdk.xcodeproj",
+        "identifier" : "AC28480624AA44C600C1FC7F",
+        "name" : "endpoint-tests"
+      }
+    }
+  ],
+  "version" : 1
+}

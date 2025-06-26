@@ -324,7 +324,7 @@ class AuthTests: XCTestCase {
         XCTAssertEqual(API.auth.authToken, AuthTests.authToken)
         
         authTokenChanged = true
-        API.authManager.requestNewAuthToken(hasFailedPriorAuth: false, onSuccess: nil)
+        API.authManager.requestNewAuthToken(hasFailedPriorAuth: false, onSuccess: nil, shouldIgnoreRetryPolicy: true)
         
         XCTAssertEqual(API.email, AuthTests.email)
         XCTAssertEqual(API.auth.authToken, newAuthToken)
@@ -361,7 +361,7 @@ class AuthTests: XCTestCase {
         XCTAssertEqual(API.auth.authToken, AuthTests.authToken)
         
         authTokenChanged = true
-        API.authManager.requestNewAuthToken(hasFailedPriorAuth: false, onSuccess: nil)
+        API.authManager.requestNewAuthToken(hasFailedPriorAuth: false, onSuccess: nil, shouldIgnoreRetryPolicy: true)
         
         XCTAssertEqual(API.userId, AuthTests.userId)
         XCTAssertEqual(API.auth.authToken, newAuthToken)
@@ -433,7 +433,8 @@ class AuthTests: XCTestCase {
         localStorage.authToken = mockEncodedPayload
         localStorage.userId = AuthTests.userId
         
-        let authManager = AuthManager(delegate: authDelegate,
+        let authManager = AuthManager(delegate: authDelegate, 
+                                      authRetryPolicy: RetryPolicy(maxRetry: 1, retryInterval: 0, retryBackoff: .linear),
                                       expirationRefreshPeriod: expirationRefreshPeriod,
                                       localStorage: localStorage,
                                       dateProvider: MockDateProvider())
@@ -460,7 +461,8 @@ class AuthTests: XCTestCase {
         mockLocalStorage.authToken = mockEncodedPayload
         mockLocalStorage.email = AuthTests.email
         
-        let authManager = AuthManager(delegate: authDelegate,
+        let authManager = AuthManager(delegate: authDelegate, 
+                                      authRetryPolicy: RetryPolicy(maxRetry: 1, retryInterval: 0, retryBackoff: .linear),
                                       expirationRefreshPeriod: expirationRefreshPeriod,
                                       localStorage: mockLocalStorage,
                                       dateProvider: MockDateProvider())
@@ -468,6 +470,36 @@ class AuthTests: XCTestCase {
         let _ = authManager
         
         wait(for: [condition1], timeout: testExpectationTimeout)
+    }
+    
+    func testAuthTokenRefreshSkippedIfUserLoggedOutAfterReschedule() {
+        let callbackNotCalledExpectation = expectation(description: "\(#function) - Callback got called. Which it shouldn't when there is no userId or emailId in memory")
+        callbackNotCalledExpectation.isInverted = true
+        
+        let authDelegate = createAuthDelegate({
+            callbackNotCalledExpectation.fulfill()
+            return nil
+        })
+        
+        let expirationRefreshPeriod: TimeInterval = 0
+        let waitTime: TimeInterval = 1.0
+        let expirationTimeSinceEpoch = Date(timeIntervalSinceNow: expirationRefreshPeriod + waitTime).timeIntervalSince1970
+        let mockEncodedPayload = createMockEncodedPayload(exp: Int(expirationTimeSinceEpoch))
+        
+        let mockLocalStorage = MockLocalStorage()
+        mockLocalStorage.authToken = mockEncodedPayload
+        mockLocalStorage.email = nil
+        mockLocalStorage.userId = nil
+        
+        let authManager = AuthManager(delegate: authDelegate, 
+                                      authRetryPolicy: RetryPolicy(maxRetry: 1, retryInterval: 0, retryBackoff: .linear),
+                                      expirationRefreshPeriod: expirationRefreshPeriod,
+                                      localStorage: mockLocalStorage,
+                                      dateProvider: MockDateProvider())
+        
+        let _ = authManager
+        
+        wait(for: [callbackNotCalledExpectation], timeout: 2.0)
     }
     
     func testAuthTokenCallbackOnSetEmail() {
@@ -527,9 +559,7 @@ class AuthTests: XCTestCase {
         XCTAssertNil(internalAPI.auth.authToken)
     }
     
-    func testAuthTokenRefreshRetryOnlyOnce() throws {
-        throw XCTSkip("skipping this test - auth token retries should occur more than once")
-        
+    func testAuthTokenRefreshRetryOnlyOnce() throws {        
         let condition1 = expectation(description: "\(#function) - callback not called correctly in some form")
         condition1.expectedFulfillmentCount = 2
         
@@ -568,17 +598,18 @@ class AuthTests: XCTestCase {
         let config = IterableConfig()
         config.authDelegate = authDelegate
         
-        let authManager = AuthManager(delegate: authDelegate,
+        let authManager = AuthManager(delegate: authDelegate, 
+                                      authRetryPolicy: RetryPolicy(maxRetry: 1, retryInterval: 0, retryBackoff: .linear),
                                       expirationRefreshPeriod: config.expiringAuthTokenRefreshPeriod,
                                       localStorage: MockLocalStorage(),
                                       dateProvider: MockDateProvider())
         
         // a normal call to ensure default states
-        authManager.requestNewAuthToken()
+        authManager.requestNewAuthToken(shouldIgnoreRetryPolicy: true)
         
         // 2 failing calls to ensure both the manager and the incoming request test retry prevention
-        authManager.requestNewAuthToken(hasFailedPriorAuth: true)
-        authManager.requestNewAuthToken(hasFailedPriorAuth: true)
+        authManager.requestNewAuthToken(hasFailedPriorAuth: true, shouldIgnoreRetryPolicy: true)
+        authManager.requestNewAuthToken(hasFailedPriorAuth: true, shouldIgnoreRetryPolicy: true)
         
         wait(for: [condition1], timeout: testExpectationTimeout)
     }
@@ -595,20 +626,21 @@ class AuthTests: XCTestCase {
         let config = IterableConfig()
         config.authDelegate = authDelegate
         
-        let authManager = AuthManager(delegate: authDelegate,
+        let authManager = AuthManager(delegate: authDelegate, 
+                                      authRetryPolicy: RetryPolicy(maxRetry: 1, retryInterval: 0, retryBackoff: .linear),
                                       expirationRefreshPeriod: config.expiringAuthTokenRefreshPeriod,
                                       localStorage: MockLocalStorage(),
                                       dateProvider: MockDateProvider())
         
         // a normal call to ensure default states
-        authManager.requestNewAuthToken()
+        authManager.requestNewAuthToken(shouldIgnoreRetryPolicy: true)
         
         // 2 failing calls to ensure both the manager and the incoming request test retry prevention
-        authManager.requestNewAuthToken(hasFailedPriorAuth: true)
-        authManager.requestNewAuthToken(hasFailedPriorAuth: true)
+        authManager.requestNewAuthToken(hasFailedPriorAuth: true, shouldIgnoreRetryPolicy: true)
+        authManager.requestNewAuthToken(hasFailedPriorAuth: true, shouldIgnoreRetryPolicy: true)
         
         // and now a normal call
-        authManager.requestNewAuthToken()
+        authManager.requestNewAuthToken(shouldIgnoreRetryPolicy: true)
         
         wait(for: [condition1], timeout: testExpectationTimeout)
     }
@@ -650,14 +682,15 @@ class AuthTests: XCTestCase {
                 }
             }
             
-            func onTokenRegistrationFailed(_ reason: String?) {
+            func onAuthFailure(_ authFailure: AuthFailure) {
                 
             }
         }
         
         let authDelegate = AsyncAuthDelegate()
         
-        let authManager = AuthManager(delegate: authDelegate,
+        let authManager = AuthManager(delegate: authDelegate, 
+                                      authRetryPolicy: RetryPolicy(maxRetry: 1, retryInterval: 0, retryBackoff: .linear),
                                       expirationRefreshPeriod: 0,
                                       localStorage: MockLocalStorage(),
                                       dateProvider: MockDateProvider())
@@ -666,7 +699,7 @@ class AuthTests: XCTestCase {
                                         onSuccess: { token in
                                             XCTAssertEqual(token, AuthTests.authToken)
                                             condition1.fulfill()
-                                        })
+        }, shouldIgnoreRetryPolicy: true)
         
         wait(for: [condition1], timeout: testExpectationTimeout)
     }
@@ -682,7 +715,7 @@ class AuthTests: XCTestCase {
                 completion(AuthTests.authToken)
             }
             
-            func onTokenRegistrationFailed(_ reason: String?) {
+            func onAuthFailure(_ authFailure: AuthFailure) {
                 
             }
         }
@@ -698,13 +731,13 @@ class AuthTests: XCTestCase {
         internalAPI.email = AuthTests.email
         
         // pass a failed state to the AuthManager
-        internalAPI.authManager.requestNewAuthToken(hasFailedPriorAuth: true, onSuccess: nil)
+        internalAPI.authManager.requestNewAuthToken(hasFailedPriorAuth: true, onSuccess: nil, shouldIgnoreRetryPolicy: true)
         
         // verify that on retry it's still in a failed state with the inverted condition
         internalAPI.authManager.requestNewAuthToken(hasFailedPriorAuth: true,
                                                     onSuccess: { token in
                                                         condition2.fulfill()
-        })
+        }, shouldIgnoreRetryPolicy: true)
         
         // now make a successful request to reset the AuthManager
         internalAPI.track("", onSuccess: { data in
@@ -715,7 +748,7 @@ class AuthTests: XCTestCase {
         internalAPI.authManager.requestNewAuthToken(hasFailedPriorAuth: false,
                                                     onSuccess: { token in
                                                         condition3.fulfill()
-                                                    })
+        }, shouldIgnoreRetryPolicy: true)
         
         wait(for: [condition1, condition3], timeout: testExpectationTimeout)
         wait(for: [condition2], timeout: testExpectationTimeoutForInverted)
@@ -733,7 +766,7 @@ class AuthTests: XCTestCase {
                 }
             }
             
-            func onTokenRegistrationFailed(_ reason: String?) {
+            func onAuthFailure(_ authFailure: AuthFailure) {
                 
             }
         }
@@ -743,7 +776,8 @@ class AuthTests: XCTestCase {
         let config = IterableConfig()
         config.authDelegate = authDelegate
         
-        let authManager = AuthManager(delegate: config.authDelegate,
+        let authManager = AuthManager(delegate: config.authDelegate, 
+                                      authRetryPolicy: RetryPolicy(maxRetry: 1, retryInterval: 0, retryBackoff: .linear),
                                       expirationRefreshPeriod: config.expiringAuthTokenRefreshPeriod,
                                       localStorage: MockLocalStorage(),
                                       dateProvider: MockDateProvider())
@@ -752,12 +786,12 @@ class AuthTests: XCTestCase {
                                         onSuccess: { token in
                                             XCTAssertEqual(token, AuthTests.authToken)
                                             condition1.fulfill()
-                                        })
+        }, shouldIgnoreRetryPolicy: true)
         
         authManager.requestNewAuthToken(hasFailedPriorAuth: false,
                                         onSuccess: { token in
                                             condition2.fulfill()
-                                        })
+        }, shouldIgnoreRetryPolicy: true)
         
         wait(for: [condition1], timeout: testExpectationTimeout)
         wait(for: [condition2], timeout: 1.0)
@@ -871,7 +905,7 @@ class AuthTests: XCTestCase {
             completion(authTokenGenerator())
         }
         
-        func onTokenRegistrationFailed(_ reason: String?) {
+        func onAuthFailure(_ authFailure: AuthFailure) {
             
         }
     }

@@ -7,9 +7,7 @@ import XCTest
 @testable import IterableSDK
 
 final class EmbeddedManagerTests: XCTestCase {
-    func testManagerSingleDelegateUpdated() throws {
-        throw XCTSkip("skipping this test - manager logic updated, needs to be revisited")
-            
+    func testManagerSingleDelegateUpdated() throws {            
             let condition1 = expectation(description: #function)
             
             let mockApiClient = MockApiClient()

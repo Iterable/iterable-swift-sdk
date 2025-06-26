@@ -16,7 +16,8 @@ protocol NotificationStateProviderProtocol {
 struct SystemNotificationStateProvider: NotificationStateProviderProtocol {
     func isNotificationsEnabled(withCallback callback: @escaping (Bool) -> Void) {
         UNUserNotificationCenter.current().getNotificationSettings { setttings in
-            callback(setttings.authorizationStatus == .authorized)
+            let notificationsDisabled = setttings.authorizationStatus == .notDetermined || setttings.authorizationStatus == .denied
+            callback(!notificationsDisabled)
         }
     }
     

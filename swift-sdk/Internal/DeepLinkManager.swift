@@ -43,9 +43,9 @@ class DeepLinkManager: NSObject {
             // Always return true for deep link
             return (true, pending)
         } else {
+            var result: Bool = false
             if let action = IterableAction.actionOpenUrl(fromUrlString: url.absoluteString) {
                 let context = IterableActionContext(action: action, source: .universalLink)
-                
                 let result = ActionRunner.execute(action: action,
                                                   context: context,
                                                   urlHandler: IterableUtil.urlHandler(fromUrlDelegate: urlDelegate,

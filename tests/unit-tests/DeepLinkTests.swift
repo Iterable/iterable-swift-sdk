@@ -71,13 +71,12 @@ class DeepLinkTests: XCTestCase {
         }
         
         let deepLinkManager = DeepLinkManager(redirectNetworkSessionProvider: createNoRedirectNetworkSessionProvider())
-        
+
         let (shouldHandleLink, _) = deepLinkManager.handleUniversalLink(URL(string: iterableNoRewriteURL)!,
                                                                         urlDelegate: mockUrlDelegate,
                                                                         urlOpener: MockUrlOpener())
         
         XCTAssertTrue(shouldHandleLink)
-        
         wait(for: [expectation1], timeout: testExpectationTimeout)
     }
 

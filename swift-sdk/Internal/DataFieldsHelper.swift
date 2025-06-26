@@ -14,7 +14,8 @@ struct DataFieldsHelper {
                                  device: UIDevice,
                                  bundle: Bundle,
                                  notificationsEnabled: Bool,
-                                 deviceAttributes: [String: String]) -> [String: Any] {
+                                 deviceAttributes: [String: String],
+                                 mobileFrameworkInfo: IterableAPIMobileFrameworkInfo) -> [String: Any] {
         var dataFields = [String: Any]()
         
         deviceAttributes.forEach { deviceAttribute in
@@ -32,6 +33,11 @@ struct DataFieldsHelper {
         dataFields.addAll(other: createBundleFields(bundle: bundle))
         
         dataFields.addAll(other: createUIDeviceFields(device: device))
+        
+        dataFields[JsonKey.mobileFrameworkInfo] = [
+            JsonKey.frameworkType: mobileFrameworkInfo.frameworkType.rawValue,
+            JsonKey.iterableSdkVersion: mobileFrameworkInfo.iterableSdkVersion ?? "unknown"
+        ]
         
         return dataFields
     }

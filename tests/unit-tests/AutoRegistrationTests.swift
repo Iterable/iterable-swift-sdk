@@ -20,17 +20,22 @@ class AutoRegistrationTests: XCTestCase {
     
     func testCallDisableAndEnable() {
         let expectation1 = expectation(description: "call register device API")
+        expectation1.expectedFulfillmentCount = 2
         let expectation2 = expectation(description: "call registerForRemoteNotifications twice")
         expectation2.expectedFulfillmentCount = 2
         let expectation3 = expectation(description: "call disable on user1@example.com")
         
         let token = "zeeToken".data(using: .utf8)!
         let networkSession = MockNetworkSession(statusCode: 200)
+        
+        var registerCallCount = 0
+        var disableCallMade = false
+        
         networkSession.callback = { _, response, _ in
             if let (request, body) = TestUtils.matchingRequest(networkSession: networkSession,
                                                                   response: response,
                                                                   endPoint: Const.Path.registerDeviceToken) {
-                // First call, API call to register endpoint
+                registerCallCount += 1
                 expectation1.fulfill()
                 TestUtils.validate(request: request, requestType: .post, apiEndPoint: Endpoint.api, path: Const.Path.registerDeviceToken, queryParams: [])
                 TestUtils.validateMatch(keyPath: KeyPath(string: "device.dataFields.notificationsEnabled"), value: false, inDictionary: body)
@@ -39,7 +44,11 @@ class AutoRegistrationTests: XCTestCase {
             if let (request, body) = TestUtils.matchingRequest(networkSession: networkSession,
                                                                   response: response,
                                                                   endPoint: Const.Path.disableDevice) {
-                // Second call, API call to disable endpoint
+                // Ensure disable is called after first register but before second
+                XCTAssertEqual(registerCallCount, 1, "Disable should be called after first register")
+                XCTAssertFalse(disableCallMade, "Disable should only be called once")
+                disableCallMade = true
+                
                 expectation3.fulfill()
                 TestUtils.validate(request: request, requestType: .post, apiEndPoint: Endpoint.api, path: Const.Path.disableDevice, queryParams: [])
                 TestUtils.validateElementPresent(withName: JsonKey.token, andValue: token.hexString(), inDictionary: body)
@@ -57,11 +66,21 @@ class AutoRegistrationTests: XCTestCase {
                                                                    config: config,
                                                                    networkSession: networkSession,
                                                                    notificationStateProvider: notificationStateProvider)
+        
+        // Force synchronous execution to maintain order
+        networkSession.queue = DispatchQueue(label: "test.queue")
+        
         internalAPI.email = "user1@example.com"
         internalAPI.register(token: token)
+        
+        // Change user and re-register token
         internalAPI.email = "user2@example.com"
+        internalAPI.register(token: token) // Need to explicitly register token for new user
         
         wait(for: [expectation1, expectation2, expectation3], timeout: testExpectationTimeout)
+        
+        XCTAssertEqual(registerCallCount, 2, "Should have exactly 2 register calls")
+        XCTAssertTrue(disableCallMade, "Should have made exactly 1 disable call")
     }
     
     func testDoNotCallDisableAndEnableWhenSameValue() {

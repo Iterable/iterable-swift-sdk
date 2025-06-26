@@ -3,6 +3,87 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## [Unreleased]
+- Adding section for unreleased changes
+
+## [6.5.12]
+- Made `IterableDataRegion` an `@objc` class for better Objective-C compatibility.
+- Improved robustness of the SDK by adding more internal initialization checks before executing certain operations.
+- Enhanced thread safety for embedded message data handling, leading to increased stability.
+- Improved `IterableEmbeddedView` by making `imgView` and `cardImageView` optional, leading to more robust view handling, particularly for `.card` and `.banner` types when images might not be present.
+- Minor refinements to authentication and token refresh logic for increased stability.
+
+## [6.5.11]
+### Fixed
+- Added missing constructor for `IterableAPIMobileFrameworkInfo`
+
+## [6.5.10]
+### Added
+- Added `mobileFrameworkInfo` configuration option to `IterableConfig` to identify the mobile framework (Flutter, React Native, or Native) being used with the SDK.
+### Fixed
+- Fixed notification tracking bug that prevents SDK from receiving push notifications when system notification settings are turned off.
+
+## [6.5.9]
+### Added
+- Support for JSON-only in-app messages, JSON-only messages are now handled by the onNewInApp handler and consumed after retrieval
+- Enhanced notification state tracking to align with system notification permissions changes
+
+### Changed
+- reorganized files and updated documentation url in podspec
+
+## [6.5.8]
+### Fixed
+- Fixed incorrect tracking of pushOpen for push notifications with Wake App enabled. Tracking now happens only when users tap to open the app.
+- Fixed the default `notificationsEnabled` value returned when `autoPushRegistration` is set to `false`.
+
+### Changed
+- Updated repository name on Fastline script and podspec files.
+- Comments out outdated tests that need to be revisited.
+- Updated sample app to use generic URLs.
+
+## [6.5.7]
+### Fixed
+- Fixed deeplink re-routing issue where delegate would only return `false` value. Thanks to @scottasoutherland :) 
+
+## [6.5.6]
+### Fixed
+- Fixed an issue where push notification were not being delivered in iOS 18 beta Sandbox builds.
+
+## [6.5.5]
+### Added
+- Introduced a new configuration option, `RetryPolicy`, in IterableConfig to set the retry policy for JWT token refresh.
+- Added the method `pauseAuthRetries(_ pauseRetry: Bool)` to allow pausing the SDK from requesting JWT tokens from the app.
+
+### Changed
+- Updated the method `onTokenRegistrationFailed(_ reason: String?)` to `onAuthFailure(_ authFailure: AuthFailure)`. The new `AuthFailure` object provides more detailed information about JWT failures.
+
+## [6.5.4]
+### Fixed
+- SDK is now compatible with Xcode 16 beta 2
+
+## [6.5.3]
+### Changed
+- Deprecated support for iOS 10 and iOS 11.
+
+## [6.5.2]
+### Fixed
+- The Privacy Manifest has been relocated to the resources folder within the SDK. This adjustment facilitates the inclusion of the SDK's privacy manifest in the generation process.
+- Resolved a bug where a scheduled authentication token refresh would occur even if the user had logged out in the interim.
+
+### Changed
+- Improved the Out Of The Box (OOTB) Embedded CardView image content view by setting it to aspect fill. This change ensures a consistent appearance across web, iOS, and Android platforms.
+
+## [6.5.1]
+
+### Added
+
+- iOS SDK now includes a new privacy policy file indicating SDK's usage of user data
+
+### Fixed
+
+- Fixed an issue where AuthManager's onTokenRequested would get called without user logged in
+- Updates logic for notificationsEnabled flag to be more inclusive in case of failures for fetching the current settings 
+
 ## [6.5.0]
 
 ### Added
