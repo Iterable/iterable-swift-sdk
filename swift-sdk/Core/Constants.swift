@@ -303,9 +303,9 @@ enum JsonValue {
     }
 }
 
-public enum IterableDataRegion {
-    public static let US = "https://api.iterable.com/api/"
-    public static let EU = "https://api.eu.iterable.com/api/"
+@objc public class IterableDataRegion: NSObject {
+    @objc public static let US = "https://api.iterable.com/api/"
+    @objc public static let EU = "https://api.eu.iterable.com/api/"
 }
 
 public protocol JsonValueRepresentable {
