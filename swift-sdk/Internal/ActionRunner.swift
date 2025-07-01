@@ -50,7 +50,6 @@ struct ActionRunner {
         
         return false
         
-
     }
     
     // MARK: - Private
