@@ -35,6 +35,9 @@ class CoffeeListTableViewController: UITableViewController {
         searchController.searchBar.placeholder = "Search"
         searchController.delegate = self
         searchController.searchResultsUpdater = self
+        
+        // Setup integration test mode if enabled
+        setupIntegrationTestMode()
     }
     
     override func viewWillAppear(_ animated: Bool) {

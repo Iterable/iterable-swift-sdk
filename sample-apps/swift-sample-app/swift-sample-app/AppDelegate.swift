@@ -18,7 +18,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     // ITBL: Set your actual api key here.
     let iterableApiKey = ""
     
-    func application(_: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
+    func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         // ITBL: Setup Notification
         setupNotifications()
         
@@ -31,6 +31,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         IterableAPI.initialize(apiKey: iterableApiKey,
                                launchOptions: launchOptions,
                                config: config)
+        
+        // Configure for integration testing if needed
+        enhancedApplicationDidFinishLaunching(application, launchOptions: launchOptions)
         
         return true
     }
@@ -49,8 +52,16 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         // Called as part of the transition from the background to the active state; here you can undo many of the changes made on entering the background.
     }
     
-    func applicationDidBecomeActive(_: UIApplication) {
+    func applicationDidBecomeActive(_ application: UIApplication) {
         // Restart any tasks that were paused (or not yet started) while the application was inactive. If the application was previously in the background, optionally refresh the user interface.
+        
+        // Check for integration test mode first
+        enhancedApplicationDidBecomeActive(application)
+        
+        // Skip normal validation if in test mode
+        if IntegrationTestHelper.shared.isInTestMode() {
+            return
+        }
         
         // ITBL:
         // You don't need to do this in your app. Just set the correct value for 'iterableApiKey' when it is declared.
@@ -85,25 +96,20 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     // MARK: Silent Push for in-app
     
     func application(_ application: UIApplication, didReceiveRemoteNotification userInfo: [AnyHashable: Any], fetchCompletionHandler completionHandler: @escaping (UIBackgroundFetchResult) -> Void) {
-        IterableAppIntegration.application(application, didReceiveRemoteNotification: userInfo, fetchCompletionHandler: completionHandler)
+        enhancedDidReceiveRemoteNotification(application, userInfo: userInfo, fetchCompletionHandler: completionHandler)
     }
     
     // MARK: Deep link
     
-    func application(_: UIApplication, continue userActivity: NSUserActivity, restorationHandler _: @escaping ([UIUserActivityRestoring]?) -> Void) -> Bool {
-        guard let url = userActivity.webpageURL else {
-            return false
-        }
-        
-        // ITBL:
-        return IterableAPI.handle(universalLink: url)
+    func application(_ application: UIApplication, continue userActivity: NSUserActivity, restorationHandler: @escaping ([UIUserActivityRestoring]?) -> Void) -> Bool {
+        return enhancedContinueUserActivity(application, userActivity: userActivity, restorationHandler: restorationHandler)
     }
     
     // MARK: Notification
     
     // ITBL:
-    func application(_: UIApplication, didRegisterForRemoteNotificationsWithDeviceToken deviceToken: Data) {
-        IterableAPI.register(token: deviceToken)
+    func application(_ application: UIApplication, didRegisterForRemoteNotificationsWithDeviceToken deviceToken: Data) {
+        enhancedDidRegisterForRemoteNotifications(application, deviceToken: deviceToken)
     }
     
     func application(_: UIApplication, didFailToRegisterForRemoteNotificationsWithError _: Error) {}
