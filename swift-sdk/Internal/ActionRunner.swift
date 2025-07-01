@@ -30,9 +30,11 @@ struct ActionRunner {
                         urlOpener: UrlOpenerProtocol? = nil,
                         allowedProtocols: [String] = []) -> Bool {
         
-        guard case let .openUrl(url) = detectActionType(fromAction: action),
-              shouldOpenUrl(url: url, from: context.source, withAllowedProtocols: allowedProtocols) else {
-            return false
+        // For URL actions, validate protocol before proceeding
+        if case let .openUrl(url) = detectActionType(fromAction: action) {
+            guard shouldOpenUrl(url: url, from: context.source, withAllowedProtocols: allowedProtocols) else {
+                return false
+            }
         }
         
         if case let handled = callExternalHandlers(action: action,
@@ -49,7 +51,6 @@ struct ActionRunner {
         }
         
         return false
-        
     }
     
     // MARK: - Private
