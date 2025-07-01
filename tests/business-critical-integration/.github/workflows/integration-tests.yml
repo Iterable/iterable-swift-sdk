@@ -1,0 +1,451 @@
+name: Business Critical Integration Tests
+
+on:
+  pull_request:
+    branches: [ master ]
+    paths:
+      - 'swift-sdk/SDK/**'
+      - 'swift-sdk/Internal/**'
+      - 'tests/business-critical-integration/**'
+  push:
+    branches: [ master ]
+  schedule:
+    - cron: '0 2 * * *'  # Daily at 2 AM UTC
+  workflow_dispatch:
+    inputs:
+      test_suite:
+        description: 'Test suite to run'
+        required: false
+        default: 'all'
+        type: choice
+        options:
+          - all
+          - push
+          - inapp
+          - embedded
+          - deeplink
+
+env:
+  DEVELOPER_DIR: /Applications/Xcode.app/Contents/Developer
+  ITERABLE_API_KEY: ${{ secrets.ITERABLE_API_KEY }}
+  ITERABLE_SERVER_KEY: ${{ secrets.ITERABLE_SERVER_KEY }}
+  TEST_PROJECT_ID: ${{ secrets.TEST_PROJECT_ID }}
+  TEST_USER_EMAIL: ${{ secrets.TEST_USER_EMAIL }}
+  APNS_CERTIFICATE: ${{ secrets.APNS_CERTIFICATE }}
+
+jobs:
+  setup:
+    name: Setup Test Environment
+    runs-on: macos-14
+    outputs:
+      simulator-uuid: ${{ steps.setup-simulator.outputs.uuid }}
+      should-run-push: ${{ steps.check-suites.outputs.run-push }}
+      should-run-inapp: ${{ steps.check-suites.outputs.run-inapp }}
+      should-run-embedded: ${{ steps.check-suites.outputs.run-embedded }}
+      should-run-deeplink: ${{ steps.check-suites.outputs.run-deeplink }}
+    steps:
+    - name: Checkout Repository
+      uses: actions/checkout@v4
+
+    - name: Setup Xcode
+      uses: maxim-lobanov/setup-xcode@v1
+      with:
+        xcode-version: latest-stable
+
+    - name: Check Test Suites to Run
+      id: check-suites
+      run: |
+        if [[ "${{ github.event.inputs.test_suite }}" == "all" || "${{ github.event.inputs.test_suite }}" == "" ]]; then
+          echo "run-push=true" >> $GITHUB_OUTPUT
+          echo "run-inapp=true" >> $GITHUB_OUTPUT
+          echo "run-embedded=true" >> $GITHUB_OUTPUT
+          echo "run-deeplink=true" >> $GITHUB_OUTPUT
+        else
+          echo "run-push=$([[ "${{ github.event.inputs.test_suite }}" == "push" ]] && echo true || echo false)" >> $GITHUB_OUTPUT
+          echo "run-inapp=$([[ "${{ github.event.inputs.test_suite }}" == "inapp" ]] && echo true || echo false)" >> $GITHUB_OUTPUT
+          echo "run-embedded=$([[ "${{ github.event.inputs.test_suite }}" == "embedded" ]] && echo true || echo false)" >> $GITHUB_OUTPUT
+          echo "run-deeplink=$([[ "${{ github.event.inputs.test_suite }}" == "deeplink" ]] && echo true || echo false)" >> $GITHUB_OUTPUT
+        fi
+
+    - name: Setup iOS Simulator
+      id: setup-simulator
+      run: |
+        # Create and boot iPhone 16 Pro simulator
+        SIMULATOR_UUID=$(xcrun simctl create "Integration-Test-iPhone" "iPhone 16 Pro" "iOS-18-2")
+        echo "Created simulator: $SIMULATOR_UUID"
+        xcrun simctl boot $SIMULATOR_UUID
+        sleep 5
+        echo "uuid=$SIMULATOR_UUID" >> $GITHUB_OUTPUT
+
+    - name: Cache Build Dependencies
+      uses: actions/cache@v4
+      with:
+        path: |
+          ~/Library/Caches/org.swift.swiftpm
+          ~/Library/Developer/Xcode/DerivedData
+        key: ${{ runner.os }}-xcode-${{ hashFiles('Package.swift', 'swift-sdk.xcodeproj/**') }}
+        restore-keys: |
+          ${{ runner.os }}-xcode-
+
+  build:
+    name: Build Test Framework
+    runs-on: macos-14
+    needs: setup
+    steps:
+    - name: Checkout Repository
+      uses: actions/checkout@v4
+
+    - name: Setup Xcode
+      uses: maxim-lobanov/setup-xcode@v1
+      with:
+        xcode-version: latest-stable
+
+    - name: Restore Build Cache
+      uses: actions/cache@v4
+      with:
+        path: |
+          ~/Library/Caches/org.swift.swiftpm
+          ~/Library/Developer/Xcode/DerivedData
+        key: ${{ runner.os }}-xcode-${{ hashFiles('Package.swift', 'swift-sdk.xcodeproj/**') }}
+        restore-keys: |
+          ${{ runner.os }}-xcode-
+
+    - name: Build Swift SDK
+      run: |
+        xcodebuild build-for-testing \
+          -project swift-sdk.xcodeproj \
+          -scheme swift-sdk \
+          -sdk iphonesimulator \
+          -destination "id=${{ needs.setup.outputs.simulator-uuid }}" \
+          -configuration Release \
+          -derivedDataPath ./DerivedData \
+          -quiet
+
+    - name: Build Integration Test Suite
+      run: |
+        xcodebuild build-for-testing \
+          -project tests/business-critical-integration/IntegrationTests.xcodeproj \
+          -scheme IntegrationTests \
+          -sdk iphonesimulator \
+          -destination "id=${{ needs.setup.outputs.simulator-uuid }}" \
+          -configuration Release \
+          -derivedDataPath ./DerivedData \
+          -quiet
+
+    - name: Cache Built Products
+      uses: actions/cache@v4
+      with:
+        path: ./DerivedData
+        key: build-${{ github.sha }}-${{ runner.os }}
+
+  push-notification-test:
+    name: Push Notification Test
+    runs-on: macos-14
+    needs: [setup, build]
+    if: needs.setup.outputs.should-run-push == 'true'
+    timeout-minutes: 20
+    steps:
+    - name: Checkout Repository
+      uses: actions/checkout@v4
+
+    - name: Setup Xcode
+      uses: maxim-lobanov/setup-xcode@v1
+      with:
+        xcode-version: latest-stable
+
+    - name: Restore Built Products
+      uses: actions/cache@v4
+      with:
+        path: ./DerivedData
+        key: build-${{ github.sha }}-${{ runner.os }}
+
+    - name: Install APNs Certificate
+      run: |
+        echo "$APNS_CERTIFICATE" | base64 -d > /tmp/apns-cert.p12
+        security create-keychain -p test integration-keychain
+        security unlock-keychain -p test integration-keychain
+        security import /tmp/apns-cert.p12 -k integration-keychain -P "" -T /usr/bin/codesign
+        security list-keychains -s integration-keychain login.keychain
+        rm /tmp/apns-cert.p12
+
+    - name: Run Push Notification Tests
+      run: |
+        xcodebuild test-without-building \
+          -project tests/business-critical-integration/IntegrationTests.xcodeproj \
+          -scheme IntegrationTests \
+          -sdk iphonesimulator \
+          -destination "id=${{ needs.setup.outputs.simulator-uuid }}" \
+          -testPlan PushNotificationTestPlan \
+          -derivedDataPath ./DerivedData \
+          -resultBundlePath ./test-results-push.xcresult \
+          -quiet
+
+    - name: Generate Push Test Report
+      if: always()
+      run: |
+        mkdir -p test-reports
+        xcrun xcresulttool get --format json --path ./test-results-push.xcresult > test-reports/push-results.json
+        
+        # Extract key metrics
+        TESTS_RUN=$(xcrun xcresulttool get --format json --path ./test-results-push.xcresult | jq '.actions[0].actionResult.testsRef.id.value' | tr -d '"')
+        PASSED=$(xcrun xcresulttool get --format json --path ./test-results-push.xcresult | jq '.actions[0].actionResult.testsRef | select(.id.value == "'$TESTS_RUN'") | .summaryRef.id.value' | tr -d '"')
+        
+        echo "Push Notification Test Results:" > test-reports/push-summary.txt
+        echo "Tests Run: $(xcrun xcresulttool get --format json --path ./test-results-push.xcresult | jq '.actions[0].actionResult.metrics | length')" >> test-reports/push-summary.txt
+        echo "Status: $(xcrun xcresulttool get --format json --path ./test-results-push.xcresult | jq '.actions[0].actionResult.status')" >> test-reports/push-summary.txt
+
+    - name: Upload Push Test Results
+      if: always()
+      uses: actions/upload-artifact@v4
+      with:
+        name: push-notification-test-results
+        path: |
+          test-reports/push-*
+          ./test-results-push.xcresult
+        retention-days: 7
+
+    - name: Cleanup Keychain
+      if: always()
+      run: |
+        security delete-keychain integration-keychain || true
+
+  inapp-message-test:
+    name: In-App Message Test
+    runs-on: macos-14
+    needs: [setup, build]
+    if: needs.setup.outputs.should-run-inapp == 'true'
+    timeout-minutes: 20
+    steps:
+    - name: Checkout Repository
+      uses: actions/checkout@v4
+
+    - name: Setup Xcode
+      uses: maxim-lobanov/setup-xcode@v1
+      with:
+        xcode-version: latest-stable
+
+    - name: Restore Built Products
+      uses: actions/cache@v4
+      with:
+        path: ./DerivedData
+        key: build-${{ github.sha }}-${{ runner.os }}
+
+    - name: Run In-App Message Tests
+      run: |
+        xcodebuild test-without-building \
+          -project tests/business-critical-integration/IntegrationTests.xcodeproj \
+          -scheme IntegrationTests \
+          -sdk iphonesimulator \
+          -destination "id=${{ needs.setup.outputs.simulator-uuid }}" \
+          -testPlan InAppMessageTestPlan \
+          -derivedDataPath ./DerivedData \
+          -resultBundlePath ./test-results-inapp.xcresult \
+          -quiet
+
+    - name: Generate In-App Test Report
+      if: always()
+      run: |
+        mkdir -p test-reports
+        xcrun xcresulttool get --format json --path ./test-results-inapp.xcresult > test-reports/inapp-results.json
+        
+        echo "In-App Message Test Results:" > test-reports/inapp-summary.txt
+        echo "Tests Run: $(xcrun xcresulttool get --format json --path ./test-results-inapp.xcresult | jq '.actions[0].actionResult.metrics | length')" >> test-reports/inapp-summary.txt
+        echo "Status: $(xcrun xcresulttool get --format json --path ./test-results-inapp.xcresult | jq '.actions[0].actionResult.status')" >> test-reports/inapp-summary.txt
+
+    - name: Upload In-App Test Results
+      if: always()
+      uses: actions/upload-artifact@v4
+      with:
+        name: inapp-message-test-results
+        path: |
+          test-reports/inapp-*
+          ./test-results-inapp.xcresult
+        retention-days: 7
+
+  embedded-message-test:
+    name: Embedded Message Test
+    runs-on: macos-14
+    needs: [setup, build]
+    if: needs.setup.outputs.should-run-embedded == 'true'
+    timeout-minutes: 20
+    steps:
+    - name: Checkout Repository
+      uses: actions/checkout@v4
+
+    - name: Setup Xcode
+      uses: maxim-lobanov/setup-xcode@v1
+      with:
+        xcode-version: latest-stable
+
+    - name: Restore Built Products
+      uses: actions/cache@v4
+      with:
+        path: ./DerivedData
+        key: build-${{ github.sha }}-${{ runner.os }}
+
+    - name: Run Embedded Message Tests
+      run: |
+        xcodebuild test-without-building \
+          -project tests/business-critical-integration/IntegrationTests.xcodeproj \
+          -scheme IntegrationTests \
+          -sdk iphonesimulator \
+          -destination "id=${{ needs.setup.outputs.simulator-uuid }}" \
+          -testPlan EmbeddedMessageTestPlan \
+          -derivedDataPath ./DerivedData \
+          -resultBundlePath ./test-results-embedded.xcresult \
+          -quiet
+
+    - name: Generate Embedded Test Report
+      if: always()
+      run: |
+        mkdir -p test-reports
+        xcrun xcresulttool get --format json --path ./test-results-embedded.xcresult > test-reports/embedded-results.json
+        
+        echo "Embedded Message Test Results:" > test-reports/embedded-summary.txt
+        echo "Tests Run: $(xcrun xcresulttool get --format json --path ./test-results-embedded.xcresult | jq '.actions[0].actionResult.metrics | length')" >> test-reports/embedded-summary.txt
+        echo "Status: $(xcrun xcresulttool get --format json --path ./test-results-embedded.xcresult | jq '.actions[0].actionResult.status')" >> test-reports/embedded-summary.txt
+
+    - name: Upload Embedded Test Results
+      if: always()
+      uses: actions/upload-artifact@v4
+      with:
+        name: embedded-message-test-results
+        path: |
+          test-reports/embedded-*
+          ./test-results-embedded.xcresult
+        retention-days: 7
+
+  deep-linking-test:
+    name: Deep Linking Test
+    runs-on: macos-14
+    needs: [setup, build]
+    if: needs.setup.outputs.should-run-deeplink == 'true'
+    timeout-minutes: 20
+    steps:
+    - name: Checkout Repository
+      uses: actions/checkout@v4
+
+    - name: Setup Xcode
+      uses: maxim-lobanov/setup-xcode@v1
+      with:
+        xcode-version: latest-stable
+
+    - name: Restore Built Products
+      uses: actions/cache@v4
+      with:
+        path: ./DerivedData
+        key: build-${{ github.sha }}-${{ runner.os }}
+
+    - name: Run Deep Linking Tests
+      run: |
+        xcodebuild test-without-building \
+          -project tests/business-critical-integration/IntegrationTests.xcodeproj \
+          -scheme IntegrationTests \
+          -sdk iphonesimulator \
+          -destination "id=${{ needs.setup.outputs.simulator-uuid }}" \
+          -testPlan DeepLinkingTestPlan \
+          -derivedDataPath ./DerivedData \
+          -resultBundlePath ./test-results-deeplink.xcresult \
+          -quiet
+
+    - name: Generate Deep Link Test Report
+      if: always()
+      run: |
+        mkdir -p test-reports
+        xcrun xcresulttool get --format json --path ./test-results-deeplink.xcresult > test-reports/deeplink-results.json
+        
+        echo "Deep Linking Test Results:" > test-reports/deeplink-summary.txt
+        echo "Tests Run: $(xcrun xcresulttool get --format json --path ./test-results-deeplink.xcresult | jq '.actions[0].actionResult.metrics | length')" >> test-reports/deeplink-summary.txt
+        echo "Status: $(xcrun xcresulttool get --format json --path ./test-results-deeplink.xcresult | jq '.actions[0].actionResult.status')" >> test-reports/deeplink-summary.txt
+
+    - name: Upload Deep Link Test Results
+      if: always()
+      uses: actions/upload-artifact@v4
+      with:
+        name: deep-linking-test-results
+        path: |
+          test-reports/deeplink-*
+          ./test-results-deeplink.xcresult
+        retention-days: 7
+
+  aggregate-results:
+    name: Aggregate Test Results
+    runs-on: macos-14
+    needs: [push-notification-test, inapp-message-test, embedded-message-test, deep-linking-test]
+    if: always()
+    steps:
+    - name: Checkout Repository
+      uses: actions/checkout@v4
+
+    - name: Download All Test Results
+      uses: actions/download-artifact@v4
+      with:
+        path: all-test-results/
+
+    - name: Generate Final Report
+      run: |
+        mkdir -p final-reports
+        
+        echo "# Business Critical Integration Test Results" > final-reports/summary.md
+        echo "**Run Date:** $(date)" >> final-reports/summary.md
+        echo "**Commit:** ${{ github.sha }}" >> final-reports/summary.md
+        echo "**Workflow:** ${{ github.workflow }}" >> final-reports/summary.md
+        echo "" >> final-reports/summary.md
+        
+        # Check each test suite
+        for suite in push-notification inapp-message embedded-message deep-linking; do
+          echo "## ${suite} Test Results" >> final-reports/summary.md
+          if [ -d "all-test-results/${suite}-test-results" ]; then
+            if [ -f "all-test-results/${suite}-test-results/${suite}-summary.txt" ]; then
+              cat "all-test-results/${suite}-test-results/${suite}-summary.txt" >> final-reports/summary.md
+              echo "✅ Test suite completed" >> final-reports/summary.md
+            else
+              echo "❌ Test results incomplete" >> final-reports/summary.md
+            fi
+          else
+            echo "⏭️ Test suite skipped" >> final-reports/summary.md
+          fi
+          echo "" >> final-reports/summary.md
+        done
+        
+        # Generate JSON summary
+        echo "{" > final-reports/summary.json
+        echo "  \"timestamp\": \"$(date -u +%Y-%m-%dT%H:%M:%SZ)\"," >> final-reports/summary.json
+        echo "  \"commit\": \"${{ github.sha }}\"," >> final-reports/summary.json
+        echo "  \"workflow_run_id\": \"${{ github.run_id }}\"," >> final-reports/summary.json
+        echo "  \"test_suites\": {" >> final-reports/summary.json
+        echo "    \"push_notification\": ${{ needs.push-notification-test.result == 'success' }}," >> final-reports/summary.json
+        echo "    \"inapp_message\": ${{ needs.inapp-message-test.result == 'success' }}," >> final-reports/summary.json
+        echo "    \"embedded_message\": ${{ needs.embedded-message-test.result == 'success' }}," >> final-reports/summary.json
+        echo "    \"deep_linking\": ${{ needs.deep-linking-test.result == 'success' }}" >> final-reports/summary.json
+        echo "  }" >> final-reports/summary.json
+        echo "}" >> final-reports/summary.json
+
+    - name: Upload Final Report
+      uses: actions/upload-artifact@v4
+      with:
+        name: final-integration-test-report
+        path: final-reports/
+        retention-days: 30
+
+    - name: Notify on Failure
+      if: failure()
+      run: |
+        echo "❌ Business Critical Integration Tests Failed"
+        echo "Check the workflow results and artifacts for detailed information"
+        exit 1
+
+  cleanup:
+    name: Cleanup Test Environment
+    runs-on: macos-14
+    needs: [setup, push-notification-test, inapp-message-test, embedded-message-test, deep-linking-test]
+    if: always()
+    steps:
+    - name: Cleanup Simulator
+      run: |
+        if [ -n "${{ needs.setup.outputs.simulator-uuid }}" ]; then
+          xcrun simctl delete "${{ needs.setup.outputs.simulator-uuid }}" || true
+        fi
+        
+        # Clean up any remaining test simulators
+        xcrun simctl delete unavailable || true
