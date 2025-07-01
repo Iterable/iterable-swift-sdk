@@ -15,11 +15,11 @@ class DeepLinkTests: XCTestCase {
         super.tearDown()
     }
     
-    private let iterableRewriteURL = "http://links.iterable.com/a/60402396fbd5433eb35397b47ab2fb83?_e=joneng%40iterable.com&_m=93125f33ba814b13a882358f8e0852e0"
-    private let iterableNoRewriteURL = "http://links.iterable.com/u/60402396fbd5433eb35397b47ab2fb83?_e=joneng%40iterable.com&_m=93125f33ba814b13a882358f8e0852e0"
+    private let iterableRewriteURL = "https://links.iterable.com/a/60402396fbd5433eb35397b47ab2fb83?_e=joneng%40iterable.com&_m=93125f33ba814b13a882358f8e0852e0"
+    private let iterableNoRewriteURL = "https://links.iterable.com/u/60402396fbd5433eb35397b47ab2fb83?_e=joneng%40iterable.com&_m=93125f33ba814b13a882358f8e0852e0"
     
-    private let redirectRequest = "https://httpbin.org/redirect-to?url=http://example.com"
-    private let exampleUrl = "http://example.com"
+    private let redirectRequest = "https://httpbin.org/redirect-to?url=https://example.com"
+    private let exampleUrl = "https://example.com"
     
     func testTrackUniversalDeepLinkRewrite() {
         let expectation1 = expectation(description: #function)
