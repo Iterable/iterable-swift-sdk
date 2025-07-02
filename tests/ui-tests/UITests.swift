@@ -105,7 +105,7 @@ class UITests: XCTestCase {
 //    }
 //    
 //    func testShowInApp1() {
-//        inAppTest(buttonName: "Show InApp#1", linkName: "Click Me", expectedCallbackUrl: "http://website/resource#something")
+//        inAppTest(buttonName: "Show InApp#1", linkName: "Click Me", expectedCallbackUrl: "https://website/resource#something")
 //    }
 //    
 //    // Full Screen
@@ -120,7 +120,7 @@ class UITests: XCTestCase {
 //    
 //    // Full Screen
 //    func testShowInApp4() {
-//        inAppTest(buttonName: "Show InApp#4", linkName: "Click Me", expectedCallbackUrl: "http://website/resource#something")
+//        inAppTest(buttonName: "Show InApp#4", linkName: "Click Me", expectedCallbackUrl: "https://website/resource#something")
 //    }
 //    
 //    // Full Screen
