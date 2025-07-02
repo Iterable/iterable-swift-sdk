@@ -8,11 +8,57 @@ import UIKit
 
 @objc final class IterableUtil: NSObject {
     static var rootViewController: UIViewController? {
+        // Try modern approach first for iOS 13+ multi-window support
+        if #available(iOS 13.0, *) {
+            if let activeViewController = getActiveWindowRootViewController() {
+                return activeViewController
+            }
+        }
+        
+        // Existing fallback chain - unchanged for backward compatibility
         if let rootViewController = AppExtensionHelper.application?.delegate?.window??.rootViewController {
             return rootViewController
         } else {
             return AppExtensionHelper.application?.windows.first?.rootViewController
         }
+    }
+    
+    @available(iOS 13.0, *)
+    private static func getActiveWindowRootViewController() -> UIViewController? {
+        guard let application = AppExtensionHelper.application else { return nil }
+        
+        // Find active scenes (foreground active takes priority)
+        let activeScenes = application.connectedScenes
+            .compactMap { $0 as? UIWindowScene }
+            .filter { $0.activationState == .foregroundActive }
+        
+        // Look for key window in active scenes first
+        for scene in activeScenes {
+            if let keyWindow = scene.windows.first(where: { $0.isKeyWindow }),
+               let rootVC = keyWindow.rootViewController {
+                return rootVC
+            }
+        }
+        
+        // Fallback to first window in first active scene
+        if let firstActiveScene = activeScenes.first,
+           let rootVC = firstActiveScene.windows.first?.rootViewController {
+            return rootVC
+        }
+        
+        // Final fallback: any foreground inactive scene with key window
+        let inactiveScenes = application.connectedScenes
+            .compactMap { $0 as? UIWindowScene }
+            .filter { $0.activationState == .foregroundInactive }
+        
+        for scene in inactiveScenes {
+            if let keyWindow = scene.windows.first(where: { $0.isKeyWindow }),
+               let rootVC = keyWindow.rootViewController {
+                return rootVC
+            }
+        }
+        
+        return nil
     }
     
     static func trim(string: String) -> String {
