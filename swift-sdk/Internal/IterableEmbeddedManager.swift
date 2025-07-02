@@ -162,7 +162,7 @@ class IterableEmbeddedManager: NSObject, IterableInternalEmbeddedManagerProtocol
     }
     
     private func retrieveEmbeddedMessages(placementIds: [Int]?, completion: @escaping () -> Void) {
-        apiClient.getEmbeddedMessages(placementIds: placementIds ?? [])
+        apiClient.getEmbeddedMessages(placementIds: placementIds)
             .onCompletion(
                 receiveValue: { embeddedMessagesPayload in
                     let placements = embeddedMessagesPayload.placements

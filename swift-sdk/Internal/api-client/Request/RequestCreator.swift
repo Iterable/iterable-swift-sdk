@@ -423,11 +423,7 @@ struct RequestCreator {
     
     // MARK: - Embedded Messaging Request Calls
     
-    func createGetEmbeddedMessagesRequest() -> Result<IterableRequest, IterableError> {
-        return createGetEmbeddedMessagesRequest(placementIds: [])
-    }
-    
-    func createGetEmbeddedMessagesRequest(placementIds: [Int]) -> Result<IterableRequest, IterableError> {
+    func createGetEmbeddedMessagesRequest(placementIds: [Int]? = []) -> Result<IterableRequest, IterableError> {
         if case .none = auth.emailOrUserId {
             ITBError(Self.authMissingMessage)
             return .failure(IterableError.general(description: Self.authMissingMessage))
@@ -441,8 +437,9 @@ struct RequestCreator {
             args[JsonKey.Embedded.packageName] = packageName
         }
         
-        if !placementIds.isEmpty {
-            args["placementIds"] = placementIds
+        if let placementIds = placementIds,
+           !placementIds.isEmpty {
+            args[JsonKey.placementIds] = placementIds
         }
         
         setCurrentUser(inDict: &args)
@@ -550,9 +547,9 @@ struct RequestCreator {
         setCurrentUser(inDict: &body)
 
         body.setValue(for: JsonKey.embeddedSessionId, value: [
-            "id": embeddedSessionId,
-            "start": IterableUtil.int(fromDate: sessionStartTime),
-            "end": IterableUtil.int(fromDate: sessionEndTime)
+            JsonKey.Embedded.Session.id: embeddedSessionId,
+            JsonKey.Embedded.Session.start: IterableUtil.int(fromDate: sessionStartTime),
+            JsonKey.Embedded.Session.end: IterableUtil.int(fromDate: sessionEndTime)
         ])
 
         body.setValue(for: JsonKey.impressions, value: embeddedSession.impressions.compactMap { $0.asDictionary() })
