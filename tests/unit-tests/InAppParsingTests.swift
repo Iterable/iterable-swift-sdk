@@ -309,7 +309,7 @@ class InAppParsingTests: XCTestCase {
                                            saveToInbox: false,
                                            inboxMetadata: nil,
                                            customPayload: nil)
-        let buttonUrl = "http://somewhere.com"
+        let buttonUrl = "https://somewhere.com"
         let expectation1 = expectation(description: "track in app click")
         
         let networkSession = MockNetworkSession(statusCode: 200)
@@ -515,7 +515,7 @@ class InAppParsingTests: XCTestCase {
             "inAppMessages" : [
                 {
                     "content" : {
-                        "html" : "<a href=\\"http://somewhere.com\\">Click here</a>"
+                        "html" : "<a href=\\"https://somewhere.com\\">Click here</a>"
                     },
                     "messageId" : "messageId-\(id)",
                     "campaignId" : \(id)
@@ -534,7 +534,7 @@ class InAppParsingTests: XCTestCase {
             "inAppMessages" : [
                 {
                     "content" : {
-                        "html" : "<a href=\\"http://somewhere.com\\">Click here</a>"
+                        "html" : "<a href=\\"https://somewhere.com\\">Click here</a>"
                     },
                     "messageId" : "messageId-\(id)",
                     "campaignId" : \(id),
@@ -558,7 +558,7 @@ class InAppParsingTests: XCTestCase {
             "inAppMessages" : [
                 {
                     "content" : {
-                        "html" : "<a href=\\"http://somewhere.com\\">Click here</a>"
+                        "html" : "<a href=\\"https://somewhere.com\\">Click here</a>"
                     },
                     "messageId" : "messageId-\(id)",
                     "campaignId" : \(id),
@@ -633,7 +633,7 @@ class InAppParsingTests: XCTestCase {
             "inAppMessages" : [
                 {
                     "content" : {
-                        "html" : "<a href=\\"http://somewhere.com\\">Click here</a>"
+                        "html" : "<a href=\\"https://somewhere.com\\">Click here</a>"
                     },
                     "messageId" : "messageId1",
                     "campaignId" : 1,
@@ -641,7 +641,7 @@ class InAppParsingTests: XCTestCase {
                 },
                 {
                     "content" : {
-                        "html" : "<a href=\\"http://somewhere.com\\">Click here</a>"
+                        "html" : "<a href=\\"https://somewhere.com\\">Click here</a>"
                     },
                     "messageId" : "messageId2",
                     "campaignId" : 2,
@@ -649,7 +649,7 @@ class InAppParsingTests: XCTestCase {
                 },
                 {
                     "content" : {
-                        "html" : "<a href=\\"http://somewhere.com\\">Click here</a>"
+                        "html" : "<a href=\\"https://somewhere.com\\">Click here</a>"
                     },
                     "messageId" : "messageId3",
                     "campaignId" : 3,
@@ -657,7 +657,7 @@ class InAppParsingTests: XCTestCase {
                 },
                 {
                     "content" : {
-                        "html" : "<a href=\\"http://somewhere.com\\">Click here</a>"
+                        "html" : "<a href=\\"https://somewhere.com\\">Click here</a>"
                     },
                     "messageId" : "messageId4",
                     "campaignId" : 4,
@@ -716,7 +716,7 @@ class InAppParsingTests: XCTestCase {
                 {
                     "content" : {
                         "type" : "html",
-                        "html" : "<a href=\\"http://somewhere.com\\">Click here</a>"
+                        "html" : "<a href=\\"https://somewhere.com\\">Click here</a>"
                     },
                     "messageId" : "messageId1",
                     "campaignId" : 1,
@@ -731,7 +731,7 @@ class InAppParsingTests: XCTestCase {
                     "saveToInbox" : true,
                     "content" : {
                         "type" : "html",
-                        "html" : "<a href=\\"http://somewhere.com\\">Click here</a>",
+                        "html" : "<a href=\\"https://somewhere.com\\">Click here</a>",
                     },
                     "messageId" : "messageId2",
                     "campaignId" : 2,
@@ -748,7 +748,7 @@ class InAppParsingTests: XCTestCase {
                 },
                 {
                     "content" : {
-                        "html" : "<a href=\\"http://somewhere.com\\">Click here</a>"
+                        "html" : "<a href=\\"https://somewhere.com\\">Click here</a>"
                     },
                     "messageId" : "messageId3",
                     "campaignId" : 3,
@@ -760,7 +760,7 @@ class InAppParsingTests: XCTestCase {
                 },
                 {
                     "content" : {
-                        "html" : "<a href=\\"http://somewhere.com\\">Click here</a>"
+                        "html" : "<a href=\\"https://somewhere.com\\">Click here</a>"
                     },
                     "messageId" : "messageId4",
                     "campaignId" : 4,

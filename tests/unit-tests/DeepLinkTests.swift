@@ -15,11 +15,11 @@ class DeepLinkTests: XCTestCase {
         super.tearDown()
     }
     
-    private let iterableRewriteURL = "http://links.iterable.com/a/60402396fbd5433eb35397b47ab2fb83?_e=joneng%40iterable.com&_m=93125f33ba814b13a882358f8e0852e0"
-    private let iterableNoRewriteURL = "http://links.iterable.com/u/60402396fbd5433eb35397b47ab2fb83?_e=joneng%40iterable.com&_m=93125f33ba814b13a882358f8e0852e0"
+    private let iterableRewriteURL = "https://links.iterable.com/a/60402396fbd5433eb35397b47ab2fb83?_e=joneng%40iterable.com&_m=93125f33ba814b13a882358f8e0852e0"
+    private let iterableNoRewriteURL = "https://links.iterable.com/u/60402396fbd5433eb35397b47ab2fb83?_e=joneng%40iterable.com&_m=93125f33ba814b13a882358f8e0852e0"
     
-    private let redirectRequest = "https://httpbin.org/redirect-to?url=http://example.com"
-    private let exampleUrl = "http://example.com"
+    private let redirectRequest = "https://httpbin.org/redirect-to?url=https://example.com"
+    private let exampleUrl = "https://example.com"
     
     func testTrackUniversalDeepLinkRewrite() {
         let expectation1 = expectation(description: #function)
@@ -181,6 +181,94 @@ class DeepLinkTests: XCTestCase {
 
     private func createCookieValue(nameValuePairs values: Any...) -> String {
         values.take(2).map { "\($0[0])=\($0[1])" }.joined(separator: ";,")
+    }
+    
+    // MARK: - GreenFi SMS Deep Link Tests
+    
+    func testGreenFiSMSDeepLinkRedirect() {
+        let expectation1 = expectation(description: "Deep link resolves successfully")
+        let expectation2 = expectation(description: "Attribution info extracted")
+        
+        let greenfiSmsUrl = "https://links.greenfi.com/a/JsvVI"
+        let destinationUrl = "https://app.greenfi.com/dashboard"
+        let campaignId = 123456
+        let templateId = 789012
+        let messageId = "sms-campaign-123"
+        
+        let mockUrlDelegate = MockUrlDelegate(returnValue: true)
+        mockUrlDelegate.callback = { url, context in
+            XCTAssertEqual(url.absoluteString, destinationUrl)
+            XCTAssertEqual(context.action.type, IterableAction.actionTypeOpenUrl)
+            XCTAssertTrue(Thread.isMainThread)
+            expectation1.fulfill()
+        }
+        
+        // Create network session that simulates GreenFi's 303 redirect response
+        let networkSession = MockNetworkSession()
+        networkSession.responseCallback = { _ in
+            MockNetworkSession.MockResponse(
+                statusCode: 303, // GreenFi returns 303 redirect
+                data: Dictionary<AnyHashable, Any>().toJsonData(),
+                delay: 0.0,
+                error: nil,
+                headerFields: [
+                    "Location": destinationUrl,
+                    "Set-Cookie": self.createCookieValue(nameValuePairs: "iterableEmailCampaignId", campaignId, "iterableTemplateId", templateId, "iterableMessageId", messageId),
+                ]
+            )
+        }
+        
+        let networkSessionProvider = MockRedirectNetworkSessionProvider(networkSession: networkSession)
+        let deepLinkManager = DeepLinkManager(redirectNetworkSessionProvider: networkSessionProvider)
+        
+        let (isIterableLink, attributionInfoFuture) = deepLinkManager.handleUniversalLink(
+            URL(string: greenfiSmsUrl)!,
+            urlDelegate: mockUrlDelegate,
+            urlOpener: MockUrlOpener()
+        )
+        
+        XCTAssertTrue(isIterableLink, "GreenFi URL should be recognized as Iterable deep link")
+        
+        attributionInfoFuture.onSuccess { attributionInfo in
+            XCTAssertNotNil(attributionInfo, "Should extract attribution info from 303 response")
+            XCTAssertEqual(attributionInfo?.campaignId, NSNumber(value: campaignId))
+            XCTAssertEqual(attributionInfo?.templateId, NSNumber(value: templateId))
+            XCTAssertEqual(attributionInfo?.messageId, messageId)
+            expectation2.fulfill()
+        }
+        
+        wait(for: [expectation1, expectation2], timeout: testExpectationTimeout)
+    }
+    
+    func testGreenFiDeepLinkWithoutRedirect() {
+        let expectation1 = expectation(description: "Deep link handled without redirect")
+        
+        let greenfiSmsUrl = "https://links.greenfi.com/a/JsvVI"
+        
+        let mockUrlDelegate = MockUrlDelegate(returnValue: true)
+        mockUrlDelegate.callback = { url, context in
+            // When no redirect occurs, should get original URL
+            XCTAssertEqual(url.absoluteString, greenfiSmsUrl)
+            XCTAssertEqual(context.action.type, IterableAction.actionTypeOpenUrl)
+            expectation1.fulfill()
+        }
+        
+        // Use no-redirect provider to simulate timeout/failure scenario
+        let deepLinkManager = DeepLinkManager(redirectNetworkSessionProvider: createNoRedirectNetworkSessionProvider())
+        
+        let (isIterableLink, attributionInfoFuture) = deepLinkManager.handleUniversalLink(
+            URL(string: greenfiSmsUrl)!,
+            urlDelegate: mockUrlDelegate,
+            urlOpener: MockUrlOpener()
+        )
+        
+        XCTAssertTrue(isIterableLink, "GreenFi URL should be recognized as Iterable deep link")
+        
+        attributionInfoFuture.onSuccess { attributionInfo in
+            XCTAssertNil(attributionInfo, "Should not have attribution info when redirect fails")
+        }
+        
+        wait(for: [expectation1], timeout: testExpectationTimeout)
     }
 }
 

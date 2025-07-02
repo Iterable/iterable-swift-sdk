@@ -1088,14 +1088,14 @@ class IterableAPITests: XCTestCase {
                 "messageId": "messageId",
                 "defaultAction": [
                     "type": "openUrl",
-                    "data": "http://somewhere.com",
+                    "data": "https://somewhere.com",
                 ],
             ] as [String : Any],
         ]
         let launchOptions: [UIApplication.LaunchOptionsKey: Any] = [UIApplication.LaunchOptionsKey.remoteNotification: userInfo]
         let urlDelegate = MockUrlDelegate(returnValue: true)
         urlDelegate.callback = { url, _ in
-            XCTAssertEqual(url.absoluteString, "http://somewhere.com")
+            XCTAssertEqual(url.absoluteString, "https://somewhere.com")
             expectation1.fulfill()
         }
         let config = IterableConfig()
@@ -1118,7 +1118,7 @@ class IterableAPITests: XCTestCase {
                 "isGhostPush": false,
                 "defaultAction": [
                     "type": "openUrl",
-                    "data": "http://somewhere.com",
+                    "data": "https://somewhere.com",
                 ],
             ] as [String : Any],
         ]
