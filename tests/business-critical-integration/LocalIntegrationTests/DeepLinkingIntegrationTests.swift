@@ -1,0 +1,1 @@
+../test-suite/DeepLinkingIntegrationTests.swift
