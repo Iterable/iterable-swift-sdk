@@ -32,11 +32,21 @@ import UIKit
             .compactMap { $0 as? UIWindowScene }
             .filter { $0.activationState == .foregroundActive }
         
-        // Look for key window in active scenes first
-        for scene in activeScenes {
-            if let keyWindow = scene.windows.first(where: { $0.isKeyWindow }),
-               let rootVC = keyWindow.rootViewController {
-                return rootVC
+        // iOS 15+: Use scene's keyWindow property (preferred approach)
+        if #available(iOS 15.0, *) {
+            for scene in activeScenes {
+                if let keyWindow = scene.keyWindow,
+                   let rootVC = keyWindow.rootViewController {
+                    return rootVC
+                }
+            }
+        } else {
+            // iOS 13-14: Fall back to isKeyWindow check
+            for scene in activeScenes {
+                if let keyWindow = scene.windows.first(where: { $0.isKeyWindow }),
+                   let rootVC = keyWindow.rootViewController {
+                    return rootVC
+                }
             }
         }
         
@@ -46,15 +56,24 @@ import UIKit
             return rootVC
         }
         
-        // Final fallback: any foreground inactive scene with key window
+        // Final fallback: any foreground inactive scene
         let inactiveScenes = application.connectedScenes
             .compactMap { $0 as? UIWindowScene }
             .filter { $0.activationState == .foregroundInactive }
         
-        for scene in inactiveScenes {
-            if let keyWindow = scene.windows.first(where: { $0.isKeyWindow }),
-               let rootVC = keyWindow.rootViewController {
-                return rootVC
+        if #available(iOS 15.0, *) {
+            for scene in inactiveScenes {
+                if let keyWindow = scene.keyWindow,
+                   let rootVC = keyWindow.rootViewController {
+                    return rootVC
+                }
+            }
+        } else {
+            for scene in inactiveScenes {
+                if let keyWindow = scene.windows.first(where: { $0.isKeyWindow }),
+                   let rootVC = keyWindow.rootViewController {
+                    return rootVC
+                }
             }
         }
         
