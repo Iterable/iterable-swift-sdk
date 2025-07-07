@@ -3,6 +3,8 @@ xcuserdata
 
 .swiftpm/
 
+.claude
+
 *~
 Podfile.lock
 Pods/
