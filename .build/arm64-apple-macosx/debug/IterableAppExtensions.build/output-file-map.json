@@ -1,0 +1,29 @@
+{
+  "": {
+    "swift-dependencies": "/Users/sumeru.chatterjee/Projects/swift-sdk/.build/arm64-apple-macosx/debug/IterableAppExtensions.build/master.swiftdeps"
+  },
+  "/Users/sumeru.chatterjee/Projects/swift-sdk/notification-extension/ITBNotificationServiceExtension.swift": {
+    "dependencies": "/Users/sumeru.chatterjee/Projects/swift-sdk/.build/arm64-apple-macosx/debug/IterableAppExtensions.build/ITBNotificationServiceExtension.d",
+    "object": "/Users/sumeru.chatterjee/Projects/swift-sdk/.build/arm64-apple-macosx/debug/IterableAppExtensions.build/ITBNotificationServiceExtension.swift.o",
+    "swiftmodule": "/Users/sumeru.chatterjee/Projects/swift-sdk/.build/arm64-apple-macosx/debug/IterableAppExtensions.build/ITBNotificationServiceExtension~partial.swiftmodule",
+    "swift-dependencies": "/Users/sumeru.chatterjee/Projects/swift-sdk/.build/arm64-apple-macosx/debug/IterableAppExtensions.build/ITBNotificationServiceExtension.swiftdeps"
+  },
+  "/Users/sumeru.chatterjee/Projects/swift-sdk/notification-extension/NotificationContentParser.swift": {
+    "dependencies": "/Users/sumeru.chatterjee/Projects/swift-sdk/.build/arm64-apple-macosx/debug/IterableAppExtensions.build/NotificationContentParser.d",
+    "object": "/Users/sumeru.chatterjee/Projects/swift-sdk/.build/arm64-apple-macosx/debug/IterableAppExtensions.build/NotificationContentParser.swift.o",
+    "swiftmodule": "/Users/sumeru.chatterjee/Projects/swift-sdk/.build/arm64-apple-macosx/debug/IterableAppExtensions.build/NotificationContentParser~partial.swiftmodule",
+    "swift-dependencies": "/Users/sumeru.chatterjee/Projects/swift-sdk/.build/arm64-apple-macosx/debug/IterableAppExtensions.build/NotificationContentParser.swiftdeps"
+  },
+  "/Users/sumeru.chatterjee/Projects/swift-sdk/notification-extension/NotificationExtensionConstants.swift": {
+    "dependencies": "/Users/sumeru.chatterjee/Projects/swift-sdk/.build/arm64-apple-macosx/debug/IterableAppExtensions.build/NotificationExtensionConstants.d",
+    "object": "/Users/sumeru.chatterjee/Projects/swift-sdk/.build/arm64-apple-macosx/debug/IterableAppExtensions.build/NotificationExtensionConstants.swift.o",
+    "swiftmodule": "/Users/sumeru.chatterjee/Projects/swift-sdk/.build/arm64-apple-macosx/debug/IterableAppExtensions.build/NotificationExtensionConstants~partial.swiftmodule",
+    "swift-dependencies": "/Users/sumeru.chatterjee/Projects/swift-sdk/.build/arm64-apple-macosx/debug/IterableAppExtensions.build/NotificationExtensionConstants.swiftdeps"
+  },
+  "/Users/sumeru.chatterjee/Projects/swift-sdk/notification-extension/TestFile.swift": {
+    "dependencies": "/Users/sumeru.chatterjee/Projects/swift-sdk/.build/arm64-apple-macosx/debug/IterableAppExtensions.build/TestFile.d",
+    "object": "/Users/sumeru.chatterjee/Projects/swift-sdk/.build/arm64-apple-macosx/debug/IterableAppExtensions.build/TestFile.swift.o",
+    "swiftmodule": "/Users/sumeru.chatterjee/Projects/swift-sdk/.build/arm64-apple-macosx/debug/IterableAppExtensions.build/TestFile~partial.swiftmodule",
+    "swift-dependencies": "/Users/sumeru.chatterjee/Projects/swift-sdk/.build/arm64-apple-macosx/debug/IterableAppExtensions.build/TestFile.swiftdeps"
+  }
+}

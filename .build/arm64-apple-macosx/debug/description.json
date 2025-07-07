@@ -1,0 +1,2263 @@
+{
+  "builtTestProducts" : [
+
+  ],
+  "copyCommands" : {
+    "/Users/sumeru.chatterjee/Projects/swift-sdk/.build/arm64-apple-macosx/debug/IterableSDK_IterableSDK.bundle/Assets.xcassets" : {
+      "inputs" : [
+        {
+          "kind" : "directory",
+          "name" : "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/Resources/Assets.xcassets"
+        }
+      ],
+      "outputs" : [
+        {
+          "kind" : "directory",
+          "name" : "/Users/sumeru.chatterjee/Projects/swift-sdk/.build/arm64-apple-macosx/debug/IterableSDK_IterableSDK.bundle/Assets.xcassets"
+        }
+      ]
+    },
+    "/Users/sumeru.chatterjee/Projects/swift-sdk/.build/arm64-apple-macosx/debug/IterableSDK_IterableSDK.bundle/IterableDataModel.xcdatamodeld" : {
+      "inputs" : [
+        {
+          "kind" : "directory",
+          "name" : "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/Resources/IterableDataModel.xcdatamodeld"
+        }
+      ],
+      "outputs" : [
+        {
+          "kind" : "directory",
+          "name" : "/Users/sumeru.chatterjee/Projects/swift-sdk/.build/arm64-apple-macosx/debug/IterableSDK_IterableSDK.bundle/IterableDataModel.xcdatamodeld"
+        }
+      ]
+    },
+    "/Users/sumeru.chatterjee/Projects/swift-sdk/.build/arm64-apple-macosx/debug/IterableSDK_IterableSDK.bundle/IterableEmbeddedView.xib" : {
+      "inputs" : [
+        {
+          "kind" : "file",
+          "name" : "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/ui-components/uikit/IterableEmbeddedView.xib"
+        }
+      ],
+      "outputs" : [
+        {
+          "kind" : "file",
+          "name" : "/Users/sumeru.chatterjee/Projects/swift-sdk/.build/arm64-apple-macosx/debug/IterableSDK_IterableSDK.bundle/IterableEmbeddedView.xib"
+        }
+      ]
+    },
+    "/Users/sumeru.chatterjee/Projects/swift-sdk/.build/arm64-apple-macosx/debug/IterableSDK_IterableSDK.bundle/PrivacyInfo.xcprivacy" : {
+      "inputs" : [
+        {
+          "kind" : "file",
+          "name" : "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/Resources/PrivacyInfo.xcprivacy"
+        }
+      ],
+      "outputs" : [
+        {
+          "kind" : "file",
+          "name" : "/Users/sumeru.chatterjee/Projects/swift-sdk/.build/arm64-apple-macosx/debug/IterableSDK_IterableSDK.bundle/PrivacyInfo.xcprivacy"
+        }
+      ]
+    },
+    "/Users/sumeru.chatterjee/Projects/swift-sdk/.build/arm64-apple-macosx/debug/IterableSDK_IterableSDK.bundle/SampleInboxCell.xib" : {
+      "inputs" : [
+        {
+          "kind" : "file",
+          "name" : "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/ui-components/uikit/SampleInboxCell.xib"
+        }
+      ],
+      "outputs" : [
+        {
+          "kind" : "file",
+          "name" : "/Users/sumeru.chatterjee/Projects/swift-sdk/.build/arm64-apple-macosx/debug/IterableSDK_IterableSDK.bundle/SampleInboxCell.xib"
+        }
+      ]
+    }
+  },
+  "explicitTargetDependencyImportCheckingMode" : {
+    "none" : {
+
+    }
+  },
+  "generatedSourceTargetSet" : [
+
+  ],
+  "pluginDescriptions" : [
+
+  ],
+  "swiftCommands" : {
+    "C.IterableAppExtensions-arm64-apple-macosx14.0-debug.module" : {
+      "executable" : "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/swiftc",
+      "fileList" : "/Users/sumeru.chatterjee/Projects/swift-sdk/.build/arm64-apple-macosx/debug/IterableAppExtensions.build/sources",
+      "importPath" : "/Users/sumeru.chatterjee/Projects/swift-sdk/.build/arm64-apple-macosx/debug/Modules",
+      "inputs" : [
+        {
+          "kind" : "file",
+          "name" : "/Users/sumeru.chatterjee/Projects/swift-sdk/notification-extension/ITBNotificationServiceExtension.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sumeru.chatterjee/Projects/swift-sdk/notification-extension/NotificationContentParser.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sumeru.chatterjee/Projects/swift-sdk/notification-extension/NotificationExtensionConstants.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sumeru.chatterjee/Projects/swift-sdk/notification-extension/TestFile.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sumeru.chatterjee/Projects/swift-sdk/.build/arm64-apple-macosx/debug/swift-version--58304C5D6DBC2206.txt"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sumeru.chatterjee/Projects/swift-sdk/.build/arm64-apple-macosx/debug/IterableAppExtensions.build/sources"
+        }
+      ],
+      "isLibrary" : true,
+      "moduleName" : "IterableAppExtensions",
+      "moduleOutputPath" : "/Users/sumeru.chatterjee/Projects/swift-sdk/.build/arm64-apple-macosx/debug/Modules/IterableAppExtensions.swiftmodule",
+      "objects" : [
+        "/Users/sumeru.chatterjee/Projects/swift-sdk/.build/arm64-apple-macosx/debug/IterableAppExtensions.build/ITBNotificationServiceExtension.swift.o",
+        "/Users/sumeru.chatterjee/Projects/swift-sdk/.build/arm64-apple-macosx/debug/IterableAppExtensions.build/NotificationContentParser.swift.o",
+        "/Users/sumeru.chatterjee/Projects/swift-sdk/.build/arm64-apple-macosx/debug/IterableAppExtensions.build/NotificationExtensionConstants.swift.o",
+        "/Users/sumeru.chatterjee/Projects/swift-sdk/.build/arm64-apple-macosx/debug/IterableAppExtensions.build/TestFile.swift.o"
+      ],
+      "otherArguments" : [
+        "-target",
+        "arm64-apple-macosx10.13",
+        "-enable-batch-mode",
+        "-index-store-path",
+        "/Users/sumeru.chatterjee/Projects/swift-sdk/.build/arm64-apple-macosx/debug/index/store",
+        "-Onone",
+        "-enable-testing",
+        "-j12",
+        "-DSWIFT_PACKAGE",
+        "-DDEBUG",
+        "-module-cache-path",
+        "/Users/sumeru.chatterjee/Projects/swift-sdk/.build/arm64-apple-macosx/debug/ModuleCache",
+        "-parseable-output",
+        "-parse-as-library",
+        "-emit-objc-header",
+        "-emit-objc-header-path",
+        "/Users/sumeru.chatterjee/Projects/swift-sdk/.build/arm64-apple-macosx/debug/IterableAppExtensions.build/IterableAppExtensions-Swift.h",
+        "-color-diagnostics",
+        "-swift-version",
+        "5",
+        "-sdk",
+        "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX15.2.sdk",
+        "-F",
+        "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/Library/Frameworks",
+        "-I",
+        "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/usr/lib",
+        "-L",
+        "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/usr/lib",
+        "-g",
+        "-Xcc",
+        "-isysroot",
+        "-Xcc",
+        "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX15.2.sdk",
+        "-Xcc",
+        "-F",
+        "-Xcc",
+        "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/Library/Frameworks",
+        "-Xcc",
+        "-fPIC",
+        "-Xcc",
+        "-g"
+      ],
+      "outputFileMapPath" : "/Users/sumeru.chatterjee/Projects/swift-sdk/.build/arm64-apple-macosx/debug/IterableAppExtensions.build/output-file-map.json",
+      "outputs" : [
+        {
+          "kind" : "file",
+          "name" : "/Users/sumeru.chatterjee/Projects/swift-sdk/.build/arm64-apple-macosx/debug/IterableAppExtensions.build/ITBNotificationServiceExtension.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sumeru.chatterjee/Projects/swift-sdk/.build/arm64-apple-macosx/debug/IterableAppExtensions.build/NotificationContentParser.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sumeru.chatterjee/Projects/swift-sdk/.build/arm64-apple-macosx/debug/IterableAppExtensions.build/NotificationExtensionConstants.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sumeru.chatterjee/Projects/swift-sdk/.build/arm64-apple-macosx/debug/IterableAppExtensions.build/TestFile.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sumeru.chatterjee/Projects/swift-sdk/.build/arm64-apple-macosx/debug/Modules/IterableAppExtensions.swiftmodule"
+        }
+      ],
+      "prepareForIndexing" : false,
+      "sources" : [
+        "/Users/sumeru.chatterjee/Projects/swift-sdk/notification-extension/ITBNotificationServiceExtension.swift",
+        "/Users/sumeru.chatterjee/Projects/swift-sdk/notification-extension/NotificationContentParser.swift",
+        "/Users/sumeru.chatterjee/Projects/swift-sdk/notification-extension/NotificationExtensionConstants.swift",
+        "/Users/sumeru.chatterjee/Projects/swift-sdk/notification-extension/TestFile.swift"
+      ],
+      "tempsPath" : "/Users/sumeru.chatterjee/Projects/swift-sdk/.build/arm64-apple-macosx/debug/IterableAppExtensions.build",
+      "wholeModuleOptimization" : false
+    },
+    "C.IterableSDK-arm64-apple-macosx14.0-debug.module" : {
+      "executable" : "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/swiftc",
+      "fileList" : "/Users/sumeru.chatterjee/Projects/swift-sdk/.build/arm64-apple-macosx/debug/IterableSDK.build/sources",
+      "importPath" : "/Users/sumeru.chatterjee/Projects/swift-sdk/.build/arm64-apple-macosx/debug/Modules",
+      "inputs" : [
+        {
+          "kind" : "file",
+          "name" : "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/Core/Constants.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/Core/Models/CommerceItem.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/Core/Models/IterableAction.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/Core/Models/IterableActionContext.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/Core/Models/IterableAttributionInfo.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/Core/Models/IterableEmbeddedMessage.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/Core/Models/IterableInAppMessage.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/Core/Models/IterablePushNotificationMetadata.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/Core/Models/RetryPolicy.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/Core/Protocols/IterableAuthManagerProtocol.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/Core/Protocols/IterableEmbeddedManagerProtocol.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/Core/Protocols/IterableEmbeddedUpdateDelegate.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/Core/Protocols/IterableInAppManagerProtocol.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/Core/Protocols/IterableInboxViewControllerViewDelegate.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/Core/Utilities/AuthFailure.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/Core/Utilities/AuthFailureReason.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/Internal/APNSTypeChecker.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/Internal/ActionRunner.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/Internal/AppExtensionHelper.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/Internal/Auth.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/Internal/AuthManager.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/Internal/ClassExtensions.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/Internal/CoreDataUtil.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/Internal/DataFieldsHelper.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/Internal/DateProvider.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/Internal/DeepLinkManager.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/Internal/Dwifft/AbstractDiffCalculator.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/Internal/Dwifft/Dwifft+UIKit.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/Internal/Dwifft/Dwifft.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/Internal/Dwifft/SectionedValues.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/Internal/EmbeddedHelper.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/Internal/EmbeddedMessagingProcessor.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/Internal/EmbeddedMessagingSerialization.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/Internal/EmbeddedSessionManager.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/Internal/EmptyEmbeddedManager.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/Internal/EmptyInAppManager.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/Internal/HealthMonitor.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/Internal/InboxImpressionTracker.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/Internal/InboxMessageViewModel.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/Internal/InboxSessionManager.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/Internal/InboxState.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/Internal/InboxViewControllerViewModel.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/Internal/InboxViewControllerViewModelProtocol.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/Internal/InboxViewControllerViewModelView.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/Internal/InternalIterableAPI.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/Internal/InternalIterableAppIntegration.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/Internal/IterableAPICallRequest.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/Internal/IterableAPICallTaskProcessor.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/Internal/IterableAPIMobileFrameworkDetector.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/Internal/IterableCoreDataPersistence.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/Internal/IterableEmbeddedManager.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/Internal/IterableHtmlMessageViewController.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/Internal/IterableInboxCell+Layout.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/Internal/IterableNotifications.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/Internal/IterablePersistence.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/Internal/IterableRequest.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/Internal/IterableRequestUtil.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/Internal/IterableTask.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/Internal/IterableTaskError.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/Internal/IterableTaskManagedObject.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/Internal/IterableTaskProcessor.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/Internal/IterableTaskResult.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/Internal/IterableTaskRunner.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/Internal/IterableTaskScheduler.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/Internal/IterableUserDefaults.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/Internal/MiscEmbeddedClasses.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/Internal/MiscInboxClasses.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/Internal/Models.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/Internal/Network/NetworkConnectivityChecker.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/Internal/Network/NetworkConnectivityManager.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/Internal/Network/NetworkHelper.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/Internal/Network/NetworkMonitor.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/Internal/Network/NetworkSession.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/Internal/Pending.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/Internal/RequestHandlerProtocol.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/Internal/RequestProcessorUtil.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/Internal/RequestSender.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/Internal/Utilities/DependencyContainer.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/Internal/Utilities/DependencyContainerProtocol.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/Internal/Utilities/IterableLogUtil.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/Internal/Utilities/IterableUtil.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/Internal/Utilities/Keychain/IterableKeychain.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/Internal/Utilities/Keychain/KeychainWrapper.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/Internal/Utilities/LocalStorage.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/Internal/Utilities/LocalStorageProtocol.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/Internal/Utilities/NotificationHelper.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/Internal/Utilities/OrderedDictionary.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/Internal/Utilities/PersistenceHelper.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/Internal/Utilities/ResourceHelper.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/Internal/Utilities/UIColor+Extension.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/Internal/Utilities/WebViewProtocol.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/Internal/api-client/ApiClient.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/Internal/api-client/ApiClientProtocol.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/Internal/api-client/Request/OfflineRequestProcessor.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/Internal/api-client/Request/OnlineRequestProcessor.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/Internal/api-client/Request/RequestCreator.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/Internal/api-client/Request/RequestHandler.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/Internal/api-client/Request/RequestProcessorProtocol.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/Internal/in-app/InAppCalculations.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/Internal/in-app/InAppContentParser.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/Internal/in-app/InAppDisplayer.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/Internal/in-app/InAppHelper.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/Internal/in-app/InAppInternal.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/Internal/in-app/InAppManager+Functions.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/Internal/in-app/InAppManager.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/Internal/in-app/InAppMessageParser.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/Internal/in-app/InAppPersistence.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/Internal/in-app/InAppPresenter.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/SDK/IterableAPI.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/SDK/IterableAppIntegration.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/SDK/IterableConfig.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/SDK/IterableLogging.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/SDK/IterableMessaging.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/ui-components/swiftui/InboxViewRepresentable.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/ui-components/swiftui/IterableInboxView.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/ui-components/uikit/IterableEmbeddedView.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/ui-components/uikit/IterableInboxCell.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/ui-components/uikit/IterableInboxNavigationViewController.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/ui-components/uikit/IterableInboxViewController.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sumeru.chatterjee/Projects/swift-sdk/.build/arm64-apple-macosx/debug/IterableSDK.build/DerivedSources/resource_bundle_accessor.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sumeru.chatterjee/Projects/swift-sdk/.build/arm64-apple-macosx/debug/swift-version--58304C5D6DBC2206.txt"
+        },
+        {
+          "kind" : "virtual",
+          "name" : "<IterableSDK-arm64-apple-macosx14.0-debug.module-resources>"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sumeru.chatterjee/Projects/swift-sdk/.build/arm64-apple-macosx/debug/IterableSDK.build/sources"
+        }
+      ],
+      "isLibrary" : true,
+      "moduleName" : "IterableSDK",
+      "moduleOutputPath" : "/Users/sumeru.chatterjee/Projects/swift-sdk/.build/arm64-apple-macosx/debug/Modules/IterableSDK.swiftmodule",
+      "objects" : [
+        "/Users/sumeru.chatterjee/Projects/swift-sdk/.build/arm64-apple-macosx/debug/IterableSDK.build/Constants.swift.o",
+        "/Users/sumeru.chatterjee/Projects/swift-sdk/.build/arm64-apple-macosx/debug/IterableSDK.build/CommerceItem.swift.o",
+        "/Users/sumeru.chatterjee/Projects/swift-sdk/.build/arm64-apple-macosx/debug/IterableSDK.build/IterableAction.swift.o",
+        "/Users/sumeru.chatterjee/Projects/swift-sdk/.build/arm64-apple-macosx/debug/IterableSDK.build/IterableActionContext.swift.o",
+        "/Users/sumeru.chatterjee/Projects/swift-sdk/.build/arm64-apple-macosx/debug/IterableSDK.build/IterableAttributionInfo.swift.o",
+        "/Users/sumeru.chatterjee/Projects/swift-sdk/.build/arm64-apple-macosx/debug/IterableSDK.build/IterableEmbeddedMessage.swift.o",
+        "/Users/sumeru.chatterjee/Projects/swift-sdk/.build/arm64-apple-macosx/debug/IterableSDK.build/IterableInAppMessage.swift.o",
+        "/Users/sumeru.chatterjee/Projects/swift-sdk/.build/arm64-apple-macosx/debug/IterableSDK.build/IterablePushNotificationMetadata.swift.o",
+        "/Users/sumeru.chatterjee/Projects/swift-sdk/.build/arm64-apple-macosx/debug/IterableSDK.build/RetryPolicy.swift.o",
+        "/Users/sumeru.chatterjee/Projects/swift-sdk/.build/arm64-apple-macosx/debug/IterableSDK.build/IterableAuthManagerProtocol.swift.o",
+        "/Users/sumeru.chatterjee/Projects/swift-sdk/.build/arm64-apple-macosx/debug/IterableSDK.build/IterableEmbeddedManagerProtocol.swift.o",
+        "/Users/sumeru.chatterjee/Projects/swift-sdk/.build/arm64-apple-macosx/debug/IterableSDK.build/IterableEmbeddedUpdateDelegate.swift.o",
+        "/Users/sumeru.chatterjee/Projects/swift-sdk/.build/arm64-apple-macosx/debug/IterableSDK.build/IterableInAppManagerProtocol.swift.o",
+        "/Users/sumeru.chatterjee/Projects/swift-sdk/.build/arm64-apple-macosx/debug/IterableSDK.build/IterableInboxViewControllerViewDelegate.swift.o",
+        "/Users/sumeru.chatterjee/Projects/swift-sdk/.build/arm64-apple-macosx/debug/IterableSDK.build/AuthFailure.swift.o",
+        "/Users/sumeru.chatterjee/Projects/swift-sdk/.build/arm64-apple-macosx/debug/IterableSDK.build/AuthFailureReason.swift.o",
+        "/Users/sumeru.chatterjee/Projects/swift-sdk/.build/arm64-apple-macosx/debug/IterableSDK.build/APNSTypeChecker.swift.o",
+        "/Users/sumeru.chatterjee/Projects/swift-sdk/.build/arm64-apple-macosx/debug/IterableSDK.build/ActionRunner.swift.o",
+        "/Users/sumeru.chatterjee/Projects/swift-sdk/.build/arm64-apple-macosx/debug/IterableSDK.build/AppExtensionHelper.swift.o",
+        "/Users/sumeru.chatterjee/Projects/swift-sdk/.build/arm64-apple-macosx/debug/IterableSDK.build/Auth.swift.o",
+        "/Users/sumeru.chatterjee/Projects/swift-sdk/.build/arm64-apple-macosx/debug/IterableSDK.build/AuthManager.swift.o",
+        "/Users/sumeru.chatterjee/Projects/swift-sdk/.build/arm64-apple-macosx/debug/IterableSDK.build/ClassExtensions.swift.o",
+        "/Users/sumeru.chatterjee/Projects/swift-sdk/.build/arm64-apple-macosx/debug/IterableSDK.build/CoreDataUtil.swift.o",
+        "/Users/sumeru.chatterjee/Projects/swift-sdk/.build/arm64-apple-macosx/debug/IterableSDK.build/DataFieldsHelper.swift.o",
+        "/Users/sumeru.chatterjee/Projects/swift-sdk/.build/arm64-apple-macosx/debug/IterableSDK.build/DateProvider.swift.o",
+        "/Users/sumeru.chatterjee/Projects/swift-sdk/.build/arm64-apple-macosx/debug/IterableSDK.build/DeepLinkManager.swift.o",
+        "/Users/sumeru.chatterjee/Projects/swift-sdk/.build/arm64-apple-macosx/debug/IterableSDK.build/AbstractDiffCalculator.swift.o",
+        "/Users/sumeru.chatterjee/Projects/swift-sdk/.build/arm64-apple-macosx/debug/IterableSDK.build/Dwifft+UIKit.swift.o",
+        "/Users/sumeru.chatterjee/Projects/swift-sdk/.build/arm64-apple-macosx/debug/IterableSDK.build/Dwifft.swift.o",
+        "/Users/sumeru.chatterjee/Projects/swift-sdk/.build/arm64-apple-macosx/debug/IterableSDK.build/SectionedValues.swift.o",
+        "/Users/sumeru.chatterjee/Projects/swift-sdk/.build/arm64-apple-macosx/debug/IterableSDK.build/EmbeddedHelper.swift.o",
+        "/Users/sumeru.chatterjee/Projects/swift-sdk/.build/arm64-apple-macosx/debug/IterableSDK.build/EmbeddedMessagingProcessor.swift.o",
+        "/Users/sumeru.chatterjee/Projects/swift-sdk/.build/arm64-apple-macosx/debug/IterableSDK.build/EmbeddedMessagingSerialization.swift.o",
+        "/Users/sumeru.chatterjee/Projects/swift-sdk/.build/arm64-apple-macosx/debug/IterableSDK.build/EmbeddedSessionManager.swift.o",
+        "/Users/sumeru.chatterjee/Projects/swift-sdk/.build/arm64-apple-macosx/debug/IterableSDK.build/EmptyEmbeddedManager.swift.o",
+        "/Users/sumeru.chatterjee/Projects/swift-sdk/.build/arm64-apple-macosx/debug/IterableSDK.build/EmptyInAppManager.swift.o",
+        "/Users/sumeru.chatterjee/Projects/swift-sdk/.build/arm64-apple-macosx/debug/IterableSDK.build/HealthMonitor.swift.o",
+        "/Users/sumeru.chatterjee/Projects/swift-sdk/.build/arm64-apple-macosx/debug/IterableSDK.build/InboxImpressionTracker.swift.o",
+        "/Users/sumeru.chatterjee/Projects/swift-sdk/.build/arm64-apple-macosx/debug/IterableSDK.build/InboxMessageViewModel.swift.o",
+        "/Users/sumeru.chatterjee/Projects/swift-sdk/.build/arm64-apple-macosx/debug/IterableSDK.build/InboxSessionManager.swift.o",
+        "/Users/sumeru.chatterjee/Projects/swift-sdk/.build/arm64-apple-macosx/debug/IterableSDK.build/InboxState.swift.o",
+        "/Users/sumeru.chatterjee/Projects/swift-sdk/.build/arm64-apple-macosx/debug/IterableSDK.build/InboxViewControllerViewModel.swift.o",
+        "/Users/sumeru.chatterjee/Projects/swift-sdk/.build/arm64-apple-macosx/debug/IterableSDK.build/InboxViewControllerViewModelProtocol.swift.o",
+        "/Users/sumeru.chatterjee/Projects/swift-sdk/.build/arm64-apple-macosx/debug/IterableSDK.build/InboxViewControllerViewModelView.swift.o",
+        "/Users/sumeru.chatterjee/Projects/swift-sdk/.build/arm64-apple-macosx/debug/IterableSDK.build/InternalIterableAPI.swift.o",
+        "/Users/sumeru.chatterjee/Projects/swift-sdk/.build/arm64-apple-macosx/debug/IterableSDK.build/InternalIterableAppIntegration.swift.o",
+        "/Users/sumeru.chatterjee/Projects/swift-sdk/.build/arm64-apple-macosx/debug/IterableSDK.build/IterableAPICallRequest.swift.o",
+        "/Users/sumeru.chatterjee/Projects/swift-sdk/.build/arm64-apple-macosx/debug/IterableSDK.build/IterableAPICallTaskProcessor.swift.o",
+        "/Users/sumeru.chatterjee/Projects/swift-sdk/.build/arm64-apple-macosx/debug/IterableSDK.build/IterableAPIMobileFrameworkDetector.swift.o",
+        "/Users/sumeru.chatterjee/Projects/swift-sdk/.build/arm64-apple-macosx/debug/IterableSDK.build/IterableCoreDataPersistence.swift.o",
+        "/Users/sumeru.chatterjee/Projects/swift-sdk/.build/arm64-apple-macosx/debug/IterableSDK.build/IterableEmbeddedManager.swift.o",
+        "/Users/sumeru.chatterjee/Projects/swift-sdk/.build/arm64-apple-macosx/debug/IterableSDK.build/IterableHtmlMessageViewController.swift.o",
+        "/Users/sumeru.chatterjee/Projects/swift-sdk/.build/arm64-apple-macosx/debug/IterableSDK.build/IterableInboxCell+Layout.swift.o",
+        "/Users/sumeru.chatterjee/Projects/swift-sdk/.build/arm64-apple-macosx/debug/IterableSDK.build/IterableNotifications.swift.o",
+        "/Users/sumeru.chatterjee/Projects/swift-sdk/.build/arm64-apple-macosx/debug/IterableSDK.build/IterablePersistence.swift.o",
+        "/Users/sumeru.chatterjee/Projects/swift-sdk/.build/arm64-apple-macosx/debug/IterableSDK.build/IterableRequest.swift.o",
+        "/Users/sumeru.chatterjee/Projects/swift-sdk/.build/arm64-apple-macosx/debug/IterableSDK.build/IterableRequestUtil.swift.o",
+        "/Users/sumeru.chatterjee/Projects/swift-sdk/.build/arm64-apple-macosx/debug/IterableSDK.build/IterableTask.swift.o",
+        "/Users/sumeru.chatterjee/Projects/swift-sdk/.build/arm64-apple-macosx/debug/IterableSDK.build/IterableTaskError.swift.o",
+        "/Users/sumeru.chatterjee/Projects/swift-sdk/.build/arm64-apple-macosx/debug/IterableSDK.build/IterableTaskManagedObject.swift.o",
+        "/Users/sumeru.chatterjee/Projects/swift-sdk/.build/arm64-apple-macosx/debug/IterableSDK.build/IterableTaskProcessor.swift.o",
+        "/Users/sumeru.chatterjee/Projects/swift-sdk/.build/arm64-apple-macosx/debug/IterableSDK.build/IterableTaskResult.swift.o",
+        "/Users/sumeru.chatterjee/Projects/swift-sdk/.build/arm64-apple-macosx/debug/IterableSDK.build/IterableTaskRunner.swift.o",
+        "/Users/sumeru.chatterjee/Projects/swift-sdk/.build/arm64-apple-macosx/debug/IterableSDK.build/IterableTaskScheduler.swift.o",
+        "/Users/sumeru.chatterjee/Projects/swift-sdk/.build/arm64-apple-macosx/debug/IterableSDK.build/IterableUserDefaults.swift.o",
+        "/Users/sumeru.chatterjee/Projects/swift-sdk/.build/arm64-apple-macosx/debug/IterableSDK.build/MiscEmbeddedClasses.swift.o",
+        "/Users/sumeru.chatterjee/Projects/swift-sdk/.build/arm64-apple-macosx/debug/IterableSDK.build/MiscInboxClasses.swift.o",
+        "/Users/sumeru.chatterjee/Projects/swift-sdk/.build/arm64-apple-macosx/debug/IterableSDK.build/Models.swift.o",
+        "/Users/sumeru.chatterjee/Projects/swift-sdk/.build/arm64-apple-macosx/debug/IterableSDK.build/NetworkConnectivityChecker.swift.o",
+        "/Users/sumeru.chatterjee/Projects/swift-sdk/.build/arm64-apple-macosx/debug/IterableSDK.build/NetworkConnectivityManager.swift.o",
+        "/Users/sumeru.chatterjee/Projects/swift-sdk/.build/arm64-apple-macosx/debug/IterableSDK.build/NetworkHelper.swift.o",
+        "/Users/sumeru.chatterjee/Projects/swift-sdk/.build/arm64-apple-macosx/debug/IterableSDK.build/NetworkMonitor.swift.o",
+        "/Users/sumeru.chatterjee/Projects/swift-sdk/.build/arm64-apple-macosx/debug/IterableSDK.build/NetworkSession.swift.o",
+        "/Users/sumeru.chatterjee/Projects/swift-sdk/.build/arm64-apple-macosx/debug/IterableSDK.build/Pending.swift.o",
+        "/Users/sumeru.chatterjee/Projects/swift-sdk/.build/arm64-apple-macosx/debug/IterableSDK.build/RequestHandlerProtocol.swift.o",
+        "/Users/sumeru.chatterjee/Projects/swift-sdk/.build/arm64-apple-macosx/debug/IterableSDK.build/RequestProcessorUtil.swift.o",
+        "/Users/sumeru.chatterjee/Projects/swift-sdk/.build/arm64-apple-macosx/debug/IterableSDK.build/RequestSender.swift.o",
+        "/Users/sumeru.chatterjee/Projects/swift-sdk/.build/arm64-apple-macosx/debug/IterableSDK.build/DependencyContainer.swift.o",
+        "/Users/sumeru.chatterjee/Projects/swift-sdk/.build/arm64-apple-macosx/debug/IterableSDK.build/DependencyContainerProtocol.swift.o",
+        "/Users/sumeru.chatterjee/Projects/swift-sdk/.build/arm64-apple-macosx/debug/IterableSDK.build/IterableLogUtil.swift.o",
+        "/Users/sumeru.chatterjee/Projects/swift-sdk/.build/arm64-apple-macosx/debug/IterableSDK.build/IterableUtil.swift.o",
+        "/Users/sumeru.chatterjee/Projects/swift-sdk/.build/arm64-apple-macosx/debug/IterableSDK.build/IterableKeychain.swift.o",
+        "/Users/sumeru.chatterjee/Projects/swift-sdk/.build/arm64-apple-macosx/debug/IterableSDK.build/KeychainWrapper.swift.o",
+        "/Users/sumeru.chatterjee/Projects/swift-sdk/.build/arm64-apple-macosx/debug/IterableSDK.build/LocalStorage.swift.o",
+        "/Users/sumeru.chatterjee/Projects/swift-sdk/.build/arm64-apple-macosx/debug/IterableSDK.build/LocalStorageProtocol.swift.o",
+        "/Users/sumeru.chatterjee/Projects/swift-sdk/.build/arm64-apple-macosx/debug/IterableSDK.build/NotificationHelper.swift.o",
+        "/Users/sumeru.chatterjee/Projects/swift-sdk/.build/arm64-apple-macosx/debug/IterableSDK.build/OrderedDictionary.swift.o",
+        "/Users/sumeru.chatterjee/Projects/swift-sdk/.build/arm64-apple-macosx/debug/IterableSDK.build/PersistenceHelper.swift.o",
+        "/Users/sumeru.chatterjee/Projects/swift-sdk/.build/arm64-apple-macosx/debug/IterableSDK.build/ResourceHelper.swift.o",
+        "/Users/sumeru.chatterjee/Projects/swift-sdk/.build/arm64-apple-macosx/debug/IterableSDK.build/UIColor+Extension.swift.o",
+        "/Users/sumeru.chatterjee/Projects/swift-sdk/.build/arm64-apple-macosx/debug/IterableSDK.build/WebViewProtocol.swift.o",
+        "/Users/sumeru.chatterjee/Projects/swift-sdk/.build/arm64-apple-macosx/debug/IterableSDK.build/ApiClient.swift.o",
+        "/Users/sumeru.chatterjee/Projects/swift-sdk/.build/arm64-apple-macosx/debug/IterableSDK.build/ApiClientProtocol.swift.o",
+        "/Users/sumeru.chatterjee/Projects/swift-sdk/.build/arm64-apple-macosx/debug/IterableSDK.build/OfflineRequestProcessor.swift.o",
+        "/Users/sumeru.chatterjee/Projects/swift-sdk/.build/arm64-apple-macosx/debug/IterableSDK.build/OnlineRequestProcessor.swift.o",
+        "/Users/sumeru.chatterjee/Projects/swift-sdk/.build/arm64-apple-macosx/debug/IterableSDK.build/RequestCreator.swift.o",
+        "/Users/sumeru.chatterjee/Projects/swift-sdk/.build/arm64-apple-macosx/debug/IterableSDK.build/RequestHandler.swift.o",
+        "/Users/sumeru.chatterjee/Projects/swift-sdk/.build/arm64-apple-macosx/debug/IterableSDK.build/RequestProcessorProtocol.swift.o",
+        "/Users/sumeru.chatterjee/Projects/swift-sdk/.build/arm64-apple-macosx/debug/IterableSDK.build/InAppCalculations.swift.o",
+        "/Users/sumeru.chatterjee/Projects/swift-sdk/.build/arm64-apple-macosx/debug/IterableSDK.build/InAppContentParser.swift.o",
+        "/Users/sumeru.chatterjee/Projects/swift-sdk/.build/arm64-apple-macosx/debug/IterableSDK.build/InAppDisplayer.swift.o",
+        "/Users/sumeru.chatterjee/Projects/swift-sdk/.build/arm64-apple-macosx/debug/IterableSDK.build/InAppHelper.swift.o",
+        "/Users/sumeru.chatterjee/Projects/swift-sdk/.build/arm64-apple-macosx/debug/IterableSDK.build/InAppInternal.swift.o",
+        "/Users/sumeru.chatterjee/Projects/swift-sdk/.build/arm64-apple-macosx/debug/IterableSDK.build/InAppManager+Functions.swift.o",
+        "/Users/sumeru.chatterjee/Projects/swift-sdk/.build/arm64-apple-macosx/debug/IterableSDK.build/InAppManager.swift.o",
+        "/Users/sumeru.chatterjee/Projects/swift-sdk/.build/arm64-apple-macosx/debug/IterableSDK.build/InAppMessageParser.swift.o",
+        "/Users/sumeru.chatterjee/Projects/swift-sdk/.build/arm64-apple-macosx/debug/IterableSDK.build/InAppPersistence.swift.o",
+        "/Users/sumeru.chatterjee/Projects/swift-sdk/.build/arm64-apple-macosx/debug/IterableSDK.build/InAppPresenter.swift.o",
+        "/Users/sumeru.chatterjee/Projects/swift-sdk/.build/arm64-apple-macosx/debug/IterableSDK.build/IterableAPI.swift.o",
+        "/Users/sumeru.chatterjee/Projects/swift-sdk/.build/arm64-apple-macosx/debug/IterableSDK.build/IterableAppIntegration.swift.o",
+        "/Users/sumeru.chatterjee/Projects/swift-sdk/.build/arm64-apple-macosx/debug/IterableSDK.build/IterableConfig.swift.o",
+        "/Users/sumeru.chatterjee/Projects/swift-sdk/.build/arm64-apple-macosx/debug/IterableSDK.build/IterableLogging.swift.o",
+        "/Users/sumeru.chatterjee/Projects/swift-sdk/.build/arm64-apple-macosx/debug/IterableSDK.build/IterableMessaging.swift.o",
+        "/Users/sumeru.chatterjee/Projects/swift-sdk/.build/arm64-apple-macosx/debug/IterableSDK.build/InboxViewRepresentable.swift.o",
+        "/Users/sumeru.chatterjee/Projects/swift-sdk/.build/arm64-apple-macosx/debug/IterableSDK.build/IterableInboxView.swift.o",
+        "/Users/sumeru.chatterjee/Projects/swift-sdk/.build/arm64-apple-macosx/debug/IterableSDK.build/IterableEmbeddedView.swift.o",
+        "/Users/sumeru.chatterjee/Projects/swift-sdk/.build/arm64-apple-macosx/debug/IterableSDK.build/IterableInboxCell.swift.o",
+        "/Users/sumeru.chatterjee/Projects/swift-sdk/.build/arm64-apple-macosx/debug/IterableSDK.build/IterableInboxNavigationViewController.swift.o",
+        "/Users/sumeru.chatterjee/Projects/swift-sdk/.build/arm64-apple-macosx/debug/IterableSDK.build/IterableInboxViewController.swift.o",
+        "/Users/sumeru.chatterjee/Projects/swift-sdk/.build/arm64-apple-macosx/debug/IterableSDK.build/resource_bundle_accessor.swift.o"
+      ],
+      "otherArguments" : [
+        "-target",
+        "arm64-apple-macosx10.13",
+        "-enable-batch-mode",
+        "-index-store-path",
+        "/Users/sumeru.chatterjee/Projects/swift-sdk/.build/arm64-apple-macosx/debug/index/store",
+        "-Onone",
+        "-enable-testing",
+        "-j12",
+        "-DSWIFT_PACKAGE",
+        "-DDEBUG",
+        "-module-cache-path",
+        "/Users/sumeru.chatterjee/Projects/swift-sdk/.build/arm64-apple-macosx/debug/ModuleCache",
+        "-parseable-output",
+        "-parse-as-library",
+        "-emit-objc-header",
+        "-emit-objc-header-path",
+        "/Users/sumeru.chatterjee/Projects/swift-sdk/.build/arm64-apple-macosx/debug/IterableSDK.build/IterableSDK-Swift.h",
+        "-color-diagnostics",
+        "-swift-version",
+        "5",
+        "-sdk",
+        "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX15.2.sdk",
+        "-F",
+        "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/Library/Frameworks",
+        "-I",
+        "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/usr/lib",
+        "-L",
+        "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/usr/lib",
+        "-g",
+        "-Xcc",
+        "-isysroot",
+        "-Xcc",
+        "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX15.2.sdk",
+        "-Xcc",
+        "-F",
+        "-Xcc",
+        "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/Library/Frameworks",
+        "-Xcc",
+        "-fPIC",
+        "-Xcc",
+        "-g"
+      ],
+      "outputFileMapPath" : "/Users/sumeru.chatterjee/Projects/swift-sdk/.build/arm64-apple-macosx/debug/IterableSDK.build/output-file-map.json",
+      "outputs" : [
+        {
+          "kind" : "file",
+          "name" : "/Users/sumeru.chatterjee/Projects/swift-sdk/.build/arm64-apple-macosx/debug/IterableSDK.build/Constants.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sumeru.chatterjee/Projects/swift-sdk/.build/arm64-apple-macosx/debug/IterableSDK.build/CommerceItem.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sumeru.chatterjee/Projects/swift-sdk/.build/arm64-apple-macosx/debug/IterableSDK.build/IterableAction.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sumeru.chatterjee/Projects/swift-sdk/.build/arm64-apple-macosx/debug/IterableSDK.build/IterableActionContext.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sumeru.chatterjee/Projects/swift-sdk/.build/arm64-apple-macosx/debug/IterableSDK.build/IterableAttributionInfo.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sumeru.chatterjee/Projects/swift-sdk/.build/arm64-apple-macosx/debug/IterableSDK.build/IterableEmbeddedMessage.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sumeru.chatterjee/Projects/swift-sdk/.build/arm64-apple-macosx/debug/IterableSDK.build/IterableInAppMessage.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sumeru.chatterjee/Projects/swift-sdk/.build/arm64-apple-macosx/debug/IterableSDK.build/IterablePushNotificationMetadata.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sumeru.chatterjee/Projects/swift-sdk/.build/arm64-apple-macosx/debug/IterableSDK.build/RetryPolicy.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sumeru.chatterjee/Projects/swift-sdk/.build/arm64-apple-macosx/debug/IterableSDK.build/IterableAuthManagerProtocol.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sumeru.chatterjee/Projects/swift-sdk/.build/arm64-apple-macosx/debug/IterableSDK.build/IterableEmbeddedManagerProtocol.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sumeru.chatterjee/Projects/swift-sdk/.build/arm64-apple-macosx/debug/IterableSDK.build/IterableEmbeddedUpdateDelegate.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sumeru.chatterjee/Projects/swift-sdk/.build/arm64-apple-macosx/debug/IterableSDK.build/IterableInAppManagerProtocol.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sumeru.chatterjee/Projects/swift-sdk/.build/arm64-apple-macosx/debug/IterableSDK.build/IterableInboxViewControllerViewDelegate.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sumeru.chatterjee/Projects/swift-sdk/.build/arm64-apple-macosx/debug/IterableSDK.build/AuthFailure.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sumeru.chatterjee/Projects/swift-sdk/.build/arm64-apple-macosx/debug/IterableSDK.build/AuthFailureReason.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sumeru.chatterjee/Projects/swift-sdk/.build/arm64-apple-macosx/debug/IterableSDK.build/APNSTypeChecker.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sumeru.chatterjee/Projects/swift-sdk/.build/arm64-apple-macosx/debug/IterableSDK.build/ActionRunner.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sumeru.chatterjee/Projects/swift-sdk/.build/arm64-apple-macosx/debug/IterableSDK.build/AppExtensionHelper.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sumeru.chatterjee/Projects/swift-sdk/.build/arm64-apple-macosx/debug/IterableSDK.build/Auth.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sumeru.chatterjee/Projects/swift-sdk/.build/arm64-apple-macosx/debug/IterableSDK.build/AuthManager.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sumeru.chatterjee/Projects/swift-sdk/.build/arm64-apple-macosx/debug/IterableSDK.build/ClassExtensions.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sumeru.chatterjee/Projects/swift-sdk/.build/arm64-apple-macosx/debug/IterableSDK.build/CoreDataUtil.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sumeru.chatterjee/Projects/swift-sdk/.build/arm64-apple-macosx/debug/IterableSDK.build/DataFieldsHelper.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sumeru.chatterjee/Projects/swift-sdk/.build/arm64-apple-macosx/debug/IterableSDK.build/DateProvider.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sumeru.chatterjee/Projects/swift-sdk/.build/arm64-apple-macosx/debug/IterableSDK.build/DeepLinkManager.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sumeru.chatterjee/Projects/swift-sdk/.build/arm64-apple-macosx/debug/IterableSDK.build/AbstractDiffCalculator.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sumeru.chatterjee/Projects/swift-sdk/.build/arm64-apple-macosx/debug/IterableSDK.build/Dwifft+UIKit.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sumeru.chatterjee/Projects/swift-sdk/.build/arm64-apple-macosx/debug/IterableSDK.build/Dwifft.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sumeru.chatterjee/Projects/swift-sdk/.build/arm64-apple-macosx/debug/IterableSDK.build/SectionedValues.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sumeru.chatterjee/Projects/swift-sdk/.build/arm64-apple-macosx/debug/IterableSDK.build/EmbeddedHelper.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sumeru.chatterjee/Projects/swift-sdk/.build/arm64-apple-macosx/debug/IterableSDK.build/EmbeddedMessagingProcessor.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sumeru.chatterjee/Projects/swift-sdk/.build/arm64-apple-macosx/debug/IterableSDK.build/EmbeddedMessagingSerialization.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sumeru.chatterjee/Projects/swift-sdk/.build/arm64-apple-macosx/debug/IterableSDK.build/EmbeddedSessionManager.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sumeru.chatterjee/Projects/swift-sdk/.build/arm64-apple-macosx/debug/IterableSDK.build/EmptyEmbeddedManager.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sumeru.chatterjee/Projects/swift-sdk/.build/arm64-apple-macosx/debug/IterableSDK.build/EmptyInAppManager.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sumeru.chatterjee/Projects/swift-sdk/.build/arm64-apple-macosx/debug/IterableSDK.build/HealthMonitor.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sumeru.chatterjee/Projects/swift-sdk/.build/arm64-apple-macosx/debug/IterableSDK.build/InboxImpressionTracker.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sumeru.chatterjee/Projects/swift-sdk/.build/arm64-apple-macosx/debug/IterableSDK.build/InboxMessageViewModel.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sumeru.chatterjee/Projects/swift-sdk/.build/arm64-apple-macosx/debug/IterableSDK.build/InboxSessionManager.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sumeru.chatterjee/Projects/swift-sdk/.build/arm64-apple-macosx/debug/IterableSDK.build/InboxState.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sumeru.chatterjee/Projects/swift-sdk/.build/arm64-apple-macosx/debug/IterableSDK.build/InboxViewControllerViewModel.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sumeru.chatterjee/Projects/swift-sdk/.build/arm64-apple-macosx/debug/IterableSDK.build/InboxViewControllerViewModelProtocol.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sumeru.chatterjee/Projects/swift-sdk/.build/arm64-apple-macosx/debug/IterableSDK.build/InboxViewControllerViewModelView.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sumeru.chatterjee/Projects/swift-sdk/.build/arm64-apple-macosx/debug/IterableSDK.build/InternalIterableAPI.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sumeru.chatterjee/Projects/swift-sdk/.build/arm64-apple-macosx/debug/IterableSDK.build/InternalIterableAppIntegration.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sumeru.chatterjee/Projects/swift-sdk/.build/arm64-apple-macosx/debug/IterableSDK.build/IterableAPICallRequest.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sumeru.chatterjee/Projects/swift-sdk/.build/arm64-apple-macosx/debug/IterableSDK.build/IterableAPICallTaskProcessor.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sumeru.chatterjee/Projects/swift-sdk/.build/arm64-apple-macosx/debug/IterableSDK.build/IterableAPIMobileFrameworkDetector.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sumeru.chatterjee/Projects/swift-sdk/.build/arm64-apple-macosx/debug/IterableSDK.build/IterableCoreDataPersistence.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sumeru.chatterjee/Projects/swift-sdk/.build/arm64-apple-macosx/debug/IterableSDK.build/IterableEmbeddedManager.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sumeru.chatterjee/Projects/swift-sdk/.build/arm64-apple-macosx/debug/IterableSDK.build/IterableHtmlMessageViewController.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sumeru.chatterjee/Projects/swift-sdk/.build/arm64-apple-macosx/debug/IterableSDK.build/IterableInboxCell+Layout.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sumeru.chatterjee/Projects/swift-sdk/.build/arm64-apple-macosx/debug/IterableSDK.build/IterableNotifications.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sumeru.chatterjee/Projects/swift-sdk/.build/arm64-apple-macosx/debug/IterableSDK.build/IterablePersistence.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sumeru.chatterjee/Projects/swift-sdk/.build/arm64-apple-macosx/debug/IterableSDK.build/IterableRequest.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sumeru.chatterjee/Projects/swift-sdk/.build/arm64-apple-macosx/debug/IterableSDK.build/IterableRequestUtil.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sumeru.chatterjee/Projects/swift-sdk/.build/arm64-apple-macosx/debug/IterableSDK.build/IterableTask.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sumeru.chatterjee/Projects/swift-sdk/.build/arm64-apple-macosx/debug/IterableSDK.build/IterableTaskError.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sumeru.chatterjee/Projects/swift-sdk/.build/arm64-apple-macosx/debug/IterableSDK.build/IterableTaskManagedObject.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sumeru.chatterjee/Projects/swift-sdk/.build/arm64-apple-macosx/debug/IterableSDK.build/IterableTaskProcessor.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sumeru.chatterjee/Projects/swift-sdk/.build/arm64-apple-macosx/debug/IterableSDK.build/IterableTaskResult.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sumeru.chatterjee/Projects/swift-sdk/.build/arm64-apple-macosx/debug/IterableSDK.build/IterableTaskRunner.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sumeru.chatterjee/Projects/swift-sdk/.build/arm64-apple-macosx/debug/IterableSDK.build/IterableTaskScheduler.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sumeru.chatterjee/Projects/swift-sdk/.build/arm64-apple-macosx/debug/IterableSDK.build/IterableUserDefaults.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sumeru.chatterjee/Projects/swift-sdk/.build/arm64-apple-macosx/debug/IterableSDK.build/MiscEmbeddedClasses.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sumeru.chatterjee/Projects/swift-sdk/.build/arm64-apple-macosx/debug/IterableSDK.build/MiscInboxClasses.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sumeru.chatterjee/Projects/swift-sdk/.build/arm64-apple-macosx/debug/IterableSDK.build/Models.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sumeru.chatterjee/Projects/swift-sdk/.build/arm64-apple-macosx/debug/IterableSDK.build/NetworkConnectivityChecker.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sumeru.chatterjee/Projects/swift-sdk/.build/arm64-apple-macosx/debug/IterableSDK.build/NetworkConnectivityManager.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sumeru.chatterjee/Projects/swift-sdk/.build/arm64-apple-macosx/debug/IterableSDK.build/NetworkHelper.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sumeru.chatterjee/Projects/swift-sdk/.build/arm64-apple-macosx/debug/IterableSDK.build/NetworkMonitor.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sumeru.chatterjee/Projects/swift-sdk/.build/arm64-apple-macosx/debug/IterableSDK.build/NetworkSession.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sumeru.chatterjee/Projects/swift-sdk/.build/arm64-apple-macosx/debug/IterableSDK.build/Pending.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sumeru.chatterjee/Projects/swift-sdk/.build/arm64-apple-macosx/debug/IterableSDK.build/RequestHandlerProtocol.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sumeru.chatterjee/Projects/swift-sdk/.build/arm64-apple-macosx/debug/IterableSDK.build/RequestProcessorUtil.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sumeru.chatterjee/Projects/swift-sdk/.build/arm64-apple-macosx/debug/IterableSDK.build/RequestSender.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sumeru.chatterjee/Projects/swift-sdk/.build/arm64-apple-macosx/debug/IterableSDK.build/DependencyContainer.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sumeru.chatterjee/Projects/swift-sdk/.build/arm64-apple-macosx/debug/IterableSDK.build/DependencyContainerProtocol.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sumeru.chatterjee/Projects/swift-sdk/.build/arm64-apple-macosx/debug/IterableSDK.build/IterableLogUtil.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sumeru.chatterjee/Projects/swift-sdk/.build/arm64-apple-macosx/debug/IterableSDK.build/IterableUtil.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sumeru.chatterjee/Projects/swift-sdk/.build/arm64-apple-macosx/debug/IterableSDK.build/IterableKeychain.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sumeru.chatterjee/Projects/swift-sdk/.build/arm64-apple-macosx/debug/IterableSDK.build/KeychainWrapper.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sumeru.chatterjee/Projects/swift-sdk/.build/arm64-apple-macosx/debug/IterableSDK.build/LocalStorage.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sumeru.chatterjee/Projects/swift-sdk/.build/arm64-apple-macosx/debug/IterableSDK.build/LocalStorageProtocol.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sumeru.chatterjee/Projects/swift-sdk/.build/arm64-apple-macosx/debug/IterableSDK.build/NotificationHelper.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sumeru.chatterjee/Projects/swift-sdk/.build/arm64-apple-macosx/debug/IterableSDK.build/OrderedDictionary.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sumeru.chatterjee/Projects/swift-sdk/.build/arm64-apple-macosx/debug/IterableSDK.build/PersistenceHelper.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sumeru.chatterjee/Projects/swift-sdk/.build/arm64-apple-macosx/debug/IterableSDK.build/ResourceHelper.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sumeru.chatterjee/Projects/swift-sdk/.build/arm64-apple-macosx/debug/IterableSDK.build/UIColor+Extension.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sumeru.chatterjee/Projects/swift-sdk/.build/arm64-apple-macosx/debug/IterableSDK.build/WebViewProtocol.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sumeru.chatterjee/Projects/swift-sdk/.build/arm64-apple-macosx/debug/IterableSDK.build/ApiClient.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sumeru.chatterjee/Projects/swift-sdk/.build/arm64-apple-macosx/debug/IterableSDK.build/ApiClientProtocol.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sumeru.chatterjee/Projects/swift-sdk/.build/arm64-apple-macosx/debug/IterableSDK.build/OfflineRequestProcessor.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sumeru.chatterjee/Projects/swift-sdk/.build/arm64-apple-macosx/debug/IterableSDK.build/OnlineRequestProcessor.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sumeru.chatterjee/Projects/swift-sdk/.build/arm64-apple-macosx/debug/IterableSDK.build/RequestCreator.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sumeru.chatterjee/Projects/swift-sdk/.build/arm64-apple-macosx/debug/IterableSDK.build/RequestHandler.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sumeru.chatterjee/Projects/swift-sdk/.build/arm64-apple-macosx/debug/IterableSDK.build/RequestProcessorProtocol.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sumeru.chatterjee/Projects/swift-sdk/.build/arm64-apple-macosx/debug/IterableSDK.build/InAppCalculations.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sumeru.chatterjee/Projects/swift-sdk/.build/arm64-apple-macosx/debug/IterableSDK.build/InAppContentParser.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sumeru.chatterjee/Projects/swift-sdk/.build/arm64-apple-macosx/debug/IterableSDK.build/InAppDisplayer.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sumeru.chatterjee/Projects/swift-sdk/.build/arm64-apple-macosx/debug/IterableSDK.build/InAppHelper.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sumeru.chatterjee/Projects/swift-sdk/.build/arm64-apple-macosx/debug/IterableSDK.build/InAppInternal.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sumeru.chatterjee/Projects/swift-sdk/.build/arm64-apple-macosx/debug/IterableSDK.build/InAppManager+Functions.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sumeru.chatterjee/Projects/swift-sdk/.build/arm64-apple-macosx/debug/IterableSDK.build/InAppManager.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sumeru.chatterjee/Projects/swift-sdk/.build/arm64-apple-macosx/debug/IterableSDK.build/InAppMessageParser.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sumeru.chatterjee/Projects/swift-sdk/.build/arm64-apple-macosx/debug/IterableSDK.build/InAppPersistence.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sumeru.chatterjee/Projects/swift-sdk/.build/arm64-apple-macosx/debug/IterableSDK.build/InAppPresenter.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sumeru.chatterjee/Projects/swift-sdk/.build/arm64-apple-macosx/debug/IterableSDK.build/IterableAPI.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sumeru.chatterjee/Projects/swift-sdk/.build/arm64-apple-macosx/debug/IterableSDK.build/IterableAppIntegration.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sumeru.chatterjee/Projects/swift-sdk/.build/arm64-apple-macosx/debug/IterableSDK.build/IterableConfig.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sumeru.chatterjee/Projects/swift-sdk/.build/arm64-apple-macosx/debug/IterableSDK.build/IterableLogging.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sumeru.chatterjee/Projects/swift-sdk/.build/arm64-apple-macosx/debug/IterableSDK.build/IterableMessaging.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sumeru.chatterjee/Projects/swift-sdk/.build/arm64-apple-macosx/debug/IterableSDK.build/InboxViewRepresentable.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sumeru.chatterjee/Projects/swift-sdk/.build/arm64-apple-macosx/debug/IterableSDK.build/IterableInboxView.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sumeru.chatterjee/Projects/swift-sdk/.build/arm64-apple-macosx/debug/IterableSDK.build/IterableEmbeddedView.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sumeru.chatterjee/Projects/swift-sdk/.build/arm64-apple-macosx/debug/IterableSDK.build/IterableInboxCell.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sumeru.chatterjee/Projects/swift-sdk/.build/arm64-apple-macosx/debug/IterableSDK.build/IterableInboxNavigationViewController.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sumeru.chatterjee/Projects/swift-sdk/.build/arm64-apple-macosx/debug/IterableSDK.build/IterableInboxViewController.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sumeru.chatterjee/Projects/swift-sdk/.build/arm64-apple-macosx/debug/IterableSDK.build/resource_bundle_accessor.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sumeru.chatterjee/Projects/swift-sdk/.build/arm64-apple-macosx/debug/Modules/IterableSDK.swiftmodule"
+        }
+      ],
+      "prepareForIndexing" : false,
+      "sources" : [
+        "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/Core/Constants.swift",
+        "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/Core/Models/CommerceItem.swift",
+        "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/Core/Models/IterableAction.swift",
+        "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/Core/Models/IterableActionContext.swift",
+        "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/Core/Models/IterableAttributionInfo.swift",
+        "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/Core/Models/IterableEmbeddedMessage.swift",
+        "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/Core/Models/IterableInAppMessage.swift",
+        "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/Core/Models/IterablePushNotificationMetadata.swift",
+        "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/Core/Models/RetryPolicy.swift",
+        "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/Core/Protocols/IterableAuthManagerProtocol.swift",
+        "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/Core/Protocols/IterableEmbeddedManagerProtocol.swift",
+        "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/Core/Protocols/IterableEmbeddedUpdateDelegate.swift",
+        "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/Core/Protocols/IterableInAppManagerProtocol.swift",
+        "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/Core/Protocols/IterableInboxViewControllerViewDelegate.swift",
+        "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/Core/Utilities/AuthFailure.swift",
+        "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/Core/Utilities/AuthFailureReason.swift",
+        "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/Internal/APNSTypeChecker.swift",
+        "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/Internal/ActionRunner.swift",
+        "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/Internal/AppExtensionHelper.swift",
+        "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/Internal/Auth.swift",
+        "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/Internal/AuthManager.swift",
+        "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/Internal/ClassExtensions.swift",
+        "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/Internal/CoreDataUtil.swift",
+        "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/Internal/DataFieldsHelper.swift",
+        "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/Internal/DateProvider.swift",
+        "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/Internal/DeepLinkManager.swift",
+        "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/Internal/Dwifft/AbstractDiffCalculator.swift",
+        "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/Internal/Dwifft/Dwifft+UIKit.swift",
+        "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/Internal/Dwifft/Dwifft.swift",
+        "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/Internal/Dwifft/SectionedValues.swift",
+        "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/Internal/EmbeddedHelper.swift",
+        "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/Internal/EmbeddedMessagingProcessor.swift",
+        "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/Internal/EmbeddedMessagingSerialization.swift",
+        "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/Internal/EmbeddedSessionManager.swift",
+        "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/Internal/EmptyEmbeddedManager.swift",
+        "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/Internal/EmptyInAppManager.swift",
+        "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/Internal/HealthMonitor.swift",
+        "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/Internal/InboxImpressionTracker.swift",
+        "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/Internal/InboxMessageViewModel.swift",
+        "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/Internal/InboxSessionManager.swift",
+        "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/Internal/InboxState.swift",
+        "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/Internal/InboxViewControllerViewModel.swift",
+        "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/Internal/InboxViewControllerViewModelProtocol.swift",
+        "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/Internal/InboxViewControllerViewModelView.swift",
+        "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/Internal/InternalIterableAPI.swift",
+        "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/Internal/InternalIterableAppIntegration.swift",
+        "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/Internal/IterableAPICallRequest.swift",
+        "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/Internal/IterableAPICallTaskProcessor.swift",
+        "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/Internal/IterableAPIMobileFrameworkDetector.swift",
+        "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/Internal/IterableCoreDataPersistence.swift",
+        "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/Internal/IterableEmbeddedManager.swift",
+        "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/Internal/IterableHtmlMessageViewController.swift",
+        "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/Internal/IterableInboxCell+Layout.swift",
+        "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/Internal/IterableNotifications.swift",
+        "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/Internal/IterablePersistence.swift",
+        "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/Internal/IterableRequest.swift",
+        "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/Internal/IterableRequestUtil.swift",
+        "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/Internal/IterableTask.swift",
+        "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/Internal/IterableTaskError.swift",
+        "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/Internal/IterableTaskManagedObject.swift",
+        "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/Internal/IterableTaskProcessor.swift",
+        "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/Internal/IterableTaskResult.swift",
+        "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/Internal/IterableTaskRunner.swift",
+        "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/Internal/IterableTaskScheduler.swift",
+        "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/Internal/IterableUserDefaults.swift",
+        "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/Internal/MiscEmbeddedClasses.swift",
+        "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/Internal/MiscInboxClasses.swift",
+        "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/Internal/Models.swift",
+        "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/Internal/Network/NetworkConnectivityChecker.swift",
+        "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/Internal/Network/NetworkConnectivityManager.swift",
+        "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/Internal/Network/NetworkHelper.swift",
+        "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/Internal/Network/NetworkMonitor.swift",
+        "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/Internal/Network/NetworkSession.swift",
+        "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/Internal/Pending.swift",
+        "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/Internal/RequestHandlerProtocol.swift",
+        "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/Internal/RequestProcessorUtil.swift",
+        "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/Internal/RequestSender.swift",
+        "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/Internal/Utilities/DependencyContainer.swift",
+        "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/Internal/Utilities/DependencyContainerProtocol.swift",
+        "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/Internal/Utilities/IterableLogUtil.swift",
+        "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/Internal/Utilities/IterableUtil.swift",
+        "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/Internal/Utilities/Keychain/IterableKeychain.swift",
+        "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/Internal/Utilities/Keychain/KeychainWrapper.swift",
+        "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/Internal/Utilities/LocalStorage.swift",
+        "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/Internal/Utilities/LocalStorageProtocol.swift",
+        "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/Internal/Utilities/NotificationHelper.swift",
+        "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/Internal/Utilities/OrderedDictionary.swift",
+        "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/Internal/Utilities/PersistenceHelper.swift",
+        "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/Internal/Utilities/ResourceHelper.swift",
+        "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/Internal/Utilities/UIColor+Extension.swift",
+        "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/Internal/Utilities/WebViewProtocol.swift",
+        "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/Internal/api-client/ApiClient.swift",
+        "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/Internal/api-client/ApiClientProtocol.swift",
+        "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/Internal/api-client/Request/OfflineRequestProcessor.swift",
+        "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/Internal/api-client/Request/OnlineRequestProcessor.swift",
+        "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/Internal/api-client/Request/RequestCreator.swift",
+        "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/Internal/api-client/Request/RequestHandler.swift",
+        "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/Internal/api-client/Request/RequestProcessorProtocol.swift",
+        "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/Internal/in-app/InAppCalculations.swift",
+        "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/Internal/in-app/InAppContentParser.swift",
+        "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/Internal/in-app/InAppDisplayer.swift",
+        "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/Internal/in-app/InAppHelper.swift",
+        "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/Internal/in-app/InAppInternal.swift",
+        "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/Internal/in-app/InAppManager+Functions.swift",
+        "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/Internal/in-app/InAppManager.swift",
+        "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/Internal/in-app/InAppMessageParser.swift",
+        "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/Internal/in-app/InAppPersistence.swift",
+        "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/Internal/in-app/InAppPresenter.swift",
+        "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/SDK/IterableAPI.swift",
+        "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/SDK/IterableAppIntegration.swift",
+        "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/SDK/IterableConfig.swift",
+        "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/SDK/IterableLogging.swift",
+        "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/SDK/IterableMessaging.swift",
+        "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/ui-components/swiftui/InboxViewRepresentable.swift",
+        "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/ui-components/swiftui/IterableInboxView.swift",
+        "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/ui-components/uikit/IterableEmbeddedView.swift",
+        "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/ui-components/uikit/IterableInboxCell.swift",
+        "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/ui-components/uikit/IterableInboxNavigationViewController.swift",
+        "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/ui-components/uikit/IterableInboxViewController.swift",
+        "/Users/sumeru.chatterjee/Projects/swift-sdk/.build/arm64-apple-macosx/debug/IterableSDK.build/DerivedSources/resource_bundle_accessor.swift"
+      ],
+      "tempsPath" : "/Users/sumeru.chatterjee/Projects/swift-sdk/.build/arm64-apple-macosx/debug/IterableSDK.build",
+      "wholeModuleOptimization" : false
+    }
+  },
+  "swiftFrontendCommands" : {
+
+  },
+  "swiftTargetScanArgs" : {
+    "IterableAppExtensions" : [
+      "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/swiftc",
+      "-module-name",
+      "IterableAppExtensions",
+      "-incremental",
+      "-c",
+      "/Users/sumeru.chatterjee/Projects/swift-sdk/notification-extension/ITBNotificationServiceExtension.swift",
+      "/Users/sumeru.chatterjee/Projects/swift-sdk/notification-extension/NotificationContentParser.swift",
+      "/Users/sumeru.chatterjee/Projects/swift-sdk/notification-extension/NotificationExtensionConstants.swift",
+      "/Users/sumeru.chatterjee/Projects/swift-sdk/notification-extension/TestFile.swift",
+      "-I",
+      "/Users/sumeru.chatterjee/Projects/swift-sdk/.build/arm64-apple-macosx/debug/Modules",
+      "-target",
+      "arm64-apple-macosx10.13",
+      "-enable-batch-mode",
+      "-index-store-path",
+      "/Users/sumeru.chatterjee/Projects/swift-sdk/.build/arm64-apple-macosx/debug/index/store",
+      "-Onone",
+      "-enable-testing",
+      "-j12",
+      "-DSWIFT_PACKAGE",
+      "-DDEBUG",
+      "-module-cache-path",
+      "/Users/sumeru.chatterjee/Projects/swift-sdk/.build/arm64-apple-macosx/debug/ModuleCache",
+      "-parseable-output",
+      "-parse-as-library",
+      "-emit-objc-header",
+      "-emit-objc-header-path",
+      "/Users/sumeru.chatterjee/Projects/swift-sdk/.build/arm64-apple-macosx/debug/IterableAppExtensions.build/IterableAppExtensions-Swift.h",
+      "-color-diagnostics",
+      "-swift-version",
+      "5",
+      "-sdk",
+      "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX15.2.sdk",
+      "-F",
+      "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/Library/Frameworks",
+      "-I",
+      "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/usr/lib",
+      "-L",
+      "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/usr/lib",
+      "-g",
+      "-Xcc",
+      "-isysroot",
+      "-Xcc",
+      "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX15.2.sdk",
+      "-Xcc",
+      "-F",
+      "-Xcc",
+      "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/Library/Frameworks",
+      "-Xcc",
+      "-fPIC",
+      "-Xcc",
+      "-g",
+      "-driver-use-frontend-path",
+      "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/swiftc"
+    ],
+    "IterableSDK" : [
+      "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/swiftc",
+      "-module-name",
+      "IterableSDK",
+      "-incremental",
+      "-c",
+      "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/Core/Constants.swift",
+      "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/Core/Models/CommerceItem.swift",
+      "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/Core/Models/IterableAction.swift",
+      "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/Core/Models/IterableActionContext.swift",
+      "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/Core/Models/IterableAttributionInfo.swift",
+      "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/Core/Models/IterableEmbeddedMessage.swift",
+      "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/Core/Models/IterableInAppMessage.swift",
+      "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/Core/Models/IterablePushNotificationMetadata.swift",
+      "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/Core/Models/RetryPolicy.swift",
+      "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/Core/Protocols/IterableAuthManagerProtocol.swift",
+      "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/Core/Protocols/IterableEmbeddedManagerProtocol.swift",
+      "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/Core/Protocols/IterableEmbeddedUpdateDelegate.swift",
+      "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/Core/Protocols/IterableInAppManagerProtocol.swift",
+      "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/Core/Protocols/IterableInboxViewControllerViewDelegate.swift",
+      "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/Core/Utilities/AuthFailure.swift",
+      "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/Core/Utilities/AuthFailureReason.swift",
+      "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/Internal/APNSTypeChecker.swift",
+      "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/Internal/ActionRunner.swift",
+      "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/Internal/AppExtensionHelper.swift",
+      "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/Internal/Auth.swift",
+      "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/Internal/AuthManager.swift",
+      "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/Internal/ClassExtensions.swift",
+      "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/Internal/CoreDataUtil.swift",
+      "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/Internal/DataFieldsHelper.swift",
+      "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/Internal/DateProvider.swift",
+      "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/Internal/DeepLinkManager.swift",
+      "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/Internal/Dwifft/AbstractDiffCalculator.swift",
+      "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/Internal/Dwifft/Dwifft+UIKit.swift",
+      "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/Internal/Dwifft/Dwifft.swift",
+      "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/Internal/Dwifft/SectionedValues.swift",
+      "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/Internal/EmbeddedHelper.swift",
+      "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/Internal/EmbeddedMessagingProcessor.swift",
+      "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/Internal/EmbeddedMessagingSerialization.swift",
+      "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/Internal/EmbeddedSessionManager.swift",
+      "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/Internal/EmptyEmbeddedManager.swift",
+      "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/Internal/EmptyInAppManager.swift",
+      "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/Internal/HealthMonitor.swift",
+      "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/Internal/InboxImpressionTracker.swift",
+      "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/Internal/InboxMessageViewModel.swift",
+      "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/Internal/InboxSessionManager.swift",
+      "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/Internal/InboxState.swift",
+      "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/Internal/InboxViewControllerViewModel.swift",
+      "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/Internal/InboxViewControllerViewModelProtocol.swift",
+      "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/Internal/InboxViewControllerViewModelView.swift",
+      "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/Internal/InternalIterableAPI.swift",
+      "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/Internal/InternalIterableAppIntegration.swift",
+      "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/Internal/IterableAPICallRequest.swift",
+      "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/Internal/IterableAPICallTaskProcessor.swift",
+      "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/Internal/IterableAPIMobileFrameworkDetector.swift",
+      "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/Internal/IterableCoreDataPersistence.swift",
+      "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/Internal/IterableEmbeddedManager.swift",
+      "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/Internal/IterableHtmlMessageViewController.swift",
+      "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/Internal/IterableInboxCell+Layout.swift",
+      "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/Internal/IterableNotifications.swift",
+      "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/Internal/IterablePersistence.swift",
+      "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/Internal/IterableRequest.swift",
+      "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/Internal/IterableRequestUtil.swift",
+      "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/Internal/IterableTask.swift",
+      "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/Internal/IterableTaskError.swift",
+      "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/Internal/IterableTaskManagedObject.swift",
+      "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/Internal/IterableTaskProcessor.swift",
+      "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/Internal/IterableTaskResult.swift",
+      "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/Internal/IterableTaskRunner.swift",
+      "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/Internal/IterableTaskScheduler.swift",
+      "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/Internal/IterableUserDefaults.swift",
+      "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/Internal/MiscEmbeddedClasses.swift",
+      "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/Internal/MiscInboxClasses.swift",
+      "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/Internal/Models.swift",
+      "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/Internal/Network/NetworkConnectivityChecker.swift",
+      "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/Internal/Network/NetworkConnectivityManager.swift",
+      "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/Internal/Network/NetworkHelper.swift",
+      "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/Internal/Network/NetworkMonitor.swift",
+      "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/Internal/Network/NetworkSession.swift",
+      "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/Internal/Pending.swift",
+      "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/Internal/RequestHandlerProtocol.swift",
+      "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/Internal/RequestProcessorUtil.swift",
+      "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/Internal/RequestSender.swift",
+      "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/Internal/Utilities/DependencyContainer.swift",
+      "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/Internal/Utilities/DependencyContainerProtocol.swift",
+      "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/Internal/Utilities/IterableLogUtil.swift",
+      "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/Internal/Utilities/IterableUtil.swift",
+      "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/Internal/Utilities/Keychain/IterableKeychain.swift",
+      "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/Internal/Utilities/Keychain/KeychainWrapper.swift",
+      "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/Internal/Utilities/LocalStorage.swift",
+      "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/Internal/Utilities/LocalStorageProtocol.swift",
+      "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/Internal/Utilities/NotificationHelper.swift",
+      "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/Internal/Utilities/OrderedDictionary.swift",
+      "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/Internal/Utilities/PersistenceHelper.swift",
+      "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/Internal/Utilities/ResourceHelper.swift",
+      "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/Internal/Utilities/UIColor+Extension.swift",
+      "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/Internal/Utilities/WebViewProtocol.swift",
+      "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/Internal/api-client/ApiClient.swift",
+      "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/Internal/api-client/ApiClientProtocol.swift",
+      "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/Internal/api-client/Request/OfflineRequestProcessor.swift",
+      "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/Internal/api-client/Request/OnlineRequestProcessor.swift",
+      "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/Internal/api-client/Request/RequestCreator.swift",
+      "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/Internal/api-client/Request/RequestHandler.swift",
+      "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/Internal/api-client/Request/RequestProcessorProtocol.swift",
+      "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/Internal/in-app/InAppCalculations.swift",
+      "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/Internal/in-app/InAppContentParser.swift",
+      "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/Internal/in-app/InAppDisplayer.swift",
+      "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/Internal/in-app/InAppHelper.swift",
+      "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/Internal/in-app/InAppInternal.swift",
+      "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/Internal/in-app/InAppManager+Functions.swift",
+      "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/Internal/in-app/InAppManager.swift",
+      "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/Internal/in-app/InAppMessageParser.swift",
+      "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/Internal/in-app/InAppPersistence.swift",
+      "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/Internal/in-app/InAppPresenter.swift",
+      "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/SDK/IterableAPI.swift",
+      "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/SDK/IterableAppIntegration.swift",
+      "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/SDK/IterableConfig.swift",
+      "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/SDK/IterableLogging.swift",
+      "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/SDK/IterableMessaging.swift",
+      "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/ui-components/swiftui/InboxViewRepresentable.swift",
+      "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/ui-components/swiftui/IterableInboxView.swift",
+      "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/ui-components/uikit/IterableEmbeddedView.swift",
+      "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/ui-components/uikit/IterableInboxCell.swift",
+      "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/ui-components/uikit/IterableInboxNavigationViewController.swift",
+      "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/ui-components/uikit/IterableInboxViewController.swift",
+      "/Users/sumeru.chatterjee/Projects/swift-sdk/.build/arm64-apple-macosx/debug/IterableSDK.build/DerivedSources/resource_bundle_accessor.swift",
+      "-I",
+      "/Users/sumeru.chatterjee/Projects/swift-sdk/.build/arm64-apple-macosx/debug/Modules",
+      "-target",
+      "arm64-apple-macosx10.13",
+      "-enable-batch-mode",
+      "-index-store-path",
+      "/Users/sumeru.chatterjee/Projects/swift-sdk/.build/arm64-apple-macosx/debug/index/store",
+      "-Onone",
+      "-enable-testing",
+      "-j12",
+      "-DSWIFT_PACKAGE",
+      "-DDEBUG",
+      "-module-cache-path",
+      "/Users/sumeru.chatterjee/Projects/swift-sdk/.build/arm64-apple-macosx/debug/ModuleCache",
+      "-parseable-output",
+      "-parse-as-library",
+      "-emit-objc-header",
+      "-emit-objc-header-path",
+      "/Users/sumeru.chatterjee/Projects/swift-sdk/.build/arm64-apple-macosx/debug/IterableSDK.build/IterableSDK-Swift.h",
+      "-color-diagnostics",
+      "-swift-version",
+      "5",
+      "-sdk",
+      "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX15.2.sdk",
+      "-F",
+      "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/Library/Frameworks",
+      "-I",
+      "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/usr/lib",
+      "-L",
+      "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/usr/lib",
+      "-g",
+      "-Xcc",
+      "-isysroot",
+      "-Xcc",
+      "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX15.2.sdk",
+      "-Xcc",
+      "-F",
+      "-Xcc",
+      "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/Library/Frameworks",
+      "-Xcc",
+      "-fPIC",
+      "-Xcc",
+      "-g",
+      "-driver-use-frontend-path",
+      "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/swiftc"
+    ]
+  },
+  "targetDependencyMap" : {
+    "IterableAppExtensions" : [
+
+    ],
+    "IterableSDK" : [
+
+    ]
+  },
+  "testDiscoveryCommands" : {
+
+  },
+  "testEntryPointCommands" : {
+
+  },
+  "writeCommands" : {
+    "/Users/sumeru.chatterjee/Projects/swift-sdk/.build/arm64-apple-macosx/debug/IterableAppExtensions.build/sources" : {
+      "alwaysOutOfDate" : false,
+      "inputs" : [
+        {
+          "kind" : "virtual",
+          "name" : "<sources-file-list>"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sumeru.chatterjee/Projects/swift-sdk/notification-extension/ITBNotificationServiceExtension.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sumeru.chatterjee/Projects/swift-sdk/notification-extension/NotificationContentParser.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sumeru.chatterjee/Projects/swift-sdk/notification-extension/NotificationExtensionConstants.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sumeru.chatterjee/Projects/swift-sdk/notification-extension/TestFile.swift"
+        }
+      ],
+      "outputFilePath" : "/Users/sumeru.chatterjee/Projects/swift-sdk/.build/arm64-apple-macosx/debug/IterableAppExtensions.build/sources"
+    },
+    "/Users/sumeru.chatterjee/Projects/swift-sdk/.build/arm64-apple-macosx/debug/IterableSDK.build/sources" : {
+      "alwaysOutOfDate" : false,
+      "inputs" : [
+        {
+          "kind" : "virtual",
+          "name" : "<sources-file-list>"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/Core/Constants.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/Core/Models/CommerceItem.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/Core/Models/IterableAction.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/Core/Models/IterableActionContext.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/Core/Models/IterableAttributionInfo.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/Core/Models/IterableEmbeddedMessage.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/Core/Models/IterableInAppMessage.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/Core/Models/IterablePushNotificationMetadata.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/Core/Models/RetryPolicy.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/Core/Protocols/IterableAuthManagerProtocol.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/Core/Protocols/IterableEmbeddedManagerProtocol.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/Core/Protocols/IterableEmbeddedUpdateDelegate.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/Core/Protocols/IterableInAppManagerProtocol.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/Core/Protocols/IterableInboxViewControllerViewDelegate.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/Core/Utilities/AuthFailure.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/Core/Utilities/AuthFailureReason.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/Internal/APNSTypeChecker.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/Internal/ActionRunner.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/Internal/AppExtensionHelper.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/Internal/Auth.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/Internal/AuthManager.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/Internal/ClassExtensions.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/Internal/CoreDataUtil.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/Internal/DataFieldsHelper.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/Internal/DateProvider.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/Internal/DeepLinkManager.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/Internal/Dwifft/AbstractDiffCalculator.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/Internal/Dwifft/Dwifft+UIKit.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/Internal/Dwifft/Dwifft.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/Internal/Dwifft/SectionedValues.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/Internal/EmbeddedHelper.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/Internal/EmbeddedMessagingProcessor.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/Internal/EmbeddedMessagingSerialization.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/Internal/EmbeddedSessionManager.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/Internal/EmptyEmbeddedManager.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/Internal/EmptyInAppManager.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/Internal/HealthMonitor.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/Internal/InboxImpressionTracker.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/Internal/InboxMessageViewModel.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/Internal/InboxSessionManager.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/Internal/InboxState.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/Internal/InboxViewControllerViewModel.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/Internal/InboxViewControllerViewModelProtocol.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/Internal/InboxViewControllerViewModelView.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/Internal/InternalIterableAPI.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/Internal/InternalIterableAppIntegration.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/Internal/IterableAPICallRequest.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/Internal/IterableAPICallTaskProcessor.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/Internal/IterableAPIMobileFrameworkDetector.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/Internal/IterableCoreDataPersistence.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/Internal/IterableEmbeddedManager.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/Internal/IterableHtmlMessageViewController.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/Internal/IterableInboxCell+Layout.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/Internal/IterableNotifications.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/Internal/IterablePersistence.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/Internal/IterableRequest.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/Internal/IterableRequestUtil.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/Internal/IterableTask.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/Internal/IterableTaskError.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/Internal/IterableTaskManagedObject.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/Internal/IterableTaskProcessor.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/Internal/IterableTaskResult.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/Internal/IterableTaskRunner.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/Internal/IterableTaskScheduler.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/Internal/IterableUserDefaults.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/Internal/MiscEmbeddedClasses.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/Internal/MiscInboxClasses.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/Internal/Models.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/Internal/Network/NetworkConnectivityChecker.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/Internal/Network/NetworkConnectivityManager.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/Internal/Network/NetworkHelper.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/Internal/Network/NetworkMonitor.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/Internal/Network/NetworkSession.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/Internal/Pending.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/Internal/RequestHandlerProtocol.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/Internal/RequestProcessorUtil.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/Internal/RequestSender.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/Internal/Utilities/DependencyContainer.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/Internal/Utilities/DependencyContainerProtocol.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/Internal/Utilities/IterableLogUtil.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/Internal/Utilities/IterableUtil.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/Internal/Utilities/Keychain/IterableKeychain.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/Internal/Utilities/Keychain/KeychainWrapper.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/Internal/Utilities/LocalStorage.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/Internal/Utilities/LocalStorageProtocol.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/Internal/Utilities/NotificationHelper.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/Internal/Utilities/OrderedDictionary.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/Internal/Utilities/PersistenceHelper.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/Internal/Utilities/ResourceHelper.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/Internal/Utilities/UIColor+Extension.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/Internal/Utilities/WebViewProtocol.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/Internal/api-client/ApiClient.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/Internal/api-client/ApiClientProtocol.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/Internal/api-client/Request/OfflineRequestProcessor.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/Internal/api-client/Request/OnlineRequestProcessor.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/Internal/api-client/Request/RequestCreator.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/Internal/api-client/Request/RequestHandler.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/Internal/api-client/Request/RequestProcessorProtocol.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/Internal/in-app/InAppCalculations.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/Internal/in-app/InAppContentParser.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/Internal/in-app/InAppDisplayer.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/Internal/in-app/InAppHelper.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/Internal/in-app/InAppInternal.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/Internal/in-app/InAppManager+Functions.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/Internal/in-app/InAppManager.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/Internal/in-app/InAppMessageParser.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/Internal/in-app/InAppPersistence.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/Internal/in-app/InAppPresenter.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/SDK/IterableAPI.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/SDK/IterableAppIntegration.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/SDK/IterableConfig.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/SDK/IterableLogging.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/SDK/IterableMessaging.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/ui-components/swiftui/InboxViewRepresentable.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/ui-components/swiftui/IterableInboxView.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/ui-components/uikit/IterableEmbeddedView.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/ui-components/uikit/IterableInboxCell.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/ui-components/uikit/IterableInboxNavigationViewController.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sumeru.chatterjee/Projects/swift-sdk/swift-sdk/ui-components/uikit/IterableInboxViewController.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sumeru.chatterjee/Projects/swift-sdk/.build/arm64-apple-macosx/debug/IterableSDK.build/DerivedSources/resource_bundle_accessor.swift"
+        }
+      ],
+      "outputFilePath" : "/Users/sumeru.chatterjee/Projects/swift-sdk/.build/arm64-apple-macosx/debug/IterableSDK.build/sources"
+    },
+    "/Users/sumeru.chatterjee/Projects/swift-sdk/.build/arm64-apple-macosx/debug/swift-version--58304C5D6DBC2206.txt" : {
+      "alwaysOutOfDate" : true,
+      "inputs" : [
+        {
+          "kind" : "virtual",
+          "name" : "<swift-get-version>"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/swiftc"
+        }
+      ],
+      "outputFilePath" : "/Users/sumeru.chatterjee/Projects/swift-sdk/.build/arm64-apple-macosx/debug/swift-version--58304C5D6DBC2206.txt"
+    }
+  }
+}

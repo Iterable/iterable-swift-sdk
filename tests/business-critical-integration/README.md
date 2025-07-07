@@ -27,16 +27,38 @@ Before you start, make sure you have:
 1. Go to [Iterable.com](https://iterable.com) and log into your account
 2. If you don't have an account, sign up for a free trial
 
-### 1.2 Find Your API Key
+### 1.2 Understanding API Key Types
+
+**IMPORTANT:** You need **BOTH** types of API keys for complete integration testing:
+
+#### 🔑 Server-side Key (for Backend Operations)
+![Server-side API Key](documentation/SERVER_SIDE_KEY_SCREENSHOT.png)
+
+**Use for:** Creating test users, managing data, sending campaigns
+- Allows "Read and write Iterable data from a server-side application"
+- **Required:** This setup script uses it to create your test user automatically
+
+#### 📱 Mobile Key (for SDK Testing)
+![Mobile API Key](documentation/MOBILE_KEY_SCREENSHOT.png)
+
+**Use for:** Actual Swift SDK integration testing
+- Allows "Update users, track events and trigger messages from Iterable's mobile SDKs"
+- **Required:** Your iOS app uses this for all SDK operations
+
+### 1.3 Get Your API Keys
 
 1. In the Iterable dashboard, click on **Settings** (gear icon) in the top right
 2. Select **API Keys** from the left sidebar
-3. Look for your **Mobile API Key** 
-4. Copy this key - you'll need it later
+3. Click **"Create New API Key"** 
+4. **Create TWO keys:**
+   - One with **"Server-side"** type (for user management)
+   - One with **"Mobile"** type (for SDK testing)
+5. Name them clearly like "Integration Tests - Server" and "Integration Tests - Mobile"
+6. Copy both keys - you'll need them in the next step
 
-> **📝 Note:** The API key looks like this: `sk_1a2b3c4d5e6f7g8h9i0j`
+> **📝 Note:** Both API keys look like this: `sk_1a2b3c4d5e6f7g8h9i0j`
 
-### 1.3 Get Your Project ID (Optional)
+### 1.4 Get Your Project ID (Optional)
 
 1. Still in Settings, click on **Project Settings**
 2. Your Project ID is shown at the top
@@ -74,11 +96,16 @@ The script will guide you through:
 
 ### 2.4 Enter Your Information
 
-When prompted, provide:
+The script will ask for three things **IN THIS ORDER**:
 
-1. **Iterable API Key**: Paste the key you copied in Step 1.2
-2. **Test Email**: Enter an email address for testing (like `test@yourcompany.com`)
-3. **Project ID**: Enter your Project ID from Step 1.3 (or leave blank)
+1. **📋 Project ID**: Enter your Iterable Project ID from Step 1.4
+2. **🔑 Server-side API Key**: Paste your server-side key for user management  
+3. **📱 Mobile API Key**: Paste your mobile key for SDK testing
+
+The script will then automatically:
+- ✅ Create a test user (`integration-test-user@test.com`) in your project
+- ✅ Set up your local testing environment
+- ✅ Configure everything needed for testing
 
 ## 🚀 Step 3: Run Your First Test
 

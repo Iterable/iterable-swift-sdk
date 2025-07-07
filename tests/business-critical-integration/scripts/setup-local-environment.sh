@@ -14,7 +14,7 @@ NC='\033[0m' # No Color
 
 # Configuration
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-PROJECT_ROOT="$(cd "$SCRIPT_DIR/../../../.." && pwd)"
+PROJECT_ROOT="$(cd "$SCRIPT_DIR/../../.." && pwd)"
 CONFIG_DIR="$SCRIPT_DIR/../config"
 LOCAL_CONFIG_FILE="$CONFIG_DIR/local-config.json"
 
@@ -162,44 +162,60 @@ configure_api_keys() {
         echo
         if [[ ! $REPLY =~ ^[Yy]$ ]]; then
             echo_info "Skipping API key configuration"
+            # Load existing config values
+            if command -v jq &> /dev/null; then
+                PROJECT_ID=$(jq -r '.projectId' "$LOCAL_CONFIG_FILE")
+                SERVER_KEY=$(jq -r '.serverApiKey' "$LOCAL_CONFIG_FILE") 
+                MOBILE_KEY=$(jq -r '.mobileApiKey' "$LOCAL_CONFIG_FILE")
+                TEST_USER_EMAIL=$(jq -r '.testUserEmail' "$LOCAL_CONFIG_FILE")
+                echo_info "Loaded existing configuration"
+            else
+                echo_warning "jq not available, cannot load existing config"
+            fi
             return
         fi
     fi
     
-    echo_info "Setting up local configuration..."
-    echo_warning "You'll need your Iterable API credentials. If you don't have them:"
-    echo_warning "1. Log into your Iterable account"
-    echo_warning "2. Go to Settings > API Keys"
-    echo_warning "3. Create a new API key with appropriate permissions"
+    echo_info "We need THREE things from you to get started:"
+    echo_warning "1. 🔑 SERVER-SIDE API Key - for creating users and backend operations"
+    echo_warning "2. 📱 MOBILE API Key - for Swift SDK integration testing"  
+    echo_warning "3. 🏗️  PROJECT ID - your Iterable project identifier"
+    echo
+    echo_info "If you don't have these keys:"
+    echo_info "• Log into your Iterable account"
+    echo_info "• Go to Settings > API Keys" 
+    echo_info "• Create API keys for both 'Server-side' and 'Mobile' types"
     echo
     
-    # Prompt for API key
-    read -p "Enter your Iterable API Key: " API_KEY
-    if [[ -z "$API_KEY" ]]; then
-        echo_error "API Key is required"
+    # Get Project ID first
+    read -p "📋 Enter your Iterable Project ID: " PROJECT_ID
+    if [[ -z "$PROJECT_ID" ]]; then
+        echo_error "Project ID is required"
         exit 1
     fi
     
-    # Prompt for Server key (optional for some tests)
-    read -p "Enter your Iterable Server Key (optional, press Enter to skip): " SERVER_KEY
-    
-    # Prompt for project ID
-    read -p "Enter your Test Project ID (or press Enter for default): " PROJECT_ID
-    if [[ -z "$PROJECT_ID" ]]; then
-        PROJECT_ID="integration-test-project"
+    # Get Server-side key  
+    read -p "🔑 Enter your SERVER-SIDE API Key (for user management): " SERVER_KEY
+    if [[ -z "$SERVER_KEY" ]]; then
+        echo_error "Server-side API Key is required"
+        exit 1
     fi
     
-    # Prompt for test user email
-    read -p "Enter test user email (or press Enter for default): " TEST_USER_EMAIL
-    if [[ -z "$TEST_USER_EMAIL" ]]; then
-        TEST_USER_EMAIL="integration-test@example.com"
+    # Get Mobile key
+    read -p "📱 Enter your MOBILE API Key (for SDK testing): " MOBILE_KEY
+    if [[ -z "$MOBILE_KEY" ]]; then
+        echo_error "Mobile API Key is required"
+        exit 1
     fi
+    
+    # Set test user email  
+    TEST_USER_EMAIL="integration-test-user@test.com"
     
     # Create local config file
     cat > "$LOCAL_CONFIG_FILE" << EOF
 {
-  "apiKey": "$API_KEY",
-  "serverKey": "$SERVER_KEY",
+  "mobileApiKey": "$MOBILE_KEY",
+  "serverApiKey": "$SERVER_KEY",
   "projectId": "$PROJECT_ID",
   "testUserEmail": "$TEST_USER_EMAIL",
   "baseUrl": "https://api.iterable.com",
@@ -228,6 +244,72 @@ EOF
     
     echo_success "Local configuration saved to: $LOCAL_CONFIG_FILE"
     echo_warning "Keep this file secure - it contains your API credentials"
+}
+
+create_test_user() {
+    echo_header "Setting Up Test User"
+    
+    echo_info "Working with test user: $TEST_USER_EMAIL"
+    echo_info "Project ID: $PROJECT_ID"
+    
+    # First, check if user already exists
+    echo_info "Checking if test user exists..."
+    USER_CHECK=$(curl -s -X GET "https://api.iterable.com/api/users/getByEmail?email=$TEST_USER_EMAIL" \
+        -H "Api-Key: $SERVER_KEY")
+    
+    if echo "$USER_CHECK" | jq -e '.user' > /dev/null 2>&1; then
+        echo_success "✅ Test user already present: $TEST_USER_EMAIL"
+        echo_info "📄 Current user data from Iterable API:"
+        echo "$USER_CHECK" | jq '.'
+        
+        # Update user with latest fields to ensure consistency
+        echo_info "Updating user with latest test configuration..."
+    else
+        echo_info "🆕 Test user not found, creating new user..."
+    fi
+    
+    # Create/Update test user via API using server-side key
+    echo_info "📡 Sending user update request..."
+    RESPONSE=$(curl -s -X POST "https://api.iterable.com/api/users/update" \
+        -H "Api-Key: $SERVER_KEY" \
+        -H "Content-Type: application/json" \
+        -d '{
+            "email": "'$TEST_USER_EMAIL'",
+            "dataFields": {
+                "firstName": "Integration",
+                "lastName": "TestUser", 
+                "testUser": true,
+                "createdForTesting": true,
+                "platform": "iOS",
+                "sdkVersion": "integration-tests",
+                "purpose": "Swift SDK Integration Testing",
+                "projectId": "'$PROJECT_ID'",
+                "lastUpdated": "'$(date -u +"%Y-%m-%dT%H:%M:%SZ")'"
+            }
+        }')
+    
+    echo_info "📄 Full API Response:"
+    echo "$RESPONSE" | jq '.'
+    
+    # Check if request was successful and provide appropriate messaging
+    if echo "$RESPONSE" | jq -e '.code == "Success"' > /dev/null 2>&1; then
+        RESPONSE_MSG=$(echo "$RESPONSE" | jq -r '.msg' 2>/dev/null)
+        if echo "$RESPONSE_MSG" | grep -q "New fields created"; then
+            echo_success "✅ Test user created successfully"
+        else
+            echo_success "✅ Test user updated successfully" 
+        fi
+        echo_info "Details: $RESPONSE_MSG"
+    else
+        echo_warning "⚠️  API request completed with issues:"
+        ERROR_MSG=$(echo "$RESPONSE" | jq -r '.msg' 2>/dev/null || echo "$RESPONSE")
+        echo_warning "$ERROR_MSG"
+        echo_info "Continuing - this may be normal for existing users"
+    fi
+    
+    echo
+    echo_info "🎯 Test user ready: $TEST_USER_EMAIL"
+    echo_info "Use this email for all integration tests"
 }
 
 setup_test_project() {
@@ -408,10 +490,13 @@ main() {
     echo_info "for running business critical integration tests."
     echo
     
-    check_requirements
-    setup_directories
-    setup_ios_simulator
+    # Get credentials FIRST before anything else
     configure_api_keys
+    create_test_user  # Create test user immediately after getting credentials
+    
+    check_requirements
+    setup_directories  
+    setup_ios_simulator
     setup_test_project
     install_dependencies
     create_test_scripts
