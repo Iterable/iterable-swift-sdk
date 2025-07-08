@@ -20,11 +20,11 @@ struct LocalStorage: LocalStorageProtocol {
         }
     }
     
-    var userIdAnnon: String? {
+    var userIdUnknown: String? {
         get {
-            keychain.userIdAnnon
+            keychain.userIdUnknown
         } set {
-            keychain.userIdAnnon = newValue
+            keychain.userIdUnknown = newValue
         }
     }
     
@@ -76,27 +76,27 @@ struct LocalStorage: LocalStorageProtocol {
         }
     }
     
-    var anonymousUserEvents: [[AnyHashable: Any]]? {
+    var unknownUserEvents: [[AnyHashable: Any]]? {
         get {
-            iterableUserDefaults.anonymousUserEvents
+            iterableUserDefaults.unknownUserEvents
         } set {
-            iterableUserDefaults.anonymousUserEvents = newValue
+            iterableUserDefaults.unknownUserEvents = newValue
         }
     }
     
-    var anonymousUserUpdate: [AnyHashable: Any]? {
+    var unknownUserUpdate: [AnyHashable: Any]? {
         get {
-            iterableUserDefaults.anonymousUserUpdate
+            iterableUserDefaults.unknownUserUpdate
         } set {
-            iterableUserDefaults.anonymousUserUpdate = newValue
+            iterableUserDefaults.unknownUserUpdate = newValue
         }
     }
 
-    var anonymousSessions: IterableAnonSessionsWrapper? {
+    var unknownUserSessions: IterableUnknownUserSessionsWrapper? {
         get {
-            iterableUserDefaults.anonymousSessions
+            iterableUserDefaults.unknownUserSessions
         } set {
-            iterableUserDefaults.anonymousSessions = newValue
+            iterableUserDefaults.unknownUserSessions = newValue
         }
     }
 
@@ -108,11 +108,11 @@ struct LocalStorage: LocalStorageProtocol {
         }
     }
 
-    var anonymousUsageTrack: Bool {
+    var unknownUsageTrack: Bool {
         get {
-            iterableUserDefaults.anonymousUsageTrack
+            iterableUserDefaults.unknownUserTrack
         } set {
-            iterableUserDefaults.anonymousUsageTrack = newValue
+            iterableUserDefaults.unknownUserTrack = newValue
         }
     }
 
