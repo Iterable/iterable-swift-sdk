@@ -148,7 +148,7 @@ class RequestCreatorTests: XCTestCase {
     }
     
     func testGetInAppMessagesRequestFailure() {
-        let auth = Auth(userId: nil, email: nil, authToken: nil, userIdAnon: nil)
+        let auth = Auth(userId: nil, email: nil, authToken: nil, userIdUnknown: nil)
         let requestCreator = RequestCreator(auth: auth, deviceMetadata: deviceMetadata)
         
         let failingRequest = requestCreator.createGetInAppMessagesRequest(1)
@@ -377,9 +377,9 @@ class RequestCreatorTests: XCTestCase {
     
     private let locationKeyPath = "\(JsonKey.inAppMessageContext).\(JsonKey.inAppLocation)"
     
-    private let userlessAuth = Auth(userId: nil, email: nil, authToken: nil, userIdAnon: nil)
+    private let userlessAuth = Auth(userId: nil, email: nil, authToken: nil, userIdUnknown: nil)
     
-    private let userIdAuth = Auth(userId: "ein", email: nil, authToken: nil, userIdAnon: nil)
+    private let userIdAuth = Auth(userId: "ein", email: nil, authToken: nil, userIdUnknown: nil)
     
     private let deviceMetadata = DeviceMetadata(deviceId: IterableUtil.generateUUID(),
                                                 platform: JsonValue.iOS,
@@ -437,6 +437,6 @@ class RequestCreatorTests: XCTestCase {
 
 extension RequestCreatorTests: AuthProvider {
     var auth: Auth {
-        Auth(userId: nil, email: email, authToken: nil, userIdAnon: nil)
+        Auth(userId: nil, email: email, authToken: nil, userIdUnknown: nil)
     }
 }

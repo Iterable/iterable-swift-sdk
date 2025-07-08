@@ -17,7 +17,7 @@ final class ValidateCustomEventUserUpdateAPITest: XCTestCase, AuthProvider  {
     let localStorage = MockLocalStorage()
 
     var auth: Auth {
-        Auth(userId: nil, email: nil, authToken: authToken, userIdAnon: nil)
+        Auth(userId: nil, email: nil, authToken: authToken, userIdUnknown: nil)
     }
 
     override func setUp() {
@@ -105,7 +105,7 @@ final class ValidateCustomEventUserUpdateAPITest: XCTestCase, AuthProvider  {
 
     func testCriteriaCustomEventCheck() {  // criteria not met with merge false with setUserId
         let config = IterableConfig()
-        config.enableAnonActivation = true
+        config.enableUnknownUserActivation = true
         IterableAPI.initializeForTesting(apiKey: ValidateCustomEventUserUpdateAPITest.apiKey,
                                                                    config: config,
                                                                    networkSession: mockSession,
@@ -120,7 +120,7 @@ final class ValidateCustomEventUserUpdateAPITest: XCTestCase, AuthProvider  {
         guard let jsonData = mockData.data(using: .utf8) else { return }
         localStorage.criteriaData = jsonData
 
-        if let events = localStorage.anonymousUserEvents {
+        if let events = localStorage.unknownUserEvents {
             XCTAssertFalse(events.isEmpty, "Expected events to be logged")
        } else {
            XCTFail("Expected events to be logged but found nil")
@@ -130,7 +130,7 @@ final class ValidateCustomEventUserUpdateAPITest: XCTestCase, AuthProvider  {
                                                               "count": 6,
                                                               "vaccinated": true])
 
-        let checker = CriteriaCompletionChecker(anonymousCriteria: jsonData, anonymousEvents:localStorage.anonymousUserEvents ?? [])
+        let checker = CriteriaCompletionChecker(unknownUserCriteria: jsonData, unknownUserEvents:localStorage.unknownUserEvents ?? [])
         let matchedCriteriaId = checker.getMatchedCriteria()
         XCTAssertEqual(matchedCriteriaId, "6")
 
@@ -138,7 +138,7 @@ final class ValidateCustomEventUserUpdateAPITest: XCTestCase, AuthProvider  {
                                                               "count": 6,
                                                               "vaccinated": true])
         waitForDuration(seconds: 3)
-        if let anonUser = localStorage.userIdAnnon {
+        if let anonUser = localStorage.userIdUnknown {
             XCTAssertFalse(anonUser.isEmpty, "Expected anon user")
        } else {
            XCTFail("Expected anon user but found nil")
@@ -154,10 +154,10 @@ final class ValidateCustomEventUserUpdateAPITest: XCTestCase, AuthProvider  {
 
         waitForDuration(seconds: 3)
 
-        if localStorage.anonymousUserEvents != nil {
+        if localStorage.unknownUserEvents != nil {
         XCTFail("Expected local stored Event nil but found")
        } else {
-           XCTAssertNil(localStorage.anonymousUserEvents, "Event found nil as user logout")
+           XCTAssertNil(localStorage.unknownUserEvents, "Event found nil as user logout")
        }
 
 

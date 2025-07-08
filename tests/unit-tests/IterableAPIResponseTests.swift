@@ -286,12 +286,12 @@ class IterableAPIResponseTests: XCTestCase {
 
 extension IterableAPIResponseTests: AuthProvider {
     var auth: Auth {
-        Auth(userId: nil, email: email, authToken: authToken, userIdAnon: nil)
+        Auth(userId: nil, email: email, authToken: authToken, userIdUnknown: nil)
     }
 }
 
 class AuthProviderNoToken: AuthProvider {
     var auth: Auth {
-        Auth(userId: nil, email: "user@example.com", authToken: nil, userIdAnon: nil)
+        Auth(userId: nil, email: "user@example.com", authToken: nil, userIdUnknown: nil)
     }
 }

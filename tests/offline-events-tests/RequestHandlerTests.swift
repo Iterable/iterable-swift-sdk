@@ -1178,7 +1178,7 @@ class RequestHandlerTests: XCTestCase {
 
 extension RequestHandlerTests: AuthProvider {
     var auth: Auth {
-        Auth(userId: nil, email: "user@example.com", authToken: nil, userIdAnon: nil)
+        Auth(userId: nil, email: "user@example.com", authToken: nil, userIdUnknown: nil)
     }
 }
 
