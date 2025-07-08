@@ -24,4 +24,5 @@ xcodebuild -project swift-sdk.xcodeproj \
            -scheme endpoint-tests \
            -sdk iphonesimulator \
            -destination 'platform=iOS Simulator,OS=18.1,name=iPhone 16 Pro' \
+           -resultBundlePath TestResults.xcresult \
            test | xcpretty

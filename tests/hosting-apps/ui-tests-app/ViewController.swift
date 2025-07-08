@@ -31,7 +31,7 @@ class ViewController: UIViewController {
         ITBInfo()
         
         let html = """
-            <a href="http://website/resource#something">Click Me</a>
+            <a href="https://website/resource#something">Click Me</a>
             <meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no'>
         """
         InAppDisplayer.showIterableHtmlMessage(html) { url in
@@ -104,7 +104,7 @@ class ViewController: UIViewController {
         
         let messageId = "zeeMessageId"
         let html = """
-            <a href="http://website/resource#something">Click Me</a>
+            <a href="https://website/resource#something">Click Me</a>
         """
         let content = IterableHtmlInAppContent(edgeInsets: .zero, html: html)
         let message = IterableInAppMessage(messageId: messageId, campaignId: 1234, content: content)
@@ -170,7 +170,7 @@ class ViewController: UIViewController {
         
         let messageId = "zeeMessageId"
         let html = """
-            <a href="http://website/resource#something">Click Me</a>
+            <a href="https://website/resource#something">Click Me</a>
         """
         let padding = Padding(top: .autoExpand,
                               left: 10,

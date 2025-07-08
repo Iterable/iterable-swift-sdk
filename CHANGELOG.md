@@ -26,6 +26,13 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 ## [Unreleased]
 - Adding section for unreleased changes
 
+## [6.5.12]
+- Made `IterableDataRegion` an `@objc` class for better Objective-C compatibility.
+- Improved robustness of the SDK by adding more internal initialization checks before executing certain operations.
+- Enhanced thread safety for embedded message data handling, leading to increased stability.
+- Improved `IterableEmbeddedView` by making `imgView` and `cardImageView` optional, leading to more robust view handling, particularly for `.card` and `.banner` types when images might not be present.
+- Minor refinements to authentication and token refresh logic for increased stability.
+
 ## [6.5.11]
 ### Fixed
 - Added missing constructor for `IterableAPIMobileFrameworkInfo`

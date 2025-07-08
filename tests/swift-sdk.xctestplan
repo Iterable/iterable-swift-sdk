@@ -1,0 +1,92 @@
+{
+  "configurations" : [
+    {
+      "id" : "7B32B846-81B2-4DC5-A059-D944ADFE884B",
+      "name" : "Configuration 1",
+      "options" : {
+
+      }
+    }
+  ],
+  "defaultOptions" : {
+    "codeCoverage" : {
+      "targets" : [
+        {
+          "containerPath" : "container:swift-sdk.xcodeproj",
+          "identifier" : "AC2263DE20CF49B8009800EB",
+          "name" : "swift-sdk"
+        },
+        {
+          "containerPath" : "container:swift-sdk.xcodeproj",
+          "identifier" : "AC90C4C320D8632D00EECA5D",
+          "name" : "notification-extension"
+        }
+      ]
+    },
+    "commandLineArgumentEntries" : [
+      {
+        "argument" : "-com.apple.CoreData.ConcurrencyDebug 1"
+      }
+    ],
+    "targetForVariableExpansion" : {
+      "containerPath" : "container:swift-sdk.xcodeproj",
+      "identifier" : "ACF560D220E443BF000AAC23",
+      "name" : "host-app"
+    }
+  },
+  "testTargets" : [
+    {
+      "skippedTests" : [
+        "AuthTests\/testOnNewAuthTokenCallbackCalled()",
+        "AuthTests\/testRetryJwtFailure()",
+        "InAppPresenterTests\/testInAppPresenterTimerFinished()",
+        "InAppTests\/testIgnoreReadMessagesOnProcessing()",
+        "InAppTests\/testMultipleMesssagesInShortTime()",
+        "IterableAPIResponseTests\/testRetryOnInvalidJwtPayload()"
+      ],
+      "target" : {
+        "containerPath" : "container:swift-sdk.xcodeproj",
+        "identifier" : "AC7B142A20D02CE200877BFE",
+        "name" : "unit-tests"
+      }
+    },
+    {
+      "target" : {
+        "containerPath" : "container:swift-sdk.xcodeproj",
+        "identifier" : "ACC87762215C20B50097E29B",
+        "name" : "ui-tests"
+      }
+    },
+    {
+      "target" : {
+        "containerPath" : "container:swift-sdk.xcodeproj",
+        "identifier" : "AC90C4CB20D8632E00EECA5D",
+        "name" : "notification-extension-tests"
+      }
+    },
+    {
+      "target" : {
+        "containerPath" : "container:swift-sdk.xcodeproj",
+        "identifier" : "ACDA976B23159C39004C412E",
+        "name" : "inbox-ui-tests"
+      }
+    },
+    {
+      "skippedTests" : [
+        "HealthMonitorTests\/testDeleteAllTasksException()",
+        "RequestHandlerTests\/testDeleteAllTasksOnLogout()",
+        "RequestHandlerTests\/testTrackInAppClick()",
+        "RequestHandlerTests\/testTrackInAppOpen()",
+        "RequestHandlerTests\/testTrackInboxSession()",
+        "TaskRunnerTests\/testCreatedAtInBody()",
+        "TaskSchedulerTests\/testScheduleTask()"
+      ],
+      "target" : {
+        "containerPath" : "container:swift-sdk.xcodeproj",
+        "identifier" : "ACFD5AB724C8200C008E497A",
+        "name" : "offline-events-tests"
+      }
+    }
+  ],
+  "version" : 1
+}
