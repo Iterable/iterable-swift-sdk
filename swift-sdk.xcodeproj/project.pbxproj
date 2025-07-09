@@ -428,10 +428,10 @@
 		DF7302152C2C176E0002633A /* AnonymousUserComplexCriteriaMatchTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = DF7302142C2C176E0002633A /* AnonymousUserComplexCriteriaMatchTests.swift */; };
 		DF97D12B2C2D4A060034D38C /* AnonymousUserCriteriaIsSetTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = DF97D12A2C2D4A060034D38C /* AnonymousUserCriteriaIsSetTests.swift */; };
 		DFFD62392C3681B900010883 /* UserMergeScenariosTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = DFFD62382C3681B900010883 /* UserMergeScenariosTests.swift */; };
-		E9EA7C9F2C1EDE5800A9D6FB /* AnonymousUserManager+Functions.swift in Sources */ = {isa = PBXBuildFile; fileRef = E9EA7C9B2C1EDE5800A9D6FB /* AnonymousUserManager+Functions.swift */; };
-		E9EA7CA02C1EDE5800A9D6FB /* AnonymousUserMerge.swift in Sources */ = {isa = PBXBuildFile; fileRef = E9EA7C9C2C1EDE5800A9D6FB /* AnonymousUserMerge.swift */; };
-		E9EA7CA12C1EDE5800A9D6FB /* AnonymousUserManagerProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = E9EA7C9D2C1EDE5800A9D6FB /* AnonymousUserManagerProtocol.swift */; };
-		E9EA7CA22C1EDE5800A9D6FB /* AnonymousUserManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = E9EA7C9E2C1EDE5800A9D6FB /* AnonymousUserManager.swift */; };
+		E9EA7C9F2C1EDE5800A9D6FB /* UnknownUserManager+Functions.swift in Sources */ = {isa = PBXBuildFile; fileRef = E9EA7C9B2C1EDE5800A9D6FB /* UnknownUserManager+Functions.swift */; };
+		E9EA7CA02C1EDE5800A9D6FB /* UnknownUserMerge.swift in Sources */ = {isa = PBXBuildFile; fileRef = E9EA7C9C2C1EDE5800A9D6FB /* UnknownUserMerge.swift */; };
+		E9EA7CA12C1EDE5800A9D6FB /* UnknownUserManagerProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = E9EA7C9D2C1EDE5800A9D6FB /* UnknownUserManagerProtocol.swift */; };
+		E9EA7CA22C1EDE5800A9D6FB /* UnknownUserManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = E9EA7C9E2C1EDE5800A9D6FB /* UnknownUserManager.swift */; };
 		E9EA7CA82C1EE3BA00A9D6FB /* AnonymousUserCriteriaMatchTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E9EA7CA62C1EE3BA00A9D6FB /* AnonymousUserCriteriaMatchTests.swift */; };
 /* End PBXBuildFile section */
 
@@ -870,10 +870,10 @@
 		DF7302142C2C176E0002633A /* AnonymousUserComplexCriteriaMatchTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnonymousUserComplexCriteriaMatchTests.swift; sourceTree = "<group>"; };
 		DF97D12A2C2D4A060034D38C /* AnonymousUserCriteriaIsSetTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AnonymousUserCriteriaIsSetTests.swift; sourceTree = "<group>"; };
 		DFFD62382C3681B900010883 /* UserMergeScenariosTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserMergeScenariosTests.swift; sourceTree = "<group>"; };
-		E9EA7C9B2C1EDE5800A9D6FB /* AnonymousUserManager+Functions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "AnonymousUserManager+Functions.swift"; sourceTree = "<group>"; };
-		E9EA7C9C2C1EDE5800A9D6FB /* AnonymousUserMerge.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AnonymousUserMerge.swift; sourceTree = "<group>"; };
-		E9EA7C9D2C1EDE5800A9D6FB /* AnonymousUserManagerProtocol.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AnonymousUserManagerProtocol.swift; sourceTree = "<group>"; };
-		E9EA7C9E2C1EDE5800A9D6FB /* AnonymousUserManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AnonymousUserManager.swift; sourceTree = "<group>"; };
+		E9EA7C9B2C1EDE5800A9D6FB /* UnknownUserManager+Functions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UnknownUserManager+Functions.swift"; sourceTree = "<group>"; };
+		E9EA7C9C2C1EDE5800A9D6FB /* UnknownUserMerge.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UnknownUserMerge.swift; sourceTree = "<group>"; };
+		E9EA7C9D2C1EDE5800A9D6FB /* UnknownUserManagerProtocol.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UnknownUserManagerProtocol.swift; sourceTree = "<group>"; };
+		E9EA7C9E2C1EDE5800A9D6FB /* UnknownUserManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UnknownUserManager.swift; sourceTree = "<group>"; };
 		E9EA7CA62C1EE3BA00A9D6FB /* AnonymousUserCriteriaMatchTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AnonymousUserCriteriaMatchTests.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -1708,10 +1708,10 @@
 			isa = PBXGroup;
 			children = (
 				9F0616402C9CA9D200FE2E6A /* IterableIdentityResolution.swift */,
-				E9EA7C9E2C1EDE5800A9D6FB /* AnonymousUserManager.swift */,
-				E9EA7C9B2C1EDE5800A9D6FB /* AnonymousUserManager+Functions.swift */,
-				E9EA7C9D2C1EDE5800A9D6FB /* AnonymousUserManagerProtocol.swift */,
-				E9EA7C9C2C1EDE5800A9D6FB /* AnonymousUserMerge.swift */,
+				E9EA7C9E2C1EDE5800A9D6FB /* UnknownUserManager.swift */,
+				E9EA7C9B2C1EDE5800A9D6FB /* UnknownUserManager+Functions.swift */,
+				E9EA7C9D2C1EDE5800A9D6FB /* UnknownUserManagerProtocol.swift */,
+				E9EA7C9C2C1EDE5800A9D6FB /* UnknownUserMerge.swift */,
 			);
 			name = AnonymousTracking;
 			sourceTree = "<group>";
@@ -2326,10 +2326,10 @@
 				5B88BC482805D09D004016E5 /* (null) in Sources */,
 				9F0616412C9CA9D400FE2E6A /* IterableIdentityResolution.swift in Sources */,
 				18E5B5D12CC77BCE00A558EC /* IterableTokenGenerator.swift in Sources */,
-				E9EA7C9F2C1EDE5800A9D6FB /* AnonymousUserManager+Functions.swift in Sources */,
-				E9EA7CA22C1EDE5800A9D6FB /* AnonymousUserManager.swift in Sources */,
-				E9EA7CA02C1EDE5800A9D6FB /* AnonymousUserMerge.swift in Sources */,
-				E9EA7CA12C1EDE5800A9D6FB /* AnonymousUserManagerProtocol.swift in Sources */,
+				E9EA7C9F2C1EDE5800A9D6FB /* UnknownUserManager+Functions.swift in Sources */,
+				E9EA7CA22C1EDE5800A9D6FB /* UnknownUserManager.swift in Sources */,
+				E9EA7CA02C1EDE5800A9D6FB /* UnknownUserMerge.swift in Sources */,
+				E9EA7CA12C1EDE5800A9D6FB /* UnknownUserManagerProtocol.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

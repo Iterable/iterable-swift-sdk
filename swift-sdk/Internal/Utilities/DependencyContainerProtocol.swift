@@ -132,8 +132,8 @@ extension DependencyContainerProtocol {
         RedirectNetworkSession(delegate: delegate)
     }
 
-    func createAnonymousUserManager(config: IterableConfig) -> AnonymousUserManagerProtocol {
-        AnonymousUserManager(config:config,
+    func createUnknownUserManager(config: IterableConfig) -> UnknownUserManagerProtocol {
+        UnknownUserManager(config:config,
                              localStorage: localStorage,
                              dateProvider: dateProvider,
                              notificationStateProvider: notificationStateProvider)
@@ -156,7 +156,7 @@ extension DependencyContainerProtocol {
                            connectivityManager: NetworkConnectivityManager())
     }
     
-    func createAnonymousUserMerge(apiClient: ApiClient, anonymousUserManager: AnonymousUserManagerProtocol, localStorage: LocalStorageProtocol) -> AnonymousUserMergeProtocol {
-        AnonymousUserMerge(apiClient: apiClient, anonymousUserManager: anonymousUserManager, localStorage: localStorage)
+    func createUnknownUserMerge(apiClient: ApiClient, unknownUserManager: UnknownUserManagerProtocol, localStorage: LocalStorageProtocol) -> UnknownUserMergeProtocol {
+        UnknownUserMerge(apiClient: apiClient, unknownUserManager: unknownUserManager, localStorage: localStorage)
     }
 }

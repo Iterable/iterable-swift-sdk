@@ -84,7 +84,7 @@ final class IsOneOfInNotOneOfCriteareaTest: XCTestCase {
 
 
         let expectedCriteriaId = "299"
-        let matchedCriteriaId = CriteriaCompletionChecker(anonymousCriteria: data(from: mockDataIsOneOf)!, anonymousEvents: eventItems).getMatchedCriteria()
+        let matchedCriteriaId = CriteriaCompletionChecker(unknownUserCriteria: data(from: mockDataIsOneOf)!, unknownUserEvents: eventItems).getMatchedCriteria()
         XCTAssertEqual(matchedCriteriaId, expectedCriteriaId)
     }
 
@@ -98,7 +98,7 @@ final class IsOneOfInNotOneOfCriteareaTest: XCTestCase {
             ]
         ]
 
-        let matchedCriteriaId = CriteriaCompletionChecker(anonymousCriteria: data(from: mockDataIsOneOf)!, anonymousEvents: eventItems).getMatchedCriteria()
+        let matchedCriteriaId = CriteriaCompletionChecker(unknownUserCriteria: data(from: mockDataIsOneOf)!, unknownUserEvents: eventItems).getMatchedCriteria()
         XCTAssertEqual(matchedCriteriaId, nil)
     }
 
@@ -167,7 +167,7 @@ final class IsOneOfInNotOneOfCriteareaTest: XCTestCase {
 
 
         let expectedCriteriaId = "299"
-        let matchedCriteriaId = CriteriaCompletionChecker(anonymousCriteria: data(from: mockDataIsNotOneOf)!, anonymousEvents: eventItems).getMatchedCriteria()
+        let matchedCriteriaId = CriteriaCompletionChecker(unknownUserCriteria: data(from: mockDataIsNotOneOf)!, unknownUserEvents: eventItems).getMatchedCriteria()
         XCTAssertEqual(matchedCriteriaId, expectedCriteriaId)
     }
 
@@ -181,7 +181,7 @@ final class IsOneOfInNotOneOfCriteareaTest: XCTestCase {
             ]
         ]
 
-        let matchedCriteriaId = CriteriaCompletionChecker(anonymousCriteria: data(from: mockDataIsNotOneOf)!, anonymousEvents: eventItems).getMatchedCriteria()
+        let matchedCriteriaId = CriteriaCompletionChecker(unknownUserCriteria: data(from: mockDataIsNotOneOf)!, unknownUserEvents: eventItems).getMatchedCriteria()
         XCTAssertEqual(matchedCriteriaId, nil)
     }
 
@@ -239,7 +239,7 @@ final class IsOneOfInNotOneOfCriteareaTest: XCTestCase {
 
 
         let expectedCriteriaId = "403"
-        let matchedCriteriaId = CriteriaCompletionChecker(anonymousCriteria: data(from: mockDataCrashTest)!, anonymousEvents: eventItems).getMatchedCriteria()
+        let matchedCriteriaId = CriteriaCompletionChecker(unknownUserCriteria: data(from: mockDataCrashTest)!, unknownUserEvents: eventItems).getMatchedCriteria()
         XCTAssertEqual(matchedCriteriaId, expectedCriteriaId)
     }
 

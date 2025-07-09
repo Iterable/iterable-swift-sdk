@@ -89,7 +89,7 @@ final class CombinationLogicEventTypeCriteria: XCTestCase {
 
 
         let expectedCriteriaId = "285"
-        let matchedCriteriaId = CriteriaCompletionChecker(anonymousCriteria: data(from: mockDataCombinatUserAnd)!, anonymousEvents: eventItems).getMatchedCriteria()
+        let matchedCriteriaId = CriteriaCompletionChecker(unknownUserCriteria: data(from: mockDataCombinatUserAnd)!, unknownUserEvents: eventItems).getMatchedCriteria()
         XCTAssertEqual(matchedCriteriaId, expectedCriteriaId)
     }
 
@@ -104,7 +104,7 @@ final class CombinationLogicEventTypeCriteria: XCTestCase {
             ]
         ]
 
-        let matchedCriteriaId = CriteriaCompletionChecker(anonymousCriteria: data(from: mockDataCombinatUserAnd)!, anonymousEvents: eventItems).getMatchedCriteria()
+        let matchedCriteriaId = CriteriaCompletionChecker(unknownUserCriteria: data(from: mockDataCombinatUserAnd)!, unknownUserEvents: eventItems).getMatchedCriteria()
         XCTAssertEqual(matchedCriteriaId, nil)
     }
 
@@ -177,7 +177,7 @@ final class CombinationLogicEventTypeCriteria: XCTestCase {
 
 
         let expectedCriteriaId = "285"
-        let matchedCriteriaId = CriteriaCompletionChecker(anonymousCriteria: data(from: mockDataCombinatUserOr)!, anonymousEvents: eventItems).getMatchedCriteria()
+        let matchedCriteriaId = CriteriaCompletionChecker(unknownUserCriteria: data(from: mockDataCombinatUserOr)!, unknownUserEvents: eventItems).getMatchedCriteria()
         XCTAssertEqual(matchedCriteriaId, expectedCriteriaId)
     }
 
@@ -192,7 +192,7 @@ final class CombinationLogicEventTypeCriteria: XCTestCase {
             ]
         ]
 
-        let matchedCriteriaId = CriteriaCompletionChecker(anonymousCriteria: data(from: mockDataCombinatUserOr)!, anonymousEvents: eventItems).getMatchedCriteria()
+        let matchedCriteriaId = CriteriaCompletionChecker(unknownUserCriteria: data(from: mockDataCombinatUserOr)!, unknownUserEvents: eventItems).getMatchedCriteria()
         XCTAssertEqual(matchedCriteriaId, nil)
     }
 
@@ -269,7 +269,7 @@ final class CombinationLogicEventTypeCriteria: XCTestCase {
 
 
         let expectedCriteriaId = "285"
-        let matchedCriteriaId = CriteriaCompletionChecker(anonymousCriteria: data(from: mockDataCombinatUserNot)!, anonymousEvents: eventItems).getMatchedCriteria()
+        let matchedCriteriaId = CriteriaCompletionChecker(unknownUserCriteria: data(from: mockDataCombinatUserNot)!, unknownUserEvents: eventItems).getMatchedCriteria()
         XCTAssertEqual(matchedCriteriaId, expectedCriteriaId)
     }
 
@@ -284,7 +284,7 @@ final class CombinationLogicEventTypeCriteria: XCTestCase {
             ]
         ]
 
-        let matchedCriteriaId = CriteriaCompletionChecker(anonymousCriteria: data(from: mockDataCombinatUserNot)!, anonymousEvents: eventItems).getMatchedCriteria()
+        let matchedCriteriaId = CriteriaCompletionChecker(unknownUserCriteria: data(from: mockDataCombinatUserNot)!, unknownUserEvents: eventItems).getMatchedCriteria()
         XCTAssertEqual(matchedCriteriaId, nil)
     }
 
@@ -360,7 +360,7 @@ final class CombinationLogicEventTypeCriteria: XCTestCase {
         ]
 
         let expectedCriteriaId = "285"
-        let matchedCriteriaId = CriteriaCompletionChecker(anonymousCriteria: data(from: mockDataCombinatUpdateCartAnd)!, anonymousEvents: eventItems).getMatchedCriteria()
+        let matchedCriteriaId = CriteriaCompletionChecker(unknownUserCriteria: data(from: mockDataCombinatUpdateCartAnd)!, unknownUserEvents: eventItems).getMatchedCriteria()
         XCTAssertEqual(matchedCriteriaId, expectedCriteriaId)
     }
 
@@ -378,7 +378,7 @@ final class CombinationLogicEventTypeCriteria: XCTestCase {
             ]
         ]
 
-        let matchedCriteriaId = CriteriaCompletionChecker(anonymousCriteria: data(from: mockDataCombinatUpdateCartAnd)!, anonymousEvents: eventItems).getMatchedCriteria()
+        let matchedCriteriaId = CriteriaCompletionChecker(unknownUserCriteria: data(from: mockDataCombinatUpdateCartAnd)!, unknownUserEvents: eventItems).getMatchedCriteria()
         XCTAssertEqual(matchedCriteriaId, nil)
     }
 
@@ -455,7 +455,7 @@ final class CombinationLogicEventTypeCriteria: XCTestCase {
         ]
 
         let expectedCriteriaId = "285"
-        let matchedCriteriaId = CriteriaCompletionChecker(anonymousCriteria: data(from: mockDataCombinatUpdateCartOr)!, anonymousEvents: eventItems).getMatchedCriteria()
+        let matchedCriteriaId = CriteriaCompletionChecker(unknownUserCriteria: data(from: mockDataCombinatUpdateCartOr)!, unknownUserEvents: eventItems).getMatchedCriteria()
         XCTAssertEqual(matchedCriteriaId, expectedCriteriaId)
     }
 
@@ -473,7 +473,7 @@ final class CombinationLogicEventTypeCriteria: XCTestCase {
             ]
         ]
 
-        let matchedCriteriaId = CriteriaCompletionChecker(anonymousCriteria: data(from: mockDataCombinatUpdateCartOr)!, anonymousEvents: eventItems).getMatchedCriteria()
+        let matchedCriteriaId = CriteriaCompletionChecker(unknownUserCriteria: data(from: mockDataCombinatUpdateCartOr)!, unknownUserEvents: eventItems).getMatchedCriteria()
         XCTAssertEqual(matchedCriteriaId, nil)
     }
 
@@ -549,7 +549,7 @@ final class CombinationLogicEventTypeCriteria: XCTestCase {
         ]
 
         let expectedCriteriaId = "285"
-        let matchedCriteriaId = CriteriaCompletionChecker(anonymousCriteria: data(from: mockDataCombinatUpdateCartNot)!, anonymousEvents: eventItems).getMatchedCriteria()
+        let matchedCriteriaId = CriteriaCompletionChecker(unknownUserCriteria: data(from: mockDataCombinatUpdateCartNot)!, unknownUserEvents: eventItems).getMatchedCriteria()
         XCTAssertEqual(matchedCriteriaId, expectedCriteriaId)
     }
 
@@ -567,7 +567,7 @@ final class CombinationLogicEventTypeCriteria: XCTestCase {
             ]
         ]
 
-        let matchedCriteriaId = CriteriaCompletionChecker(anonymousCriteria: data(from: mockDataCombinatUpdateCartNot)!, anonymousEvents: eventItems).getMatchedCriteria()
+        let matchedCriteriaId = CriteriaCompletionChecker(unknownUserCriteria: data(from: mockDataCombinatUpdateCartNot)!, unknownUserEvents: eventItems).getMatchedCriteria()
         XCTAssertEqual(matchedCriteriaId, nil)
     }
 
@@ -648,7 +648,7 @@ final class CombinationLogicEventTypeCriteria: XCTestCase {
         ]
 
         let expectedCriteriaId = "285"
-        let matchedCriteriaId = CriteriaCompletionChecker(anonymousCriteria: data(from: mockDataCombinatPurchaseAnd)!, anonymousEvents: eventItems).getMatchedCriteria()
+        let matchedCriteriaId = CriteriaCompletionChecker(unknownUserCriteria: data(from: mockDataCombinatPurchaseAnd)!, unknownUserEvents: eventItems).getMatchedCriteria()
         XCTAssertEqual(matchedCriteriaId, expectedCriteriaId)
     }
 
@@ -669,7 +669,7 @@ final class CombinationLogicEventTypeCriteria: XCTestCase {
             ]
         ]
 
-        let matchedCriteriaId = CriteriaCompletionChecker(anonymousCriteria: data(from: mockDataCombinatPurchaseAnd)!, anonymousEvents: eventItems).getMatchedCriteria()
+        let matchedCriteriaId = CriteriaCompletionChecker(unknownUserCriteria: data(from: mockDataCombinatPurchaseAnd)!, unknownUserEvents: eventItems).getMatchedCriteria()
         XCTAssertEqual(matchedCriteriaId, nil)
     }
 
@@ -749,7 +749,7 @@ final class CombinationLogicEventTypeCriteria: XCTestCase {
         ]
 
         let expectedCriteriaId = "285"
-        let matchedCriteriaId = CriteriaCompletionChecker(anonymousCriteria: data(from: mockDataCombinatPurchaseOr)!, anonymousEvents: eventItems).getMatchedCriteria()
+        let matchedCriteriaId = CriteriaCompletionChecker(unknownUserCriteria: data(from: mockDataCombinatPurchaseOr)!, unknownUserEvents: eventItems).getMatchedCriteria()
         XCTAssertEqual(matchedCriteriaId, expectedCriteriaId)
     }
 
@@ -770,7 +770,7 @@ final class CombinationLogicEventTypeCriteria: XCTestCase {
             ]
         ]
 
-        let matchedCriteriaId = CriteriaCompletionChecker(anonymousCriteria: data(from: mockDataCombinatPurchaseOr)!, anonymousEvents: eventItems).getMatchedCriteria()
+        let matchedCriteriaId = CriteriaCompletionChecker(unknownUserCriteria: data(from: mockDataCombinatPurchaseOr)!, unknownUserEvents: eventItems).getMatchedCriteria()
         XCTAssertEqual(matchedCriteriaId, nil)
     }
 
@@ -850,7 +850,7 @@ final class CombinationLogicEventTypeCriteria: XCTestCase {
         ]
 
         let expectedCriteriaId = "285"
-        let matchedCriteriaId = CriteriaCompletionChecker(anonymousCriteria: data(from: mockDataCombinatPurchaseNot)!, anonymousEvents: eventItems).getMatchedCriteria()
+        let matchedCriteriaId = CriteriaCompletionChecker(unknownUserCriteria: data(from: mockDataCombinatPurchaseNot)!, unknownUserEvents: eventItems).getMatchedCriteria()
         XCTAssertEqual(matchedCriteriaId, expectedCriteriaId)
     }
 
@@ -871,7 +871,7 @@ final class CombinationLogicEventTypeCriteria: XCTestCase {
             ]
         ]
 
-        let matchedCriteriaId = CriteriaCompletionChecker(anonymousCriteria: data(from: mockDataCombinatPurchaseNot)!, anonymousEvents: eventItems).getMatchedCriteria()
+        let matchedCriteriaId = CriteriaCompletionChecker(unknownUserCriteria: data(from: mockDataCombinatPurchaseNot)!, unknownUserEvents: eventItems).getMatchedCriteria()
         XCTAssertEqual(matchedCriteriaId, nil)
     }
 
@@ -947,7 +947,7 @@ final class CombinationLogicEventTypeCriteria: XCTestCase {
         ]
 
         let expectedCriteriaId = "285"
-        let matchedCriteriaId = CriteriaCompletionChecker(anonymousCriteria: data(from: mockDataCombinatPurchaseCustomEventAnd)!, anonymousEvents: eventItems).getMatchedCriteria()
+        let matchedCriteriaId = CriteriaCompletionChecker(unknownUserCriteria: data(from: mockDataCombinatPurchaseCustomEventAnd)!, unknownUserEvents: eventItems).getMatchedCriteria()
         XCTAssertEqual(matchedCriteriaId, expectedCriteriaId)
     }
 
@@ -965,7 +965,7 @@ final class CombinationLogicEventTypeCriteria: XCTestCase {
             ]
         ]
 
-        let matchedCriteriaId = CriteriaCompletionChecker(anonymousCriteria: data(from: mockDataCombinatPurchaseCustomEventAnd)!, anonymousEvents: eventItems).getMatchedCriteria()
+        let matchedCriteriaId = CriteriaCompletionChecker(unknownUserCriteria: data(from: mockDataCombinatPurchaseCustomEventAnd)!, unknownUserEvents: eventItems).getMatchedCriteria()
         XCTAssertEqual(matchedCriteriaId, nil)
     }
 
@@ -1041,7 +1041,7 @@ final class CombinationLogicEventTypeCriteria: XCTestCase {
         ]
 
         let expectedCriteriaId = "285"
-        let matchedCriteriaId = CriteriaCompletionChecker(anonymousCriteria: data(from: mockDataCombinatPurchaseCustomEventOr)!, anonymousEvents: eventItems).getMatchedCriteria()
+        let matchedCriteriaId = CriteriaCompletionChecker(unknownUserCriteria: data(from: mockDataCombinatPurchaseCustomEventOr)!, unknownUserEvents: eventItems).getMatchedCriteria()
         XCTAssertEqual(matchedCriteriaId, expectedCriteriaId)
     }
 
@@ -1059,7 +1059,7 @@ final class CombinationLogicEventTypeCriteria: XCTestCase {
             ]
         ]
 
-        let matchedCriteriaId = CriteriaCompletionChecker(anonymousCriteria: data(from: mockDataCombinatPurchaseCustomEventOr)!, anonymousEvents: eventItems).getMatchedCriteria()
+        let matchedCriteriaId = CriteriaCompletionChecker(unknownUserCriteria: data(from: mockDataCombinatPurchaseCustomEventOr)!, unknownUserEvents: eventItems).getMatchedCriteria()
         XCTAssertEqual(matchedCriteriaId, nil)
     }
 
@@ -1135,7 +1135,7 @@ final class CombinationLogicEventTypeCriteria: XCTestCase {
         ]
 
         let expectedCriteriaId = "285"
-        let matchedCriteriaId = CriteriaCompletionChecker(anonymousCriteria: data(from: mockDataCombinatPurchaseCustomEventNot)!, anonymousEvents: eventItems).getMatchedCriteria()
+        let matchedCriteriaId = CriteriaCompletionChecker(unknownUserCriteria: data(from: mockDataCombinatPurchaseCustomEventNot)!, unknownUserEvents: eventItems).getMatchedCriteria()
         XCTAssertEqual(matchedCriteriaId, expectedCriteriaId)
     }
 
@@ -1153,7 +1153,7 @@ final class CombinationLogicEventTypeCriteria: XCTestCase {
             ]
         ]
 
-        let matchedCriteriaId = CriteriaCompletionChecker(anonymousCriteria: data(from: mockDataCombinatPurchaseCustomEventNot)!, anonymousEvents: eventItems).getMatchedCriteria()
+        let matchedCriteriaId = CriteriaCompletionChecker(unknownUserCriteria: data(from: mockDataCombinatPurchaseCustomEventNot)!, unknownUserEvents: eventItems).getMatchedCriteria()
         XCTAssertEqual(matchedCriteriaId, nil)
     }
 }

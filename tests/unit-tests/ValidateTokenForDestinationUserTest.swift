@@ -127,7 +127,7 @@ final class ValidateTokenForDestinationUserTest: XCTestCase {
     func testCriteriaUserIdTokenCheck() {  // criteria not met with merge false with setUserId
 
         let authDelegate = createAuthDelegate({
-            if self.localStorage.userIdAnnon == IterableAPI.userId {
+            if self.localStorage.userIdUnknown == IterableAPI.userId {
                 return  ValidateTokenForDestinationUserTest.userIdAnnonToken
             } else if IterableAPI.userId == ValidateTokenForDestinationUserTest.userId {
                 return  ValidateTokenForDestinationUserTest.mergeUserIdToken
@@ -138,7 +138,7 @@ final class ValidateTokenForDestinationUserTest: XCTestCase {
         })
 
         let config = IterableConfig()
-        config.enableAnonActivation = true
+        config.enableUnknownUserActivation = true
         config.authDelegate = authDelegate
         IterableAPI.initializeForTesting(apiKey: ValidateTokenForDestinationUserTest.apiKey,
                                                                    config: config,
@@ -154,7 +154,7 @@ final class ValidateTokenForDestinationUserTest: XCTestCase {
         guard let jsonData = mockData.data(using: .utf8) else { return }
         localStorage.criteriaData = jsonData
 
-        if let events = localStorage.anonymousUserEvents {
+        if let events = localStorage.unknownUserEvents {
             XCTAssertFalse(events.isEmpty, "Expected events to be logged")
        } else {
            XCTFail("Expected events to be logged but found nil")
@@ -165,7 +165,7 @@ final class ValidateTokenForDestinationUserTest: XCTestCase {
                                                               "count": 6,
                                                               "vaccinated": true])
 
-        let checker = CriteriaCompletionChecker(anonymousCriteria: jsonData, anonymousEvents:localStorage.anonymousUserEvents ?? [])
+        let checker = CriteriaCompletionChecker(unknownUserCriteria: jsonData, unknownUserEvents:localStorage.unknownUserEvents ?? [])
         let matchedCriteriaId = checker.getMatchedCriteria()
         XCTAssertEqual(matchedCriteriaId, "6")
        
@@ -192,17 +192,17 @@ final class ValidateTokenForDestinationUserTest: XCTestCase {
         
         wait(for: [expectation], timeout: testExpectationTimeout)
 
-        if let anonUser = localStorage.userIdAnnon {
+        if let anonUser = localStorage.userIdUnknown {
             XCTAssertFalse(anonUser.isEmpty, "Expected anon user")
        } else {
            XCTFail("Expected anon user but found nil")
        }
-        XCTAssertEqual(IterableAPI.userId, localStorage.userIdAnnon)
+        XCTAssertEqual(IterableAPI.userId, localStorage.userIdUnknown)
         XCTAssertNil(IterableAPI.email)
         XCTAssertEqual(IterableAPI.authToken, ValidateTokenForDestinationUserTest.userIdAnnonToken)
 
 
-        let identityResolution = IterableIdentityResolution(replayOnVisitorToKnown: true, mergeOnAnonymousToKnown: true)
+        let identityResolution = IterableIdentityResolution(replayOnVisitorToKnown: true, mergeOnUnknownToKnown: true)
         IterableAPI.setUserId(ValidateTokenForDestinationUserTest.userId, nil, identityResolution)
 
         // Verify "merge user" API call is made
@@ -229,7 +229,7 @@ final class ValidateTokenForDestinationUserTest: XCTestCase {
     func testCriteriaEmailTokenCheck() {  // criteria not met with merge false with setUserId
 
         let authDelegate = createAuthDelegate({
-            if self.localStorage.userIdAnnon == IterableAPI.userId {
+            if self.localStorage.userIdUnknown == IterableAPI.userId {
                 return  ValidateTokenForDestinationUserTest.userIdAnnonToken
             } else if IterableAPI.userId == ValidateTokenForDestinationUserTest.userId {
                 return  ValidateTokenForDestinationUserTest.mergeUserIdToken
@@ -242,7 +242,7 @@ final class ValidateTokenForDestinationUserTest: XCTestCase {
         })
 
         let config = IterableConfig()
-        config.enableAnonActivation = true
+        config.enableUnknownUserActivation = true
         config.authDelegate = authDelegate
         IterableAPI.initializeForTesting(apiKey: ValidateTokenForDestinationUserTest.apiKey,
                                                                    config: config,
@@ -258,7 +258,7 @@ final class ValidateTokenForDestinationUserTest: XCTestCase {
         guard let jsonData = mockData.data(using: .utf8) else { return }
         localStorage.criteriaData = jsonData
 
-        if let events = localStorage.anonymousUserEvents {
+        if let events = localStorage.unknownUserEvents {
             XCTAssertFalse(events.isEmpty, "Expected events to be logged")
        } else {
            XCTFail("Expected events to be logged but found nil")
@@ -269,7 +269,7 @@ final class ValidateTokenForDestinationUserTest: XCTestCase {
                                                               "count": 6,
                                                               "vaccinated": true])
 
-        let checker = CriteriaCompletionChecker(anonymousCriteria: jsonData, anonymousEvents:localStorage.anonymousUserEvents ?? [])
+        let checker = CriteriaCompletionChecker(unknownUserCriteria: jsonData, unknownUserEvents:localStorage.unknownUserEvents ?? [])
         let matchedCriteriaId = checker.getMatchedCriteria()
         XCTAssertEqual(matchedCriteriaId, "6")
 
@@ -296,16 +296,16 @@ final class ValidateTokenForDestinationUserTest: XCTestCase {
 
         wait(for: [expectation], timeout: testExpectationTimeout)
 
-        if let anonUser = localStorage.userIdAnnon {
+        if let anonUser = localStorage.userIdUnknown {
             XCTAssertFalse(anonUser.isEmpty, "Expected anon user")
        } else {
            XCTFail("Expected anon user but found nil")
        }
-        XCTAssertEqual(IterableAPI.userId, localStorage.userIdAnnon)
+        XCTAssertEqual(IterableAPI.userId, localStorage.userIdUnknown)
         XCTAssertNil(IterableAPI.email)
         XCTAssertEqual(IterableAPI.authToken, ValidateTokenForDestinationUserTest.userIdAnnonToken)
 
-        let identityResolution = IterableIdentityResolution(replayOnVisitorToKnown: true, mergeOnAnonymousToKnown: true)
+        let identityResolution = IterableIdentityResolution(replayOnVisitorToKnown: true, mergeOnUnknownToKnown: true)
         IterableAPI.setEmail(ValidateTokenForDestinationUserTest.email, nil, identityResolution)
 
         // Verify "merge user" API call is made

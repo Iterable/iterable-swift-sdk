@@ -126,10 +126,10 @@ import UIKit
             callback?(false)
         }
         
-        if let implementation, config.enableAnonActivation, !implementation.isSDKInitialized(), implementation.getVisitorUsageTracked() {
-            ITBInfo("AUT ENABLED AND CONSENT GIVEN - Criteria fetched")
-            implementation.anonymousUserManager.getAnonCriteria()
-            implementation.anonymousUserManager.updateAnonSession()
+        if let implementation, config.enableUnknownUserActivation, !implementation.isSDKInitialized(), implementation.getVisitorUsageTracked() {
+            ITBInfo("UUA ENABLED AND CONSENT GIVEN - Criteria fetched")
+            implementation.unknownUserManager.getUnknownUserCriteria()
+            implementation.unknownUserManager.updateUnknownUserSession()
         }
     }
 

@@ -99,7 +99,7 @@ final class NestedFieldSupportForArrayData: XCTestCase {
 
 
         let expectedCriteriaId = "168"
-        let matchedCriteriaId = CriteriaCompletionChecker(anonymousCriteria: data(from: mockData)!, anonymousEvents: eventItems).getMatchedCriteria()
+        let matchedCriteriaId = CriteriaCompletionChecker(unknownUserCriteria: data(from: mockData)!, unknownUserEvents: eventItems).getMatchedCriteria()
         XCTAssertEqual(matchedCriteriaId, expectedCriteriaId)
     }
 
@@ -128,7 +128,7 @@ final class NestedFieldSupportForArrayData: XCTestCase {
             ]
         ]
 
-        let matchedCriteriaId = CriteriaCompletionChecker(anonymousCriteria: data(from: mockData)!, anonymousEvents: eventItems).getMatchedCriteria()
+        let matchedCriteriaId = CriteriaCompletionChecker(unknownUserCriteria: data(from: mockData)!, unknownUserEvents: eventItems).getMatchedCriteria()
         XCTAssertEqual(matchedCriteriaId, nil)
     }
 
@@ -206,7 +206,7 @@ final class NestedFieldSupportForArrayData: XCTestCase {
 
 
         let expectedCriteriaId = "436"
-        let matchedCriteriaId = CriteriaCompletionChecker(anonymousCriteria: data(from: mokeDataForUserArray)!, anonymousEvents: eventItems).getMatchedCriteria()
+        let matchedCriteriaId = CriteriaCompletionChecker(unknownUserCriteria: data(from: mokeDataForUserArray)!, unknownUserEvents: eventItems).getMatchedCriteria()
         XCTAssertEqual(matchedCriteriaId, expectedCriteriaId)
     }
 
@@ -236,7 +236,7 @@ final class NestedFieldSupportForArrayData: XCTestCase {
             ]
           ]
 
-        let matchedCriteriaId = CriteriaCompletionChecker(anonymousCriteria: data(from: mokeDataForUserArray)!, anonymousEvents: eventItems).getMatchedCriteria()
+        let matchedCriteriaId = CriteriaCompletionChecker(unknownUserCriteria: data(from: mokeDataForUserArray)!, unknownUserEvents: eventItems).getMatchedCriteria()
         XCTAssertEqual(matchedCriteriaId, nil)
     }
 
@@ -301,7 +301,7 @@ final class NestedFieldSupportForArrayData: XCTestCase {
 
 
         let expectedCriteriaId = "459"
-        let matchedCriteriaId = CriteriaCompletionChecker(anonymousCriteria: data(from: mokeDataForEventArray)!, anonymousEvents: eventItems).getMatchedCriteria()
+        let matchedCriteriaId = CriteriaCompletionChecker(unknownUserCriteria: data(from: mokeDataForEventArray)!, unknownUserEvents: eventItems).getMatchedCriteria()
         XCTAssertEqual(matchedCriteriaId, expectedCriteriaId)
     }
 
@@ -320,7 +320,7 @@ final class NestedFieldSupportForArrayData: XCTestCase {
             ]
           ]
 
-        let matchedCriteriaId = CriteriaCompletionChecker(anonymousCriteria: data(from: mokeDataForEventArray)!, anonymousEvents: eventItems).getMatchedCriteria()
+        let matchedCriteriaId = CriteriaCompletionChecker(unknownUserCriteria: data(from: mokeDataForEventArray)!, unknownUserEvents: eventItems).getMatchedCriteria()
         XCTAssertEqual(matchedCriteriaId, nil)
     }
 }
