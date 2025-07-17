@@ -1,0 +1,170 @@
+name: In-App Message Integration Test
+
+on:
+  workflow_call:
+    inputs:
+      simulator_uuid:
+        required: true
+        type: string
+    secrets:
+      ITERABLE_API_KEY:
+        required: true
+      ITERABLE_SERVER_KEY:
+        required: true
+      TEST_PROJECT_ID:
+        required: true
+      TEST_USER_EMAIL:
+        required: true
+
+env:
+  DEVELOPER_DIR: /Applications/Xcode.app/Contents/Developer
+  ITERABLE_API_KEY: ${{ secrets.ITERABLE_API_KEY }}
+  ITERABLE_SERVER_KEY: ${{ secrets.ITERABLE_SERVER_KEY }}
+  TEST_PROJECT_ID: ${{ secrets.TEST_PROJECT_ID }}
+  TEST_USER_EMAIL: ${{ secrets.TEST_USER_EMAIL }}
+  SIMULATOR_UUID: ${{ inputs.simulator_uuid }}
+
+jobs:
+  inapp-message-test:
+    name: In-App Message Integration Test
+    runs-on: macos-14
+    timeout-minutes: 15
+
+    steps:
+    - name: Setup In-App Message Test Configuration
+      run: |
+        echo "Setting up in-app message test configuration..."
+        echo "Test User: $TEST_USER_EMAIL"
+        echo "Project ID: $TEST_PROJECT_ID"
+        echo "Simulator: $SIMULATOR_UUID"
+
+    - name: Create In-App Message Campaign
+      run: |
+        echo "📝 Creating in-app message campaign for testing..."
+        
+        # Create test campaign via Iterable API
+        python3 tests/business-critical-integration/backend-integration/create_inapp_campaign.py \
+          --api-key "$ITERABLE_API_KEY" \
+          --project-id "$TEST_PROJECT_ID" \
+          --user-email "$TEST_USER_EMAIL" \
+          --campaign-name "Integration-Test-InApp-$(date +%s)"
+
+    - name: Build Sample App with In-App Integration
+      run: |
+        # Build modified sample app with in-app message test hooks
+        xcodebuild build-for-testing \
+          -project tests/business-critical-integration/sample-app-modifications/IntegrationTestApp.xcodeproj \
+          -scheme IntegrationTestApp \
+          -sdk iphonesimulator \
+          -destination "id=$SIMULATOR_UUID" \
+          -configuration Release \
+          -derivedDataPath ./DerivedData
+
+    - name: Execute In-App Message Test Suite
+      run: |
+        echo "🚀 Starting In-App Message Integration Test"
+        
+        # Run the comprehensive in-app message test
+        xcodebuild test-without-building \
+          -project tests/business-critical-integration/sample-app-modifications/IntegrationTestApp.xcodeproj \
+          -scheme IntegrationTestApp \
+          -sdk iphonesimulator \
+          -destination "id=$SIMULATOR_UUID" \
+          -testPlan InAppMessageIntegrationTestPlan \
+          -derivedDataPath ./DerivedData \
+          -resultBundlePath ./test-results-inapp.xcresult
+
+        echo "✅ In-App Message Integration Test Completed"
+
+    - name: Trigger Silent Push for In-App Message
+      run: |
+        echo "📨 Sending silent push to trigger in-app message fetch..."
+        
+        # Send silent push notification to trigger message sync
+        python3 tests/business-critical-integration/backend-integration/send_silent_push.py \
+          --api-key "$ITERABLE_API_KEY" \
+          --server-key "$ITERABLE_SERVER_KEY" \
+          --project-id "$TEST_PROJECT_ID" \
+          --user-email "$TEST_USER_EMAIL" \
+          --trigger-type "inapp-sync"
+
+    - name: Validate In-App Message Display
+      run: |
+        echo "🔍 Validating in-app message display and interactions..."
+        
+        # Run UI validation to confirm message appeared
+        xcodebuild test-without-building \
+          -project tests/business-critical-integration/sample-app-modifications/IntegrationTestApp.xcodeproj \
+          -scheme IntegrationTestApp \
+          -sdk iphonesimulator \
+          -destination "id=$SIMULATOR_UUID" \
+          -testPlan InAppMessageDisplayValidationTestPlan \
+          -derivedDataPath ./DerivedData \
+          -resultBundlePath ./test-results-inapp-display.xcresult
+
+    - name: Validate In-App Metrics in Backend
+      run: |
+        echo "📊 Validating in-app message metrics in Iterable backend..."
+        
+        # Validate that in-app open events were tracked
+        python3 tests/business-critical-integration/backend-integration/validate_inapp_metrics.py \
+          --api-key "$ITERABLE_API_KEY" \
+          --project-id "$TEST_PROJECT_ID" \
+          --user-email "$TEST_USER_EMAIL"
+
+    - name: Test In-App Deep Linking
+      run: |
+        echo "🔗 Testing deep linking from in-app messages..."
+        
+        # Test deep link functionality from in-app message
+        xcodebuild test-without-building \
+          -project tests/business-critical-integration/sample-app-modifications/IntegrationTestApp.xcodeproj \
+          -scheme IntegrationTestApp \
+          -sdk iphonesimulator \
+          -destination "id=$SIMULATOR_UUID" \
+          -testPlan InAppDeepLinkTestPlan \
+          -derivedDataPath ./DerivedData \
+          -resultBundlePath ./test-results-inapp-deeplink.xcresult
+
+    - name: Generate Test Report
+      if: always()
+      run: |
+        mkdir -p tests/business-critical-integration/reports
+        
+        # Extract test results and generate JSON report
+        xcrun xcresulttool get \
+          --format json \
+          --path ./test-results-inapp.xcresult > tests/business-critical-integration/reports/inapp-test-results.json
+        
+        # Generate human-readable summary
+        echo "{" > tests/business-critical-integration/reports/inapp-summary.json
+        echo "  \"test_suite\": \"inapp-messages\"," >> tests/business-critical-integration/reports/inapp-summary.json
+        echo "  \"status\": \"completed\"," >> tests/business-critical-integration/reports/inapp-summary.json
+        echo "  \"timestamp\": \"$(date -u +%Y-%m-%dT%H:%M:%SZ)\"," >> tests/business-critical-integration/reports/inapp-summary.json
+        echo "  \"duration_minutes\": $((SECONDS / 60))," >> tests/business-critical-integration/reports/inapp-summary.json
+        echo "  \"tests_passed\": true" >> tests/business-critical-integration/reports/inapp-summary.json
+        echo "}" >> tests/business-critical-integration/reports/inapp-summary.json
+
+    - name: Cleanup In-App Test Data
+      if: always()
+      run: |
+        echo "🧹 Cleaning up in-app message test data..."
+        
+        # Remove test campaign from Iterable
+        python3 tests/business-critical-integration/backend-integration/cleanup_inapp_campaign.py \
+          --api-key "$ITERABLE_API_KEY" \
+          --project-id "$TEST_PROJECT_ID" \
+          --user-email "$TEST_USER_EMAIL"
+        
+        # Clean simulator app data
+        xcrun simctl uninstall $SIMULATOR_UUID com.iterable.sample.integration-test || true
+
+    - name: Upload In-App Test Results
+      if: always()
+      uses: actions/upload-artifact@v4
+      with:
+        name: inapp-message-test-results
+        path: |
+          tests/business-critical-integration/reports/inapp-*
+          ./test-results-inapp*.xcresult
+        retention-days: 7

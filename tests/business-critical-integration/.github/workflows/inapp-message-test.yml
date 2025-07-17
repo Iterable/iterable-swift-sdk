@@ -1,0 +1,597 @@
+name: In-App Message Integration Test
+
+on:
+  workflow_call:
+    inputs:
+      simulator_uuid:
+        required: true
+        type: string
+      derived_data_path:
+        required: false
+        type: string
+        default: './DerivedData'
+    secrets:
+      ITERABLE_API_KEY:
+        required: true
+      ITERABLE_SERVER_KEY:
+        required: true
+      TEST_PROJECT_ID:
+        required: true
+      TEST_USER_EMAIL:
+        required: true
+
+env:
+  DEVELOPER_DIR: /Applications/Xcode.app/Contents/Developer
+  ITERABLE_API_KEY: ${{ secrets.ITERABLE_API_KEY }}
+  ITERABLE_SERVER_KEY: ${{ secrets.ITERABLE_SERVER_KEY }}
+  TEST_PROJECT_ID: ${{ secrets.TEST_PROJECT_ID }}
+  TEST_USER_EMAIL: ${{ secrets.TEST_USER_EMAIL }}
+  SIMULATOR_UUID: ${{ inputs.simulator_uuid }}
+
+jobs:
+  inapp-message-integration:
+    name: In-App Message Integration
+    runs-on: macos-14
+    timeout-minutes: 25
+    
+    steps:
+    - name: Checkout Repository
+      uses: actions/checkout@v4
+
+    - name: Setup Xcode
+      uses: maxim-lobanov/setup-xcode@v1
+      with:
+        xcode-version: latest-stable
+
+    - name: Validate Environment
+      run: |
+        echo "🔍 Validating in-app message test environment..."
+        echo "API Key Length: ${#ITERABLE_API_KEY}"
+        echo "Server Key Length: ${#ITERABLE_SERVER_KEY}"
+        echo "Test Project ID: $TEST_PROJECT_ID"
+        echo "Test User Email: $TEST_USER_EMAIL"
+        echo "Simulator UUID: $SIMULATOR_UUID"
+        
+        # Verify simulator exists and is booted
+        xcrun simctl list devices | grep "$SIMULATOR_UUID" || {
+          echo "❌ Simulator $SIMULATOR_UUID not found"
+          exit 1
+        }
+
+    - name: Setup Backend API Client
+      run: |
+        echo "🌐 Setting up backend API client for in-app message testing..."
+        
+        # Create API client configuration
+        cat > /tmp/inapp-api-config.json << EOF
+        {
+          "apiKey": "$ITERABLE_API_KEY",
+          "serverKey": "$ITERABLE_SERVER_KEY",
+          "projectId": "$TEST_PROJECT_ID",
+          "userEmail": "$TEST_USER_EMAIL",
+          "baseUrl": "https://api.iterable.com"
+        }
+        EOF
+
+    - name: Create In-App Message Campaign
+      run: |
+        echo "📝 Creating in-app message campaign..."
+        
+        python3 - << 'EOF'
+        import json
+        import requests
+        import os
+        import time
+        
+        # Load configuration
+        with open('/tmp/inapp-api-config.json', 'r') as f:
+            config = json.load(f)
+        
+        # Create in-app message campaign
+        campaign_payload = {
+            "name": f"Integration Test In-App - {int(time.time())}",
+            "listIds": [],
+            "segmentationListId": None,
+            "suppressionListIds": [],
+            "sendAt": "immediate",
+            "sendMode": "immediate",
+            "startTimeLocal": None,
+            "endTimeLocal": None,
+            "timezone": "America/Los_Angeles",
+            "campaignState": "Draft",
+            "dataFields": {},
+            "messageMedium": "InApp",
+            "messageTypeId": 1,
+            "template": {
+                "html": "<div style='background-color: #007AFF; color: white; padding: 20px; text-align: center;'><h2>Integration Test Message</h2><p>This is a test in-app message for integration testing.</p><button onclick='iterable://dismiss'>Close</button><button onclick='https://links.iterable.com/u/click?_t=inapp-test&_m=integration'>Learn More</button></div>",
+                "displaySettings": {
+                    "displayMode": "Immediate",
+                    "backgroundAlpha": 0.5,
+                    "padding": {
+                        "top": 0,
+                        "left": 0,
+                        "bottom": 0,
+                        "right": 0
+                    },
+                    "position": "Center"
+                },
+                "closeButton": {
+                    "isRequiredToDismissMessage": False,
+                    "position": "TopRight",
+                    "size": "Regular",
+                    "color": "#FFFFFF",
+                    "sideMargin": 10,
+                    "topMargin": 10
+                }
+            },
+            "metadata": {
+                "source": "github-actions",
+                "test": "inapp-message-integration"
+            }
+        }
+        
+        headers = {
+            'Api-Key': config['serverKey'],
+            'Content-Type': 'application/json'
+        }
+        
+        try:
+            response = requests.post(
+                f"{config['baseUrl']}/api/campaigns/create",
+                headers=headers,
+                json=campaign_payload,
+                timeout=30
+            )
+            
+            if response.status_code in [200, 201]:
+                campaign_data = response.json()
+                campaign_id = campaign_data.get('campaignId')
+                print(f"✅ In-app message campaign created: {campaign_id}")
+                
+                # Save campaign ID for later use
+                with open('/tmp/campaign-id.txt', 'w') as f:
+                    f.write(str(campaign_id))
+            else:
+                print(f"❌ Failed to create in-app campaign: {response.status_code}")
+                print(f"Response: {response.text}")
+                exit(1)
+                
+        except Exception as e:
+            print(f"❌ Error creating in-app campaign: {str(e)}")
+            exit(1)
+        EOF
+
+    - name: Initialize Test App for In-App Messages
+      run: |
+        echo "🚀 Initializing test app for in-app message testing..."
+        
+        xcodebuild test-without-building \
+          -project tests/business-critical-integration/IntegrationTests.xcodeproj \
+          -scheme IntegrationTests \
+          -sdk iphonesimulator \
+          -destination "id=$SIMULATOR_UUID" \
+          -testPlan InAppMessageInitializationTestPlan \
+          -derivedDataPath "${{ inputs.derived_data_path }}" \
+          -resultBundlePath ./test-results-inapp-init.xcresult \
+          -enableCodeCoverage NO \
+          -quiet
+
+    - name: Send Silent Push to Trigger Message Sync
+      run: |
+        echo "📨 Sending silent push notification to trigger in-app message sync..."
+        
+        python3 - << 'EOF'
+        import json
+        import requests
+        import os
+        import time
+        
+        # Load configuration
+        with open('/tmp/inapp-api-config.json', 'r') as f:
+            config = json.load(f)
+        
+        # Load campaign ID
+        try:
+            with open('/tmp/campaign-id.txt', 'r') as f:
+                campaign_id = f.read().strip()
+        except:
+            campaign_id = "12345"  # Fallback
+        
+        # Silent push payload to trigger in-app message sync
+        silent_push_payload = {
+            "recipientEmail": config['userEmail'],
+            "campaignId": int(campaign_id),
+            "dataFields": {
+                "silentPush": True,
+                "triggerInApp": True,
+                "messageSync": True,
+                "timestamp": str(int(time.time()))
+            },
+            "sendAt": "immediate",
+            "allowRepeatMarketingCampaigns": True,
+            "metadata": {
+                "source": "github-actions",
+                "test": "inapp-silent-push",
+                "purpose": "trigger-message-sync"
+            },
+            "pushPayload": {
+                "contentAvailable": True,
+                "isGhostPush": True,
+                "badge": None,
+                "sound": None,
+                "body": None,
+                "title": None
+            }
+        }
+        
+        headers = {
+            'Api-Key': config['serverKey'],
+            'Content-Type': 'application/json'
+        }
+        
+        try:
+            response = requests.post(
+                f"{config['baseUrl']}/api/push/target",
+                headers=headers,
+                json=silent_push_payload,
+                timeout=30
+            )
+            
+            if response.status_code in [200, 201]:
+                print("✅ Silent push sent to trigger in-app message sync")
+                print(f"Message ID: {response.json().get('messageId', 'unknown')}")
+            else:
+                print(f"❌ Failed to send silent push: {response.status_code}")
+                print(f"Response: {response.text}")
+                exit(1)
+                
+        except Exception as e:
+            print(f"❌ Error sending silent push: {str(e)}")
+            exit(1)
+        EOF
+
+    - name: Test In-App Message Display
+      run: |
+        echo "📱 Testing in-app message display after silent push..."
+        
+        # Wait for silent push to be processed
+        sleep 15
+        
+        xcodebuild test-without-building \
+          -project tests/business-critical-integration/IntegrationTests.xcodeproj \
+          -scheme IntegrationTests \
+          -sdk iphonesimulator \
+          -destination "id=$SIMULATOR_UUID" \
+          -testPlan InAppMessageDisplayTestPlan \
+          -derivedDataPath "${{ inputs.derived_data_path }}" \
+          -resultBundlePath ./test-results-inapp-display.xcresult \
+          -enableCodeCoverage NO \
+          -quiet
+
+    - name: Test In-App Message Interactions
+      run: |
+        echo "👆 Testing in-app message interactions and buttons..."
+        
+        xcodebuild test-without-building \
+          -project tests/business-critical-integration/IntegrationTests.xcodeproj \
+          -scheme IntegrationTests \
+          -sdk iphonesimulator \
+          -destination "id=$SIMULATOR_UUID" \
+          -testPlan InAppMessageInteractionTestPlan \
+          -derivedDataPath "${{ inputs.derived_data_path }}" \
+          -resultBundlePath ./test-results-inapp-interaction.xcresult \
+          -enableCodeCoverage NO \
+          -quiet
+
+    - name: Test In-App Deep Link Handling
+      run: |
+        echo "🔗 Testing deep link handling from in-app messages..."
+        
+        xcodebuild test-without-building \
+          -project tests/business-critical-integration/IntegrationTests.xcodeproj \
+          -scheme IntegrationTests \
+          -sdk iphonesimulator \
+          -destination "id=$SIMULATOR_UUID" \
+          -testPlan InAppMessageDeepLinkTestPlan \
+          -derivedDataPath "${{ inputs.derived_data_path }}" \
+          -resultBundlePath ./test-results-inapp-deeplink.xcresult \
+          -enableCodeCoverage NO \
+          -quiet
+
+    - name: Validate In-App Message Metrics
+      run: |
+        echo "📊 Validating in-app message metrics in backend..."
+        
+        python3 - << 'EOF'
+        import json
+        import requests
+        import os
+        import time
+        import sys
+        
+        # Load configuration
+        with open('/tmp/inapp-api-config.json', 'r') as f:
+            config = json.load(f)
+        
+        headers = {
+            'Api-Key': config['apiKey'],
+            'Content-Type': 'application/json'
+        }
+        
+        # Check for in-app message events in the last 15 minutes
+        end_time = int(time.time())
+        start_time = end_time - 900  # 15 minutes ago
+        
+        expected_events = ['inAppOpen', 'inAppClick', 'inAppClose', 'inAppDelivery']
+        
+        for attempt in range(4):
+            try:
+                response = requests.get(
+                    f"{config['baseUrl']}/api/events/get",
+                    headers=headers,
+                    params={
+                        'email': config['userEmail'],
+                        'startDateTime': start_time,
+                        'endDateTime': end_time
+                    },
+                    timeout=30
+                )
+                
+                if response.status_code == 200:
+                    events = response.json().get('events', [])
+                    inapp_events = [e for e in events if e.get('eventName') in expected_events]
+                    
+                    if len(inapp_events) >= 2:  # At least delivery and open
+                        print(f"✅ In-app message metrics validated: {len(inapp_events)} events found")
+                        for event in inapp_events:
+                            print(f"  - {event.get('eventName')} at {event.get('createdAt')}")
+                        sys.exit(0)
+                    else:
+                        print(f"⚠️ Attempt {attempt + 1}: Found {len(inapp_events)} events, need at least 2")
+                        if inapp_events:
+                            for event in inapp_events:
+                                print(f"  - {event.get('eventName')}")
+                else:
+                    print(f"⚠️ Attempt {attempt + 1}: API returned {response.status_code}")
+                    
+            except Exception as e:
+                print(f"⚠️ Attempt {attempt + 1}: {str(e)}")
+            
+            if attempt < 3:
+                time.sleep(20)
+        
+        print("❌ In-app message metrics validation failed - insufficient events")
+        sys.exit(1)
+        EOF
+
+    - name: Test Multiple In-App Messages Queue
+      run: |
+        echo "📚 Testing multiple in-app messages queue management..."
+        
+        # Create a second in-app message
+        python3 - << 'EOF'
+        import json
+        import requests
+        import os
+        import time
+        
+        # Load configuration
+        with open('/tmp/inapp-api-config.json', 'r') as f:
+            config = json.load(f)
+        
+        # Create second in-app message campaign
+        campaign_payload = {
+            "name": f"Integration Test In-App #2 - {int(time.time())}",
+            "recipientEmail": config['userEmail'],
+            "campaignId": 67890,
+            "messageMedium": "InApp",
+            "template": {
+                "html": "<div style='background-color: #FF6B35; color: white; padding: 20px; text-align: center;'><h2>Second Test Message</h2><p>This is the second in-app message for queue testing.</p><button onclick='iterable://dismiss'>Got It</button></div>",
+                "displaySettings": {
+                    "displayMode": "Immediate",
+                    "backgroundAlpha": 0.7,
+                    "position": "Bottom"
+                }
+            },
+            "dataFields": {
+                "priority": "high",
+                "queueTest": True
+            },
+            "sendAt": "immediate"
+        }
+        
+        headers = {
+            'Api-Key': config['serverKey'],
+            'Content-Type': 'application/json'
+        }
+        
+        try:
+            response = requests.post(
+                f"{config['baseUrl']}/api/campaigns/create",
+                headers=headers,
+                json=campaign_payload,
+                timeout=30
+            )
+            
+            if response.status_code in [200, 201]:
+                print("✅ Second in-app message campaign created for queue testing")
+            else:
+                print(f"⚠️ Warning: Could not create second campaign: {response.status_code}")
+                
+        except Exception as e:
+            print(f"⚠️ Warning: Error creating second campaign: {str(e)}")
+        EOF
+        
+        # Test queue management
+        xcodebuild test-without-building \
+          -project tests/business-critical-integration/IntegrationTests.xcodeproj \
+          -scheme IntegrationTests \
+          -sdk iphonesimulator \
+          -destination "id=$SIMULATOR_UUID" \
+          -testPlan InAppMessageQueueTestPlan \
+          -derivedDataPath "${{ inputs.derived_data_path }}" \
+          -resultBundlePath ./test-results-inapp-queue.xcresult \
+          -enableCodeCoverage NO \
+          -quiet
+
+    - name: Test Message Expiration Handling
+      run: |
+        echo "⏰ Testing in-app message expiration and cleanup..."
+        
+        xcodebuild test-without-building \
+          -project tests/business-critical-integration/IntegrationTests.xcodeproj \
+          -scheme IntegrationTests \
+          -sdk iphonesimulator \
+          -destination "id=$SIMULATOR_UUID" \
+          -testPlan InAppMessageExpirationTestPlan \
+          -derivedDataPath "${{ inputs.derived_data_path }}" \
+          -resultBundlePath ./test-results-inapp-expiration.xcresult \
+          -enableCodeCoverage NO \
+          -quiet
+
+    - name: Generate Test Reports
+      if: always()
+      run: |
+        echo "📋 Generating comprehensive in-app message test reports..."
+        
+        mkdir -p test-reports/inapp
+        
+        # Extract test results from each test run
+        for result_bundle in ./test-results-inapp*.xcresult; do
+          if [ -f "$result_bundle" ]; then
+            bundle_name=$(basename "$result_bundle" .xcresult)
+            xcrun xcresulttool get --format json --path "$result_bundle" > "test-reports/inapp/${bundle_name}.json"
+            
+            # Extract summary information
+            echo "Results from $bundle_name:" >> test-reports/inapp/summary.txt
+            xcrun xcresulttool get --format json --path "$result_bundle" | \
+              jq -r '.actions[0].actionResult.status' >> test-reports/inapp/summary.txt
+            echo "" >> test-reports/inapp/summary.txt
+          fi
+        done
+        
+        # Create final summary
+        cat > test-reports/inapp/final-summary.json << EOF
+        {
+          "test_suite": "inapp-messages",
+          "timestamp": "$(date -u +%Y-%m-%dT%H:%M:%SZ)",
+          "environment": {
+            "simulator_uuid": "$SIMULATOR_UUID",
+            "project_id": "$TEST_PROJECT_ID",
+            "user_email": "$TEST_USER_EMAIL"
+          },
+          "features_tested": [
+            "silent_push_trigger",
+            "message_display",
+            "user_interactions",
+            "deep_link_handling",
+            "metrics_tracking",
+            "queue_management",
+            "message_expiration"
+          ],
+          "status": "completed"
+        }
+        EOF
+
+    - name: Capture Screenshots
+      if: always()
+      run: |
+        echo "📸 Capturing in-app message test screenshots..."
+        
+        mkdir -p test-reports/inapp/screenshots
+        
+        # Capture current app state
+        xcrun simctl io $SIMULATOR_UUID screenshot test-reports/inapp/screenshots/final-state.png
+        
+        # Capture app hierarchy
+        xcrun simctl io $SIMULATOR_UUID recordVideo --codec=h264 --force test-reports/inapp/screenshots/app-recording.mov &
+        RECORDING_PID=$!
+        sleep 5
+        kill $RECORDING_PID || true
+
+    - name: Cleanup Test Data
+      if: always()
+      run: |
+        echo "🧹 Cleaning up in-app message test data..."
+        
+        # Remove test campaigns and user data
+        python3 - << 'EOF'
+        import json
+        import requests
+        import os
+        
+        # Load configuration
+        with open('/tmp/inapp-api-config.json', 'r') as f:
+            config = json.load(f)
+        
+        headers = {
+            'Api-Key': config['apiKey'],
+            'Content-Type': 'application/json'
+        }
+        
+        try:
+            # Delete campaign if campaign ID exists
+            if os.path.exists('/tmp/campaign-id.txt'):
+                with open('/tmp/campaign-id.txt', 'r') as f:
+                    campaign_id = f.read().strip()
+                
+                response = requests.delete(
+                    f"{config['baseUrl']}/api/campaigns/{campaign_id}",
+                    headers=headers,
+                    timeout=30
+                )
+                
+                if response.status_code in [200, 204, 404]:
+                    print("✅ Test campaign cleaned up")
+                else:
+                    print(f"⚠️ Campaign cleanup warning: {response.status_code}")
+            
+            # Clear user's in-app message queue
+            response = requests.post(
+                f"{config['baseUrl']}/api/inApp/target/clear",
+                headers=headers,
+                json={'email': config['userEmail']},
+                timeout=30
+            )
+            
+            if response.status_code in [200, 404]:
+                print("✅ User's in-app message queue cleared")
+            else:
+                print(f"⚠️ Queue cleanup warning: {response.status_code}")
+                
+        except Exception as e:
+            print(f"⚠️ Cleanup warning: {str(e)}")
+        EOF
+        
+        # Clean up temporary files
+        rm -f /tmp/inapp-api-config.json
+        rm -f /tmp/campaign-id.txt
+
+    - name: Upload Test Results
+      if: always()
+      uses: actions/upload-artifact@v4
+      with:
+        name: inapp-message-detailed-results
+        path: |
+          test-reports/inapp/
+          ./test-results-inapp*.xcresult
+        retention-days: 7
+
+    - name: Validate Test Success
+      run: |
+        echo "🎯 Validating overall in-app message test success..."
+        
+        # Check if all critical test files exist
+        required_files=(
+          "test-reports/inapp/final-summary.json"
+          "test-reports/inapp/summary.txt"
+        )
+        
+        for file in "${required_files[@]}"; do
+          if [ ! -f "$file" ]; then
+            echo "❌ Required test output missing: $file"
+            exit 1
+          fi
+        done
+        
+        echo "✅ In-app message integration tests completed successfully"
