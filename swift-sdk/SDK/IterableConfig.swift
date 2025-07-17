@@ -74,9 +74,9 @@ public struct IterableAPIMobileFrameworkInfo: Codable {
     @objc func onAuthFailure(_ authFailure: AuthFailure)
 }
 
-/// The delegate for getting the UserId once annon session tracked
-@objc public protocol IterableAnonUserDelegate: AnyObject {
-    @objc func onAnonUserCreated(userId: String)
+/// The delegate for getting the UserId once unknown user session tracked
+@objc public protocol IterableUnknownUserHandler: AnyObject {
+    @objc func onUnknownUserCreated(userId: String)
 }
 
 /// Iterable Configuration Object. Use this when initializing the API.
@@ -106,8 +106,8 @@ public class IterableConfig: NSObject {
     /// Implement this protocol to enable token-based authentication with the Iterable SDK
     public weak var authDelegate: IterableAuthDelegate?
 
-    /// Implement this protocol to get userId once the userId set for AnonUser
-    public weak var anonUserDelegate: IterableAnonUserDelegate?
+    /// Implement this protocol to get userId once the userId set for Unknown User
+    public weak var unknownUserHandler: IterableUnknownUserHandler?
 
 
     /// When set to `true`, IterableSDK will automatically register and deregister
@@ -157,7 +157,7 @@ public class IterableConfig: NSObject {
     public var dataRegion: String = IterableDataRegion.US
     
     /// When set to `true`, IterableSDK will track all events when users are not logged into the application.
-    public var enableAnonActivation = true
+    public var enableUnknownUserActivation = true
     
     /// Enables fetching of anonymous user criteria on foreground when set to `true`
     /// By default, the SDK will fetch anonymous user criteria on foreground.

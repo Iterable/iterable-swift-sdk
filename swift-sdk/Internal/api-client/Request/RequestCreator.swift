@@ -62,7 +62,7 @@ struct RequestCreator {
         
         setCurrentUser(inDict: &body)
         
-        if auth.email == nil, (auth.userId != nil || auth.userIdAnon != nil) {
+        if auth.email == nil, (auth.userId != nil || auth.userIdUnknownUser != nil) {
             body[JsonKey.preferUserId] = true
         }
         
@@ -79,7 +79,7 @@ struct RequestCreator {
         
         setCurrentUser(inDict: &body)
         
-        if auth.email == nil, (auth.userId != nil || auth.userIdAnon != nil) {
+        if auth.email == nil, (auth.userId != nil || auth.userIdUnknownUser != nil) {
             body[JsonKey.preferUserId] = true
         }
         
@@ -105,7 +105,7 @@ struct RequestCreator {
         var body: [String: Any] = [JsonKey.Commerce.user: apiUserDict,
                                    JsonKey.Commerce.items: itemsToSerialize]
         
-        if auth.email == nil, (auth.userId != nil || auth.userIdAnon != nil) {
+        if auth.email == nil, (auth.userId != nil || auth.userIdUnknownUser != nil) {
             body[JsonKey.preferUserId] = true
         }
         return .success(.post(createPostRequest(path: Const.Path.updateCart, body: body)))
@@ -125,7 +125,7 @@ struct RequestCreator {
                                    JsonKey.Body.createdAt: createdAt,
                                    JsonKey.Commerce.items: itemsToSerialize]
         
-        if auth.email == nil, (auth.userId != nil || auth.userIdAnon != nil) {
+        if auth.email == nil, (auth.userId != nil || auth.userIdUnknownUser != nil) {
             body[JsonKey.preferUserId] = true
         }
 
@@ -152,7 +152,7 @@ struct RequestCreator {
                                    JsonKey.Commerce.items: itemsToSerialize,
                                    JsonKey.Commerce.total: total]
         
-        if auth.email == nil, (auth.userId != nil || auth.userIdAnon != nil) {
+        if auth.email == nil, (auth.userId != nil || auth.userIdUnknownUser != nil) {
             body[JsonKey.preferUserId] = true
         }
         
@@ -190,7 +190,7 @@ struct RequestCreator {
                                    JsonKey.Commerce.items: itemsToSerialize,
                                    JsonKey.Commerce.total: total]
 
-        if auth.email == nil, (auth.userId != nil || auth.userIdAnon != nil) {
+        if auth.email == nil, (auth.userId != nil || auth.userIdUnknownUser != nil) {
             body[JsonKey.preferUserId] = true
         }
         
@@ -683,7 +683,7 @@ struct RequestCreator {
         return .success(.get(createGetRequest(forPath: Const.Path.getCriteria, withArgs: body as! [String: String])))
     }
 
-    func createTrackAnonSessionRequest(createdAt: Int, withUserId userId: String, dataFields: [AnyHashable: Any]?, requestJson: [AnyHashable: Any]) -> Result<IterableRequest, IterableError> {
+    func createTrackUnknownUserSessionRequest(createdAt: Int, withUserId userId: String, dataFields: [AnyHashable: Any]?, requestJson: [AnyHashable: Any]) -> Result<IterableRequest, IterableError> {
         var body = [AnyHashable: Any]()
         
         var userDict = [AnyHashable: Any]()
@@ -699,7 +699,7 @@ struct RequestCreator {
         body.setValue(for: JsonKey.Body.createdAt, value: createdAt)
         body.setValue(for: JsonKey.deviceInfo, value: deviceMetadata.asDictionary())
         body.setValue(for: JsonKey.anonSessionContext, value: requestJson)
-        return .success(.post(createPostRequest(path: Const.Path.trackAnonSession, body: body)))
+        return .success(.post(createPostRequest(path: Const.Path.trackUnknownUserSession, body: body)))
     }
     
     // MARK: - PRIVATE
@@ -734,7 +734,7 @@ struct RequestCreator {
             dict.setValue(for: JsonKey.email, value: email)
         case let .userId(userId):
             dict.setValue(for: JsonKey.userId, value: userId)
-        case let .userIdAnon(userId):
+        case let .userIdUnknownUser(userId):
             dict.setValue(for: JsonKey.userId, value: userId)
         case .none:
             ITBInfo("Current user is unavailable")
@@ -747,7 +747,7 @@ struct RequestCreator {
             dict.setValue(for: JsonKey.userKey, value: email)
         case let .userId(userId):
             dict.setValue(for: JsonKey.userKey, value: userId)
-        case let .userIdAnon(userId):
+        case let .userIdUnknownUser(userId):
             dict.setValue(for: JsonKey.userKey, value: userId)
         case .none:
             ITBInfo("Current user is unavailable")
