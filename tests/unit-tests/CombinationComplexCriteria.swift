@@ -194,7 +194,7 @@ final class CombinationComplexCriteria: XCTestCase {
 
 
         let expectedCriteriaId = "290"
-        let matchedCriteriaId = CriteriaCompletionChecker(anonymousCriteria: data(from: mockDataComplexCriteria1)!, anonymousEvents: eventItems).getMatchedCriteria()
+        let matchedCriteriaId = CriteriaCompletionChecker(unknownUserCriteria: data(from: mockDataComplexCriteria1)!, unknownUserEvents: eventItems).getMatchedCriteria()
         XCTAssertEqual(matchedCriteriaId, expectedCriteriaId)
     }
 
@@ -219,7 +219,7 @@ final class CombinationComplexCriteria: XCTestCase {
             ]
         ]
 
-        let matchedCriteriaId = CriteriaCompletionChecker(anonymousCriteria: data(from: mockDataComplexCriteria1)!, anonymousEvents: eventItems).getMatchedCriteria()
+        let matchedCriteriaId = CriteriaCompletionChecker(unknownUserCriteria: data(from: mockDataComplexCriteria1)!, unknownUserEvents: eventItems).getMatchedCriteria()
         XCTAssertEqual(matchedCriteriaId, nil)
     }
 
@@ -390,7 +390,7 @@ final class CombinationComplexCriteria: XCTestCase {
         ]
 
         let expectedCriteriaId = "291"
-        let matchedCriteriaId = CriteriaCompletionChecker(anonymousCriteria: data(from: mockDataComplexCriteria2)!, anonymousEvents: eventItems).getMatchedCriteria()
+        let matchedCriteriaId = CriteriaCompletionChecker(unknownUserCriteria: data(from: mockDataComplexCriteria2)!, unknownUserEvents: eventItems).getMatchedCriteria()
         XCTAssertEqual(matchedCriteriaId, expectedCriteriaId)
     }
 
@@ -406,7 +406,7 @@ final class CombinationComplexCriteria: XCTestCase {
           ]
 
 
-        let matchedCriteriaId = CriteriaCompletionChecker(anonymousCriteria: data(from: mockDataComplexCriteria2)!, anonymousEvents: eventItems).getMatchedCriteria()
+        let matchedCriteriaId = CriteriaCompletionChecker(unknownUserCriteria: data(from: mockDataComplexCriteria2)!, unknownUserEvents: eventItems).getMatchedCriteria()
         XCTAssertEqual(matchedCriteriaId, nil)
     }
 
@@ -559,7 +559,7 @@ final class CombinationComplexCriteria: XCTestCase {
         ]
 
         let expectedCriteriaId = "292"
-        let matchedCriteriaId = CriteriaCompletionChecker(anonymousCriteria: data(from: mockDataComplexCriteria3)!, anonymousEvents: eventItems).getMatchedCriteria()
+        let matchedCriteriaId = CriteriaCompletionChecker(unknownUserCriteria: data(from: mockDataComplexCriteria3)!, unknownUserEvents: eventItems).getMatchedCriteria()
         XCTAssertEqual(matchedCriteriaId, expectedCriteriaId)
     }
     
@@ -573,7 +573,7 @@ final class CombinationComplexCriteria: XCTestCase {
         ]
 
         let expectedCriteriaId = "292"
-        let matchedCriteriaId = CriteriaCompletionChecker(anonymousCriteria: data(from: mockDataComplexCriteria3)!, anonymousEvents: eventItems).getMatchedCriteria()
+        let matchedCriteriaId = CriteriaCompletionChecker(unknownUserCriteria: data(from: mockDataComplexCriteria3)!, unknownUserEvents: eventItems).getMatchedCriteria()
         XCTAssertEqual(matchedCriteriaId, expectedCriteriaId)
     }
 
@@ -588,7 +588,7 @@ final class CombinationComplexCriteria: XCTestCase {
              "dataFields": ["firstName": "Alex", "lastName":"Aris"]
             ]
         ]
-        let matchedCriteriaId = CriteriaCompletionChecker(anonymousCriteria: data(from: mockDataComplexCriteria3)!, anonymousEvents: eventItems).getMatchedCriteria()
+        let matchedCriteriaId = CriteriaCompletionChecker(unknownUserCriteria: data(from: mockDataComplexCriteria3)!, unknownUserEvents: eventItems).getMatchedCriteria()
         XCTAssertEqual(matchedCriteriaId, nil)
     }
 }

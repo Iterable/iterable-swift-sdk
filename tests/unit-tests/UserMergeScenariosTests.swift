@@ -18,7 +18,7 @@ class UserMergeScenariosTests: XCTestCase, AuthProvider {
     let localStorage = MockLocalStorage()
     
     var auth: Auth {
-        Auth(userId: nil, email: nil, authToken: authToken, userIdAnon: nil)
+        Auth(userId: nil, email: nil, authToken: authToken, userIdUnknownUser: nil)
     }
     
     override func setUp() {
@@ -85,7 +85,7 @@ class UserMergeScenariosTests: XCTestCase, AuthProvider {
     
     func testCriteriaNotMetUserIdDefault() {  // criteria not met with merge default with setUserId
         let config = IterableConfig()
-        config.enableAnonActivation = true
+        config.enableUnknownUserActivation = true
         IterableAPI.initializeForTesting(apiKey: UserMergeScenariosTests.apiKey,
                                          config: config,
                                          networkSession: mockSession,
@@ -95,7 +95,7 @@ class UserMergeScenariosTests: XCTestCase, AuthProvider {
         localStorage.criteriaData = jsonData
         IterableAPI.track(event: "testEvent123")
         
-        if let events = localStorage.anonymousUserEvents {
+        if let events = localStorage.unknownUserEvents {
             XCTAssertFalse(events.isEmpty, "Expected events to be logged")
         } else {
             XCTFail("Expected events to be logged but found nil")
@@ -109,10 +109,10 @@ class UserMergeScenariosTests: XCTestCase, AuthProvider {
         }
         waitForDuration(seconds: 5)
         
-        if localStorage.anonymousUserEvents != nil {
+        if localStorage.unknownUserEvents != nil {
             XCTFail("Events are not replayed")
         } else {
-            XCTAssertNil(localStorage.anonymousUserEvents, "Expected events to be nil")
+            XCTAssertNil(localStorage.unknownUserEvents, "Expected events to be nil")
         }
         
         // Verify "merge user" API call is not made
@@ -130,7 +130,7 @@ class UserMergeScenariosTests: XCTestCase, AuthProvider {
     
     func testCriteriaNotMetUserIdReplayTrueMergeFalse() {  // criteria not met with merge false with setUserId
         let config = IterableConfig()
-        config.enableAnonActivation = true
+        config.enableUnknownUserActivation = true
         IterableAPI.initializeForTesting(apiKey: UserMergeScenariosTests.apiKey,
                                          config: config,
                                          networkSession: mockSession,
@@ -140,7 +140,7 @@ class UserMergeScenariosTests: XCTestCase, AuthProvider {
         localStorage.criteriaData = jsonData
         IterableAPI.track(event: "testEvent123")
         
-        if let events = localStorage.anonymousUserEvents {
+        if let events = localStorage.unknownUserEvents {
             XCTAssertFalse(events.isEmpty, "Expected events to be logged")
         } else {
             XCTFail("Expected events to be logged but found nil")
@@ -154,10 +154,10 @@ class UserMergeScenariosTests: XCTestCase, AuthProvider {
             XCTFail("Expected userId but found nil")
         }
         
-        if localStorage.anonymousUserEvents != nil {
+        if localStorage.unknownUserEvents != nil {
             XCTFail("Events are not replayed")
         } else {
-            XCTAssertNil(localStorage.anonymousUserEvents, "Expected events to be nil")
+            XCTAssertNil(localStorage.unknownUserEvents, "Expected events to be nil")
         }
         
         // Verify "merge user" API call is not made
@@ -175,7 +175,7 @@ class UserMergeScenariosTests: XCTestCase, AuthProvider {
     
     func testCriteriaNotMetUserIdReplayFalseMergeFalse() {  // criteria not met with merge true with setUserId
         let config = IterableConfig()
-        config.enableAnonActivation = true
+        config.enableUnknownUserActivation = true
         IterableAPI.initializeForTesting(apiKey: UserMergeScenariosTests.apiKey,
                                          config: config,
                                          networkSession: mockSession,
@@ -186,7 +186,7 @@ class UserMergeScenariosTests: XCTestCase, AuthProvider {
         localStorage.criteriaData = jsonData
         IterableAPI.track(event: "testEvent123")
         
-        if let events = localStorage.anonymousUserEvents {
+        if let events = localStorage.unknownUserEvents {
             XCTAssertFalse(events.isEmpty, "Expected events to be logged")
         } else {
             XCTFail("Expected events to be logged but found nil")
@@ -203,7 +203,7 @@ class UserMergeScenariosTests: XCTestCase, AuthProvider {
         waitForDuration(seconds: 5)
         
         let expectation1 = self.expectation(description: "Events properly cleared")
-        if let events = localStorage.anonymousUserEvents {
+        if let events = localStorage.unknownUserEvents {
             XCTAssertFalse(events.isEmpty, "Expected events to be logged")
         } else {
             expectation1.fulfill()
@@ -224,7 +224,7 @@ class UserMergeScenariosTests: XCTestCase, AuthProvider {
     
     func testCriteriaNotMetUserIdReplayFalseMergeTrue() {  // criteria not met with merge true with setUserId
         let config = IterableConfig()
-        config.enableAnonActivation = true
+        config.enableUnknownUserActivation = true
         IterableAPI.initializeForTesting(apiKey: UserMergeScenariosTests.apiKey,
                                          config: config,
                                          networkSession: mockSession,
@@ -235,7 +235,7 @@ class UserMergeScenariosTests: XCTestCase, AuthProvider {
         localStorage.criteriaData = jsonData
         IterableAPI.track(event: "testEvent123")
         
-        if let events = localStorage.anonymousUserEvents {
+        if let events = localStorage.unknownUserEvents {
             XCTAssertFalse(events.isEmpty, "Expected events to be logged")
         } else {
             XCTFail("Expected events to be logged but found nil")
@@ -252,7 +252,7 @@ class UserMergeScenariosTests: XCTestCase, AuthProvider {
         waitForDuration(seconds: 5)
         
         let expectation1 = self.expectation(description: "Events properly cleared")
-        if let events = localStorage.anonymousUserEvents {
+        if let events = localStorage.unknownUserEvents {
             XCTAssertFalse(events.isEmpty, "Expected events to be logged")
         } else {
             expectation1.fulfill()
@@ -273,7 +273,7 @@ class UserMergeScenariosTests: XCTestCase, AuthProvider {
     
     func testCriteriaMetUserIdDefault() {  // criteria met with merge default with setUserId
         let config = IterableConfig()
-        config.enableAnonActivation = true
+        config.enableUnknownUserActivation = true
         IterableAPI.initializeForTesting(apiKey: UserMergeScenariosTests.apiKey,
                                          config: config,
                                          networkSession: mockSession,
@@ -285,7 +285,7 @@ class UserMergeScenariosTests: XCTestCase, AuthProvider {
         IterableAPI.track(event: "testEvent")
         waitForDuration(seconds: 3)
         
-        if let anonUser = localStorage.userIdAnnon {
+        if let anonUser = localStorage.userIdUnknownUser {
             XCTAssertFalse(anonUser.isEmpty, "Expected anon user nil")
         } else {
             XCTFail("Expected anon user nil but found")
@@ -309,7 +309,7 @@ class UserMergeScenariosTests: XCTestCase, AuthProvider {
     
     func testCriteriaMetUserIdMergeFalse() {  // criteria met with merge false with setUserId
         let config = IterableConfig()
-        config.enableAnonActivation = true
+        config.enableUnknownUserActivation = true
         IterableAPI.initializeForTesting(apiKey: UserMergeScenariosTests.apiKey,
                                          config: config,
                                          networkSession: mockSession,
@@ -321,7 +321,7 @@ class UserMergeScenariosTests: XCTestCase, AuthProvider {
         IterableAPI.track(event: "testEvent")
         waitForDuration(seconds: 3)
         
-        if let anonUser = localStorage.userIdAnnon {
+        if let anonUser = localStorage.userIdUnknownUser {
             XCTAssertFalse(anonUser.isEmpty, "Expected anon user to be found")
         } else {
             XCTFail("Expected anon user but found nil")
@@ -345,7 +345,7 @@ class UserMergeScenariosTests: XCTestCase, AuthProvider {
     
     func testCriteriaMetUserIdMergeTrue() {  // criteria met with merge true with setUserId
         let config = IterableConfig()
-        config.enableAnonActivation = true
+        config.enableUnknownUserActivation = true
         IterableAPI.initializeForTesting(apiKey: UserMergeScenariosTests.apiKey,
                                          config: config,
                                          networkSession: mockSession,
@@ -357,7 +357,7 @@ class UserMergeScenariosTests: XCTestCase, AuthProvider {
         IterableAPI.track(event: "testEvent")
         waitForDuration(seconds: 3)
         
-        if let anonUser = localStorage.userIdAnnon {
+        if let anonUser = localStorage.userIdUnknownUser {
             XCTAssertFalse(anonUser.isEmpty, "Expected anon user nil")
         } else {
             XCTFail("Expected anon user nil but found")
@@ -384,7 +384,7 @@ class UserMergeScenariosTests: XCTestCase, AuthProvider {
     
     func testIdentifiedUserIdDefault() {  // current user identified with setUserId default
         let config = IterableConfig()
-        config.enableAnonActivation = true
+        config.enableUnknownUserActivation = true
         IterableAPI.initializeForTesting(apiKey: UserMergeScenariosTests.apiKey,
                                          config: config,
                                          networkSession: mockSession,
@@ -405,10 +405,10 @@ class UserMergeScenariosTests: XCTestCase, AuthProvider {
         waitForDuration(seconds: 3)
         
         
-        if localStorage.userIdAnnon != nil {
+        if localStorage.userIdUnknownUser != nil {
             XCTFail("Expected anon user nil but found")
         } else {
-            XCTAssertNil(localStorage.anonymousUserEvents, "Expected anon user to be nil")
+            XCTAssertNil(localStorage.unknownUserEvents, "Expected anon user to be nil")
         }
         
         IterableAPI.setUserId("testuseranotheruser")
@@ -434,7 +434,7 @@ class UserMergeScenariosTests: XCTestCase, AuthProvider {
     
     func testIdentifiedUserIdMergeFalse() {  // current user identified with setUserId merge false
         let config = IterableConfig()
-        config.enableAnonActivation = true
+        config.enableUnknownUserActivation = true
         IterableAPI.initializeForTesting(apiKey: UserMergeScenariosTests.apiKey,
                                          config: config,
                                          networkSession: mockSession,
@@ -454,10 +454,10 @@ class UserMergeScenariosTests: XCTestCase, AuthProvider {
         IterableAPI.track(event: "testEvent")
         waitForDuration(seconds: 3)
         
-        if localStorage.userIdAnnon != nil {
+        if localStorage.userIdUnknownUser != nil {
             XCTFail("Expected anon user nil but found")
         } else {
-            XCTAssertNil(localStorage.userIdAnnon, "Expected anon user to be nil")
+            XCTAssertNil(localStorage.userIdUnknownUser, "Expected anon user to be nil")
         }
         
         let identityResolution = IterableIdentityResolution(replayOnVisitorToKnown: true, mergeOnAnonymousToKnown: false)
@@ -485,7 +485,7 @@ class UserMergeScenariosTests: XCTestCase, AuthProvider {
     
     func testIdentifiedUserIdMergeTrue() {  // current user identified with setUserId true
         let config = IterableConfig()
-        config.enableAnonActivation = true
+        config.enableUnknownUserActivation = true
         IterableAPI.initializeForTesting(apiKey: UserMergeScenariosTests.apiKey,
                                          config: config,
                                          networkSession: mockSession,
@@ -505,10 +505,10 @@ class UserMergeScenariosTests: XCTestCase, AuthProvider {
         waitForDuration(seconds: 3)
         
         
-        if localStorage.userIdAnnon != nil {
+        if localStorage.userIdUnknownUser != nil {
             XCTFail("Expected anon user nil but found")
         } else {
-            XCTAssertNil(localStorage.anonymousUserEvents, "Expected anon user to be nil")
+            XCTAssertNil(localStorage.unknownUserEvents, "Expected anon user to be nil")
         }
         
         let identityResolution = IterableIdentityResolution(replayOnVisitorToKnown: true, mergeOnAnonymousToKnown: true)
@@ -537,7 +537,7 @@ class UserMergeScenariosTests: XCTestCase, AuthProvider {
     
     func testCriteriaNotMetEmailDefault() {  // criteria not met with merge default with setEmail
         let config = IterableConfig()
-        config.enableAnonActivation = true
+        config.enableUnknownUserActivation = true
         IterableAPI.initializeForTesting(apiKey: UserMergeScenariosTests.apiKey,
                                          config: config,
                                          networkSession: mockSession,
@@ -547,7 +547,7 @@ class UserMergeScenariosTests: XCTestCase, AuthProvider {
         localStorage.criteriaData = jsonData
         IterableAPI.track(event: "testEvent123")
         
-        if let events = localStorage.anonymousUserEvents {
+        if let events = localStorage.unknownUserEvents {
             XCTAssertFalse(events.isEmpty, "Expected events to be logged")
         } else {
             XCTFail("Expected events to be logged but found nil")
@@ -561,10 +561,10 @@ class UserMergeScenariosTests: XCTestCase, AuthProvider {
         }
         waitForDuration(seconds: 5)
         
-        if localStorage.anonymousUserEvents != nil {
+        if localStorage.unknownUserEvents != nil {
             XCTFail("Events are not replayed")
         } else {
-            XCTAssertNil(localStorage.anonymousUserEvents, "Expected events to be nil")
+            XCTAssertNil(localStorage.unknownUserEvents, "Expected events to be nil")
         }
         
         // Verify "merge user" API call is not made
@@ -582,7 +582,7 @@ class UserMergeScenariosTests: XCTestCase, AuthProvider {
     
     func testCriteriaNotMetEmailReplayTrueMergeFalse() {  // criteria not met with merge false with setEmail
         let config = IterableConfig()
-        config.enableAnonActivation = true
+        config.enableUnknownUserActivation = true
         IterableAPI.initializeForTesting(apiKey: UserMergeScenariosTests.apiKey,
                                          config: config,
                                          networkSession: mockSession,
@@ -591,7 +591,7 @@ class UserMergeScenariosTests: XCTestCase, AuthProvider {
         localStorage.criteriaData = jsonData
         IterableAPI.track(event: "testEvent123")
         
-        if let events = localStorage.anonymousUserEvents {
+        if let events = localStorage.unknownUserEvents {
             XCTAssertFalse(events.isEmpty, "Expected events to be logged")
         } else {
             XCTFail("Expected events to be logged but found nil")
@@ -605,10 +605,10 @@ class UserMergeScenariosTests: XCTestCase, AuthProvider {
             XCTFail("Expected email but found nil")
         }
         
-        if localStorage.anonymousUserEvents != nil {
+        if localStorage.unknownUserEvents != nil {
             XCTFail("Events are not replayed")
         } else {
-            XCTAssertNil(localStorage.anonymousUserEvents, "Expected events to be nil")
+            XCTAssertNil(localStorage.unknownUserEvents, "Expected events to be nil")
         }
         
         // Verify "merge user" API call is not made
@@ -626,7 +626,7 @@ class UserMergeScenariosTests: XCTestCase, AuthProvider {
     
     func testCriteriaNotMetEmailReplayFalseMergeFalse() {  // criteria not met with merge true with setEmail
         let config = IterableConfig()
-        config.enableAnonActivation = true
+        config.enableUnknownUserActivation = true
         IterableAPI.initializeForTesting(apiKey: UserMergeScenariosTests.apiKey,
                                          config: config,
                                          networkSession: mockSession,
@@ -636,7 +636,7 @@ class UserMergeScenariosTests: XCTestCase, AuthProvider {
         localStorage.criteriaData = jsonData
         IterableAPI.track(event: "testEvent123")
         
-        if let events = localStorage.anonymousUserEvents {
+        if let events = localStorage.unknownUserEvents {
             XCTAssertFalse(events.isEmpty, "Expected events to be logged")
         } else {
             XCTFail("Expected events to be logged but found nil")
@@ -652,7 +652,7 @@ class UserMergeScenariosTests: XCTestCase, AuthProvider {
         waitForDuration(seconds: 5)
         
         let expectation1 = self.expectation(description: "Events properly cleared")
-        if let events = localStorage.anonymousUserEvents {
+        if let events = localStorage.unknownUserEvents {
             XCTAssertFalse(events.isEmpty, "Expected events to be logged")
         } else {
             expectation1.fulfill()
@@ -673,7 +673,7 @@ class UserMergeScenariosTests: XCTestCase, AuthProvider {
     
     func testCriteriaNotMetEmailReplayFalseMergeTrue() {  // criteria not met with merge true with setEmail
         let config = IterableConfig()
-        config.enableAnonActivation = true
+        config.enableUnknownUserActivation = true
         IterableAPI.initializeForTesting(apiKey: UserMergeScenariosTests.apiKey,
                                          config: config,
                                          networkSession: mockSession,
@@ -683,7 +683,7 @@ class UserMergeScenariosTests: XCTestCase, AuthProvider {
         localStorage.criteriaData = jsonData
         IterableAPI.track(event: "testEvent123")
         
-        if let events = localStorage.anonymousUserEvents {
+        if let events = localStorage.unknownUserEvents {
             XCTAssertFalse(events.isEmpty, "Expected events to be logged")
         } else {
             XCTFail("Expected events to be logged but found nil")
@@ -699,7 +699,7 @@ class UserMergeScenariosTests: XCTestCase, AuthProvider {
         waitForDuration(seconds: 5)
         
         let expectation1 = self.expectation(description: "Events properly cleared")
-        if let events = localStorage.anonymousUserEvents {
+        if let events = localStorage.unknownUserEvents {
             XCTAssertFalse(events.isEmpty, "Expected events to be logged")
         } else {
             expectation1.fulfill()
@@ -720,7 +720,7 @@ class UserMergeScenariosTests: XCTestCase, AuthProvider {
     
     func testCriteriaMetEmailDefault() {  // criteria met with merge default with setEmail
         let config = IterableConfig()
-        config.enableAnonActivation = true
+        config.enableUnknownUserActivation = true
         IterableAPI.initializeForTesting(apiKey: UserMergeScenariosTests.apiKey,
                                          config: config,
                                          networkSession: mockSession,
@@ -731,7 +731,7 @@ class UserMergeScenariosTests: XCTestCase, AuthProvider {
         IterableAPI.track(event: "testEvent")
         waitForDuration(seconds: 3)
         
-        if let anonUser = localStorage.userIdAnnon {
+        if let anonUser = localStorage.userIdUnknownUser {
             XCTAssertFalse(anonUser.isEmpty, "Expected anon user")
         } else {
             XCTFail("Expected anon user but found nil")
@@ -755,7 +755,7 @@ class UserMergeScenariosTests: XCTestCase, AuthProvider {
     
     func testCriteriaMetEmailMergeFalse() {  // criteria met with merge false with setEmail
         let config = IterableConfig()
-        config.enableAnonActivation = true
+        config.enableUnknownUserActivation = true
         IterableAPI.initializeForTesting(apiKey: UserMergeScenariosTests.apiKey,
                                          config: config,
                                          networkSession: mockSession,
@@ -766,7 +766,7 @@ class UserMergeScenariosTests: XCTestCase, AuthProvider {
         IterableAPI.track(event: "testEvent")
         waitForDuration(seconds: 3)
         
-        if let anonUser = localStorage.userIdAnnon {
+        if let anonUser = localStorage.userIdUnknownUser {
             XCTAssertFalse(anonUser.isEmpty, "Expected anon user")
         } else {
             XCTFail("Expected anon user but found nil")
@@ -790,7 +790,7 @@ class UserMergeScenariosTests: XCTestCase, AuthProvider {
     
     func testCriteriaMetEmailMergeTrue() {  // criteria met with merge true with setEmail
         let config = IterableConfig()
-        config.enableAnonActivation = true
+        config.enableUnknownUserActivation = true
         IterableAPI.initializeForTesting(apiKey: UserMergeScenariosTests.apiKey,
                                          config: config,
                                          networkSession: mockSession,
@@ -801,7 +801,7 @@ class UserMergeScenariosTests: XCTestCase, AuthProvider {
         IterableAPI.track(event: "testEvent")
         waitForDuration(seconds: 3)
         
-        if let anonUser = localStorage.userIdAnnon {
+        if let anonUser = localStorage.userIdUnknownUser {
             XCTAssertFalse(anonUser.isEmpty, "Expected anon user")
         } else {
             XCTFail("Expected anon user but found nil")
@@ -826,7 +826,7 @@ class UserMergeScenariosTests: XCTestCase, AuthProvider {
     
     func testIdentifiedEmailDefault() {  // current user identified with setEmail default
         let config = IterableConfig()
-        config.enableAnonActivation = true
+        config.enableUnknownUserActivation = true
         IterableAPI.initializeForTesting(apiKey: UserMergeScenariosTests.apiKey,
                                          config: config,
                                          networkSession: mockSession,
@@ -846,10 +846,10 @@ class UserMergeScenariosTests: XCTestCase, AuthProvider {
         waitForDuration(seconds: 3)
         
         
-        if localStorage.userIdAnnon != nil {
+        if localStorage.userIdUnknownUser != nil {
             XCTFail("Expected anon user nil but found")
         } else {
-            XCTAssertNil(localStorage.anonymousUserEvents, "Expected anon user to be nil")
+            XCTAssertNil(localStorage.unknownUserEvents, "Expected anon user to be nil")
         }
         
         IterableAPI.setEmail("testuseranotheruser@test.com")
@@ -874,7 +874,7 @@ class UserMergeScenariosTests: XCTestCase, AuthProvider {
     
     func testIdentifiedEmailMergeFalse() {  // current user identified with setEmail merge false
         let config = IterableConfig()
-        config.enableAnonActivation = true
+        config.enableUnknownUserActivation = true
         IterableAPI.initializeForTesting(apiKey: UserMergeScenariosTests.apiKey,
                                          config: config,
                                          networkSession: mockSession,
@@ -894,10 +894,10 @@ class UserMergeScenariosTests: XCTestCase, AuthProvider {
         waitForDuration(seconds: 3)
         
         
-        if localStorage.userIdAnnon != nil {
+        if localStorage.userIdUnknownUser != nil {
             XCTFail("Expected anon user nil but found")
         } else {
-            XCTAssertNil(localStorage.anonymousUserEvents, "Expected anon user to be nil")
+            XCTAssertNil(localStorage.unknownUserEvents, "Expected anon user to be nil")
         }
         
         let identityResolution = IterableIdentityResolution(replayOnVisitorToKnown: true, mergeOnAnonymousToKnown: false)
@@ -924,7 +924,7 @@ class UserMergeScenariosTests: XCTestCase, AuthProvider {
     
     func testIdentifiedEmailMergeTrue() {  // current user identified with setEmail true
         let config = IterableConfig()
-        config.enableAnonActivation = true
+        config.enableUnknownUserActivation = true
         IterableAPI.initializeForTesting(apiKey: UserMergeScenariosTests.apiKey,
                                          config: config,
                                          networkSession: mockSession,
@@ -944,10 +944,10 @@ class UserMergeScenariosTests: XCTestCase, AuthProvider {
         waitForDuration(seconds: 3)
         
         
-        if localStorage.userIdAnnon != nil {
+        if localStorage.userIdUnknownUser != nil {
             XCTFail("Expected anon user nil but found")
         } else {
-            XCTAssertNil(localStorage.anonymousUserEvents, "Expected anon user to be nil")
+            XCTAssertNil(localStorage.unknownUserEvents, "Expected anon user to be nil")
         }
         
         let identityResolution = IterableIdentityResolution(replayOnVisitorToKnown: true, mergeOnAnonymousToKnown: true)
@@ -977,7 +977,7 @@ class UserMergeScenariosTests: XCTestCase, AuthProvider {
     
     func testCriteriaMetTwice() {
         let config = IterableConfig()
-        config.enableAnonActivation = true
+        config.enableUnknownUserActivation = true
         
         let mockSession = MockNetworkSession()
         
@@ -995,19 +995,19 @@ class UserMergeScenariosTests: XCTestCase, AuthProvider {
         
         waitForDuration(seconds: 3)
         
-        if let anonUser = localStorage.userIdAnnon {
+        if let anonUser = localStorage.userIdUnknownUser {
             XCTAssertFalse(anonUser.isEmpty, "Expected anon user nil")
         } else {
             XCTFail("Expected anon user nil but found")
         }
         
         // Verify that anon session request was made exactly once
-        let anonSessionRequest = mockSession.getRequest(withEndPoint: Const.Path.trackAnonSession)
+        let anonSessionRequest = mockSession.getRequest(withEndPoint: Const.Path.trackUnknownUserSession)
         XCTAssertNotNil(anonSessionRequest, "Anonymous session request should not be nil")
         
         // Count total requests with anon session endpoint
         let anonSessionRequests = mockSession.requests.filter { request in
-            request.url?.absoluteString.contains(Const.Path.trackAnonSession) == true
+            request.url?.absoluteString.contains(Const.Path.trackUnknownUserSession) == true
         }
         XCTAssertEqual(anonSessionRequests.count, 1, "Anonymous session should be called exactly once")
 

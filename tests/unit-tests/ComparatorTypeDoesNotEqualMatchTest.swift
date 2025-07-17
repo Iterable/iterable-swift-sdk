@@ -65,7 +65,7 @@ final class ComparatorTypeDoesNotEqualMatchTest: XCTestCase {
                                                  "dataFields":["subscribed": false
                                                               ]]]
         let expectedCriteriaId = "194"
-        let matchedCriteriaId = CriteriaCompletionChecker(anonymousCriteria: data(from: mokeDataBool)!, anonymousEvents: eventItems).getMatchedCriteria()
+        let matchedCriteriaId = CriteriaCompletionChecker(unknownUserCriteria: data(from: mokeDataBool)!, unknownUserEvents: eventItems).getMatchedCriteria()
         XCTAssertEqual(matchedCriteriaId, expectedCriteriaId)
     }
 
@@ -74,7 +74,7 @@ final class ComparatorTypeDoesNotEqualMatchTest: XCTestCase {
         let eventItems: [[AnyHashable: Any]] = [["dataType":"user",
                                                  "dataFields":["subscribed": true,
                                                                ]]]
-        let matchedCriteriaId = CriteriaCompletionChecker(anonymousCriteria: data(from: mokeDataBool)!, anonymousEvents: eventItems).getMatchedCriteria()
+        let matchedCriteriaId = CriteriaCompletionChecker(unknownUserCriteria: data(from: mokeDataBool)!, unknownUserEvents: eventItems).getMatchedCriteria()
         XCTAssertEqual(matchedCriteriaId, nil)
     }
 
@@ -123,7 +123,7 @@ final class ComparatorTypeDoesNotEqualMatchTest: XCTestCase {
                                                  "dataFields":["phoneNumber": "123456"
                                                                ]]]
         let expectedCriteriaId = "195"
-        let matchedCriteriaId = CriteriaCompletionChecker(anonymousCriteria: data(from: mokeDataString)!, anonymousEvents: eventItems).getMatchedCriteria()
+        let matchedCriteriaId = CriteriaCompletionChecker(unknownUserCriteria: data(from: mokeDataString)!, unknownUserEvents: eventItems).getMatchedCriteria()
         XCTAssertEqual(matchedCriteriaId, expectedCriteriaId)
     }
 
@@ -133,7 +133,7 @@ final class ComparatorTypeDoesNotEqualMatchTest: XCTestCase {
                                                  "dataFields":["phoneNumber": "57688559"
                                                                ]]]
 
-        let matchedCriteriaId = CriteriaCompletionChecker(anonymousCriteria: data(from: mokeDataString)!, anonymousEvents: eventItems).getMatchedCriteria()
+        let matchedCriteriaId = CriteriaCompletionChecker(unknownUserCriteria: data(from: mokeDataString)!, unknownUserEvents: eventItems).getMatchedCriteria()
         XCTAssertEqual(matchedCriteriaId, nil)
     }
 
@@ -182,7 +182,7 @@ final class ComparatorTypeDoesNotEqualMatchTest: XCTestCase {
                                                  "dataFields":["savings": 9.99
                                                                ]]]
         let expectedCriteriaId = "196"
-        let matchedCriteriaId = CriteriaCompletionChecker(anonymousCriteria: data(from: mokeDataDouble)!, anonymousEvents: eventItems).getMatchedCriteria()
+        let matchedCriteriaId = CriteriaCompletionChecker(unknownUserCriteria: data(from: mokeDataDouble)!, unknownUserEvents: eventItems).getMatchedCriteria()
         XCTAssertEqual(matchedCriteriaId, expectedCriteriaId)
     }
 
@@ -192,7 +192,7 @@ final class ComparatorTypeDoesNotEqualMatchTest: XCTestCase {
                                                  "dataFields":["savings": 19.99
                                                                ]]]
 
-        let matchedCriteriaId = CriteriaCompletionChecker(anonymousCriteria: data(from: mokeDataDouble)!, anonymousEvents: eventItems).getMatchedCriteria()
+        let matchedCriteriaId = CriteriaCompletionChecker(unknownUserCriteria: data(from: mokeDataDouble)!, unknownUserEvents: eventItems).getMatchedCriteria()
         XCTAssertEqual(matchedCriteriaId, nil)
     }
 
@@ -241,7 +241,7 @@ final class ComparatorTypeDoesNotEqualMatchTest: XCTestCase {
                                                  "dataFields":["eventTimeStamp": 20
                                                                ]]]
         let expectedCriteriaId = "197"
-        let matchedCriteriaId = CriteriaCompletionChecker(anonymousCriteria: data(from: mokeDataLong)!, anonymousEvents: eventItems).getMatchedCriteria()
+        let matchedCriteriaId = CriteriaCompletionChecker(unknownUserCriteria: data(from: mokeDataLong)!, unknownUserEvents: eventItems).getMatchedCriteria()
         XCTAssertEqual(matchedCriteriaId, expectedCriteriaId)
     }
 
@@ -250,7 +250,7 @@ final class ComparatorTypeDoesNotEqualMatchTest: XCTestCase {
         let eventItems: [[AnyHashable: Any]] = [["dataType":"user",
                                                  "dataFields":["eventTimeStamp": 15
                                                                ]]]
-        let matchedCriteriaId = CriteriaCompletionChecker(anonymousCriteria: data(from: mokeDataLong)!, anonymousEvents: eventItems).getMatchedCriteria()
+        let matchedCriteriaId = CriteriaCompletionChecker(unknownUserCriteria: data(from: mokeDataLong)!, unknownUserEvents: eventItems).getMatchedCriteria()
         XCTAssertEqual(matchedCriteriaId, nil)
     }
 

@@ -13,7 +13,7 @@ fi
 # Make sure xcpretty is installed
 if ! command -v xcpretty &> /dev/null; then
     echo "xcpretty not found, installing via gem..."
-    gem install xcpretty
+    sudo gem install xcpretty
 fi
 
 echo "Building Iterable Swift SDK..."
