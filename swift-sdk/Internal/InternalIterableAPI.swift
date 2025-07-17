@@ -66,7 +66,7 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
     }
     
     var auth: Auth {
-        Auth(userId: userId, email: email, authToken: authManager.getAuthToken(), userIdAnon: localStorage.userIdAnnon)
+        Auth(userId: userId, email: email, authToken: authManager.getAuthToken(), userIdUnknownUser: localStorage.userIdUnknownUser)
     }
 
     var dependencyContainer: DependencyContainerProtocol
@@ -82,12 +82,12 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
         self.dependencyContainer.createAuthManager(config: self.config)
     }()
     
-    lazy var anonymousUserManager: AnonymousUserManagerProtocol = {
-        self.dependencyContainer.createAnonymousUserManager(config: self.config)
+    lazy var unknownUserManager: UnknownUserManagerProtocol = {
+        self.dependencyContainer.createUnknownUserManager(config: self.config)
     }()
     
-    lazy var anonymousUserMerge: AnonymousUserMergeProtocol = {
-        self.dependencyContainer.createAnonymousUserMerge(apiClient: apiClient as! ApiClient, anonymousUserManager: anonymousUserManager, localStorage: localStorage)
+    lazy var unknownUserMerge: UnknownUserMergeProtocol = {
+        self.dependencyContainer.createUnknownUserMerge(apiClient: apiClient as! ApiClient, unknownUserManager: unknownUserManager, localStorage: localStorage)
     }()
     
     lazy var embeddedManager: IterableInternalEmbeddedManagerProtocol = {
@@ -151,9 +151,9 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
             guard let config = self?.config else {
                 return
             }
-            let merge = identityResolution?.mergeOnAnonymousToKnown ?? config.identityResolution.mergeOnAnonymousToKnown
+            let merge = identityResolution?.mergeOnUnknownUserToKnown ?? config.identityResolution.mergeOnUnknownUserToKnown
             let replay = identityResolution?.replayOnVisitorToKnown ?? config.identityResolution.replayOnVisitorToKnown
-            if config.enableAnonActivation, let email = email {
+            if config.enableUnknownUserActivation, let email = email {
                 self?.attemptAndProcessMerge(
                     merge: merge ?? true,
                     replay: replay ?? true,
@@ -161,7 +161,7 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
                     isEmail: true,
                     failureHandler: failureHandler
                 )
-                self?.localStorage.userIdAnnon = nil
+                self?.localStorage.userIdUnknownUser = nil
             }
         }
         
@@ -171,7 +171,7 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
         self.storeIdentifierData()
     }
     
-    func setUserId(_ userId: String?, authToken: String? = nil, successHandler: OnSuccessHandler? = nil, failureHandler: OnFailureHandler? = nil, isAnon: Bool = false, identityResolution: IterableIdentityResolution? = nil) {
+    func setUserId(_ userId: String?, authToken: String? = nil, successHandler: OnSuccessHandler? = nil, failureHandler: OnFailureHandler? = nil, isUnknownUser: Bool = false, identityResolution: IterableIdentityResolution? = nil) {
         ITBInfo()
 
         if self._userId == userId && userId != nil {
@@ -192,9 +192,9 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
             guard let config = self?.config else {
                 return
             }
-            if config.enableAnonActivation {
-                if let userId = userId, userId != (self?.localStorage.userIdAnnon ?? "") {
-                    let merge = identityResolution?.mergeOnAnonymousToKnown ?? config.identityResolution.mergeOnAnonymousToKnown
+            if config.enableUnknownUserActivation {
+                if let userId = userId, userId != (self?.localStorage.userIdUnknownUser ?? "") {
+                    let merge = identityResolution?.mergeOnUnknownUserToKnown ?? config.identityResolution.mergeOnUnknownUserToKnown
                     let replay = identityResolution?.replayOnVisitorToKnown ?? config.identityResolution.replayOnVisitorToKnown
                     self?.attemptAndProcessMerge(
                         merge: merge ?? true,
@@ -205,8 +205,8 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
                     )
                 }
 
-                if !isAnon {
-                    self?.localStorage.userIdAnnon = nil
+                if !isUnknownUser {
+                    self?.localStorage.userIdUnknownUser = nil
                 }
             }
         }
@@ -222,36 +222,44 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
     }
     
     func attemptAndProcessMerge(merge: Bool, replay: Bool, destinationUser: String?, isEmail: Bool, failureHandler: OnFailureHandler? = nil) {
-        anonymousUserMerge.tryMergeUser(destinationUser: destinationUser, isEmail: isEmail, merge: merge) { mergeResult, error in
+        unknownUserMerge.tryMergeUser(destinationUser: destinationUser, isEmail: isEmail, merge: merge) { mergeResult, error in
             
             if mergeResult == MergeResult.mergenotrequired ||  mergeResult == MergeResult.mergesuccessful {
                 if (replay) {
-                    self.anonymousUserManager.syncEvents()
+                    self.unknownUserManager.syncEvents()
                 }
             } else {
                 failureHandler?(error, nil)
             }
-            self.anonymousUserManager.clearVisitorEventsAndUserData()
+                            self.unknownUserManager.clearVisitorEventsAndUserData()
         }
     }
 
     func setVisitorUsageTracked(isVisitorUsageTracked: Bool) {
         ITBInfo("CONSENT CHANGED - local events cleared")
-        self.localStorage.anonymousUsageTrack = isVisitorUsageTracked
-        self.localStorage.anonymousUserEvents = nil
-        self.localStorage.anonymousSessions = nil
-        self.localStorage.anonymousUserUpdate = nil
-        self.localStorage.userIdAnnon = nil
+        self.localStorage.unknownUserUsageTrack = isVisitorUsageTracked
+                    self.localStorage.unknownUserEvents = nil
+                  self.localStorage.unknownUserSessions = nil
+          self.localStorage.unknownUserUpdate = nil
+        self.localStorage.userIdUnknownUser = nil
         
-        if isVisitorUsageTracked && config.enableAnonActivation {
-            ITBInfo("CONSENT GIVEN and ANON TRACKING ENABLED - Criteria fetched")
-            self.anonymousUserManager.getAnonCriteria()
-            self.anonymousUserManager.updateAnonSession()
+        if isVisitorUsageTracked && config.enableUnknownUserActivation {
+            ITBInfo("CONSENT GIVEN and UNKNOWN USER TRACKING ENABLED - Criteria fetched")
+            self.unknownUserManager.getUnknownUserCriteria()
+            self.unknownUserManager.updateUnknownUserSession()
         }
     }
 
     func getVisitorUsageTracked() -> Bool {
-        return self.localStorage.anonymousUsageTrack
+        return self.localStorage.unknownUserUsageTrack
+    }
+    
+    func getUnknownUserUsageTracked() -> Bool {
+        return self.localStorage.unknownUserUsageTrack
+    }
+    
+    func setUnknownUserUsageTracked(isUnknownUserUsageTracked: Bool) {
+        setVisitorUsageTracked(isVisitorUsageTracked: isUnknownUserUsageTracked)
     }
 
     // MARK: - API Request Calls
@@ -268,9 +276,9 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
             return
         }
 
-         if !isEitherUserIdOrEmailSet() && localStorage.userIdAnnon == nil {
-            if config.enableAnonActivation {
-                anonymousUserManager.trackAnonTokenRegistration(token: token)
+         if !isEitherUserIdOrEmailSet() && localStorage.userIdUnknownUser == nil {
+            if config.enableUnknownUserActivation {
+                unknownUserManager.trackUnknownUserTokenRegistration(token: token)
             }
             onFailure?("Iterable SDK must be initialized with an API key and user email/userId before calling SDK methods", nil)
             return
@@ -341,10 +349,10 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
                     mergeNestedObjects: Bool,
                     onSuccess: OnSuccessHandler? = nil,
                     onFailure: OnFailureHandler? = nil) -> Pending<SendRequestValue, SendRequestError> {
-        if !isEitherUserIdOrEmailSet() && localStorage.userIdAnnon == nil {
-            if config.enableAnonActivation {
-                ITBInfo("AUT ENABLED - anon update user")
-                anonymousUserManager.trackAnonUpdateUser(dataFields)
+        if !isEitherUserIdOrEmailSet() && localStorage.userIdUnknownUser == nil {
+            if config.enableUnknownUserActivation {
+                ITBInfo("AUT ENABLED - unknown user update user")
+                unknownUserManager.trackUnknownUserUpdateUser(dataFields)
             }
             return rejectWithInitializationError(onFailure: onFailure)
         }
@@ -373,10 +381,10 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
     func updateCart(items: [CommerceItem],
                     onSuccess: OnSuccessHandler? = nil,
                     onFailure: OnFailureHandler? = nil) -> Pending<SendRequestValue, SendRequestError> {
-        if !isEitherUserIdOrEmailSet() && localStorage.userIdAnnon == nil {
-            if config.enableAnonActivation {
-                ITBInfo("AUT ENABLED - anon update cart")
-                anonymousUserManager.trackAnonUpdateCart(items: items)
+        if !isEitherUserIdOrEmailSet() && localStorage.userIdUnknownUser == nil {
+            if config.enableUnknownUserActivation {
+                ITBInfo("AUT ENABLED - unknown user update cart")
+                unknownUserManager.trackUnknownUserUpdateCart(items: items)
             }
             return rejectWithInitializationError(onFailure: onFailure)
         }
@@ -407,9 +415,9 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
                        onSuccess: OnSuccessHandler? = nil,
                        onFailure: OnFailureHandler? = nil) -> Pending<SendRequestValue, SendRequestError> {
         if !isEitherUserIdOrEmailSet() {
-            if config.enableAnonActivation {
-                ITBInfo("AUT ENABLED - anon track purchase")
-                anonymousUserManager.trackAnonPurchaseEvent(total: total, items: items, dataFields: dataFields)
+            if config.enableUnknownUserActivation {
+                ITBInfo("AUT ENABLED - unknown user track purchase")
+                unknownUserManager.trackUnknownUserPurchaseEvent(total: total, items: items, dataFields: dataFields)
             }
             return rejectWithInitializationError(onFailure: onFailure)
         }
@@ -480,10 +488,10 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
                dataFields: [AnyHashable: Any]? = nil,
                onSuccess: OnSuccessHandler? = nil,
                onFailure: OnFailureHandler? = nil) -> Pending<SendRequestValue, SendRequestError> {
-        if !isEitherUserIdOrEmailSet() && localStorage.userIdAnnon == nil {
-            if config.enableAnonActivation {
-                ITBInfo("AUT ENABLED - anon track custom event")
-                anonymousUserManager.trackAnonEvent(name: eventName, dataFields: dataFields)
+        if !isEitherUserIdOrEmailSet() && localStorage.userIdUnknownUser == nil {
+            if config.enableUnknownUserActivation {
+                ITBInfo("AUT ENABLED - unknown user track custom event")
+                unknownUserManager.trackUnknownUserEvent(name: eventName, dataFields: dataFields)
             }
             return rejectWithInitializationError(onFailure: onFailure)
         }
@@ -733,8 +741,8 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
         IterableUtil.isNullOrEmpty(string: _email) && IterableUtil.isNullOrEmpty(string: _userId)
     }
     
-    public func isAnonUserSet() -> Bool {
-        IterableUtil.isNotNullOrEmpty(string: localStorage.userIdAnnon)
+    public func isUnknownUserSet() -> Bool {
+        IterableUtil.isNotNullOrEmpty(string: localStorage.userIdUnknownUser)
     }
     
     private func logoutPreviousUser() {
@@ -853,7 +861,7 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
         networkSession = dependencyContainer.networkSession
         notificationStateProvider = dependencyContainer.notificationStateProvider
         localStorage = dependencyContainer.localStorage
-        //localStorage.userIdAnnon = nil      // remove this before pushing the code (only for testing)
+        //localStorage.userIdUnknownUser = nil      // remove this before pushing the code (only for testing)
         //localStorage.userId = nil      // remove this before pushing the code (only for testing)
         //localStorage.email = nil      // remove this before pushing the code (only for testing)
         inAppDisplayer = dependencyContainer.inAppDisplayer
@@ -935,16 +943,16 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
         
         let currentTime = Date().timeIntervalSince1970 * 1000  // Convert to milliseconds
         
-        // fetching anonymous user criteria on foregrounding
+        // fetching unknown user criteria on foregrounding
         if noUserLoggedIn()
-            && !isAnonUserSet()
-            && config.enableAnonActivation
+            && !isUnknownUserSet()
+            && config.enableUnknownUserActivation
             && getVisitorUsageTracked()
-            && (currentTime - anonymousUserManager.getLastCriteriaFetch() >= Const.criteriaFetchingCooldown) {
+            && (currentTime - unknownUserManager.getLastCriteriaFetch() >= Const.criteriaFetchingCooldown) {
             
-            anonymousUserManager.updateLastCriteriaFetch(currentTime: currentTime)
-            anonymousUserManager.getAnonCriteria()
-            ITBInfo("Fetching anonymous user criteria - Foreground")
+            unknownUserManager.updateLastCriteriaFetch(currentTime: currentTime)
+            unknownUserManager.getUnknownUserCriteria()
+            ITBInfo("Fetching unknown user criteria - Foreground")
         }
     }
     

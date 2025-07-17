@@ -20,11 +20,11 @@ struct LocalStorage: LocalStorageProtocol {
         }
     }
     
-    var userIdAnnon: String? {
+    var userIdUnknownUser: String? {
         get {
-            keychain.userIdAnnon
+            keychain.userIdUnknownUser
         } set {
-            keychain.userIdAnnon = newValue
+            keychain.userIdUnknownUser = newValue
         }
     }
     
@@ -76,27 +76,27 @@ struct LocalStorage: LocalStorageProtocol {
         }
     }
     
-    var anonymousUserEvents: [[AnyHashable: Any]]? {
+        var unknownUserEvents: [[AnyHashable: Any]]? {
         get {
-            iterableUserDefaults.anonymousUserEvents
+            iterableUserDefaults.unknownUserEvents
         } set {
-            iterableUserDefaults.anonymousUserEvents = newValue
-        }
-    }
-    
-    var anonymousUserUpdate: [AnyHashable: Any]? {
-        get {
-            iterableUserDefaults.anonymousUserUpdate
-        } set {
-            iterableUserDefaults.anonymousUserUpdate = newValue
+            iterableUserDefaults.unknownUserEvents = newValue
         }
     }
 
-    var anonymousSessions: IterableAnonSessionsWrapper? {
+    var unknownUserUpdate: [AnyHashable: Any]? {
         get {
-            iterableUserDefaults.anonymousSessions
+            iterableUserDefaults.unknownUserUpdate
         } set {
-            iterableUserDefaults.anonymousSessions = newValue
+            iterableUserDefaults.unknownUserUpdate = newValue
+        }
+    }
+
+    var unknownUserSessions: IterableUnknownUserSessionsWrapper? {
+        get {
+            iterableUserDefaults.unknownUserSessions
+        } set {
+            iterableUserDefaults.unknownUserSessions = newValue
         }
     }
 
@@ -108,11 +108,11 @@ struct LocalStorage: LocalStorageProtocol {
         }
     }
 
-    var anonymousUsageTrack: Bool {
+    var unknownUserUsageTrack: Bool {
         get {
-            iterableUserDefaults.anonymousUsageTrack
+            iterableUserDefaults.unknownUserUsageTrack
         } set {
-            iterableUserDefaults.anonymousUsageTrack = newValue
+            iterableUserDefaults.unknownUserUsageTrack = newValue
         }
     }
 

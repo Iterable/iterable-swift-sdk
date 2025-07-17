@@ -66,7 +66,7 @@ final class ComparatorDataTypeWithArrayInput: XCTestCase {
             "milestoneYears": [1996, 1997, 2002, 2020, 2024]
         ]]
         let expectedCriteriaId = "285"
-        let matchedCriteriaId = CriteriaCompletionChecker(anonymousCriteria: data(from: mockDataMileStoneYearEqual)!, anonymousEvents: eventItems).getMatchedCriteria()
+        let matchedCriteriaId = CriteriaCompletionChecker(unknownUserCriteria: data(from: mockDataMileStoneYearEqual)!, unknownUserEvents: eventItems).getMatchedCriteria()
         XCTAssertEqual(matchedCriteriaId, expectedCriteriaId)
     }
 
@@ -76,7 +76,7 @@ final class ComparatorDataTypeWithArrayInput: XCTestCase {
             "createdAt": 1699246745093,
             "milestoneYears": [1996, 1998, 2002, 2020, 2024]
         ]]
-        let matchedCriteriaId = CriteriaCompletionChecker(anonymousCriteria: data(from: mockDataMileStoneYearEqual)!, anonymousEvents: eventItems).getMatchedCriteria()
+        let matchedCriteriaId = CriteriaCompletionChecker(unknownUserCriteria: data(from: mockDataMileStoneYearEqual)!, unknownUserEvents: eventItems).getMatchedCriteria()
         XCTAssertEqual(matchedCriteriaId, nil)
     }
 
@@ -128,7 +128,7 @@ final class ComparatorDataTypeWithArrayInput: XCTestCase {
             "milestoneYears": [1996, 1998, 2002, 2020, 2024]
         ]]
         let expectedCriteriaId = "285"
-        let matchedCriteriaId = CriteriaCompletionChecker(anonymousCriteria: data(from: mockDataMileStoneYearDoesNotEqual)!, anonymousEvents: eventItems).getMatchedCriteria()
+        let matchedCriteriaId = CriteriaCompletionChecker(unknownUserCriteria: data(from: mockDataMileStoneYearDoesNotEqual)!, unknownUserEvents: eventItems).getMatchedCriteria()
         XCTAssertEqual(matchedCriteriaId, expectedCriteriaId)
     }
 
@@ -138,7 +138,7 @@ final class ComparatorDataTypeWithArrayInput: XCTestCase {
             "createdAt": 1699246745093,
             "milestoneYears": [1996, 1997, 2002, 2020, 2024]
         ]]
-        let matchedCriteriaId = CriteriaCompletionChecker(anonymousCriteria: data(from: mockDataMileStoneYearDoesNotEqual)!, anonymousEvents: eventItems).getMatchedCriteria()
+        let matchedCriteriaId = CriteriaCompletionChecker(unknownUserCriteria: data(from: mockDataMileStoneYearDoesNotEqual)!, unknownUserEvents: eventItems).getMatchedCriteria()
         XCTAssertEqual(matchedCriteriaId, nil)
     }
 
@@ -191,7 +191,7 @@ final class ComparatorDataTypeWithArrayInput: XCTestCase {
             "milestoneYears": [1996, 1998, 2002, 2020, 2024]
         ]]
         let expectedCriteriaId = "285"
-        let matchedCriteriaId = CriteriaCompletionChecker(anonymousCriteria: data(from: mockDataMileStoneYearGreaterThan)!, anonymousEvents: eventItems).getMatchedCriteria()
+        let matchedCriteriaId = CriteriaCompletionChecker(unknownUserCriteria: data(from: mockDataMileStoneYearGreaterThan)!, unknownUserEvents: eventItems).getMatchedCriteria()
         XCTAssertEqual(matchedCriteriaId, expectedCriteriaId)
     }
 
@@ -201,7 +201,7 @@ final class ComparatorDataTypeWithArrayInput: XCTestCase {
             "createdAt": 1699246745093,
             "milestoneYears": [1990, 1992, 1994, 1997]
         ]]
-        let matchedCriteriaId = CriteriaCompletionChecker(anonymousCriteria: data(from: mockDataMileStoneYearGreaterThan)!, anonymousEvents: eventItems).getMatchedCriteria()
+        let matchedCriteriaId = CriteriaCompletionChecker(unknownUserCriteria: data(from: mockDataMileStoneYearGreaterThan)!, unknownUserEvents: eventItems).getMatchedCriteria()
         XCTAssertEqual(matchedCriteriaId, nil)
     }
 
@@ -254,7 +254,7 @@ final class ComparatorDataTypeWithArrayInput: XCTestCase {
             "milestoneYears": [1997, 1998, 2002, 2020, 2024]
         ]]
         let expectedCriteriaId = "285"
-        let matchedCriteriaId = CriteriaCompletionChecker(anonymousCriteria: data(from: mockDataMileStoneYearGreaterThanOrEqualTo)!, anonymousEvents: eventItems).getMatchedCriteria()
+        let matchedCriteriaId = CriteriaCompletionChecker(unknownUserCriteria: data(from: mockDataMileStoneYearGreaterThanOrEqualTo)!, unknownUserEvents: eventItems).getMatchedCriteria()
         XCTAssertEqual(matchedCriteriaId, expectedCriteriaId)
     }
 
@@ -264,7 +264,7 @@ final class ComparatorDataTypeWithArrayInput: XCTestCase {
             "createdAt": 1699246745093,
             "milestoneYears": [1990, 1992, 1994, 1996]
         ]]
-        let matchedCriteriaId = CriteriaCompletionChecker(anonymousCriteria: data(from: mockDataMileStoneYearGreaterThanOrEqualTo)!, anonymousEvents: eventItems).getMatchedCriteria()
+        let matchedCriteriaId = CriteriaCompletionChecker(unknownUserCriteria: data(from: mockDataMileStoneYearGreaterThanOrEqualTo)!, unknownUserEvents: eventItems).getMatchedCriteria()
         XCTAssertEqual(matchedCriteriaId, nil)
     }
 
@@ -316,7 +316,7 @@ final class ComparatorDataTypeWithArrayInput: XCTestCase {
             "milestoneYears": [1990, 1992, 1994, 1996, 1998]
         ]]
         let expectedCriteriaId = "285"
-        let matchedCriteriaId = CriteriaCompletionChecker(anonymousCriteria: data(from: mockDataMileStoneYearLessThan)!, anonymousEvents: eventItems).getMatchedCriteria()
+        let matchedCriteriaId = CriteriaCompletionChecker(unknownUserCriteria: data(from: mockDataMileStoneYearLessThan)!, unknownUserEvents: eventItems).getMatchedCriteria()
         XCTAssertEqual(matchedCriteriaId, expectedCriteriaId)
     }
 
@@ -326,7 +326,7 @@ final class ComparatorDataTypeWithArrayInput: XCTestCase {
             "createdAt": 1699246745093,
             "milestoneYears": [1997, 1999, 2002, 2004]
         ]]
-        let matchedCriteriaId = CriteriaCompletionChecker(anonymousCriteria: data(from: mockDataMileStoneYearLessThan)!, anonymousEvents: eventItems).getMatchedCriteria()
+        let matchedCriteriaId = CriteriaCompletionChecker(unknownUserCriteria: data(from: mockDataMileStoneYearLessThan)!, unknownUserEvents: eventItems).getMatchedCriteria()
         XCTAssertEqual(matchedCriteriaId, nil)
     }
 
@@ -378,7 +378,7 @@ final class ComparatorDataTypeWithArrayInput: XCTestCase {
             "milestoneYears": [1990, 1992, 1994, 1996, 1998]
         ]]
         let expectedCriteriaId = "285"
-        let matchedCriteriaId = CriteriaCompletionChecker(anonymousCriteria: data(from: mockDataMileStoneYearLessThanOrEquaTo)!, anonymousEvents: eventItems).getMatchedCriteria()
+        let matchedCriteriaId = CriteriaCompletionChecker(unknownUserCriteria: data(from: mockDataMileStoneYearLessThanOrEquaTo)!, unknownUserEvents: eventItems).getMatchedCriteria()
         XCTAssertEqual(matchedCriteriaId, expectedCriteriaId)
     }
 
@@ -388,7 +388,7 @@ final class ComparatorDataTypeWithArrayInput: XCTestCase {
             "createdAt": 1699246745093,
             "milestoneYears": [1998, 1999, 2002, 2004]
         ]]
-        let matchedCriteriaId = CriteriaCompletionChecker(anonymousCriteria: data(from: mockDataMileStoneYearLessThanOrEquaTo)!, anonymousEvents: eventItems).getMatchedCriteria()
+        let matchedCriteriaId = CriteriaCompletionChecker(unknownUserCriteria: data(from: mockDataMileStoneYearLessThanOrEquaTo)!, unknownUserEvents: eventItems).getMatchedCriteria()
         XCTAssertEqual(matchedCriteriaId, nil)
     }
 
@@ -440,7 +440,7 @@ final class ComparatorDataTypeWithArrayInput: XCTestCase {
             "addresses": ["US", "UK", "USA"]
         ]]
         let expectedCriteriaId = "285"
-        let matchedCriteriaId = CriteriaCompletionChecker(anonymousCriteria: data(from: mockDataForArrayContains)!, anonymousEvents: eventItems).getMatchedCriteria()
+        let matchedCriteriaId = CriteriaCompletionChecker(unknownUserCriteria: data(from: mockDataForArrayContains)!, unknownUserEvents: eventItems).getMatchedCriteria()
         XCTAssertEqual(matchedCriteriaId, expectedCriteriaId)
     }
 
@@ -450,7 +450,7 @@ final class ComparatorDataTypeWithArrayInput: XCTestCase {
             "createdAt": 1699246745093,
             "addresses": ["UK", "USA"]
         ]]
-        let matchedCriteriaId = CriteriaCompletionChecker(anonymousCriteria: data(from: mockDataForArrayContains)!, anonymousEvents: eventItems).getMatchedCriteria()
+        let matchedCriteriaId = CriteriaCompletionChecker(unknownUserCriteria: data(from: mockDataForArrayContains)!, unknownUserEvents: eventItems).getMatchedCriteria()
         XCTAssertEqual(matchedCriteriaId, nil)
     }
 
@@ -508,7 +508,7 @@ final class ComparatorDataTypeWithArrayInput: XCTestCase {
                            "GB, London"]
         ]]
         let expectedCriteriaId = "285"
-        let matchedCriteriaId = CriteriaCompletionChecker(anonymousCriteria: data(from: mockDataForArrayStartWith)!, anonymousEvents: eventItems).getMatchedCriteria()
+        let matchedCriteriaId = CriteriaCompletionChecker(unknownUserCriteria: data(from: mockDataForArrayStartWith)!, unknownUserEvents: eventItems).getMatchedCriteria()
         XCTAssertEqual(matchedCriteriaId, expectedCriteriaId)
     }
 
@@ -522,7 +522,7 @@ final class ComparatorDataTypeWithArrayInput: XCTestCase {
                            "GB",
                            "London"]
         ]]
-        let matchedCriteriaId = CriteriaCompletionChecker(anonymousCriteria: data(from: mockDataForArrayStartWith)!, anonymousEvents: eventItems).getMatchedCriteria()
+        let matchedCriteriaId = CriteriaCompletionChecker(unknownUserCriteria: data(from: mockDataForArrayStartWith)!, unknownUserEvents: eventItems).getMatchedCriteria()
         XCTAssertEqual(matchedCriteriaId, nil)
     }
 
@@ -578,7 +578,7 @@ final class ComparatorDataTypeWithArrayInput: XCTestCase {
                            "London"]
             ]]
         let expectedCriteriaId = "285"
-        let matchedCriteriaId = CriteriaCompletionChecker(anonymousCriteria: data(from: mockDataForArrayMatchRegex)!, anonymousEvents: eventItems).getMatchedCriteria()
+        let matchedCriteriaId = CriteriaCompletionChecker(unknownUserCriteria: data(from: mockDataForArrayMatchRegex)!, unknownUserEvents: eventItems).getMatchedCriteria()
         XCTAssertEqual(matchedCriteriaId, expectedCriteriaId)
     }
 
@@ -592,7 +592,7 @@ final class ComparatorDataTypeWithArrayInput: XCTestCase {
                            "US, Los Angeles",
                            ]
         ]]
-        let matchedCriteriaId = CriteriaCompletionChecker(anonymousCriteria: data(from: mockDataForArrayMatchRegex)!, anonymousEvents: eventItems).getMatchedCriteria()
+        let matchedCriteriaId = CriteriaCompletionChecker(unknownUserCriteria: data(from: mockDataForArrayMatchRegex)!, unknownUserEvents: eventItems).getMatchedCriteria()
         XCTAssertEqual(matchedCriteriaId, nil)
     }
 
@@ -684,7 +684,7 @@ final class ComparatorDataTypeWithArrayInput: XCTestCase {
             ]
         ]
         let expectedCriteriaId = "382"
-        let matchedCriteriaId = CriteriaCompletionChecker(anonymousCriteria: data(from: mockDataStringArrayMixCriteArea)!, anonymousEvents: eventItems).getMatchedCriteria()
+        let matchedCriteriaId = CriteriaCompletionChecker(unknownUserCriteria: data(from: mockDataStringArrayMixCriteArea)!, unknownUserEvents: eventItems).getMatchedCriteria()
         XCTAssertEqual(matchedCriteriaId, expectedCriteriaId)
     }
 
@@ -706,7 +706,7 @@ final class ComparatorDataTypeWithArrayInput: XCTestCase {
                 "total": [210.0, 220.20, 250.10]
             ]
         ]
-        let matchedCriteriaId = CriteriaCompletionChecker(anonymousCriteria: data(from: mockDataStringArrayMixCriteArea)!, anonymousEvents: eventItems).getMatchedCriteria()
+        let matchedCriteriaId = CriteriaCompletionChecker(unknownUserCriteria: data(from: mockDataStringArrayMixCriteArea)!, unknownUserEvents: eventItems).getMatchedCriteria()
         XCTAssertEqual(matchedCriteriaId, nil)
     }
 }

@@ -70,7 +70,7 @@ final class CustomEventUserUpdateTestCaseTests: XCTestCase {
             ["dataType": "customEvent", "createdAt": 1699246745093, "eventName": "button-clicked", "dataFields": ["button-clicked.lastPageViewed": "signup page"]
             ]]
 
-        let matchedCriteriaId = CriteriaCompletionChecker(anonymousCriteria: data(from: mockData)!, anonymousEvents: eventItems).getMatchedCriteria()
+        let matchedCriteriaId = CriteriaCompletionChecker(unknownUserCriteria: data(from: mockData)!, unknownUserEvents: eventItems).getMatchedCriteria()
         XCTAssertEqual(matchedCriteriaId, nil)
     }
 
@@ -79,7 +79,7 @@ final class CustomEventUserUpdateTestCaseTests: XCTestCase {
             ["dataType": "customEvent", "createdAt": 1699246745093, "eventName": "button-clicked", "dataFields": ["button-clicked.button-clicked.lastPageViewed": "signup page"]
             ]]
 
-        let matchedCriteriaId = CriteriaCompletionChecker(anonymousCriteria: data(from: mockData)!, anonymousEvents: eventItems).getMatchedCriteria()
+        let matchedCriteriaId = CriteriaCompletionChecker(unknownUserCriteria: data(from: mockData)!, unknownUserEvents: eventItems).getMatchedCriteria()
         XCTAssertEqual(matchedCriteriaId, nil)
     }
 
@@ -88,7 +88,7 @@ final class CustomEventUserUpdateTestCaseTests: XCTestCase {
             ["dataType": "customEvent", "createdAt": 1699246745093, "eventName": "button-clicked", "dataFields": ["button-clicked": ["button-clicked.lastPageViewed": "signup page"]]
             ]]
 
-        let matchedCriteriaId = CriteriaCompletionChecker(anonymousCriteria: data(from: mockData)!, anonymousEvents: eventItems).getMatchedCriteria()
+        let matchedCriteriaId = CriteriaCompletionChecker(unknownUserCriteria: data(from: mockData)!, unknownUserEvents: eventItems).getMatchedCriteria()
         XCTAssertEqual(matchedCriteriaId, nil)
     }
 
@@ -96,7 +96,7 @@ final class CustomEventUserUpdateTestCaseTests: XCTestCase {
         let eventItems: [[AnyHashable: Any]] = [
             ["dataType": "customEvent", "createdAt": 1699246745093, "eventName": "button-clicked", "dataFields": ["button-clicked": ["lastPageViewed": "signup page"]]
             ]]
-        let matchedCriteriaId = CriteriaCompletionChecker(anonymousCriteria: data(from: mockData)!, anonymousEvents: eventItems).getMatchedCriteria()
+        let matchedCriteriaId = CriteriaCompletionChecker(unknownUserCriteria: data(from: mockData)!, unknownUserEvents: eventItems).getMatchedCriteria()
         XCTAssertEqual(matchedCriteriaId, nil)
     }
 
@@ -105,7 +105,7 @@ final class CustomEventUserUpdateTestCaseTests: XCTestCase {
             ["dataType": "customEvent", "createdAt": 1699246745093, "eventName": "button-clicked", "dataFields": ["lastPageViewed": "signup page"]
             ]]
         let expectedCriteriaId = "48"
-        let matchedCriteriaId = CriteriaCompletionChecker(anonymousCriteria: data(from: mockData)!, anonymousEvents: eventItems).getMatchedCriteria()
+        let matchedCriteriaId = CriteriaCompletionChecker(unknownUserCriteria: data(from: mockData)!, unknownUserEvents: eventItems).getMatchedCriteria()
         XCTAssertEqual(matchedCriteriaId, expectedCriteriaId)
     }
 
@@ -174,7 +174,7 @@ final class CustomEventUserUpdateTestCaseTests: XCTestCase {
               ]
             ]
           ]
-        let matchedCriteriaId = CriteriaCompletionChecker(anonymousCriteria: data(from: mockDataForMultiLevelNested)!, anonymousEvents: eventItems).getMatchedCriteria()
+        let matchedCriteriaId = CriteriaCompletionChecker(unknownUserCriteria: data(from: mockDataForMultiLevelNested)!, unknownUserEvents: eventItems).getMatchedCriteria()
         XCTAssertEqual(matchedCriteriaId, nil)
     }
 
@@ -194,7 +194,7 @@ final class CustomEventUserUpdateTestCaseTests: XCTestCase {
               ]
             ]
           ]
-        let matchedCriteriaId = CriteriaCompletionChecker(anonymousCriteria: data(from: mockDataForMultiLevelNested)!, anonymousEvents: eventItems).getMatchedCriteria()
+        let matchedCriteriaId = CriteriaCompletionChecker(unknownUserCriteria: data(from: mockDataForMultiLevelNested)!, unknownUserEvents: eventItems).getMatchedCriteria()
         XCTAssertEqual(matchedCriteriaId, nil)
     }
 
@@ -220,7 +220,7 @@ final class CustomEventUserUpdateTestCaseTests: XCTestCase {
               ]
             ]
           ]
-        let matchedCriteriaId = CriteriaCompletionChecker(anonymousCriteria: data(from: mockDataForMultiLevelNested)!, anonymousEvents: eventItems).getMatchedCriteria()
+        let matchedCriteriaId = CriteriaCompletionChecker(unknownUserCriteria: data(from: mockDataForMultiLevelNested)!, unknownUserEvents: eventItems).getMatchedCriteria()
         XCTAssertEqual(matchedCriteriaId, nil)
     }
 
@@ -236,7 +236,7 @@ final class CustomEventUserUpdateTestCaseTests: XCTestCase {
               ]
             ]
           ]
-        let matchedCriteriaId = CriteriaCompletionChecker(anonymousCriteria: data(from: mockDataForMultiLevelNested)!, anonymousEvents: eventItems).getMatchedCriteria()
+        let matchedCriteriaId = CriteriaCompletionChecker(unknownUserCriteria: data(from: mockDataForMultiLevelNested)!, unknownUserEvents: eventItems).getMatchedCriteria()
         XCTAssertEqual(matchedCriteriaId, nil)
     }
 
@@ -261,7 +261,7 @@ final class CustomEventUserUpdateTestCaseTests: XCTestCase {
             ]
           ]
         let expectedCriteriaId = "425"
-        let matchedCriteriaId = CriteriaCompletionChecker(anonymousCriteria: data(from: mockDataForMultiLevelNested)!, anonymousEvents: eventItems).getMatchedCriteria()
+        let matchedCriteriaId = CriteriaCompletionChecker(unknownUserCriteria: data(from: mockDataForMultiLevelNested)!, unknownUserEvents: eventItems).getMatchedCriteria()
         XCTAssertEqual(matchedCriteriaId, expectedCriteriaId)
     }
 }

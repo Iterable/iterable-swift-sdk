@@ -15,7 +15,7 @@ enum EventType {
     static let purchase = "purchase"
     static let updateUser = "user"
     static let updateCart = "updateCart"
-    static let anonSession = "anonSession"
+            static let unknownUserSession = "unknownUserSession"
     static let tokenRegistration = "tokenRegistration"
     static let trackEvent = "trackEvent"
 }
@@ -52,8 +52,8 @@ enum Const {
         static let updateSubscriptions = "users/updateSubscriptions"
         static let getRemoteConfiguration = "mobile/getRemoteConfiguration"
         static let mergeUser = "users/merge";
-        static let getCriteria = "anonymoususer/list";
-        static let trackAnonSession = "anonymoususer/events/session";
+        static let getCriteria = "unknownuser/list";
+        static let trackUnknownUserSession = "unknownuser/events/session";
         static let getEmbeddedMessages = "embedded-messaging/messages"
         static let embeddedMessageReceived = "embedded-messaging/events/received"
         static let embeddedMessageClick = "embedded-messaging/events/click"
@@ -71,13 +71,13 @@ enum Const {
         static let deviceId = "itbl_device_id"
         static let sdkVersion = "itbl_sdk_version"
         static let offlineMode = "itbl_offline_mode"
-        static let anonymousUserEvents = "itbl_anonymous_user_events"
-        static let anonymousUserUpdate = "itbl_anonymous_user_update"
+        static let unknownUserEvents = "itbl_unknown_user_events"
+        static let unknownUserUpdate = "itbl_unknown_user_update"
         static let criteriaData = "itbl_criteria_data"
-        static let anonymousSessions = "itbl_anon_sessions"
+        static let unknownUserSessions = "itbl_unknown_user_sessions"
         static let matchedCriteria = "itbl_matched_criteria"
         static let eventList = "itbl_event_list"
-        static let anonymousUsageTrack = "itbl_anonymous_usage_track"
+        static let unknownUserUsageTrack = "itbl_unknown_user_usage_track"
         static let isNotificationsEnabled = "itbl_isNotificationsEnabled"
         static let hasStoredNotificationSetting = "itbl_hasStoredNotificationSetting"
 
@@ -90,7 +90,7 @@ enum Const {
         enum Key {
             static let email = "itbl_email"
             static let userId = "itbl_userid"
-            static let userIdAnnon = "itbl_userid_annon"
+            static let userIdUnknownUser = "itbl_userid_unknown_user"
             static let authToken = "itbl_auth_token"
         }
     }
@@ -200,7 +200,7 @@ enum JsonKey {
     static let actionIdentifier = "actionIdentifier"
     static let userText = "userText"
     static let appAlreadyRunning = "appAlreadyRunning"
-    static let anonSessionContext = "anonSessionContext"
+            static let unknownUserSessionContext = "unknownUserSessionContext"
     
     static let html = "html"
     

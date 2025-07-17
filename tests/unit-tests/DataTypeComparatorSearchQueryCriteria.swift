@@ -92,7 +92,7 @@ final class DataTypeComparatorSearchQueryCriteria: XCTestCase {
 
         let expectedCriteriaId = "285"
 
-        let matchedCriteriaId = CriteriaCompletionChecker(anonymousCriteria: data(from: mockDataEqual)!, anonymousEvents: eventItems).getMatchedCriteria()
+        let matchedCriteriaId = CriteriaCompletionChecker(unknownUserCriteria: data(from: mockDataEqual)!, unknownUserEvents: eventItems).getMatchedCriteria()
         XCTAssertEqual(matchedCriteriaId, expectedCriteriaId)
     }
 
@@ -108,7 +108,7 @@ final class DataTypeComparatorSearchQueryCriteria: XCTestCase {
                                                     "country":"Taiwan"]
                                                 ]]
 
-        let matchedCriteriaId = CriteriaCompletionChecker(anonymousCriteria: data(from: mockDataEqual)!, anonymousEvents: eventItems).getMatchedCriteria()
+        let matchedCriteriaId = CriteriaCompletionChecker(unknownUserCriteria: data(from: mockDataEqual)!, unknownUserEvents: eventItems).getMatchedCriteria()
         XCTAssertEqual(matchedCriteriaId, nil)
     }
 
@@ -177,7 +177,7 @@ final class DataTypeComparatorSearchQueryCriteria: XCTestCase {
                                                  ]]
         let expectedCriteriaId = "285"
 
-        let matchedCriteriaId = CriteriaCompletionChecker(anonymousCriteria: data(from: mockDataDoesNotEquals)!, anonymousEvents: eventItems).getMatchedCriteria()
+        let matchedCriteriaId = CriteriaCompletionChecker(unknownUserCriteria: data(from: mockDataDoesNotEquals)!, unknownUserEvents: eventItems).getMatchedCriteria()
         XCTAssertEqual(matchedCriteriaId, expectedCriteriaId)
     }
 
@@ -189,7 +189,7 @@ final class DataTypeComparatorSearchQueryCriteria: XCTestCase {
                                                     "eventTimeStamp": 30,
                                                     "likes_boba": true]
                                                 ]]
-        let matchedCriteriaId = CriteriaCompletionChecker(anonymousCriteria: data(from: mockDataDoesNotEquals)!, anonymousEvents: eventItems).getMatchedCriteria()
+        let matchedCriteriaId = CriteriaCompletionChecker(unknownUserCriteria: data(from: mockDataDoesNotEquals)!, unknownUserEvents: eventItems).getMatchedCriteria()
         XCTAssertEqual(matchedCriteriaId, nil)
     }
 
@@ -288,7 +288,7 @@ final class DataTypeComparatorSearchQueryCriteria: XCTestCase {
                                                 ]]
         let expectedCriteriaId = "289"
 
-        let matchedCriteriaId = CriteriaCompletionChecker(anonymousCriteria: data(from: mockDataLessThanOrEqual)!, anonymousEvents: eventItems).getMatchedCriteria()
+        let matchedCriteriaId = CriteriaCompletionChecker(unknownUserCriteria: data(from: mockDataLessThanOrEqual)!, unknownUserEvents: eventItems).getMatchedCriteria()
         XCTAssertEqual(matchedCriteriaId, expectedCriteriaId)
     }
 
@@ -299,7 +299,7 @@ final class DataTypeComparatorSearchQueryCriteria: XCTestCase {
                                                     "savings": 18,
                                                     "eventTimeStamp": 18]
                                                 ]]
-        let matchedCriteriaId = CriteriaCompletionChecker(anonymousCriteria: data(from: mockDataLessThanOrEqual)!, anonymousEvents: eventItems).getMatchedCriteria()
+        let matchedCriteriaId = CriteriaCompletionChecker(unknownUserCriteria: data(from: mockDataLessThanOrEqual)!, unknownUserEvents: eventItems).getMatchedCriteria()
         XCTAssertEqual(matchedCriteriaId, nil)
     }
 
@@ -312,7 +312,7 @@ final class DataTypeComparatorSearchQueryCriteria: XCTestCase {
                                                 ]]
         let expectedCriteriaId = "290"
 
-        let matchedCriteriaId = CriteriaCompletionChecker(anonymousCriteria: data(from: mockDataLessThanOrEqual)!, anonymousEvents: eventItems).getMatchedCriteria()
+        let matchedCriteriaId = CriteriaCompletionChecker(unknownUserCriteria: data(from: mockDataLessThanOrEqual)!, unknownUserEvents: eventItems).getMatchedCriteria()
         XCTAssertEqual(matchedCriteriaId, expectedCriteriaId)
     }
 
@@ -323,7 +323,7 @@ final class DataTypeComparatorSearchQueryCriteria: XCTestCase {
                                                     "savings": 18,
                                                     "eventTimeStamp": 12]
                                                 ]]
-        let matchedCriteriaId = CriteriaCompletionChecker(anonymousCriteria: data(from: mockDataLessThanOrEqual)!, anonymousEvents: eventItems).getMatchedCriteria()
+        let matchedCriteriaId = CriteriaCompletionChecker(unknownUserCriteria: data(from: mockDataLessThanOrEqual)!, unknownUserEvents: eventItems).getMatchedCriteria()
         XCTAssertEqual(matchedCriteriaId, nil)
     }
 
@@ -422,7 +422,7 @@ final class DataTypeComparatorSearchQueryCriteria: XCTestCase {
                                                 ]]
         let expectedCriteriaId = "290"
 
-        let matchedCriteriaId = CriteriaCompletionChecker(anonymousCriteria: data(from: mockDataGreaterThanOrEqual)!, anonymousEvents: eventItems).getMatchedCriteria()
+        let matchedCriteriaId = CriteriaCompletionChecker(unknownUserCriteria: data(from: mockDataGreaterThanOrEqual)!, unknownUserEvents: eventItems).getMatchedCriteria()
         XCTAssertEqual(matchedCriteriaId, expectedCriteriaId)
     }
 
@@ -433,7 +433,7 @@ final class DataTypeComparatorSearchQueryCriteria: XCTestCase {
                                                     "savings": 5,
                                                     "eventTimeStamp": 3]
                                                 ]]
-        let matchedCriteriaId = CriteriaCompletionChecker(anonymousCriteria: data(from: mockDataGreaterThanOrEqual)!, anonymousEvents: eventItems).getMatchedCriteria()
+        let matchedCriteriaId = CriteriaCompletionChecker(unknownUserCriteria: data(from: mockDataGreaterThanOrEqual)!, unknownUserEvents: eventItems).getMatchedCriteria()
         XCTAssertEqual(matchedCriteriaId, nil)
     }
 
@@ -445,7 +445,7 @@ final class DataTypeComparatorSearchQueryCriteria: XCTestCase {
                                                     "eventTimeStamp": 30]
                                                 ]]
         let expectedCriteriaId = "291"
-        let matchedCriteriaId = CriteriaCompletionChecker(anonymousCriteria: data(from: mockDataGreaterThanOrEqual)!, anonymousEvents: eventItems).getMatchedCriteria()
+        let matchedCriteriaId = CriteriaCompletionChecker(unknownUserCriteria: data(from: mockDataGreaterThanOrEqual)!, unknownUserEvents: eventItems).getMatchedCriteria()
         XCTAssertEqual(matchedCriteriaId, expectedCriteriaId)
     }
 
@@ -455,7 +455,7 @@ final class DataTypeComparatorSearchQueryCriteria: XCTestCase {
                                                     "savings": 18,
                                                     "eventTimeStamp":16]
                                                 ]]
-        let matchedCriteriaId = CriteriaCompletionChecker(anonymousCriteria: data(from: mockDataGreaterThanOrEqual)!, anonymousEvents: eventItems).getMatchedCriteria()
+        let matchedCriteriaId = CriteriaCompletionChecker(unknownUserCriteria: data(from: mockDataGreaterThanOrEqual)!, unknownUserEvents: eventItems).getMatchedCriteria()
         XCTAssertEqual(matchedCriteriaId, nil)
     }
 
@@ -530,7 +530,7 @@ final class DataTypeComparatorSearchQueryCriteria: XCTestCase {
                                                     "country": "Taiwan"]
                                                 ]]
         let expectedCriteriaId = "285"
-        let matchedCriteriaId = CriteriaCompletionChecker(anonymousCriteria: data(from: mockDataIsSet)!, anonymousEvents: eventItems).getMatchedCriteria()
+        let matchedCriteriaId = CriteriaCompletionChecker(unknownUserCriteria: data(from: mockDataIsSet)!, unknownUserEvents: eventItems).getMatchedCriteria()
         XCTAssertEqual(matchedCriteriaId, expectedCriteriaId)
     }
 
@@ -542,7 +542,7 @@ final class DataTypeComparatorSearchQueryCriteria: XCTestCase {
                                                     "saved_cars":"",
                                                     "country": ""]
                                                 ]]
-        let matchedCriteriaId = CriteriaCompletionChecker(anonymousCriteria: data(from: mockDataIsSet)!, anonymousEvents: eventItems).getMatchedCriteria()
+        let matchedCriteriaId = CriteriaCompletionChecker(unknownUserCriteria: data(from: mockDataIsSet)!, unknownUserEvents: eventItems).getMatchedCriteria()
         XCTAssertEqual(matchedCriteriaId, nil)
     }
 
@@ -605,7 +605,7 @@ final class DataTypeComparatorSearchQueryCriteria: XCTestCase {
         let eventItems: [[AnyHashable: Any]] = [["dataType":"user",
                                                  "country":"Taiwan"]]
         let expectedCriteriaId = "288"
-        let matchedCriteriaId = CriteriaCompletionChecker(anonymousCriteria: data(from: mockDataContainRegexStartWith)!, anonymousEvents: eventItems).getMatchedCriteria()
+        let matchedCriteriaId = CriteriaCompletionChecker(unknownUserCriteria: data(from: mockDataContainRegexStartWith)!, unknownUserEvents: eventItems).getMatchedCriteria()
         XCTAssertEqual(matchedCriteriaId, expectedCriteriaId)
     }
 
@@ -613,21 +613,21 @@ final class DataTypeComparatorSearchQueryCriteria: XCTestCase {
         let eventItems: [[AnyHashable: Any]] = [["dataType":"user",
                                                  "country":"Chaina",
                                                  "phoneNumber": "1212567"]]
-        let matchedCriteriaId = CriteriaCompletionChecker(anonymousCriteria: data(from: mockDataContainRegexStartWith)!, anonymousEvents: eventItems).getMatchedCriteria()
+        let matchedCriteriaId = CriteriaCompletionChecker(unknownUserCriteria: data(from: mockDataContainRegexStartWith)!, unknownUserEvents: eventItems).getMatchedCriteria()
         XCTAssertEqual(matchedCriteriaId, nil)
     }
 
     func testCompareDataStartWithFailure() {
         let eventItems: [[AnyHashable: Any]] = [["dataType":"user",
                                                  "country":"Chaina"]]
-        let matchedCriteriaId = CriteriaCompletionChecker(anonymousCriteria: data(from: mockDataContainRegexStartWith)!, anonymousEvents: eventItems).getMatchedCriteria()
+        let matchedCriteriaId = CriteriaCompletionChecker(unknownUserCriteria: data(from: mockDataContainRegexStartWith)!, unknownUserEvents: eventItems).getMatchedCriteria()
         XCTAssertEqual(matchedCriteriaId, nil)
     }
 
     func testCompareDataContainFailure() {
         let eventItems: [[AnyHashable: Any]] = [["dataType":"user",
                                                  "country":"ina"]]
-        let matchedCriteriaId = CriteriaCompletionChecker(anonymousCriteria: data(from: mockDataContainRegexStartWith)!, anonymousEvents: eventItems).getMatchedCriteria()
+        let matchedCriteriaId = CriteriaCompletionChecker(unknownUserCriteria: data(from: mockDataContainRegexStartWith)!, unknownUserEvents: eventItems).getMatchedCriteria()
         XCTAssertEqual(matchedCriteriaId, nil)
     }
 

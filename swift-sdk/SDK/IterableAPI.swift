@@ -126,10 +126,10 @@ import UIKit
             callback?(false)
         }
         
-        if let implementation, config.enableAnonActivation, !implementation.isSDKInitialized(), implementation.getVisitorUsageTracked() {
+        if let implementation, config.enableUnknownUserActivation, !implementation.isSDKInitialized(), implementation.getVisitorUsageTracked() {
             ITBInfo("AUT ENABLED AND CONSENT GIVEN - Criteria fetched")
-            implementation.anonymousUserManager.getAnonCriteria()
-            implementation.anonymousUserManager.updateAnonSession()
+            implementation.unknownUserManager.getUnknownUserCriteria()
+            implementation.unknownUserManager.updateUnknownUserSession()
         }
     }
 
@@ -848,6 +848,26 @@ import UIKit
         
         implementation.track(inboxSession: inboxSession)
     }
+    
+    // MARK: - Unknown User Usage Tracking
+    
+    /// Gets the current unknown user usage tracking setting
+    ///
+    /// - Returns: `true` if unknown user usage tracking is enabled, `false` otherwise
+    @objc public static func getUnknownUserUsageTracked() -> Bool {
+        guard let implementation = implementation else { return false }
+        return implementation.getUnknownUserUsageTracked()
+    }
+    
+    /// Sets the unknown user usage tracking setting
+    ///
+    /// - Parameter isUnknownUserUsageTracked: `true` to enable unknown user usage tracking, `false` to disable
+    @objc public static func setUnknownUserUsageTracked(isUnknownUserUsageTracked: Bool) {
+        guard let implementation = implementation else { return }
+        implementation.setUnknownUserUsageTracked(isUnknownUserUsageTracked: isUnknownUserUsageTracked)
+    }
+    
+
     
     // MARK: - Private/Internal
     

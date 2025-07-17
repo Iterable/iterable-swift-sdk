@@ -43,8 +43,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate, IterableAuthDelegate {
         config.customActionDelegate = self
         config.urlDelegate = self
         config.inAppDisplayInterval = 1
-        config.anonUserDelegate = self
-        config.enableAnonTracking = true
+        config.unknownUserHandler = self
+        config.enableUnknownUserActivation = true
         config.authDelegate = self
         IterableAPI.initialize(apiKey: iterableApiKey,
                                launchOptions: launchOptions,
@@ -175,9 +175,9 @@ extension AppDelegate: IterableURLDelegate {
     }
 }
 
-extension AppDelegate: IterableAnonUserDelegate {
-    func onAnonUserCreated(userId: String) {
-        print("UserId Created from anonsession: \(userId)")
+extension AppDelegate: IterableUnknownUserHandler {
+    func onUnknownUserCreated(userId: String) {
+        print("UserId Created from unknown user session: \(userId)")
     }
 }
 
