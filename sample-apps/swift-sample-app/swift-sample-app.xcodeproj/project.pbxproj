@@ -9,6 +9,8 @@
 /* Begin PBXBuildFile section */
 		551A5FF1251AB1950004C9A0 /* IterableSDK in Frameworks */ = {isa = PBXBuildFile; productRef = 551A5FF0251AB1950004C9A0 /* IterableSDK */; };
 		551A5FF3251AB19B0004C9A0 /* IterableAppExtensions in Frameworks */ = {isa = PBXBuildFile; productRef = 551A5FF2251AB19B0004C9A0 /* IterableAppExtensions */; };
+		8A146C732E1EBBEF00174C2F /* AppDelegate+IntegrationTest 2.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8A146C722E1EBBEF00174C2F /* AppDelegate+IntegrationTest 2.swift */; };
+		8A233D012E24FDA5000AC795 /* IntegrationTestHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8A233D002E24FDA5000AC795 /* IntegrationTestHelper.swift */; };
 		AC1BDF5820E304BC000010CA /* CoffeeListTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC5ECD9E20E304000081E1DA /* CoffeeListTableViewController.swift */; };
 		AC1BDF5920E304BF000010CA /* DeepLinkHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC1BDF5720E30436000010CA /* DeepLinkHandler.swift */; };
 		AC1BDF5A20E304CC000010CA /* CoffeeViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC5ECD9F20E304070081E1DA /* CoffeeViewController.swift */; };
@@ -52,6 +54,8 @@
 
 /* Begin PBXFileReference section */
 		551A5FEC251AB1510004C9A0 /* swift-sdk */ = {isa = PBXFileReference; lastKnownFileType = folder; name = "swift-sdk"; path = ../..; sourceTree = "<group>"; };
+		8A146C722E1EBBEF00174C2F /* AppDelegate+IntegrationTest 2.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "AppDelegate+IntegrationTest 2.swift"; sourceTree = "<group>"; };
+		8A233D002E24FDA5000AC795 /* IntegrationTestHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IntegrationTestHelper.swift; sourceTree = "<group>"; };
 		AC1BDF5720E30436000010CA /* DeepLinkHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeepLinkHandler.swift; sourceTree = "<group>"; };
 		AC5ECD9C20E303D20081E1DA /* UIViewController+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIViewController+Extension.swift"; sourceTree = "<group>"; };
 		AC5ECD9E20E304000081E1DA /* CoffeeListTableViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoffeeListTableViewController.swift; sourceTree = "<group>"; };
@@ -142,6 +146,8 @@
 				ACFA148420E3033700AF4A5A /* Model */,
 				ACFA148720E3036200AF4A5A /* Storyboards */,
 				ACA3A13820E2F6AF00FEF74F /* AppDelegate.swift */,
+				8A233D002E24FDA5000AC795 /* IntegrationTestHelper.swift */,
+				8A146C722E1EBBEF00174C2F /* AppDelegate+IntegrationTest 2.swift */,
 			);
 			path = "swift-sample-app";
 			sourceTree = "<group>";
@@ -320,11 +326,13 @@
 				E9C60B7C2B3C2061005C4462 /* EmbeddedMessagesViewController.swift in Sources */,
 				E9C60B7E2B3C2072005C4462 /* IterableCardViewCell.swift in Sources */,
 				AC1BDF5A20E304CC000010CA /* CoffeeViewController.swift in Sources */,
+				8A146C732E1EBBEF00174C2F /* AppDelegate+IntegrationTest 2.swift in Sources */,
 				ACA3A13920E2F6AF00FEF74F /* AppDelegate.swift in Sources */,
 				AC1BDF5920E304BF000010CA /* DeepLinkHandler.swift in Sources */,
 				ACE7624B20FEB2C20040A002 /* LoginViewController.swift in Sources */,
 				AC1BDF5C20E304D7000010CA /* CoffeeType.swift in Sources */,
 				AC1BDF5B20E304D1000010CA /* UIViewController+Extension.swift in Sources */,
+				8A233D012E24FDA5000AC795 /* IntegrationTestHelper.swift in Sources */,
 				AC1BDF5820E304BC000010CA /* CoffeeListTableViewController.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -367,6 +375,99 @@
 /* End PBXVariantGroup section */
 
 /* Begin XCBuildConfiguration section */
+		AC123456789ABCDE0 /* Internal */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = "swift-sample-app/swift-sample-app.entitlements";
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = BP98Z28R86;
+				INFOPLIST_FILE = "swift-sample-app/Info.plist";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = "com.iterable.swift-sample-app";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Internal;
+		};
+		AC123456789ABCDE1 /* Internal */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = BP98Z28R86;
+				INFOPLIST_FILE = "swift-sample-app-notification-extension/Info.plist";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = "com.iterable.swift-sample-app.notification-extension";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Internal;
+		};
+		AC123456789ABCDEF /* Internal */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				SDKROOT = iphoneos;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Internal;
+		};
 		ACA3A14520E2F6B100FEF74F /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -558,99 +659,6 @@
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Release;
-		};
-		AC123456789ABCDEF /* Internal */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				ALWAYS_SEARCH_USER_PATHS = NO;
-				CLANG_ANALYZER_NONNULL = YES;
-				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
-				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
-				CLANG_CXX_LIBRARY = "libc++";
-				CLANG_ENABLE_MODULES = YES;
-				CLANG_ENABLE_OBJC_ARC = YES;
-				CLANG_ENABLE_OBJC_WEAK = YES;
-				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
-				CLANG_WARN_BOOL_CONVERSION = YES;
-				CLANG_WARN_COMMA = YES;
-				CLANG_WARN_CONSTANT_CONVERSION = YES;
-				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
-				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
-				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
-				CLANG_WARN_EMPTY_BODY = YES;
-				CLANG_WARN_ENUM_CONVERSION = YES;
-				CLANG_WARN_INFINITE_RECURSION = YES;
-				CLANG_WARN_INT_CONVERSION = YES;
-				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
-				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
-				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
-				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
-				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
-				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
-				CLANG_WARN_STRICT_PROTOTYPES = YES;
-				CLANG_WARN_SUSPICIOUS_MOVE = YES;
-				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
-				CLANG_WARN_UNREACHABLE_CODE = YES;
-				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
-				CODE_SIGN_IDENTITY = "iPhone Developer";
-				COPY_PHASE_STRIP = NO;
-				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
-				ENABLE_NS_ASSERTIONS = NO;
-				ENABLE_STRICT_OBJC_MSGSEND = YES;
-				GCC_C_LANGUAGE_STANDARD = gnu11;
-				GCC_NO_COMMON_BLOCKS = YES;
-				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
-				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
-				GCC_WARN_UNDECLARED_SELECTOR = YES;
-				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
-				GCC_WARN_UNUSED_FUNCTION = YES;
-				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
-				MTL_ENABLE_DEBUG_INFO = NO;
-				SDKROOT = iphoneos;
-				SWIFT_COMPILATION_MODE = wholemodule;
-				SWIFT_OPTIMIZATION_LEVEL = "-O";
-				VALIDATE_PRODUCT = YES;
-			};
-			name = Internal;
-		};
-		AC123456789ABCDE0 /* Internal */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				CODE_SIGN_ENTITLEMENTS = "swift-sample-app/swift-sample-app.entitlements";
-				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = "BP98Z28R86";
-				INFOPLIST_FILE = "swift-sample-app/Info.plist";
-				LD_RUNPATH_SEARCH_PATHS = (
-					"$(inherited)",
-					"@executable_path/Frameworks",
-				);
-				PRODUCT_BUNDLE_IDENTIFIER = "com.iterable.swift-sample-app";
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
-			};
-			name = Internal;
-		};
-		AC123456789ABCDE1 /* Internal */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = "BP98Z28R86";
-				INFOPLIST_FILE = "swift-sample-app-notification-extension/Info.plist";
-				LD_RUNPATH_SEARCH_PATHS = (
-					"$(inherited)",
-					"@executable_path/Frameworks",
-					"@executable_path/../../Frameworks",
-				);
-				PRODUCT_BUNDLE_IDENTIFIER = "com.iterable.swift-sample-app.notification-extension";
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				SKIP_INSTALL = YES;
-				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
-			};
-			name = Internal;
 		};
 /* End XCBuildConfiguration section */
 
