@@ -13,11 +13,11 @@ import Foundation
     public var replayOnVisitorToKnown: Bool?
 
     /// the authToken which caused the failure
-    public let mergeOnAnonymousToKnown: Bool?
+    public let mergeOnUnknownUserToKnown: Bool?
 
     public init(replayOnVisitorToKnown: Bool?,
-                mergeOnAnonymousToKnown: Bool?) {
+                                  mergeOnUnknownUserToKnown: Bool?) {
         self.replayOnVisitorToKnown = replayOnVisitorToKnown
-        self.mergeOnAnonymousToKnown = mergeOnAnonymousToKnown
+        self.mergeOnUnknownUserToKnown = mergeOnUnknownUserToKnown
     }
 }

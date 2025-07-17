@@ -192,17 +192,17 @@ final class ValidateTokenForDestinationUserTest: XCTestCase {
         
         wait(for: [expectation], timeout: testExpectationTimeout)
 
-        if let anonUser = localStorage.userIdUnknownUser {
-            XCTAssertFalse(anonUser.isEmpty, "Expected anon user")
+        if let unknownUser = localStorage.userIdUnknownUser {
+            XCTAssertFalse(unknownUser.isEmpty, "Expected unknown user")
        } else {
-           XCTFail("Expected anon user but found nil")
+           XCTFail("Expected unknown user but found nil")
        }
         XCTAssertEqual(IterableAPI.userId, localStorage.userIdUnknownUser)
         XCTAssertNil(IterableAPI.email)
         XCTAssertEqual(IterableAPI.authToken, ValidateTokenForDestinationUserTest.userIdUnknownUserToken)
 
 
-        let identityResolution = IterableIdentityResolution(replayOnVisitorToKnown: true, mergeOnAnonymousToKnown: true)
+        let identityResolution = IterableIdentityResolution(replayOnVisitorToKnown: true, mergeOnUnknownUserToKnown: true)
         IterableAPI.setUserId(ValidateTokenForDestinationUserTest.userId, nil, identityResolution)
 
         // Verify "merge user" API call is made
@@ -296,16 +296,16 @@ final class ValidateTokenForDestinationUserTest: XCTestCase {
 
         wait(for: [expectation], timeout: testExpectationTimeout)
 
-        if let anonUser = localStorage.userIdUnknownUser {
-            XCTAssertFalse(anonUser.isEmpty, "Expected anon user")
+        if let unknownUser = localStorage.userIdUnknownUser {
+            XCTAssertFalse(unknownUser.isEmpty, "Expected unknown user")
        } else {
-           XCTFail("Expected anon user but found nil")
+           XCTFail("Expected unknown user but found nil")
        }
         XCTAssertEqual(IterableAPI.userId, localStorage.userIdUnknownUser)
         XCTAssertNil(IterableAPI.email)
         XCTAssertEqual(IterableAPI.authToken, ValidateTokenForDestinationUserTest.userIdUnknownUserToken)
 
-        let identityResolution = IterableIdentityResolution(replayOnVisitorToKnown: true, mergeOnAnonymousToKnown: true)
+        let identityResolution = IterableIdentityResolution(replayOnVisitorToKnown: true, mergeOnUnknownUserToKnown: true)
         IterableAPI.setEmail(ValidateTokenForDestinationUserTest.email, nil, identityResolution)
 
         // Verify "merge user" API call is made

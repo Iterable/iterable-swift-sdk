@@ -425,14 +425,14 @@
 		ACFF42B02465B4AE00FDF10D /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACFF42AF2465B4AE00FDF10D /* AppDelegate.swift */; };
 		BA2BB8192BADD5A500EA0229 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = BA2BB8182BADD5A500EA0229 /* PrivacyInfo.xcprivacy */; };
 		BA2BB81A2BADD5A500EA0229 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = BA2BB8182BADD5A500EA0229 /* PrivacyInfo.xcprivacy */; };
-		DF7302152C2C176E0002633A /* AnonymousUserComplexCriteriaMatchTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = DF7302142C2C176E0002633A /* AnonymousUserComplexCriteriaMatchTests.swift */; };
-		DF97D12B2C2D4A060034D38C /* AnonymousUserCriteriaIsSetTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = DF97D12A2C2D4A060034D38C /* AnonymousUserCriteriaIsSetTests.swift */; };
+		DF7302152C2C176E0002633A /* UnknownUserComplexCriteriaMatchTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = DF7302142C2C176E0002633A /* UnknownUserComplexCriteriaMatchTests.swift */; };
+		DF97D12B2C2D4A060034D38C /* UnknownUserCriteriaIsSetTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = DF97D12A2C2D4A060034D38C /* UnknownUserCriteriaIsSetTests.swift */; };
 		DFFD62392C3681B900010883 /* UserMergeScenariosTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = DFFD62382C3681B900010883 /* UserMergeScenariosTests.swift */; };
 		E9EA7C9F2C1EDE5800A9D6FB /* UnknownUserManager+Functions.swift in Sources */ = {isa = PBXBuildFile; fileRef = E9EA7C9B2C1EDE5800A9D6FB /* UnknownUserManager+Functions.swift */; };
 		E9EA7CA02C1EDE5800A9D6FB /* UnknownUserMerge.swift in Sources */ = {isa = PBXBuildFile; fileRef = E9EA7C9C2C1EDE5800A9D6FB /* UnknownUserMerge.swift */; };
 		E9EA7CA12C1EDE5800A9D6FB /* UnknownUserManagerProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = E9EA7C9D2C1EDE5800A9D6FB /* UnknownUserManagerProtocol.swift */; };
 		E9EA7CA22C1EDE5800A9D6FB /* UnknownUserManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = E9EA7C9E2C1EDE5800A9D6FB /* UnknownUserManager.swift */; };
-		E9EA7CA82C1EE3BA00A9D6FB /* AnonymousUserCriteriaMatchTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E9EA7CA62C1EE3BA00A9D6FB /* AnonymousUserCriteriaMatchTests.swift */; };
+		E9EA7CA82C1EE3BA00A9D6FB /* UnknownUserCriteriaMatchTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E9EA7CA62C1EE3BA00A9D6FB /* UnknownUserCriteriaMatchTests.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -867,14 +867,14 @@
 		ACFF42AE24656ECF00FDF10D /* ui-tests-app.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = "ui-tests-app.entitlements"; sourceTree = "<group>"; };
 		ACFF42AF2465B4AE00FDF10D /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		BA2BB8182BADD5A500EA0229 /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
-		DF7302142C2C176E0002633A /* AnonymousUserComplexCriteriaMatchTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnonymousUserComplexCriteriaMatchTests.swift; sourceTree = "<group>"; };
-		DF97D12A2C2D4A060034D38C /* AnonymousUserCriteriaIsSetTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AnonymousUserCriteriaIsSetTests.swift; sourceTree = "<group>"; };
+		DF7302142C2C176E0002633A /* UnknownUserComplexCriteriaMatchTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UnknownUserComplexCriteriaMatchTests.swift; sourceTree = "<group>"; };
+		DF97D12A2C2D4A060034D38C /* UnknownUserCriteriaIsSetTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UnknownUserCriteriaIsSetTests.swift; sourceTree = "<group>"; };
 		DFFD62382C3681B900010883 /* UserMergeScenariosTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserMergeScenariosTests.swift; sourceTree = "<group>"; };
 		E9EA7C9B2C1EDE5800A9D6FB /* UnknownUserManager+Functions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UnknownUserManager+Functions.swift"; sourceTree = "<group>"; };
 		E9EA7C9C2C1EDE5800A9D6FB /* UnknownUserMerge.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UnknownUserMerge.swift; sourceTree = "<group>"; };
 		E9EA7C9D2C1EDE5800A9D6FB /* UnknownUserManagerProtocol.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UnknownUserManagerProtocol.swift; sourceTree = "<group>"; };
 		E9EA7C9E2C1EDE5800A9D6FB /* UnknownUserManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UnknownUserManager.swift; sourceTree = "<group>"; };
-		E9EA7CA62C1EE3BA00A9D6FB /* AnonymousUserCriteriaMatchTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AnonymousUserCriteriaMatchTests.swift; sourceTree = "<group>"; };
+		E9EA7CA62C1EE3BA00A9D6FB /* UnknownUserCriteriaMatchTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UnknownUserCriteriaMatchTests.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -1452,7 +1452,7 @@
 		AC72A0BB20CF4C8C004D7997 /* Internal */ = {
 			isa = PBXGroup;
 			children = (
-				E9EA7C9A2C1EDE4400A9D6FB /* AnonymousTracking */,
+				E9EA7C9A2C1EDE4400A9D6FB /* UnknownUserTracking */,
 				AC7A525F227BB9B80064D67E /* Initialization */,
 				AC5E888724E1B7AD00752321 /* Request Processing */,
 				AC72A0AC20CF4C08004D7997 /* Util */,
@@ -1471,7 +1471,7 @@
 			isa = PBXGroup;
 			children = (
 				8A272FCF2DD3775800634559 /* IterableDataRegionObjCTests.m */,
-				E9EA7CA52C1EE39A00A9D6FB /* anonymous-tracking-tests */,
+				E9EA7CA52C1EE39A00A9D6FB /* unknown-user-tracking-tests */,
 				1CBFFE152A97AEDC00ED57EE /* embedded-messaging-tests */,
 				552A0AAA280E24E400A80963 /* api-tests */,
 				AC3A3029262EE04400425435 /* deep-linking-tests */,
@@ -1704,7 +1704,7 @@
 			path = ../..;
 			sourceTree = "<group>";
 		};
-		E9EA7C9A2C1EDE4400A9D6FB /* AnonymousTracking */ = {
+		E9EA7C9A2C1EDE4400A9D6FB /* UnknownUserTracking */ = {
 			isa = PBXGroup;
 			children = (
 				9F0616402C9CA9D200FE2E6A /* IterableIdentityResolution.swift */,
@@ -1713,16 +1713,16 @@
 				E9EA7C9D2C1EDE5800A9D6FB /* UnknownUserManagerProtocol.swift */,
 				E9EA7C9C2C1EDE5800A9D6FB /* UnknownUserMerge.swift */,
 			);
-			name = AnonymousTracking;
+			name = UnknownUserTracking;
 			sourceTree = "<group>";
 		};
-		E9EA7CA52C1EE39A00A9D6FB /* anonymous-tracking-tests */ = {
+		E9EA7CA52C1EE39A00A9D6FB /* unknown-user-tracking-tests */ = {
 			isa = PBXGroup;
 			children = (
 				09CAA47A2D4B9AD80057FB72 /* IterableApiCriteriaFetchTests.swift */,
-				E9EA7CA62C1EE3BA00A9D6FB /* AnonymousUserCriteriaMatchTests.swift */,
-				DF97D12A2C2D4A060034D38C /* AnonymousUserCriteriaIsSetTests.swift */,
-				DF7302142C2C176E0002633A /* AnonymousUserComplexCriteriaMatchTests.swift */,
+				E9EA7CA62C1EE3BA00A9D6FB /* UnknownUserCriteriaMatchTests.swift */,
+				DF97D12A2C2D4A060034D38C /* UnknownUserCriteriaIsSetTests.swift */,
+				DF7302142C2C176E0002633A /* UnknownUserComplexCriteriaMatchTests.swift */,
 				DFFD62382C3681B900010883 /* UserMergeScenariosTests.swift */,
 				182A2A142C661C9A002FF058 /* DataTypeComparatorSearchQueryCriteria.swift */,
 				18BB8B792C64DC8D007EBF23 /* ComparatorTypeDoesNotEqualMatchTest.swift */,
@@ -1736,7 +1736,7 @@
 				1802C00E2CA2C99E009DEA2B /* CombinationComplexCriteria.swift */,
 				18E5B5D22CC7853D00A558EC /* ValidateTokenForDestinationUserTest.swift */,
 			);
-			name = "anonymous-tracking-tests";
+			name = "unknown-user-tracking-tests";
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -1761,9 +1761,9 @@
 /* End PBXHeadersBuildPhase section */
 
 /* Begin PBXNativeTarget section */
-		373267FA2B4D51B200CC82C9 /* AnonymousUserMerge */ = {
+		373267FA2B4D51B200CC82C9 /* UnknownUserMerge */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 373268042B4D51B200CC82C9 /* Build configuration list for PBXNativeTarget "AnonymousUserMerge" */;
+			buildConfigurationList = 373268042B4D51B200CC82C9 /* Build configuration list for PBXNativeTarget "UnknownUserMerge" */;
 			buildPhases = (
 				373267F72B4D51B200CC82C9 /* Sources */,
 				373267F82B4D51B200CC82C9 /* Frameworks */,
@@ -1774,8 +1774,8 @@
 			dependencies = (
 				373268012B4D51B200CC82C9 /* PBXTargetDependency */,
 			);
-			name = AnonymousUserMerge;
-			productName = AnonymousUserMerge;
+			name = UnknownUserMerge;
+			productName = UnknownUserMerge;
 			productType = "com.apple.product-type.bundle.unit-test";
 		};
 		AC2263DE20CF49B8009800EB /* swift-sdk */ = {
@@ -2077,7 +2077,7 @@
 				ACDA976B23159C39004C412E /* inbox-ui-tests */,
 				AC28480624AA44C600C1FC7F /* endpoint-tests */,
 				ACFD5AB724C8200C008E497A /* offline-events-tests */,
-				373267FA2B4D51B200CC82C9 /* AnonymousUserMerge */,
+				373267FA2B4D51B200CC82C9 /* UnknownUserMerge */,
 			);
 		};
 /* End PBXProject section */
@@ -2384,14 +2384,14 @@
 				ACA8D1A921965B7D001B1332 /* InAppTests.swift in Sources */,
 				5588DFB928C045E3000697D7 /* MockInAppDelegate.swift in Sources */,
 				5588DFD128C0465E000697D7 /* MockAPNSTypeChecker.swift in Sources */,
-				DF7302152C2C176E0002633A /* AnonymousUserComplexCriteriaMatchTests.swift in Sources */,
+				DF7302152C2C176E0002633A /* UnknownUserComplexCriteriaMatchTests.swift in Sources */,
 				18BB8B7A2C64DC8D007EBF23 /* ComparatorTypeDoesNotEqualMatchTest.swift in Sources */,
 				00B6FACC210E8484007535CF /* APNSTypeCheckerTests.swift in Sources */,
 				09CAA47B2D4B9AD80057FB72 /* IterableApiCriteriaFetchTests.swift in Sources */,
 				AC8F35A2239806B500302994 /* InboxViewControllerViewModelTests.swift in Sources */,
 				092D01942D3038F600E3066A /* NotificationObserverTests.swift in Sources */,
 				AC995F9A2166EEB50099A184 /* CommonMocks.swift in Sources */,
-				E9EA7CA82C1EE3BA00A9D6FB /* AnonymousUserCriteriaMatchTests.swift in Sources */,
+				E9EA7CA82C1EE3BA00A9D6FB /* UnknownUserCriteriaMatchTests.swift in Sources */,
 				5588DFE128C046B7000697D7 /* MockLocalStorage.swift in Sources */,
 				18A3520A2C7DC51C007FED53 /* NestedFieldSupportForArrayData.swift in Sources */,
 				1CBFFE1B2A97AEEF00ED57EE /* EmbeddedMessagingProcessorTests.swift in Sources */,
@@ -2441,7 +2441,7 @@
 				AC64626B2140AACF0046E1BD /* IterableAPIResponseTests.swift in Sources */,
 				1CBFFE1D2A97AEEF00ED57EE /* EmbeddedMessagingSerializationTests.swift in Sources */,
 				5588DFB128C045C9000697D7 /* MockInAppDisplayer.swift in Sources */,
-				DF97D12B2C2D4A060034D38C /* AnonymousUserCriteriaIsSetTests.swift in Sources */,
+				DF97D12B2C2D4A060034D38C /* UnknownUserCriteriaIsSetTests.swift in Sources */,
 				55B37FC6229752DD0042F13A /* OrderedDictionaryTests.swift in Sources */,
 				1CBFFE1C2A97AEEF00ED57EE /* EmbeddedSessionManagerTests.swift in Sources */,
 				5588DFD928C04683000697D7 /* MockWebView.swift in Sources */,
@@ -2812,7 +2812,7 @@
 				MARKETING_VERSION = 1.0;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
-				PRODUCT_BUNDLE_IDENTIFIER = AnonymousUserMergeTests.AnonymousUserMerge;
+				PRODUCT_BUNDLE_IDENTIFIER = UnknownUserMergeTests.UnknownUserMerge;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = auto;
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator macosx";
@@ -2838,7 +2838,7 @@
 				MACOSX_DEPLOYMENT_TARGET = 14.2;
 				MARKETING_VERSION = 1.0;
 				MTL_FAST_MATH = YES;
-				PRODUCT_BUNDLE_IDENTIFIER = AnonymousUserMergeTests.AnonymousUserMerge;
+				PRODUCT_BUNDLE_IDENTIFIER = UnknownUserMergeTests.UnknownUserMerge;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = auto;
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator macosx";
@@ -3492,7 +3492,7 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		373268042B4D51B200CC82C9 /* Build configuration list for PBXNativeTarget "AnonymousUserMerge" */ = {
+		373268042B4D51B200CC82C9 /* Build configuration list for PBXNativeTarget "UnknownUserMerge" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				373268022B4D51B200CC82C9 /* Debug */,

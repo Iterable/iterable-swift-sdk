@@ -15,7 +15,7 @@ enum EventType {
     static let purchase = "purchase"
     static let updateUser = "user"
     static let updateCart = "updateCart"
-    static let anonSession = "anonSession"
+            static let unknownUserSession = "unknownUserSession"
     static let tokenRegistration = "tokenRegistration"
     static let trackEvent = "trackEvent"
 }
@@ -200,7 +200,7 @@ enum JsonKey {
     static let actionIdentifier = "actionIdentifier"
     static let userText = "userText"
     static let appAlreadyRunning = "appAlreadyRunning"
-    static let anonSessionContext = "anonSessionContext"
+            static let unknownUserSessionContext = "unknownUserSessionContext"
     
     static let html = "html"
     

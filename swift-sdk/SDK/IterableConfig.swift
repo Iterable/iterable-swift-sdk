@@ -159,8 +159,8 @@ public class IterableConfig: NSObject {
     /// When set to `true`, IterableSDK will track all events when users are not logged into the application.
     public var enableUnknownUserActivation = true
     
-    /// Enables fetching of anonymous user criteria on foreground when set to `true`
-    /// By default, the SDK will fetch anonymous user criteria on foreground.
+    /// Enables fetching of unknown user criteria on foreground when set to `true`
+    /// By default, the SDK will fetch unknown user criteria on foreground.
     public var enableForegroundCriteriaFetch = true
     
     /// Allows for fetching embedded messages.
@@ -169,7 +169,7 @@ public class IterableConfig: NSObject {
     // How many events can be stored in the local storage. By default limt is 100.
     public var eventThresholdLimit: Int = 100
     
-    public var identityResolution: IterableIdentityResolution = IterableIdentityResolution(replayOnVisitorToKnown: true, mergeOnAnonymousToKnown: true)
+    public var identityResolution: IterableIdentityResolution = IterableIdentityResolution(replayOnVisitorToKnown: true, mergeOnUnknownUserToKnown: true)
     
     /// The type of mobile framework we are using.
     public var mobileFrameworkInfo: IterableAPIMobileFrameworkInfo?

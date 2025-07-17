@@ -82,15 +82,15 @@ public class UnknownUserManager: UnknownUserManagerProtocol {
             localStorage.unknownUserSessions = sessions
         } else {
             // create session object for the first time
-            let initialAnonSessions = IterableUnknownUserSessions(totalUnknownUserSessionCount: 1, lastUnknownUserSession: IterableUtil.secondsFromEpoch(for: dateProvider.currentDate), firstUnknownUserSession: IterableUtil.secondsFromEpoch(for: dateProvider.currentDate))
-            let anonSessionWrapper = IterableUnknownUserSessionsWrapper(itbl_unknown_user_sessions: initialAnonSessions)
-            localStorage.unknownUserSessions = anonSessionWrapper
+            let initialUnknownUserSessions = IterableUnknownUserSessions(totalUnknownUserSessionCount: 1, lastUnknownUserSession: IterableUtil.secondsFromEpoch(for: dateProvider.currentDate), firstUnknownUserSession: IterableUtil.secondsFromEpoch(for: dateProvider.currentDate))
+            let unknownUserSessionWrapper = IterableUnknownUserSessionsWrapper(itbl_unknown_user_sessions: initialUnknownUserSessions)
+            localStorage.unknownUserSessions = unknownUserSessionWrapper
         }
     }
     
     /// Syncs unsynced data which might have failed to sync when calling syncEvents for the first time after criterias met
     public func syncNonSyncedEvents() {
-        DispatchQueue.main.asyncAfter(deadline: .now() + 2) { // little delay necessary in case it takes time to store userIdAnon in localstorage
+        DispatchQueue.main.asyncAfter(deadline: .now() + 2) { // little delay necessary in case it takes time to store userIdUnknownUser in localstorage
             self.syncEvents()
         }
     }
@@ -191,7 +191,7 @@ public class UnknownUserManager: UnknownUserManagerProtocol {
                 self.localStorage.userIdUnknownUser = userId
                 self.config.unknownUserHandler?.onUnknownUserCreated(userId: userId)
                 
-                IterableAPI.implementation?.setUserId(userId, isAnon: true)
+                IterableAPI.implementation?.setUserId(userId, isUnknownUser: true)
                 
                 self.syncNonSyncedEvents()
             }

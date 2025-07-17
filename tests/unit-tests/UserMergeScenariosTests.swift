@@ -146,7 +146,7 @@ class UserMergeScenariosTests: XCTestCase, AuthProvider {
             XCTFail("Expected events to be logged but found nil")
         }
         
-        let identityResolution = IterableIdentityResolution(replayOnVisitorToKnown: true, mergeOnAnonymousToKnown: false)
+        let identityResolution = IterableIdentityResolution(replayOnVisitorToKnown: true, mergeOnUnknownUserToKnown: false)
         IterableAPI.setUserId("testuser123", nil, identityResolution)
         if let userId = IterableAPI.userId {
             XCTAssertEqual(userId, "testuser123", "Expected userId to be 'testuser123'")
@@ -192,7 +192,7 @@ class UserMergeScenariosTests: XCTestCase, AuthProvider {
             XCTFail("Expected events to be logged but found nil")
         }
         
-        let identityResolution = IterableIdentityResolution(replayOnVisitorToKnown: false, mergeOnAnonymousToKnown: false)
+        let identityResolution = IterableIdentityResolution(replayOnVisitorToKnown: false, mergeOnUnknownUserToKnown: false)
         IterableAPI.setUserId("testuser123", nil, identityResolution)
         
         if let userId = IterableAPI.userId {
@@ -241,7 +241,7 @@ class UserMergeScenariosTests: XCTestCase, AuthProvider {
             XCTFail("Expected events to be logged but found nil")
         }
         
-        let identityResolution = IterableIdentityResolution(replayOnVisitorToKnown: false, mergeOnAnonymousToKnown: true)
+        let identityResolution = IterableIdentityResolution(replayOnVisitorToKnown: false, mergeOnUnknownUserToKnown: true)
         IterableAPI.setUserId("testuser123", nil, identityResolution)
         
         if let userId = IterableAPI.userId {
@@ -285,10 +285,10 @@ class UserMergeScenariosTests: XCTestCase, AuthProvider {
         IterableAPI.track(event: "testEvent")
         waitForDuration(seconds: 3)
         
-        if let anonUser = localStorage.userIdUnknownUser {
-            XCTAssertFalse(anonUser.isEmpty, "Expected anon user nil")
+        if let unknownUser = localStorage.userIdUnknownUser {
+            XCTAssertFalse(unknownUser.isEmpty, "Expected unknown user nil")
         } else {
-            XCTFail("Expected anon user nil but found")
+            XCTFail("Expected unknown user nil but found")
         }
         
         IterableAPI.setUserId("testuser123")
@@ -321,13 +321,13 @@ class UserMergeScenariosTests: XCTestCase, AuthProvider {
         IterableAPI.track(event: "testEvent")
         waitForDuration(seconds: 3)
         
-        if let anonUser = localStorage.userIdUnknownUser {
-            XCTAssertFalse(anonUser.isEmpty, "Expected anon user to be found")
+        if let unknownUser = localStorage.userIdUnknownUser {
+            XCTAssertFalse(unknownUser.isEmpty, "Expected unknown user to be found")
         } else {
-            XCTFail("Expected anon user but found nil")
+            XCTFail("Expected unknown user but found nil")
         }
         
-        let identityResolution = IterableIdentityResolution(replayOnVisitorToKnown: true, mergeOnAnonymousToKnown: false)
+        let identityResolution = IterableIdentityResolution(replayOnVisitorToKnown: true, mergeOnUnknownUserToKnown: false)
         IterableAPI.setUserId("testuser123", nil, identityResolution)
         
         // Verify "merge user" API call is not made
@@ -357,13 +357,13 @@ class UserMergeScenariosTests: XCTestCase, AuthProvider {
         IterableAPI.track(event: "testEvent")
         waitForDuration(seconds: 3)
         
-        if let anonUser = localStorage.userIdUnknownUser {
-            XCTAssertFalse(anonUser.isEmpty, "Expected anon user nil")
+        if let unknownUser = localStorage.userIdUnknownUser {
+            XCTAssertFalse(unknownUser.isEmpty, "Expected unknown user nil")
         } else {
-            XCTFail("Expected anon user nil but found")
+            XCTFail("Expected unknown user nil but found")
         }
         
-        let identityResolution = IterableIdentityResolution(replayOnVisitorToKnown: true, mergeOnAnonymousToKnown: true)
+        let identityResolution = IterableIdentityResolution(replayOnVisitorToKnown: true, mergeOnUnknownUserToKnown: true)
         IterableAPI.setUserId("testuser123", nil, identityResolution)
         
         waitForDuration(seconds: 3)
@@ -406,9 +406,9 @@ class UserMergeScenariosTests: XCTestCase, AuthProvider {
         
         
         if localStorage.userIdUnknownUser != nil {
-            XCTFail("Expected anon user nil but found")
+            XCTFail("Expected unknown user nil but found")
         } else {
-            XCTAssertNil(localStorage.unknownUserEvents, "Expected anon user to be nil")
+            XCTAssertNil(localStorage.unknownUserEvents, "Expected unknown user to be nil")
         }
         
         IterableAPI.setUserId("testuseranotheruser")
@@ -455,12 +455,12 @@ class UserMergeScenariosTests: XCTestCase, AuthProvider {
         waitForDuration(seconds: 3)
         
         if localStorage.userIdUnknownUser != nil {
-            XCTFail("Expected anon user nil but found")
+            XCTFail("Expected unknown user nil but found")
         } else {
-            XCTAssertNil(localStorage.userIdUnknownUser, "Expected anon user to be nil")
+            XCTAssertNil(localStorage.userIdUnknownUser, "Expected unknown user to be nil")
         }
         
-        let identityResolution = IterableIdentityResolution(replayOnVisitorToKnown: true, mergeOnAnonymousToKnown: false)
+        let identityResolution = IterableIdentityResolution(replayOnVisitorToKnown: true, mergeOnUnknownUserToKnown: false)
         IterableAPI.setUserId("testuseranotheruser", nil, identityResolution)
         
         if let userId = IterableAPI.userId {
@@ -506,12 +506,12 @@ class UserMergeScenariosTests: XCTestCase, AuthProvider {
         
         
         if localStorage.userIdUnknownUser != nil {
-            XCTFail("Expected anon user nil but found")
+            XCTFail("Expected unknown user nil but found")
         } else {
-            XCTAssertNil(localStorage.unknownUserEvents, "Expected anon user to be nil")
+            XCTAssertNil(localStorage.unknownUserEvents, "Expected unknown user to be nil")
         }
         
-        let identityResolution = IterableIdentityResolution(replayOnVisitorToKnown: true, mergeOnAnonymousToKnown: true)
+        let identityResolution = IterableIdentityResolution(replayOnVisitorToKnown: true, mergeOnUnknownUserToKnown: true)
         IterableAPI.setUserId("testuseranotheruser", nil, identityResolution)
         waitForDuration(seconds: 3)
         
@@ -597,7 +597,7 @@ class UserMergeScenariosTests: XCTestCase, AuthProvider {
             XCTFail("Expected events to be logged but found nil")
         }
         
-        let identityResolution = IterableIdentityResolution(replayOnVisitorToKnown: true, mergeOnAnonymousToKnown: false)
+        let identityResolution = IterableIdentityResolution(replayOnVisitorToKnown: true, mergeOnUnknownUserToKnown: false)
         IterableAPI.setEmail("testuser123@test.com", nil, identityResolution)
         if let userId = IterableAPI.email {
             XCTAssertEqual(userId, "testuser123@test.com", "Expected email to be 'testuser123@test.com'")
@@ -642,7 +642,7 @@ class UserMergeScenariosTests: XCTestCase, AuthProvider {
             XCTFail("Expected events to be logged but found nil")
         }
         
-        let identityResolution = IterableIdentityResolution(replayOnVisitorToKnown: false, mergeOnAnonymousToKnown: false)
+        let identityResolution = IterableIdentityResolution(replayOnVisitorToKnown: false, mergeOnUnknownUserToKnown: false)
         IterableAPI.setEmail("testuser123@test.com", nil, identityResolution)
         if let userId = IterableAPI.email {
             XCTAssertEqual(userId, "testuser123@test.com", "Expected email to be 'testuser123@test.com'")
@@ -689,7 +689,7 @@ class UserMergeScenariosTests: XCTestCase, AuthProvider {
             XCTFail("Expected events to be logged but found nil")
         }
         
-        let identityResolution = IterableIdentityResolution(replayOnVisitorToKnown: false, mergeOnAnonymousToKnown: true)
+        let identityResolution = IterableIdentityResolution(replayOnVisitorToKnown: false, mergeOnUnknownUserToKnown: true)
         IterableAPI.setEmail("testuser123@test.com", nil, identityResolution)
         if let userId = IterableAPI.email {
             XCTAssertEqual(userId, "testuser123@test.com", "Expected email to be 'testuser123@test.com'")
@@ -731,10 +731,10 @@ class UserMergeScenariosTests: XCTestCase, AuthProvider {
         IterableAPI.track(event: "testEvent")
         waitForDuration(seconds: 3)
         
-        if let anonUser = localStorage.userIdUnknownUser {
-            XCTAssertFalse(anonUser.isEmpty, "Expected anon user")
+        if let unknownUser = localStorage.userIdUnknownUser {
+            XCTAssertFalse(unknownUser.isEmpty, "Expected unknown user")
         } else {
-            XCTFail("Expected anon user but found nil")
+            XCTFail("Expected unknown user but found nil")
         }
         
         IterableAPI.setEmail("testuser123@test.com")
@@ -766,13 +766,13 @@ class UserMergeScenariosTests: XCTestCase, AuthProvider {
         IterableAPI.track(event: "testEvent")
         waitForDuration(seconds: 3)
         
-        if let anonUser = localStorage.userIdUnknownUser {
-            XCTAssertFalse(anonUser.isEmpty, "Expected anon user")
+        if let unknownUser = localStorage.userIdUnknownUser {
+            XCTAssertFalse(unknownUser.isEmpty, "Expected unknown user")
         } else {
-            XCTFail("Expected anon user but found nil")
+            XCTFail("Expected unknown user but found nil")
         }
         
-        let identityResolution = IterableIdentityResolution(replayOnVisitorToKnown: true, mergeOnAnonymousToKnown: false)
+        let identityResolution = IterableIdentityResolution(replayOnVisitorToKnown: true, mergeOnUnknownUserToKnown: false)
         IterableAPI.setEmail("testuser123@test.com", nil, identityResolution)
         
         // Verify "merge user" API call is not made
@@ -801,13 +801,13 @@ class UserMergeScenariosTests: XCTestCase, AuthProvider {
         IterableAPI.track(event: "testEvent")
         waitForDuration(seconds: 3)
         
-        if let anonUser = localStorage.userIdUnknownUser {
-            XCTAssertFalse(anonUser.isEmpty, "Expected anon user")
+        if let unknownUser = localStorage.userIdUnknownUser {
+            XCTAssertFalse(unknownUser.isEmpty, "Expected unknown user")
         } else {
-            XCTFail("Expected anon user but found nil")
+            XCTFail("Expected unknown user but found nil")
         }
         
-        let identityResolution = IterableIdentityResolution(replayOnVisitorToKnown: true, mergeOnAnonymousToKnown: true)
+        let identityResolution = IterableIdentityResolution(replayOnVisitorToKnown: true, mergeOnUnknownUserToKnown: true)
         IterableAPI.setEmail("testuser123@test.com", nil, identityResolution)
         
         // Verify "merge user" API call is made
@@ -847,9 +847,9 @@ class UserMergeScenariosTests: XCTestCase, AuthProvider {
         
         
         if localStorage.userIdUnknownUser != nil {
-            XCTFail("Expected anon user nil but found")
+            XCTFail("Expected unknown user nil but found")
         } else {
-            XCTAssertNil(localStorage.unknownUserEvents, "Expected anon user to be nil")
+            XCTAssertNil(localStorage.unknownUserEvents, "Expected unknown user to be nil")
         }
         
         IterableAPI.setEmail("testuseranotheruser@test.com")
@@ -895,12 +895,12 @@ class UserMergeScenariosTests: XCTestCase, AuthProvider {
         
         
         if localStorage.userIdUnknownUser != nil {
-            XCTFail("Expected anon user nil but found")
+            XCTFail("Expected unknown user nil but found")
         } else {
-            XCTAssertNil(localStorage.unknownUserEvents, "Expected anon user to be nil")
+            XCTAssertNil(localStorage.unknownUserEvents, "Expected unknown user to be nil")
         }
         
-        let identityResolution = IterableIdentityResolution(replayOnVisitorToKnown: true, mergeOnAnonymousToKnown: false)
+        let identityResolution = IterableIdentityResolution(replayOnVisitorToKnown: true, mergeOnUnknownUserToKnown: false)
         IterableAPI.setEmail("testuseranotheruser@test.com", nil, identityResolution)
         if let userId = IterableAPI.email {
             XCTAssertEqual(userId, "testuseranotheruser@test.com", "Expected email to be 'testuseranotheruser@test.com'")
@@ -945,12 +945,12 @@ class UserMergeScenariosTests: XCTestCase, AuthProvider {
         
         
         if localStorage.userIdUnknownUser != nil {
-            XCTFail("Expected anon user nil but found")
+            XCTFail("Expected unknown user nil but found")
         } else {
-            XCTAssertNil(localStorage.unknownUserEvents, "Expected anon user to be nil")
+            XCTAssertNil(localStorage.unknownUserEvents, "Expected unknown user to be nil")
         }
         
-        let identityResolution = IterableIdentityResolution(replayOnVisitorToKnown: true, mergeOnAnonymousToKnown: true)
+        let identityResolution = IterableIdentityResolution(replayOnVisitorToKnown: true, mergeOnUnknownUserToKnown: true)
         IterableAPI.setEmail("testuseranotheruser@test.com", nil, identityResolution)
         waitForDuration(seconds: 3)
         
@@ -995,10 +995,10 @@ class UserMergeScenariosTests: XCTestCase, AuthProvider {
         
         waitForDuration(seconds: 3)
         
-        if let anonUser = localStorage.userIdUnknownUser {
-            XCTAssertFalse(anonUser.isEmpty, "Expected anon user nil")
+        if let unknownUser = localStorage.userIdUnknownUser {
+            XCTAssertFalse(unknownUser.isEmpty, "Expected unknown user nil")
         } else {
-            XCTFail("Expected anon user nil but found")
+            XCTFail("Expected unknown user nil but found")
         }
         
         // Verify that anon session request was made exactly once

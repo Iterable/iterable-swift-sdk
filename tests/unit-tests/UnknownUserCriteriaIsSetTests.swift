@@ -9,7 +9,7 @@ import XCTest
 
 @testable import IterableSDK
 
-class AnonymousUserCriteriaIsSetTests: XCTestCase {
+class UnknownUserCriteriaIsSetTests: XCTestCase {
     
     private let mockDataUserProperty = """
     {

@@ -138,10 +138,10 @@ final class ValidateCustomEventUserUpdateAPITest: XCTestCase, AuthProvider  {
                                                               "count": 6,
                                                               "vaccinated": true])
         waitForDuration(seconds: 3)
-        if let anonUser = localStorage.userIdUnknownUser {
-            XCTAssertFalse(anonUser.isEmpty, "Expected anon user")
+        if let unknownUser = localStorage.userIdUnknownUser {
+            XCTAssertFalse(unknownUser.isEmpty, "Expected unknown user")
        } else {
-           XCTFail("Expected anon user but found nil")
+           XCTFail("Expected unknown user but found nil")
        }
 
         IterableAPI.logoutUser()

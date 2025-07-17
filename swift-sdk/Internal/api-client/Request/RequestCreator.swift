@@ -698,7 +698,7 @@ struct RequestCreator {
         body.setValue(for: JsonKey.Commerce.user, value: userDict)
         body.setValue(for: JsonKey.Body.createdAt, value: createdAt)
         body.setValue(for: JsonKey.deviceInfo, value: deviceMetadata.asDictionary())
-        body.setValue(for: JsonKey.anonSessionContext, value: requestJson)
+                    body.setValue(for: JsonKey.unknownUserSessionContext, value: requestJson)
         return .success(.post(createPostRequest(path: Const.Path.trackUnknownUserSession, body: body)))
     }
     

@@ -10,7 +10,7 @@ import XCTest
 
 @testable import IterableSDK
 
-class AnonymousUserComplexCriteriaMatchTests: XCTestCase {
+class UnknownUserComplexCriteriaMatchTests: XCTestCase {
     
     private let mockDataForCriteria1 = """
     {
