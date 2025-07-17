@@ -1001,15 +1001,15 @@ class UserMergeScenariosTests: XCTestCase, AuthProvider {
             XCTFail("Expected unknown user nil but found")
         }
         
-        // Verify that anon session request was made exactly once
-        let anonSessionRequest = mockSession.getRequest(withEndPoint: Const.Path.trackUnknownUserSession)
-        XCTAssertNotNil(anonSessionRequest, "Anonymous session request should not be nil")
+        // Verify that unknown user session request was made exactly once
+        let unknownUserSessionRequest = mockSession.getRequest(withEndPoint: Const.Path.trackUnknownUserSession)
+        XCTAssertNotNil(unknownUserSessionRequest, "Unknown user session request should not be nil")
         
-        // Count total requests with anon session endpoint
-        let anonSessionRequests = mockSession.requests.filter { request in
+        // Count total requests with unknown user session endpoint
+        let unknownUserSessionRequests = mockSession.requests.filter { request in
             request.url?.absoluteString.contains(Const.Path.trackUnknownUserSession) == true
         }
-        XCTAssertEqual(anonSessionRequests.count, 1, "Anonymous session should be called exactly once")
+        XCTAssertEqual(unknownUserSessionRequests.count, 1, "Unknown user session should be called exactly once")
 
         // Verify track events were made
         let trackRequests = mockSession.requests.filter { request in

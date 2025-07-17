@@ -6,7 +6,7 @@ This is the **Iterable Swift SDK** for iOS/macOS integration. The SDK provides:
 - In-app messaging 
 - Event tracking
 - User management
-- Anonymous/Unknown user tracking
+- Unknown user tracking
 
 ## Key Architecture
 - **Core SDK**: `swift-sdk/` - Main SDK implementation
@@ -53,7 +53,7 @@ swift-sdk/
 - **IterableAPI**: Main SDK interface
 - **IterableConfig**: Configuration management
 - **InternalIterableAPI**: Core implementation
-- **UnknownUserManager**: Anonymous user tracking
+- **UnknownUserManager**: Unknown user tracking
 - **LocalStorage**: Data persistence
 
 ## Common Tasks

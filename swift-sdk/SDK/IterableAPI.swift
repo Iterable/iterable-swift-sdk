@@ -867,22 +867,7 @@ import UIKit
         implementation.setUnknownUserUsageTracked(isUnknownUserUsageTracked: isUnknownUserUsageTracked)
     }
     
-    // MARK: - Deprecated Anonymous User Methods
-    
-    /// Gets the current unknown user usage tracking setting
-    /// - Deprecated: Use getUnknownUserUsageTracked() instead
-    @available(*, deprecated, message: "Use getUnknownUserUsageTracked() instead")
-    @objc public static func getAnonymousUsageTracked() -> Bool {
-        return getUnknownUserUsageTracked()
-    }
-    
-    /// Sets the unknown user usage tracking setting
-    /// - Parameter isAnonymousUsageTracked: `true` to enable unknown user usage tracking, `false` to disable
-    /// - Deprecated: Use setUnknownUserUsageTracked(isUnknownUserUsageTracked:) instead
-    @available(*, deprecated, message: "Use setUnknownUserUsageTracked(isUnknownUserUsageTracked:) instead")
-    @objc public static func setAnonymousUsageTracked(isAnonymousUsageTracked: Bool) {
-        setUnknownUserUsageTracked(isUnknownUserUsageTracked: isAnonymousUsageTracked)
-    }
+
     
     // MARK: - Private/Internal
     
