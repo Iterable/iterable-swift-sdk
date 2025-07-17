@@ -161,8 +161,10 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
                     isEmail: true,
                     failureHandler: failureHandler
                 )
-                // Send consent for replay scenario if user didn't meet criteria but had consent
-                self?.sendConsentForReplayScenario(email: email, userId: nil)
+                // Send consent for replay scenario only if replay events is enabled
+                if let replay, replay {
+                    self?.sendConsentForReplayScenario(email: email, userId: nil)
+                }
                 
                 self?.localStorage.userIdAnnon = nil
             }
@@ -206,8 +208,10 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
                         isEmail: false,
                         failureHandler: failureHandler
                     )
-                    // Send consent for replay scenario if user didn't meet criteria but had consent
-                    self?.sendConsentForReplayScenario(email: nil, userId: userId)
+                    // Send consent for replay scenario only if replay events is enabled
+                    if let replay, replay {
+                        self?.sendConsentForReplayScenario(email: nil, userId: userId)
+                    }
                 }
 
                 if !isAnon {
