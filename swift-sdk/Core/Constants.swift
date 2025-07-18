@@ -469,6 +469,12 @@ extension Array: JsonValueRepresentable where Element: JsonValueRepresentable {
     }
 }
 
+extension Int64: JsonValueRepresentable {
+    public var jsonValue: Any {
+        self
+    }
+}
+
 enum MobileDeviceType: String, Codable {
     case iOS
     case Android

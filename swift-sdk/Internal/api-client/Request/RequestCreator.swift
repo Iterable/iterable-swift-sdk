@@ -705,7 +705,7 @@ struct RequestCreator {
     func createTrackConsentRequest(consentTimestamp: Int64, email: String?, userId: String?, isUserKnown: Bool) -> Result<IterableRequest, IterableError> {
         var body = [AnyHashable: Any]()
         
-        body.setValue(for: JsonKey.consentTimestamp, value: Int(consentTimestamp))
+        body.setValue(for: JsonKey.consentTimestamp, value: consentTimestamp)
         
         if let email = email {
             body.setValue(for: JsonKey.email, value: email)
