@@ -702,6 +702,25 @@ struct RequestCreator {
         return .success(.post(createPostRequest(path: Const.Path.trackAnonSession, body: body)))
     }
     
+    func createTrackConsentRequest(consentTimestamp: Int64, email: String?, userId: String?, isUserKnown: Bool) -> Result<IterableRequest, IterableError> {
+        var body = [AnyHashable: Any]()
+        
+        body.setValue(for: JsonKey.consentTimestamp, value: consentTimestamp)
+        
+        if let email = email {
+            body.setValue(for: JsonKey.email, value: email)
+        }
+        
+        if let userId = userId {
+            body.setValue(for: JsonKey.userId, value: userId)
+        }
+        
+        body.setValue(for: JsonKey.isUserKnown, value: isUserKnown)
+        body.setValue(for: JsonKey.deviceInfo, value: deviceMetadata.asDictionary())
+        
+        return .success(.post(createPostRequest(path: Const.Path.trackConsent, body: body)))
+    }
+    
     // MARK: - PRIVATE
     
     private static let authMissingMessage = "Both email and userId are nil"

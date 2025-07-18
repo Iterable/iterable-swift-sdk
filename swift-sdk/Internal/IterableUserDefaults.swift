@@ -78,6 +78,14 @@ class IterableUserDefaults {
         }
     }
 
+    var visitorConsentTimestamp: Int64? {
+        get {
+            return int64(withKey: .visitorConsentTimestamp)
+        } set {
+            save(int64: newValue, withKey: .visitorConsentTimestamp)
+        }
+    }
+
     var anonymousUserEvents: [[AnyHashable: Any]]? {
         get {
             return eventData(withKey: .anonymousUserEvents)
@@ -242,6 +250,14 @@ class IterableUserDefaults {
         userDefaults.object(forKey: key.value) as? Data
     }
     
+    private func int64(withKey key: UserDefaultsKey) -> Int64? {
+        userDefaults.object(forKey: key.value) as? Int64
+    }
+
+    private func save(int64: Int64?, withKey key: UserDefaultsKey) {
+        userDefaults.set(int64, forKey: key.value)
+    }
+    
     private static func isExpired(expiration: Date?, currentDate: Date) -> Bool {
         if let expiration = expiration {
             if expiration.timeIntervalSinceReferenceDate > currentDate.timeIntervalSinceReferenceDate {
@@ -326,6 +342,7 @@ class IterableUserDefaults {
         static let criteriaData = UserDefaultsKey(value: Const.UserDefault.criteriaData)
         static let anonymousSessions = UserDefaultsKey(value: Const.UserDefault.anonymousSessions)
         static let anonymousUsageTrack = UserDefaultsKey(value: Const.UserDefault.anonymousUsageTrack)
+        static let visitorConsentTimestamp = UserDefaultsKey(value: Const.UserDefault.visitorConsentTimestamp)
 
         static let isNotificationsEnabled = UserDefaultsKey(value: Const.UserDefault.isNotificationsEnabled)
         static let hasStoredNotificationSetting = UserDefaultsKey(value: Const.UserDefault.hasStoredNotificationSetting)

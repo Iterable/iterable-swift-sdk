@@ -32,6 +32,8 @@ class MockLocalStorage: LocalStorageProtocol {
 
     var anonymousUsageTrack: Bool = true
     
+    var visitorConsentTimestamp: Int64?
+    
     var anonymousUserUpdate: [AnyHashable : Any]?
 
     var isNotificationsEnabled: Bool = false

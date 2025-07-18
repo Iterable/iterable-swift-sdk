@@ -51,15 +51,25 @@ class IterableApiCriteriaFetchTests: XCTestCase {
         config.enableAnonActivation = true
         config.enableForegroundCriteriaFetch = true
         
+        // Set up localStorage to have visitor usage tracking enabled for the first criteria fetch during initialization
+        localStorage.anonymousUsageTrack = true
+        
         IterableAPI.initializeForTesting(apiKey: IterableApiCriteriaFetchTests.apiKey,
                                          config: config,
                                          networkSession: mockNetworkSession,
                                          localStorage: localStorage)
         
+        // Manually trigger the criteria fetch logic that happens in initialize2() but not in initializeForTesting()
+        if let implementation = IterableAPI.implementation, config.enableAnonActivation, !implementation.isSDKInitialized(), implementation.getVisitorUsageTracked() {
+            implementation.anonymousUserManager.getAnonCriteria()
+            implementation.anonymousUserManager.updateAnonSession()
+        }
+        
         internalApi = InternalIterableAPI.initializeForTesting(
             config: config,
             dateProvider: mockDateProvider,
             networkSession: mockNetworkSession,
+            localStorage: localStorage,
             applicationStateProvider: mockApplicationStateProvider,
             notificationCenter: mockNotificationCenter
         )
@@ -91,6 +101,7 @@ class IterableApiCriteriaFetchTests: XCTestCase {
             config: config,
             dateProvider: mockDateProvider,
             networkSession: mockNetworkSession,
+            localStorage: localStorage,
             applicationStateProvider: mockApplicationStateProvider,
             notificationCenter: mockNotificationCenter
         )
@@ -126,15 +137,25 @@ class IterableApiCriteriaFetchTests: XCTestCase {
         config.enableAnonActivation = true
         config.enableForegroundCriteriaFetch = true
         
+        // Set up localStorage to have visitor usage tracking enabled for the first criteria fetch during initialization
+        localStorage.anonymousUsageTrack = true
+        
         IterableAPI.initializeForTesting(apiKey: IterableApiCriteriaFetchTests.apiKey,
                                          config: config,
                                          networkSession: mockNetworkSession,
                                          localStorage: localStorage)
 
+        // Manually trigger the criteria fetch logic that happens in initialize2() but not in initializeForTesting()
+        if let implementation = IterableAPI.implementation, config.enableAnonActivation, !implementation.isSDKInitialized(), implementation.getVisitorUsageTracked() {
+            implementation.anonymousUserManager.getAnonCriteria()
+            implementation.anonymousUserManager.updateAnonSession()
+        }
+
         internalApi = InternalIterableAPI.initializeForTesting(
             config: config,
             dateProvider: mockDateProvider,
             networkSession: mockNetworkSession,
+            localStorage: localStorage,
             applicationStateProvider: mockApplicationStateProvider,
             notificationCenter: mockNotificationCenter
         )

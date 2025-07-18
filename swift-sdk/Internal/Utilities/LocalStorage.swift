@@ -116,6 +116,14 @@ struct LocalStorage: LocalStorageProtocol {
         }
     }
 
+    var visitorConsentTimestamp: Int64? {
+        get {
+            iterableUserDefaults.visitorConsentTimestamp
+        } set {
+            iterableUserDefaults.visitorConsentTimestamp = newValue
+        }
+    }
+
     var isNotificationsEnabled: Bool {
         get {
             iterableUserDefaults.isNotificationsEnabled

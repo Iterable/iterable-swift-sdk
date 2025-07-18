@@ -292,6 +292,12 @@ extension ApiClient: ApiClientProtocol {
         let result = createRequestCreator().flatMap { $0.createTrackAnonSessionRequest(createdAt: createdAt, withUserId: userId, dataFields: dataFields, requestJson: requestJson) }
         return send(iterableRequestResult: result)
     }
+    
+    func trackConsent(consentTimestamp: Int64, email: String?, userId: String?, isUserKnown: Bool) -> Pending<SendRequestValue, SendRequestError> {
+        let result = createRequestCreator().flatMap { $0.createTrackConsentRequest(consentTimestamp: consentTimestamp, email: email, userId: userId, isUserKnown: isUserKnown) }
+        return send(iterableRequestResult: result)
+    }
+    
     // MARK: - Embedded Messaging
     
     func getEmbeddedMessages() -> Pending<PlacementsPayload, SendRequestError> {
