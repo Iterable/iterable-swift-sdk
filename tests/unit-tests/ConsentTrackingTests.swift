@@ -2,7 +2,7 @@
 //  ConsentTrackingTests.swift
 //  swift-sdk
 //
-//  Created by Anonymous User Activation on 23/01/2025.
+//  Created by Iterable Team on 23/01/2025.
 //  Copyright © 2025 Iterable. All rights reserved.
 //
 

@@ -271,7 +271,17 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
         return self.localStorage.anonymousUsageTrack
     }
 
-    /// Sends consent data for replay scenarios when user signs up/in but didn't meet criteria
+    /// Sends consent data for replay scenarios.
+    /// 
+    /// A "replay scenario" occurs when a user signs up or logs in but does not meet the criteria
+    /// for immediate consent tracking. This method ensures that consent data is sent retroactively
+    /// if the following conditions are met:
+    /// - A consent timestamp exists (`visitorConsentTimestamp` is not nil).
+    /// - No anonymous user ID is present (`userIdAnnon` is nil).
+    /// - Anonymous usage tracking is enabled (`anonymousUsageTrack` is true).
+    ///
+    /// This method is typically called during user sign-up or sign-in processes to ensure that
+    /// consent data is properly recorded for compliance and analytics purposes.
     private func sendConsentForReplayScenario(email: String?, userId: String?) {
         guard let consentTimestamp = localStorage.visitorConsentTimestamp else {
             return
