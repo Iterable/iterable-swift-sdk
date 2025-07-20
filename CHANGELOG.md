@@ -18,7 +18,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 - This release includes initial support for Unknown user activation, a feature that allows marketers to convert valuable visitors into customers. With this feature, the SDK can:
   - Fetch unknown user profile creation criteria from your Iterable project, and then automatically create Iterable user profiles for Unknown users who meet these criteria.
-  - Save information about a user's previous interactions with your application to their anonymous profile, after it's created.
+  - Save information about a user's previous interactions with your application to their unknown user profile, after it's created.
   - Display personalized messages for Unknown users (in-app, push, and embedded messages).
   - Merge unknown user profiles into an existing, known user profiles (when needed).
 - Unknown user activation is currently in private beta. If you'd like to learn more about it or discuss using it, talk to your Iterable customer success manager (who can also provide detailed documentation).
