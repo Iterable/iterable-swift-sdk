@@ -111,6 +111,46 @@ swift-sdk/
 ./agent_test.sh AuthTests
 ```
 
+## AI Agent Memory System
+
+### 🧠 Update Instructions for AI Agents
+**IMPORTANT**: When you discover something useful while working on this codebase, update this README to help future AI agents. Add learnings to the sections below.
+
+### 📍 Code Location Map
+- **Auth Logic**: `swift-sdk/Internal/AuthManager.swift` (main auth manager), `swift-sdk/Internal/Auth.swift` (auth models)
+- **API Calls**: `swift-sdk/Internal/api-client/ApiClient.swift` (main client), `swift-sdk/Internal/Network/NetworkHelper.swift` (networking)
+- **Models**: `swift-sdk/Core/Models/` (all data structures - CommerceItem, IterableInAppMessage, etc.)
+- **Main Entry**: `swift-sdk/SDK/IterableAPI.swift` (public API), `swift-sdk/Internal/InternalIterableAPI.swift` (core implementation)
+- **Request Handling**: `swift-sdk/Internal/api-client/Request/` (online/offline processors)
+
+### 🛠️ Common Task Recipes
+
+**Add New API Endpoint:**
+1. Add path constant to `swift-sdk/Core/Constants.swift` in `Const.Path`
+2. Add method to `ApiClientProtocol.swift` and implement in `ApiClient.swift`
+3. Create request in `swift-sdk/Internal/api-client/Request/RequestCreator.swift`
+4. Add to `RequestHandlerProtocol.swift` and `RequestHandler.swift`
+
+**Modify Auth Logic:**
+- Main logic: `swift-sdk/Internal/AuthManager.swift`
+- Token storage: `swift-sdk/Internal/Utilities/Keychain/IterableKeychain.swift`
+- Auth failures: Handle in `RequestProcessorUtil.swift`
+
+**Add New Model:**
+- Create in `swift-sdk/Core/Models/YourModel.swift`
+- Make it `@objcMembers public class` for Objective-C compatibility
+- Implement `Codable` if it needs JSON serialization
+
+### 🐛 Common Failure Solutions
+
+**"Test X failed"** → Check test file in `tests/unit-tests/` - often parameter name mismatches after refactoring
+
+**"Build failed: file not found"** → Update `swift-sdk.xcodeproj/project.pbxproj` to include new/renamed files
+
+**"Auth token issues"** → Check `AuthManager.swift` and ensure JWT format is correct in tests
+
+**"Network request fails"** → Check endpoint in `Constants.swift` and request creation in `RequestCreator.swift`
+
 ## Notes
 - Always test builds after refactoring
 - Parameter name changes require test file updates
