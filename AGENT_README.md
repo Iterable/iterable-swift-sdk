@@ -1,4 +1,4 @@
-# AI README - Iterable Swift SDK
+# AGENT README - Iterable Swift SDK
 
 ## Project Overview
 This is the **Iterable Swift SDK** for iOS/macOS integration. The SDK provides:
@@ -18,7 +18,7 @@ This is the **Iterable Swift SDK** for iOS/macOS integration. The SDK provides:
 
 ### 🔨 Building the SDK
 ```bash
-./mac_agent_build.sh
+./agent_build.sh
 ```
 - Validates compilation on iOS Simulator
 - Shows build errors with context
@@ -26,7 +26,7 @@ This is the **Iterable Swift SDK** for iOS/macOS integration. The SDK provides:
 
 ### 🧪 Running Tests  
 ```bash
-./mac_agent_test.sh
+./agent_test.sh
 ```
 - Runs full unit test suite
 - Executes on iOS Simulator 
@@ -59,10 +59,10 @@ swift-sdk/
 ## Common Tasks
 
 ### Adding New Features
-1. Build first: `./mac_agent_build.sh`
+1. Build first: `./agent_build.sh`
 2. Implement in `swift-sdk/Internal/` or `swift-sdk/SDK/`
 3. Add tests in `tests/unit-tests/`
-4. Verify: `./mac_agent_test.sh`
+4. Verify: `./agent_test.sh`
 
 ### Debugging Build Issues
 - Build script shows compilation errors with file paths
@@ -81,8 +81,8 @@ swift-sdk/
 - **iOS Simulator**: For testing
 
 ## Quick Start for AI Agents
-1. Run `./mac_agent_build.sh` to verify project builds
-2. Run `./mac_agent_test.sh` to check test health
+1. Run `./agent_build.sh` to verify project builds
+2. Run `./agent_test.sh` to check test health
 3. Make changes to source files
 4. Re-run both scripts to validate
 5. Commit when both pass ✅
