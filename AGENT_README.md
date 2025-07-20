@@ -26,11 +26,21 @@ This is the **Iterable Swift SDK** for iOS/macOS integration. The SDK provides:
 
 ### 🧪 Running Tests  
 ```bash
+# Run all tests
 ./agent_test.sh
+
+# Run specific test suite
+./agent_test.sh IterableApiCriteriaFetchTests
+
+# Run specific test (dot notation - recommended)
+./agent_test.sh "IterableApiCriteriaFetchTests.testForegroundCriteriaFetchWhenConditionsMet"
+
+# Run specific test (full path)
+./agent_test.sh "unit-tests/IterableApiCriteriaFetchTests/testForegroundCriteriaFetchWhenConditionsMet"
 ```
-- Runs full unit test suite
-- Executes on iOS Simulator 
-- Shows test failures and summary
+- Executes on iOS Simulator with accurate pass/fail reporting
+- Returns exit code 0 for success, 1 for failures
+- Shows detailed test counts and failure information
 - Requires password for xcpretty installation (first run)
 
 ## Project Structure
@@ -62,7 +72,7 @@ swift-sdk/
 1. Build first: `./agent_build.sh`
 2. Implement in `swift-sdk/Internal/` or `swift-sdk/SDK/`
 3. Add tests in `tests/unit-tests/`
-4. Verify: `./agent_test.sh`
+4. Verify: `./agent_test.sh` (all tests) or `./agent_test.sh YourTestSuite` (specific suite)
 
 ### Debugging Build Issues
 - Build script shows compilation errors with file paths
@@ -70,7 +80,8 @@ swift-sdk/
 - Verify file renames are reflected in project file
 
 ### Test Failures
-- Test script shows specific failures with line numbers
+- Test script shows specific failures with line numbers and detailed error messages
+- Run failing tests individually: `./agent_test.sh "TestSuite.testMethod"`
 - Mock classes available in `tests/common/`
 - Update parameter names when refactoring APIs
 
@@ -82,10 +93,23 @@ swift-sdk/
 
 ## Quick Start for AI Agents
 1. Run `./agent_build.sh` to verify project builds
-2. Run `./agent_test.sh` to check test health
+2. Run `./agent_test.sh` to check test health (or `./agent_test.sh TestSuite` for specific suite)
 3. Make changes to source files
 4. Re-run both scripts to validate
-5. Commit when both pass ✅
+5. Debug failing tests: `./agent_test.sh "TestSuite.testMethod"`
+6. Commit when both pass ✅
+
+## Test Filtering Examples
+```bash
+# Debug specific failing tests
+./agent_test.sh "IterableApiCriteriaFetchTests.testForegroundCriteriaFetchWhenConditionsMet"
+
+# Run a problematic test suite
+./agent_test.sh ValidateCustomEventUserUpdateAPITest
+
+# Check auth-related tests
+./agent_test.sh AuthTests
+```
 
 ## Notes
 - Always test builds after refactoring
