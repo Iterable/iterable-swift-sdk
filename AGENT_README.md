@@ -35,12 +35,13 @@ This is the **Iterable Swift SDK** for iOS/macOS integration. The SDK provides:
 # Run specific test (dot notation - recommended)
 ./agent_test.sh "IterableApiCriteriaFetchTests.testForegroundCriteriaFetchWhenConditionsMet"
 
-# Run specific test (full path)
-./agent_test.sh "unit-tests/IterableApiCriteriaFetchTests/testForegroundCriteriaFetchWhenConditionsMet"
+# List all available test suites
+./agent_test.sh --list
 ```
 - Executes on iOS Simulator with accurate pass/fail reporting
 - Returns exit code 0 for success, 1 for failures
 - Shows detailed test counts and failure information
+- `--list` shows all test suites with test counts
 - Requires password for xcpretty installation (first run)
 
 ## Project Structure

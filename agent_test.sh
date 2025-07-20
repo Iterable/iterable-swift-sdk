@@ -8,15 +8,45 @@ fi
 
 # Parse command line arguments
 FILTER=""
+LIST_TESTS=false
+
 if [[ $# -eq 1 ]]; then
-    FILTER="$1"
-    echo "🎯 Running tests with filter: $FILTER"
+    if [[ "$1" == "--list" ]]; then
+        LIST_TESTS=true
+    else
+        FILTER="$1"
+        echo "🎯 Running tests with filter: $FILTER"
+    fi
 elif [[ $# -gt 1 ]]; then
-    echo "❌ Usage: $0 [filter]"
+    echo "❌ Usage: $0 [filter|--list]"
     echo "   filter: Test suite name (e.g., 'IterableApiCriteriaFetchTests')"
     echo "           or specific test (e.g., 'IterableApiCriteriaFetchTests.testForegroundCriteriaFetchWhenConditionsMet')"
     echo "           or full path (e.g., 'unit-tests/IterableApiCriteriaFetchTests/testForegroundCriteriaFetchWhenConditionsMet')"
+    echo "   --list: List all available test suites and tests"
     exit 1
+fi
+
+# Handle test listing
+if [[ "$LIST_TESTS" == true ]]; then
+    echo "📋 Listing available test suites..."
+    
+    # Use grep to extract test class names from source files
+    echo "📦 Available Test Suites:"
+    find tests/unit-tests -name "*.swift" -exec basename {} .swift \; | sort | while read test_file; do
+        # Count test methods in each file
+        test_count=$(grep -c "func test" "tests/unit-tests/$test_file.swift" 2>/dev/null || echo "0")
+        echo "  • $test_file ($test_count tests)"
+    done
+    
+    echo ""
+    echo "🔍 Example Usage:"
+    echo "  ./agent_test.sh AuthTests"
+    echo "  ./agent_test.sh \"AuthTests.testAsyncAuthTokenRetrieval\""
+    echo ""
+    echo "💡 To see specific test methods in a suite, check the source file:"
+    echo "  grep 'func test' tests/unit-tests/AuthTests.swift"
+    
+    exit 0
 fi
 
 # Make sure xcpretty is installed
