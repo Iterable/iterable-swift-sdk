@@ -66,6 +66,8 @@ class IterableApiCriteriaFetchTests: XCTestCase {
         
         internalApi.setVisitorUsageTracked(isVisitorUsageTracked: true)
         sleep(5)
+        // Reset the last criteria fetch time to bypass cooldown
+        internalApi.unknownUserManager.updateLastCriteriaFetch(currentTime: 0)
         // Simulate app coming to foreground
         mockNotificationCenter.post(name: UIApplication.didBecomeActiveNotification, object: nil, userInfo: nil)
         
@@ -142,6 +144,9 @@ class IterableApiCriteriaFetchTests: XCTestCase {
         internalApi.setVisitorUsageTracked(isVisitorUsageTracked: true)
         
         sleep(5)
+        
+        // Reset the last criteria fetch time to bypass cooldown for first foreground
+        internalApi.unknownUserManager.updateLastCriteriaFetch(currentTime: 0)
         
         // First foreground
         mockNotificationCenter.post(name: UIApplication.didBecomeActiveNotification, object: nil, userInfo: nil)
