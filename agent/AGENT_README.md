@@ -18,7 +18,7 @@ This is the **Iterable Swift SDK** for iOS/macOS integration. The SDK provides:
 
 ### 🔨 Building the SDK
 ```bash
-./agent_build.sh
+./agent/agent_build.sh
 ```
 - Validates compilation on iOS Simulator
 - Shows build errors with context
@@ -28,22 +28,22 @@ This is the **Iterable Swift SDK** for iOS/macOS integration. The SDK provides:
 
 # List all available test suites
 ```bash
-./agent_test.sh --list
+./agent/agent_test.sh --list
 ```
 
 ### 🧪 Running Tests  
 ```bash
 # Run all tests
-./agent_test.sh
+./agent/agent_test.sh
 
 # Run specific test suite
-./agent_test.sh IterableApiCriteriaFetchTests
+./agent/agent_test.sh IterableApiCriteriaFetchTests
 
 # Run specific unit test (dot notation - recommended)
-./agent_test.sh "IterableApiCriteriaFetchTests.testForegroundCriteriaFetchWhenConditionsMet"
+./agent/agent_test.sh "IterableApiCriteriaFetchTests.testForegroundCriteriaFetchWhenConditionsMet"
 
 # Run any specific test with path 
-./agent_test.sh "unit-tests/IterableApiCriteriaFetchTests/testForegroundCriteriaFetchWhenConditionsMet"
+./agent/agent_test.sh "unit-tests/IterableApiCriteriaFetchTests/testForegroundCriteriaFetchWhenConditionsMet"
 ```
 - Executes on iOS Simulator with accurate pass/fail reporting
 - Returns exit code 0 for success, 1 for failures
@@ -77,10 +77,10 @@ swift-sdk/
 ## Common Tasks
 
 ### Adding New Features
-1. Build first: `./agent_build.sh`
+1. Build first: `./agent/agent_build.sh`
 2. Implement in `swift-sdk/Internal/` or `swift-sdk/SDK/`
 3. Add tests in `tests/unit-tests/`
-4. Verify: `./agent_test.sh` (all tests) or `./agent_test.sh YourTestSuite` (specific suite)
+4. Verify: `./agent/agent_test.sh` (all tests) or `./agent/agent_test.sh YourTestSuite` (specific suite)
 
 ### Debugging Build Issues
 - Build script shows compilation errors with file paths
@@ -89,7 +89,7 @@ swift-sdk/
 
 ### Test Failures
 - Test script shows specific failures with line numbers and detailed error messages
-- Run failing tests individually: `./agent_test.sh "TestSuite.testMethod"`
+- Run failing tests individually: `./agent/agent_test.sh "TestSuite.testMethod"`
 - Mock classes available in `tests/common/`
 - Update parameter names when refactoring APIs
 
@@ -100,23 +100,23 @@ swift-sdk/
 - **iOS Simulator**: For testing
 
 ## Quick Start for AI Agents
-1. Run `./agent_build.sh` to verify project builds
-2. Run `./agent_test.sh` to check test health (or `./agent_test.sh TestSuite` for specific suite)
+1. Run `./agent/agent_build.sh` to verify project builds
+2. Run `./agent/agent_test.sh` to check test health (or `./agent/agent_test.sh TestSuite` for specific suite)
 3. Make changes to source files
 4. Re-run both scripts to validate
-5. Debug failing tests: `./agent_test.sh "TestSuite.testMethod"`
+5. Debug failing tests: `./agent/agent_test.sh "TestSuite.testMethod"`
 6. Commit when both pass ✅
 
 ## Test Filtering Examples
 ```bash
 # Debug specific failing tests
-./agent_test.sh "IterableApiCriteriaFetchTests.testForegroundCriteriaFetchWhenConditionsMet"
+./agent/agent_test.sh "IterableApiCriteriaFetchTests.testForegroundCriteriaFetchWhenConditionsMet"
 
 # Run a problematic test suite
-./agent_test.sh ValidateCustomEventUserUpdateAPITest
+./agent/agent_test.sh ValidateCustomEventUserUpdateAPITest
 
 # Check auth-related tests
-./agent_test.sh AuthTests
+./agent/agent_test.sh AuthTests
 ```
 
 ## AI Agent Memory System

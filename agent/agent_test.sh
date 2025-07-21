@@ -40,8 +40,8 @@ if [[ "$LIST_TESTS" == true ]]; then
     
     echo ""
     echo "🔍 Example Usage:"
-    echo "  ./agent_test.sh AuthTests"
-    echo "  ./agent_test.sh \"AuthTests.testAsyncAuthTokenRetrieval\""
+    echo "  ./agent/agent_test.sh AuthTests"
+    echo "  ./agent/agent_test.sh \"AuthTests.testAsyncAuthTokenRetrieval\""
     echo ""
     echo "💡 To see specific test methods in a suite, check the source file:"
     echo "  grep 'func test' tests/unit-tests/AuthTests.swift"
