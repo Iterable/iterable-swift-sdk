@@ -24,6 +24,8 @@ protocol LocalStorageProtocol {
     var unknownUserUsageTrack: Bool { get set }
 
     var unknownUserEvents: [[AnyHashable: Any]]? { get set }
+
+    var visitorConsentTimestamp: Int64? { get set }
     
     var unknownUserUpdate: [AnyHashable: Any]? { get set }
 

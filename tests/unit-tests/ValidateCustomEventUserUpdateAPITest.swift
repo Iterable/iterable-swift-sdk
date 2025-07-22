@@ -106,6 +106,10 @@ final class ValidateCustomEventUserUpdateAPITest: XCTestCase, AuthProvider  {
     func testCriteriaCustomEventCheck() {  // criteria not met with merge false with setUserId
         let config = IterableConfig()
         config.enableUnknownUserActivation = true
+        
+        // Disable consent tracking for this test to avoid interference with request capture
+        localStorage.visitorConsentTimestamp = nil
+        
         IterableAPI.initializeForTesting(apiKey: ValidateCustomEventUserUpdateAPITest.apiKey,
                                                                    config: config,
                                                                    networkSession: mockSession,
@@ -167,7 +171,12 @@ final class ValidateCustomEventUserUpdateAPITest: XCTestCase, AuthProvider  {
         IterableAPI.track(event: "animal-found", dataFields: dataFields)
 
         waitForDuration(seconds: 3)
-        if let request = self.mockSession.getRequest(withEndPoint: Const.Path.trackEvent) {
+        // Get the last trackEvent request instead of the first one (needed because consent tracking creates additional requests)
+        let trackEventRequests = self.mockSession.requests.filter { request in
+            request.url?.absoluteString.contains(Const.Path.trackEvent) == true
+        }
+        
+        if let request = trackEventRequests.last {
             print(request)
             TestUtils.validate(request: request, apiEndPoint: Endpoint.api, path: Const.Path.trackEvent)
             TestUtils.validateMatch(keyPath: KeyPath(keys: JsonKey.eventName), value: "animal-found", inDictionary: request.bodyDict)

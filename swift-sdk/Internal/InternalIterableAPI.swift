@@ -161,6 +161,11 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
                     isEmail: true,
                     failureHandler: failureHandler
                 )
+                // Send consent for replay scenario only if replay events is enabled
+                if let replay, replay {
+                    self?.sendConsentForReplayScenario(email: email, userId: nil)
+                }
+                
                 self?.localStorage.userIdUnknownUser = nil
             }
         }
@@ -203,6 +208,10 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
                         isEmail: false,
                         failureHandler: failureHandler
                     )
+                    // Send consent for replay scenario only if replay events is enabled
+                    if let replay, replay {
+                        self?.sendConsentForReplayScenario(email: nil, userId: userId)
+                    }
                 }
 
                 if !isUnknownUser {
@@ -238,9 +247,17 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
     func setVisitorUsageTracked(isVisitorUsageTracked: Bool) {
         ITBInfo("CONSENT CHANGED - local events cleared")
         self.localStorage.unknownUserUsageTrack = isVisitorUsageTracked
-                    self.localStorage.unknownUserEvents = nil
-                  self.localStorage.unknownUserSessions = nil
-          self.localStorage.unknownUserUpdate = nil
+        
+        // Store consent timestamp when consent is given
+        if isVisitorUsageTracked {
+            self.localStorage.visitorConsentTimestamp = Int64(dateProvider.currentDate.timeIntervalSince1970)
+        } else {
+            self.localStorage.visitorConsentTimestamp = nil
+        }
+        
+        self.localStorage.unknownUserEvents = nil
+        self.localStorage.unknownUserSessions = nil
+        self.localStorage.unknownUserUpdate = nil
         self.localStorage.userIdUnknownUser = nil
         
         if isVisitorUsageTracked && config.enableUnknownUserActivation {
@@ -260,6 +277,39 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
     
     func setUnknownUserUsageTracked(isUnknownUserUsageTracked: Bool) {
         setVisitorUsageTracked(isVisitorUsageTracked: isUnknownUserUsageTracked)
+    }
+
+    /// Sends consent data for replay scenarios.
+    /// 
+    /// A "replay scenario" occurs when a user signs up or logs in but does not meet the criteria
+    /// for immediate consent tracking. This method ensures that consent data is sent retroactively
+    /// if the following conditions are met:
+    /// - A consent timestamp exists (`visitorConsentTimestamp` is not nil).
+    /// - No anonymous user ID is present (`userIdAnnon` is nil).
+    /// - Anonymous usage tracking is enabled (`anonymousUsageTrack` is true).
+    ///
+    /// This method is typically called during user sign-up or sign-in processes to ensure that
+    /// consent data is properly recorded for compliance and analytics purposes.
+    private func sendConsentForReplayScenario(email: String?, userId: String?) {
+        guard let consentTimestamp = localStorage.visitorConsentTimestamp else {
+            return
+        }
+        
+        // Only send consent if we have previous anonymous tracking consent but no anonymous user ID
+        guard localStorage.userIdUnknownUser == nil && localStorage.unknownUserUsageTrack else {
+            return
+        }
+        
+        apiClient.trackConsent(
+            consentTimestamp: consentTimestamp,
+            email: email,
+            userId: userId,
+            isUserKnown: true
+        ).onSuccess { _ in
+            ITBInfo("Consent tracked successfully for replay scenario")
+        }.onError { error in
+            ITBError("Failed to track consent for replay scenario: \(error)")
+        }
     }
 
     // MARK: - API Request Calls

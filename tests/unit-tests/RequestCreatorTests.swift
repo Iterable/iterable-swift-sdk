@@ -433,6 +433,100 @@ class RequestCreatorTests: XCTestCase {
     private func getEmptyInAppContent() -> IterableHtmlInAppContent {
         IterableHtmlInAppContent(edgeInsets: .zero, html: "")
     }
+    
+    // MARK: - Consent Request Tests
+    
+    func testCreateTrackConsentRequestWithEmail() {
+        let consentTimestamp: Int64 = 1639490139
+        let email = "test@example.com"
+        
+        let urlRequest = convertToUrlRequest(createRequestCreator().createTrackConsentRequest(
+            consentTimestamp: consentTimestamp,
+            email: email,
+            userId: nil,
+            isUserKnown: true
+        ))
+        
+        TestUtils.validateHeader(urlRequest, apiKey)
+        TestUtils.validate(request: urlRequest, requestType: .post, apiEndPoint: Endpoint.api, path: Const.Path.trackConsent)
+        
+        let body = urlRequest.bodyDict
+        TestUtils.validateMatch(keyPath: KeyPath(keys: JsonKey.consentTimestamp), value: Int(consentTimestamp), inDictionary: body)
+        TestUtils.validateMatch(keyPath: KeyPath(keys: JsonKey.email), value: email, inDictionary: body)
+        TestUtils.validateMatch(keyPath: KeyPath(keys: JsonKey.isUserKnown), value: true, inDictionary: body)
+        XCTAssertNil(body[JsonKey.userId])
+        
+        TestUtils.validateDeviceInfo(inBody: body, withDeviceId: deviceMetadata.deviceId)
+    }
+    
+    func testCreateTrackConsentRequestWithUserId() {
+        let consentTimestamp: Int64 = 1639490139
+        let userId = "test-user-123"
+        
+        let urlRequest = convertToUrlRequest(createRequestCreator().createTrackConsentRequest(
+            consentTimestamp: consentTimestamp,
+            email: nil,
+            userId: userId,
+            isUserKnown: false
+        ))
+        
+        TestUtils.validateHeader(urlRequest, apiKey)
+        TestUtils.validate(request: urlRequest, requestType: .post, apiEndPoint: Endpoint.api, path: Const.Path.trackConsent)
+        
+        let body = urlRequest.bodyDict
+        TestUtils.validateMatch(keyPath: KeyPath(keys: JsonKey.consentTimestamp), value: Int(consentTimestamp), inDictionary: body)
+        TestUtils.validateMatch(keyPath: KeyPath(keys: JsonKey.userId), value: userId, inDictionary: body)
+        TestUtils.validateMatch(keyPath: KeyPath(keys: JsonKey.isUserKnown), value: false, inDictionary: body)
+        XCTAssertNil(body[JsonKey.email])
+        
+        TestUtils.validateDeviceInfo(inBody: body, withDeviceId: deviceMetadata.deviceId)
+    }
+    
+    func testCreateTrackConsentRequestWithBothEmailAndUserId() {
+        let consentTimestamp: Int64 = 1639490139
+        let email = "test@example.com"
+        let userId = "test-user-123"
+        
+        let urlRequest = convertToUrlRequest(createRequestCreator().createTrackConsentRequest(
+            consentTimestamp: consentTimestamp,
+            email: email,
+            userId: userId,
+            isUserKnown: true
+        ))
+        
+        TestUtils.validateHeader(urlRequest, apiKey)
+        TestUtils.validate(request: urlRequest, requestType: .post, apiEndPoint: Endpoint.api, path: Const.Path.trackConsent)
+        
+        let body = urlRequest.bodyDict
+        TestUtils.validateMatch(keyPath: KeyPath(keys: JsonKey.consentTimestamp), value: Int(consentTimestamp), inDictionary: body)
+        TestUtils.validateMatch(keyPath: KeyPath(keys: JsonKey.email), value: email, inDictionary: body)
+        TestUtils.validateMatch(keyPath: KeyPath(keys: JsonKey.userId), value: userId, inDictionary: body)
+        TestUtils.validateMatch(keyPath: KeyPath(keys: JsonKey.isUserKnown), value: true, inDictionary: body)
+        
+        TestUtils.validateDeviceInfo(inBody: body, withDeviceId: deviceMetadata.deviceId)
+    }
+    
+    func testCreateTrackConsentRequestMinimal() {
+        let consentTimestamp: Int64 = 1639490139
+        
+        let urlRequest = convertToUrlRequest(createRequestCreator().createTrackConsentRequest(
+            consentTimestamp: consentTimestamp,
+            email: nil,
+            userId: nil,
+            isUserKnown: false
+        ))
+        
+        TestUtils.validateHeader(urlRequest, apiKey)
+        TestUtils.validate(request: urlRequest, requestType: .post, apiEndPoint: Endpoint.api, path: Const.Path.trackConsent)
+        
+        let body = urlRequest.bodyDict
+        TestUtils.validateMatch(keyPath: KeyPath(keys: JsonKey.consentTimestamp), value: Int(consentTimestamp), inDictionary: body)
+        TestUtils.validateMatch(keyPath: KeyPath(keys: JsonKey.isUserKnown), value: false, inDictionary: body)
+        XCTAssertNil(body[JsonKey.email])
+        XCTAssertNil(body[JsonKey.userId])
+        
+        TestUtils.validateDeviceInfo(inBody: body, withDeviceId: deviceMetadata.deviceId)
+    }
 }
 
 extension RequestCreatorTests: AuthProvider {
