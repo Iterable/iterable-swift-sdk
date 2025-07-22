@@ -23,6 +23,8 @@ protocol LocalStorageProtocol {
 
     var anonymousUsageTrack: Bool { get set }
 
+    var visitorConsentTimestamp: Int64? { get set }
+
     var anonymousUserEvents: [[AnyHashable: Any]]? { get set }
     
     var anonymousUserUpdate: [AnyHashable: Any]? { get set }

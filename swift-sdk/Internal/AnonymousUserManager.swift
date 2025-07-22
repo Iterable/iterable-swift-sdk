@@ -193,6 +193,9 @@ public class AnonymousUserManager: AnonymousUserManagerProtocol {
                 
                 IterableAPI.implementation?.setUserId(userId, isAnon: true)
                 
+                // Send consent data after session creation
+                self.sendConsentAfterCriteriaMatch(userId: userId)
+                
                 self.syncNonSyncedEvents()
             }
         }
@@ -265,5 +268,24 @@ public class AnonymousUserManager: AnonymousUserManagerProtocol {
         }
         
         localStorage.anonymousUserEvents = eventsDataObjects
+    }
+    
+    /// Sends consent data after user meets criteria and anonymous user is created
+    private func sendConsentAfterCriteriaMatch(userId: String) {
+        guard let consentTimestamp = localStorage.visitorConsentTimestamp else {
+            ITBInfo("No consent timestamp found, skipping consent tracking")
+            return
+        }
+        
+        IterableAPI.implementation?.apiClient.trackConsent(
+            consentTimestamp: consentTimestamp,
+            email: nil,
+            userId: userId,
+            isUserKnown: false
+        ).onSuccess { _ in
+            ITBInfo("Consent tracked successfully for criteria match")
+        }.onError { error in
+            ITBError("Failed to track consent for criteria match: \(error)")
+        }
     }
 }

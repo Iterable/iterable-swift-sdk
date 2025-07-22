@@ -7,6 +7,10 @@ import Foundation
 @testable import IterableSDK
 
 class BlankApiClient: ApiClientProtocol {
+    func trackConsent(consentTimestamp: Int64, email: String?, userId: String?, isUserKnown: Bool) -> IterableSDK.Pending<IterableSDK.SendRequestValue, IterableSDK.SendRequestError> {
+        Pending()
+    }
+
     
     func updateCart(items: [IterableSDK.CommerceItem], createdAt: Int) -> IterableSDK.Pending<IterableSDK.SendRequestValue, IterableSDK.SendRequestError> {
         Pending()

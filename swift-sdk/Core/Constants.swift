@@ -54,6 +54,7 @@ enum Const {
         static let mergeUser = "users/merge";
         static let getCriteria = "anonymoususer/list";
         static let trackAnonSession = "anonymoususer/events/session";
+        static let trackConsent = "anonymoususer/events/trackConsent";
         static let getEmbeddedMessages = "embedded-messaging/messages"
         static let embeddedMessageReceived = "embedded-messaging/events/received"
         static let embeddedMessageClick = "embedded-messaging/events/click"
@@ -78,6 +79,7 @@ enum Const {
         static let matchedCriteria = "itbl_matched_criteria"
         static let eventList = "itbl_event_list"
         static let anonymousUsageTrack = "itbl_anonymous_usage_track"
+        static let visitorConsentTimestamp = "itbl_visitor_consent_timestamp"
         static let isNotificationsEnabled = "itbl_isNotificationsEnabled"
         static let hasStoredNotificationSetting = "itbl_hasStoredNotificationSetting"
 
@@ -265,7 +267,11 @@ enum JsonKey {
     
     static let frameworkType = "frameworkType"
     
-//    embedded
+// Consent tracking
+    static let consentTimestamp = "consentTimestamp"
+    static let isUserKnown = "isUserKnown"
+    
+    // Embedded Messages
     static let embeddedSessionId = "session"
     static let placementId = "placementId"
     static let embeddedSessionStart = "embeddedSessionStart"
@@ -458,6 +464,12 @@ extension Dictionary: JsonValueRepresentable {
 }
 
 extension Array: JsonValueRepresentable where Element: JsonValueRepresentable {
+    public var jsonValue: Any {
+        self
+    }
+}
+
+extension Int64: JsonValueRepresentable {
     public var jsonValue: Any {
         self
     }
