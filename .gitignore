@@ -1,7 +1,6 @@
 .DS_Store
 xcuserdata
 
-# AI assistant configuration
 .claude/
 
 .swiftpm/

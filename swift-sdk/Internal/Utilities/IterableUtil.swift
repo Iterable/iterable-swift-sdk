@@ -25,39 +25,85 @@ import UIKit
     
     @available(iOS 13.0, *)
     private static func getActiveWindowRootViewController() -> UIViewController? {
-        guard let application = AppExtensionHelper.application else { return nil }
+        guard let application = AppExtensionHelper.application else { 
+            ITBDebug("No application found in AppExtensionHelper")
+            return nil 
+        }
+        
+        ITBDebug("Application has \(application.connectedScenes.count) connected scenes")
         
         // Find active scenes (foreground active takes priority)
         let activeScenes = application.connectedScenes
             .compactMap { $0 as? UIWindowScene }
             .filter { $0.activationState == .foregroundActive }
         
-        // Look for key window in active scenes first
-        for scene in activeScenes {
-            if let keyWindow = scene.windows.first(where: { $0.isKeyWindow }),
-               let rootVC = keyWindow.rootViewController {
-                return rootVC
+        ITBDebug("Found \(activeScenes.count) foreground active scenes")
+        
+        // iOS 15+: Use scene's keyWindow property (preferred approach)
+        if #available(iOS 15.0, *) {
+            for (index, scene) in activeScenes.enumerated() {
+                ITBDebug("Checking scene \(index): keyWindow exists = \(scene.keyWindow != nil)")
+                if let keyWindow = scene.keyWindow,
+                   let rootVC = keyWindow.rootViewController {
+                    ITBDebug("Found root view controller in keyWindow: \(String(describing: rootVC))")
+                    return rootVC
+                } else {
+                    ITBDebug("Scene \(index): keyWindow or rootVC is nil")
+                }
+            }
+        } else {
+            // iOS 13-14: Fall back to isKeyWindow check
+            for (index, scene) in activeScenes.enumerated() {
+                let keyWindows = scene.windows.filter { $0.isKeyWindow }
+                ITBDebug("Scene \(index): found \(keyWindows.count) key windows")
+                if let keyWindow = scene.windows.first(where: { $0.isKeyWindow }),
+                   let rootVC = keyWindow.rootViewController {
+                    ITBDebug("Found root view controller in keyWindow (iOS 13-14): \(String(describing: rootVC))")
+                    return rootVC
+                } else {
+                    ITBDebug("Scene \(index): no keyWindow with rootVC found")
+                }
             }
         }
         
         // Fallback to first window in first active scene
         if let firstActiveScene = activeScenes.first,
            let rootVC = firstActiveScene.windows.first?.rootViewController {
+            ITBDebug("Fallback: Found root view controller in first window of first active scene: \(String(describing: rootVC))")
             return rootVC
+        } else {
+            ITBDebug("Fallback: No root view controller found in first window of first active scene")
         }
         
-        // Final fallback: any foreground inactive scene with key window
+        // Final fallback: any foreground inactive scene
         let inactiveScenes = application.connectedScenes
             .compactMap { $0 as? UIWindowScene }
             .filter { $0.activationState == .foregroundInactive }
         
-        for scene in inactiveScenes {
-            if let keyWindow = scene.windows.first(where: { $0.isKeyWindow }),
-               let rootVC = keyWindow.rootViewController {
-                return rootVC
+        ITBDebug("Checking \(inactiveScenes.count) foreground inactive scenes as final fallback")
+        
+        if #available(iOS 15.0, *) {
+            for (index, scene) in inactiveScenes.enumerated() {
+                ITBDebug("Inactive scene \(index): keyWindow exists = \(scene.keyWindow != nil)")
+                if let keyWindow = scene.keyWindow,
+                   let rootVC = keyWindow.rootViewController {
+                    ITBDebug("Final fallback: Found root view controller in inactive scene keyWindow: \(String(describing: rootVC))")
+                    return rootVC
+                }
+            }
+        } else {
+            for (index, scene) in inactiveScenes.enumerated() {
+                let keyWindows = scene.windows.filter { $0.isKeyWindow }
+                ITBDebug("Inactive scene \(index): found \(keyWindows.count) key windows")
+                if let keyWindow = scene.windows.first(where: { $0.isKeyWindow }),
+                   let rootVC = keyWindow.rootViewController {
+                    ITBDebug("Final fallback: Found root view controller in inactive scene keyWindow (iOS 13-14): \(String(describing: rootVC))")
+                    return rootVC
+                }
             }
         }
         
+        ITBDebug("No root view controller found in any scene")
         return nil
     }
     
@@ -144,74 +190,5 @@ import UIKit
             
             return true
         }
-    }
-
-    @available(iOS 13.0, *)
-    private static func getActiveWindowRootViewController() -> UIViewController? {
-        guard let application = AppExtensionHelper.application else { return nil }
-        
-        // Prioritize foregroundActive scenes for Stage Manager and multi-window scenarios
-        for scene in application.connectedScenes {
-            guard let windowScene = scene as? UIWindowScene,
-                  windowScene.activationState == .foregroundActive else { continue }
-            
-            // Filter for visible, normal-level windows with valid rootViewControllers
-            let visibleWindows = windowScene.windows.filter { 
-                $0.isHidden == false && 
-                $0.windowLevel == .normal &&
-                $0.rootViewController != nil
-            }
-            
-            // Try keyWindow first if available (iOS 15+) and in our visible set
-            if #available(iOS 15.0, *) {
-                if let keyWindow = windowScene.keyWindow,
-                   visibleWindows.contains(keyWindow) {
-                    return keyWindow.rootViewController
-                }
-            }
-            
-            // For iOS 13-14, find keyWindow manually in visible windows
-            for window in visibleWindows {
-                if window.isKeyWindow {
-                    return window.rootViewController
-                }
-            }
-            
-            // Fallback to first visible, normal window
-            if let firstVisibleWindow = visibleWindows.first {
-                return firstVisibleWindow.rootViewController
-            }
-        }
-        
-        // Secondary fallback: any foregroundInactive scene (Stage Manager background)
-        for scene in application.connectedScenes {
-            guard let windowScene = scene as? UIWindowScene,
-                  windowScene.activationState == .foregroundInactive else { continue }
-            
-            let visibleWindows = windowScene.windows.filter { 
-                $0.isHidden == false && 
-                $0.windowLevel == .normal &&
-                $0.rootViewController != nil
-            }
-            
-            if #available(iOS 15.0, *) {
-                if let keyWindow = windowScene.keyWindow,
-                   visibleWindows.contains(keyWindow) {
-                    return keyWindow.rootViewController
-                }
-            }
-            
-            for window in visibleWindows {
-                if window.isKeyWindow {
-                    return window.rootViewController
-                }
-            }
-            
-            if let firstVisibleWindow = visibleWindows.first {
-                return firstVisibleWindow.rootViewController
-            }
-        }
-        
-        return nil
     }
 }
