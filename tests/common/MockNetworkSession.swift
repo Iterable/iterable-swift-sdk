@@ -182,7 +182,7 @@ class MockNetworkSession: NetworkSessionProtocol {
     }
 
     func getRequest(withEndPoint endPoint: String) -> URLRequest? {
-        return requests.last { request in
+        return requests.first { request in
             request.url?.absoluteString.contains(endPoint) == true
         }
     }
