@@ -108,11 +108,11 @@ struct LocalStorage: LocalStorageProtocol {
         }
     }
 
-    var unknownUserUsageTrack: Bool {
+    var visitorUsageTracked: Bool {
         get {
-            iterableUserDefaults.unknownUserUsageTrack
+            iterableUserDefaults.visitorUsageTracked
         } set {
-            iterableUserDefaults.unknownUserUsageTrack = newValue
+            iterableUserDefaults.visitorUsageTracked = newValue
         }
     }
 

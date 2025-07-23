@@ -21,7 +21,7 @@ protocol LocalStorageProtocol {
     
     var offlineMode: Bool { get set }
 
-    var unknownUserUsageTrack: Bool { get set }
+    var visitorUsageTracked: Bool { get set }
 
     var unknownUserEvents: [[AnyHashable: Any]]? { get set }
 

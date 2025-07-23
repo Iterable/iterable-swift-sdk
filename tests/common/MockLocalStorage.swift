@@ -30,7 +30,7 @@ class MockLocalStorage: LocalStorageProtocol {
     
     var offlineMode: Bool = false
 
-    var unknownUserUsageTrack: Bool = true
+    var visitorUsageTracked: Bool = true
     
     var visitorConsentTimestamp: Int64?
     

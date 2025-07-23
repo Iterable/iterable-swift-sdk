@@ -223,7 +223,7 @@ public class UnknownUserManager: UnknownUserManagerProtocol {
     /// Stores event data locally
     private func storeEventData(type: String, data: [AnyHashable: Any], shouldOverWrite: Bool = false) {
         // Early return if no AUT consent was given
-        if !self.localStorage.unknownUserUsageTrack {
+        if !self.localStorage.visitorUsageTracked {
             ITBInfo("UUA CONSENT NOT GIVEN - no events being stored")
             return
         }

@@ -70,11 +70,11 @@ class IterableUserDefaults {
         }
     }
 
-    var unknownUserUsageTrack: Bool {
+    var visitorUsageTracked: Bool {
         get {
-            return bool(withKey: .unknownUserUsageTrack)
+            return bool(withKey: .visitorUsageTracked)
         } set {
-            save(bool: newValue, withKey: .unknownUserUsageTrack)
+            save(bool: newValue, withKey: .visitorUsageTracked)
         }
     }
 

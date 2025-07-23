@@ -73,7 +73,7 @@ class CoffeeListTableViewController: UITableViewController {
     }
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         if indexPath.section == 0 {
-            let cell = tableView.dequeueReusableCell(withIdentifier: "unknownUserUsageTrackCell", for: indexPath)
+            let cell = tableView.dequeueReusableCell(withIdentifier: "visitorUsageTrackedCell", for: indexPath)
             cell.textLabel?.text = IterableAPI.getVisitorUsageTracked() ? "Tap to disable Visitor Usage Track" : "Tap to enable Visitor Usage Track"
             cell.textLabel?.numberOfLines = 0
             cell.accessoryType = IterableAPI.getVisitorUsageTracked() ? .checkmark : .none

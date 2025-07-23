@@ -28,7 +28,7 @@ class ConsentTrackingTests: XCTestCase {
         
         // Set up consent timestamp
         mockLocalStorage.visitorConsentTimestamp = ConsentTrackingTests.consentTimestamp
-        mockLocalStorage.unknownUserUsageTrack = true
+        mockLocalStorage.visitorUsageTracked = true
         
         let config = IterableConfig()
         config.enableUnknownUserActivation = true
@@ -201,7 +201,7 @@ class ConsentTrackingTests: XCTestCase {
         expectation.isInverted = true
         
         // Disable anonymous usage tracking
-        mockLocalStorage.unknownUserUsageTrack = false
+        mockLocalStorage.visitorUsageTracked = false
         
         mockNetworkSession.responseCallback = { url in
             if url.absoluteString.contains(Const.Path.trackConsent) {

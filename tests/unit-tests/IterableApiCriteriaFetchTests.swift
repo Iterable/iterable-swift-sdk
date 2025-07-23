@@ -52,7 +52,7 @@ class IterableApiCriteriaFetchTests: XCTestCase {
         config.enableForegroundCriteriaFetch = true
         
         // Set up localStorage to have visitor usage tracking enabled for the first criteria fetch during initialization
-        localStorage.unknownUserUsageTrack = true
+        localStorage.visitorUsageTracked = true
         
         IterableAPI.initializeForTesting(apiKey: IterableApiCriteriaFetchTests.apiKey,
                                          config: config,
@@ -140,7 +140,7 @@ class IterableApiCriteriaFetchTests: XCTestCase {
         config.enableForegroundCriteriaFetch = true
         
         // Set up localStorage to have visitor usage tracking enabled for the first criteria fetch during initialization
-        localStorage.unknownUserUsageTrack = true
+        localStorage.visitorUsageTracked = true
         
         IterableAPI.initializeForTesting(apiKey: IterableApiCriteriaFetchTests.apiKey,
                                          config: config,

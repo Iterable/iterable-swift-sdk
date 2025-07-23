@@ -246,7 +246,7 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
 
     func setVisitorUsageTracked(isVisitorUsageTracked: Bool) {
         ITBInfo("CONSENT CHANGED - local events cleared")
-        self.localStorage.unknownUserUsageTrack = isVisitorUsageTracked
+        self.localStorage.visitorUsageTracked = isVisitorUsageTracked
         
         // Store consent timestamp when consent is given
         if isVisitorUsageTracked {
@@ -268,7 +268,7 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
     }
 
     func getVisitorUsageTracked() -> Bool {
-        return self.localStorage.unknownUserUsageTrack
+        return self.localStorage.visitorUsageTracked
     }
 
     /// Sends consent data for replay scenarios.
@@ -288,7 +288,7 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
         }
         
         // Only send consent if we have previous anonymous tracking consent but no anonymous user ID
-        guard localStorage.userIdUnknownUser == nil && localStorage.unknownUserUsageTrack else {
+        guard localStorage.userIdUnknownUser == nil && localStorage.visitorUsageTracked else {
             return
         }
         
