@@ -44,12 +44,13 @@ class InAppDisplayer: InAppDisplayerProtocol {
             return .notShown("In-app notification is being presented.")
         }
         
-        guard let topViewController = getTopViewController() else {
+        // Initial basic checks - detailed checks will be done after delay
+        guard InAppDisplayer.getTopViewController() != nil else {
             return .notShown("No top view controller.")
         }
         
-        if topViewController is IterableHtmlMessageViewController {
-            return .notShown("Skipping the in-app notification. Another notification is already being displayed.")
+        guard let message = messageMetadata?.message else {
+            return .notShown("No message available for display validation.")
         }
         
         let parameters = IterableHtmlMessageViewController.Parameters(html: htmlString,
@@ -58,11 +59,31 @@ class InAppDisplayer: InAppDisplayerProtocol {
                                                                       isModal: true)
         let htmlMessageVC = IterableHtmlMessageViewController.create(parameters: parameters, onClickCallback: onClickCallback)
         
-        topViewController.definesPresentationContext = true
-        
         htmlMessageVC.modalPresentationStyle = .overFullScreen
         
-        let presenter = InAppPresenter(topViewController: topViewController, htmlMessageViewController: htmlMessageVC)
+        // Create display validator that will be called after delay
+        let displayValidator: () -> Bool = {
+            // Check if another in-app is being presented
+            guard !InAppPresenter.isPresenting else {
+                return false
+            }
+            
+            // Check if we can get a top view controller
+            guard let topViewController = InAppDisplayer.getTopViewController() else {
+                return false
+            }
+            
+            // Check if another Iterable message is already displayed
+            guard !(topViewController is IterableHtmlMessageViewController) else {
+                return false
+            }
+            
+            return true
+        }
+        
+        let presenter = InAppPresenter(htmlMessageViewController: htmlMessageVC, 
+                                       message: message,
+                                       displayValidator: displayValidator)
         presenter.show()
         
         return .shown
@@ -81,7 +102,7 @@ class InAppDisplayer: InAppDisplayerProtocol {
         return topViewController is IterableHtmlMessageViewController
     }
     
-    private static func getTopViewController() -> UIViewController? {
+    static func getTopViewController() -> UIViewController? {
         guard let rootViewController = IterableUtil.rootViewController else {
             return nil
         }

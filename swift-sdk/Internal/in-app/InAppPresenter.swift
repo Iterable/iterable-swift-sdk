@@ -8,16 +8,20 @@ class InAppPresenter {
     static var isPresenting = false
     
     private let maxDelay: TimeInterval
-    
-    private let topViewController: UIViewController
     private let htmlMessageViewController: IterableHtmlMessageViewController
+    private let message: IterableInAppMessage
+    private let displayValidator: () -> Bool
     private var delayTimer: Timer?
     
-    init(topViewController: UIViewController, htmlMessageViewController: IterableHtmlMessageViewController, maxDelay: TimeInterval = 0.75) {
+    init(htmlMessageViewController: IterableHtmlMessageViewController, 
+         message: IterableInAppMessage,
+         displayValidator: @escaping () -> Bool, 
+         maxDelay: TimeInterval = 0.75) {
         ITBInfo()
         
-        self.topViewController = topViewController
         self.htmlMessageViewController = htmlMessageViewController
+        self.message = message
+        self.displayValidator = displayValidator
         self.maxDelay = maxDelay
         
         // shouldn't be necessary, but in case there's some kind of race condition
@@ -41,7 +45,7 @@ class InAppPresenter {
                 ITBInfo("delayTimer called")
                 
                 self.delayTimer = nil
-                self.present()
+                self.presentAfterDelayValidation()
             }
         }
     }
@@ -55,14 +59,33 @@ class InAppPresenter {
             delayTimer?.invalidate()
             delayTimer = nil
             
-            present()
+            presentAfterDelayValidation()
         }
     }
     
-    private func present() {
+    private func presentAfterDelayValidation() {
         ITBInfo()
         
         InAppPresenter.isPresenting = false
+        
+        // Re-validate display conditions after delay
+        guard displayValidator() else {
+            ITBInfo("Display validation failed after delay - not showing message")
+            return
+        }
+        
+        // Get top view controller at presentation time, not at construction time
+        guard let topViewController = InAppDisplayer.getTopViewController() else {
+            ITBInfo("No top view controller available after delay")
+            return
+        }
+        
+        if topViewController is IterableHtmlMessageViewController {
+            ITBInfo("Another Iterable message is already being displayed")
+            return
+        }
+        
+        topViewController.definesPresentationContext = true
         
         topViewController.present(htmlMessageViewController, animated: false)
         
