@@ -15,7 +15,7 @@ enum EventType {
     static let purchase = "purchase"
     static let updateUser = "user"
     static let updateCart = "updateCart"
-            static let unknownUserSession = "unknownUserSession"
+    static let unknownSession = "unknownSession"
     static let tokenRegistration = "tokenRegistration"
     static let trackEvent = "trackEvent"
 }
@@ -54,7 +54,7 @@ enum Const {
         static let mergeUser = "users/merge";
         static let getCriteria = "unknownuser/list";
         static let trackUnknownUserSession = "unknownuser/events/session";
-        static let trackConsent = "unknownuser/events/trackConsent";
+        static let trackConsent = "unknownuser/consent";
         static let getEmbeddedMessages = "embedded-messaging/messages"
         static let embeddedMessageReceived = "embedded-messaging/events/received"
         static let embeddedMessageClick = "embedded-messaging/events/click"
@@ -202,7 +202,7 @@ enum JsonKey {
     static let actionIdentifier = "actionIdentifier"
     static let userText = "userText"
     static let appAlreadyRunning = "appAlreadyRunning"
-            static let unknownUserSessionContext = "unknownUserSessionContext"
+    static let unknownSessionContext = "unknownSessionContext"
     
     static let html = "html"
     
