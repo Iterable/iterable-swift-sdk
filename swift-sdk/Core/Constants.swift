@@ -78,7 +78,7 @@ enum Const {
         static let unknownUserSessions = "itbl_unknown_user_sessions"
         static let matchedCriteria = "itbl_matched_criteria"
         static let eventList = "itbl_event_list"
-        static let unknownUserUsageTrack = "itbl_unknown_user_usage_track"
+        static let visitorUsageTracked = "itbl_visitor_usage_tracked"
         static let visitorConsentTimestamp = "itbl_visitor_consent_timestamp"
         static let isNotificationsEnabled = "itbl_isNotificationsEnabled"
         static let hasStoredNotificationSetting = "itbl_hasStoredNotificationSetting"

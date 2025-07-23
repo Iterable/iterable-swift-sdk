@@ -341,7 +341,7 @@ class IterableUserDefaults {
         static let unknownUserUpdate = UserDefaultsKey(value: Const.UserDefault.unknownUserUpdate)
         static let criteriaData = UserDefaultsKey(value: Const.UserDefault.criteriaData)
         static let unknownUserSessions = UserDefaultsKey(value: Const.UserDefault.unknownUserSessions)
-        static let unknownUserUsageTrack = UserDefaultsKey(value: Const.UserDefault.unknownUserUsageTrack)
+        static let visitorUsageTracked = UserDefaultsKey(value: Const.UserDefault.visitorUsageTracked)
         static let visitorConsentTimestamp = UserDefaultsKey(value: Const.UserDefault.visitorConsentTimestamp)
 
         static let isNotificationsEnabled = UserDefaultsKey(value: Const.UserDefault.isNotificationsEnabled)
