@@ -74,9 +74,9 @@ class CoffeeListTableViewController: UITableViewController {
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         if indexPath.section == 0 {
             let cell = tableView.dequeueReusableCell(withIdentifier: "unknownUserUsageTrackCell", for: indexPath)
-            cell.textLabel?.text = IterableAPI.getUnknownUserUsageTracked() ? "Tap to disable Unknown User Usage Track" : "Tap to enable Unknown User Usage Track"
+            cell.textLabel?.text = IterableAPI.getVisitorUsageTracked() ? "Tap to disable Visitor Usage Track" : "Tap to enable Visitor Usage Track"
             cell.textLabel?.numberOfLines = 0
-            cell.accessoryType = IterableAPI.getUnknownUserUsageTracked() ? .checkmark : .none
+            cell.accessoryType = IterableAPI.getVisitorUsageTracked() ? .checkmark : .none
             return cell
         } else {
             let cell = tableView.dequeueReusableCell(withIdentifier: "coffeeCell", for: indexPath)
@@ -90,8 +90,8 @@ class CoffeeListTableViewController: UITableViewController {
 
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         if indexPath.section == 0 {
-                    let permissionToTrack = IterableAPI.getUnknownUserUsageTracked()
-        IterableAPI.setUnknownUserUsageTracked(isUnknownUserUsageTracked: !permissionToTrack)
+            let permissionToTrack = IterableAPI.getVisitorUsageTracked()
+            IterableAPI.setVisitorUsageTracked(isVisitorUsageTracked: !permissionToTrack)
             self.tableView.reloadData()
         }
     }

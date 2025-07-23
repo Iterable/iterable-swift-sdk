@@ -270,14 +270,6 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
     func getVisitorUsageTracked() -> Bool {
         return self.localStorage.unknownUserUsageTrack
     }
-    
-    func getUnknownUserUsageTracked() -> Bool {
-        return self.localStorage.unknownUserUsageTrack
-    }
-    
-    func setUnknownUserUsageTracked(isUnknownUserUsageTracked: Bool) {
-        setVisitorUsageTracked(isVisitorUsageTracked: isUnknownUserUsageTracked)
-    }
 
     /// Sends consent data for replay scenarios.
     /// 
@@ -401,7 +393,7 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
                     onFailure: OnFailureHandler? = nil) -> Pending<SendRequestValue, SendRequestError> {
         if !isEitherUserIdOrEmailSet() && localStorage.userIdUnknownUser == nil {
             if config.enableUnknownUserActivation {
-                ITBInfo("AUT ENABLED - unknown user update user")
+                ITBInfo("UUA ENABLED - unknown user update user")
                 unknownUserManager.trackUnknownUserUpdateUser(dataFields)
             }
             return rejectWithInitializationError(onFailure: onFailure)
@@ -433,7 +425,7 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
                     onFailure: OnFailureHandler? = nil) -> Pending<SendRequestValue, SendRequestError> {
         if !isEitherUserIdOrEmailSet() && localStorage.userIdUnknownUser == nil {
             if config.enableUnknownUserActivation {
-                ITBInfo("AUT ENABLED - unknown user update cart")
+                ITBInfo("UUA ENABLED - unknown user update cart")
                 unknownUserManager.trackUnknownUserUpdateCart(items: items)
             }
             return rejectWithInitializationError(onFailure: onFailure)
@@ -466,7 +458,7 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
                        onFailure: OnFailureHandler? = nil) -> Pending<SendRequestValue, SendRequestError> {
         if !isEitherUserIdOrEmailSet() {
             if config.enableUnknownUserActivation {
-                ITBInfo("AUT ENABLED - unknown user track purchase")
+                ITBInfo("UUA ENABLED - unknown user track purchase")
                 unknownUserManager.trackUnknownUserPurchaseEvent(total: total, items: items, dataFields: dataFields)
             }
             return rejectWithInitializationError(onFailure: onFailure)
@@ -540,7 +532,7 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
                onFailure: OnFailureHandler? = nil) -> Pending<SendRequestValue, SendRequestError> {
         if !isEitherUserIdOrEmailSet() && localStorage.userIdUnknownUser == nil {
             if config.enableUnknownUserActivation {
-                ITBInfo("AUT ENABLED - unknown user track custom event")
+                ITBInfo("UUA ENABLED - unknown user track custom event")
                 unknownUserManager.trackUnknownUserEvent(name: eventName, dataFields: dataFields)
             }
             return rejectWithInitializationError(onFailure: onFailure)
@@ -911,9 +903,6 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
         networkSession = dependencyContainer.networkSession
         notificationStateProvider = dependencyContainer.notificationStateProvider
         localStorage = dependencyContainer.localStorage
-        //localStorage.userIdUnknownUser = nil      // remove this before pushing the code (only for testing)
-        //localStorage.userId = nil      // remove this before pushing the code (only for testing)
-        //localStorage.email = nil      // remove this before pushing the code (only for testing)
         inAppDisplayer = dependencyContainer.inAppDisplayer
         urlOpener = dependencyContainer.urlOpener
         notificationCenter = dependencyContainer.notificationCenter
