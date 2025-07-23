@@ -132,7 +132,7 @@ class MetricsValidator {
             expectedCount: 1,
             timeWindow: timeout,
             requiredFields: [],
-            optionalValidations: [{ eventData in
+            optionalValidations: [{ (eventData: [String: Any]) in
                 let (isValid, _) = customValidation(eventData)
                 return isValid
             }],
@@ -435,7 +435,7 @@ class MetricsValidator {
                     )
                     completion(true, report)
                 } else {
-                    DispatchQueue.global().asyncAfter(deadline: .now() + self?.pollInterval ?? 3.0) {
+                    DispatchQueue.global().asyncAfter(deadline: .now() + .seconds(Int(self?.pollInterval ?? 3.0))) {
                         validateWorkflowEvents()
                     }
                 }
@@ -476,7 +476,7 @@ class MetricsValidator {
                 if success && count >= expectation.expectedCount {
                     completion(true, count)
                 } else {
-                    DispatchQueue.global().asyncAfter(deadline: .now() + self?.pollInterval ?? 3.0) {
+                    DispatchQueue.global().asyncAfter(deadline: .now() + .seconds(Int(self?.pollInterval ?? 3.0))) {
                         checkEvents()
                     }
                 }
@@ -527,11 +527,11 @@ class MetricsValidator {
                         }
                     }
                     
-                    DispatchQueue.global().asyncAfter(deadline: .now() + self?.pollInterval ?? 3.0) {
+                    DispatchQueue.global().asyncAfter(deadline: .now() + .seconds(Int(self?.pollInterval ?? 3.0))) {
                         checkEventExists()
                     }
                 } else {
-                    DispatchQueue.global().asyncAfter(deadline: .now() + self?.pollInterval ?? 3.0) {
+                    DispatchQueue.global().asyncAfter(deadline: .now() + .seconds(Int(self?.pollInterval ?? 3.0))) {
                         checkEventExists()
                     }
                 }
@@ -577,11 +577,11 @@ class MetricsValidator {
                         }
                     }
                     
-                    DispatchQueue.global().asyncAfter(deadline: .now() + self?.pollInterval ?? 3.0) {
+                    DispatchQueue.global().asyncAfter(deadline: .now() + .seconds(Int(self?.pollInterval ?? 3.0))) {
                         checkEventWithCustomLogic()
                     }
                 } else {
-                    DispatchQueue.global().asyncAfter(deadline: .now() + self?.pollInterval ?? 3.0) {
+                    DispatchQueue.global().asyncAfter(deadline: .now() + .seconds(Int(self?.pollInterval ?? 3.0))) {
                         checkEventWithCustomLogic()
                     }
                 }

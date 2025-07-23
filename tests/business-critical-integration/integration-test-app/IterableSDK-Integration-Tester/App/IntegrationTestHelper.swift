@@ -4,17 +4,17 @@ import UIKit
 class IntegrationTestHelper {
     static let shared = IntegrationTestHelper()
     
-    private var isInTestMode = false
+    private var InTestMode = false
     
     private init() {}
     
     func enableTestMode() {
-        isInTestMode = true
+        InTestMode = true
         print("🧪 Integration test mode enabled")
     }
     
     func isInTestMode() -> Bool {
-        return isInTestMode || ProcessInfo.processInfo.environment["INTEGRATION_TEST_MODE"] == "1"
+        return InTestMode || ProcessInfo.processInfo.environment["INTEGRATION_TEST_MODE"] == "1"
     }
     
     func setupIntegrationTestMode() {

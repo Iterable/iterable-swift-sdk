@@ -6,6 +6,13 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		8AB716912E311CA0004AAB74 /* IterableAppExtensions in Frameworks */ = {isa = PBXBuildFile; productRef = 8AB716902E311CA0004AAB74 /* IterableAppExtensions */; };
+		8AB716932E311CA0004AAB74 /* IterableSDK in Frameworks */ = {isa = PBXBuildFile; productRef = 8AB716922E311CA0004AAB74 /* IterableSDK */; };
+		8AB716962E311DA0004AAB74 /* IterableAppExtensions in Frameworks */ = {isa = PBXBuildFile; productRef = 8AB716952E311DA0004AAB74 /* IterableAppExtensions */; };
+		8AB716982E311DA0004AAB74 /* IterableSDK in Frameworks */ = {isa = PBXBuildFile; productRef = 8AB716972E311DA0004AAB74 /* IterableSDK */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXContainerItemProxy section */
 		8AB716292E3119A3004AAB74 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -34,6 +41,12 @@
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
 				SupportingFiles/Info.plist,
+				Tests/DeepLinkingIntegrationTests.swift,
+				Tests/EmbeddedMessageIntegrationTests.swift,
+				Tests/InAppMessageIntegrationTests.swift,
+				Tests/IntegrationTestBase.swift,
+				Tests/main.swift,
+				Tests/PushNotificationIntegrationTests.swift,
 			);
 			target = 8AB716112E3119A3004AAB74 /* IterableSDK-Integration-Tester */;
 		};
@@ -65,6 +78,10 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				8AB716962E311DA0004AAB74 /* IterableAppExtensions in Frameworks */,
+				8AB716982E311DA0004AAB74 /* IterableSDK in Frameworks */,
+				8AB716912E311CA0004AAB74 /* IterableAppExtensions in Frameworks */,
+				8AB716932E311CA0004AAB74 /* IterableSDK in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -125,6 +142,10 @@
 			);
 			name = "IterableSDK-Integration-Tester";
 			packageProductDependencies = (
+				8AB716902E311CA0004AAB74 /* IterableAppExtensions */,
+				8AB716922E311CA0004AAB74 /* IterableSDK */,
+				8AB716952E311DA0004AAB74 /* IterableAppExtensions */,
+				8AB716972E311DA0004AAB74 /* IterableSDK */,
 			);
 			productName = "IterableSDK-Integration-Tester";
 			productReference = 8AB716122E3119A3004AAB74 /* IterableSDK-Integration-Tester.app */;
@@ -208,6 +229,9 @@
 			);
 			mainGroup = 8AB716092E3119A3004AAB74;
 			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				8AB716942E311DA0004AAB74 /* XCRemoteSwiftPackageReference "iterable-swift-sdk" */,
+			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 8AB716132E3119A3004AAB74 /* Products */;
 			projectDirPath = "";
@@ -565,6 +589,38 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		8AB716942E311DA0004AAB74 /* XCRemoteSwiftPackageReference "iterable-swift-sdk" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/Iterable/iterable-swift-sdk";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 6.5.12;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		8AB716902E311CA0004AAB74 /* IterableAppExtensions */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = IterableAppExtensions;
+		};
+		8AB716922E311CA0004AAB74 /* IterableSDK */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = IterableSDK;
+		};
+		8AB716952E311DA0004AAB74 /* IterableAppExtensions */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 8AB716942E311DA0004AAB74 /* XCRemoteSwiftPackageReference "iterable-swift-sdk" */;
+			productName = IterableAppExtensions;
+		};
+		8AB716972E311DA0004AAB74 /* IterableSDK */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 8AB716942E311DA0004AAB74 /* XCRemoteSwiftPackageReference "iterable-swift-sdk" */;
+			productName = IterableSDK;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 8AB7160A2E3119A3004AAB74 /* Project object */;
 }
