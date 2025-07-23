@@ -1,1 +1,0 @@
-../test-suite/InAppMessageIntegrationTests.swift

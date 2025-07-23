@@ -261,7 +261,7 @@ build_test_project() {
     echo_success "Proceeding with sample app build for iOS simulator"
     
     # Build the sample app for testing
-    SAMPLE_APP_PATH="$PROJECT_ROOT/sample-apps/swift-sample-app"
+    SAMPLE_APP_PATH="$PROJECT_ROOT/tests/business-critical-integration/integration-test-app"
     if [[ -d "$SAMPLE_APP_PATH" ]]; then
         echo_info "Building sample app for testing..."
         cd "$SAMPLE_APP_PATH"

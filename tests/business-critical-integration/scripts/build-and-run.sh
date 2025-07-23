@@ -44,7 +44,7 @@ echo_info "Opening iOS Simulator..."
 open -a Simulator
 
 # Navigate to sample app
-SAMPLE_APP_PATH="$PROJECT_ROOT/sample-apps/swift-sample-app"
+SAMPLE_APP_PATH="$PROJECT_ROOT/tests/business-critical-integration/integration-test-app"
 cd "$SAMPLE_APP_PATH"
 
 echo_info "Sample app location: $SAMPLE_APP_PATH"
@@ -56,7 +56,7 @@ xcodebuild clean -project swift-sample-app.xcodeproj -scheme swift-sample-app -s
 # Create integration test helpers
 echo_info "Creating integration test helpers..."
 create_integration_helpers() {
-    cat > swift-sample-app/IntegrationTestHelper.swift << 'EOF'
+    cat > IntegrationTestHelper.swift << 'EOF'
 import Foundation
 import UIKit
 
