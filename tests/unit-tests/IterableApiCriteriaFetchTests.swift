@@ -54,7 +54,17 @@ class IterableApiCriteriaFetchTests: XCTestCase {
         // Set up localStorage to have visitor usage tracking enabled for the first criteria fetch during initialization
         localStorage.visitorUsageTracked = true
         
-        // Initialize and set up both test API and global implementation
+        IterableAPI.initializeForTesting(apiKey: IterableApiCriteriaFetchTests.apiKey,
+                                         config: config,
+                                         networkSession: mockNetworkSession,
+                                         localStorage: localStorage)
+        
+        // Manually trigger the criteria fetch logic that happens in initialize2() but not in initializeForTesting()
+        if let implementation = IterableAPI.implementation, config.enableUnknownUserActivation, !implementation.isSDKInitialized(), implementation.getVisitorUsageTracked() {
+            implementation.unknownUserManager.getUnknownUserCriteria()
+            implementation.unknownUserManager.updateUnknownUserSession()
+        }
+        
         internalApi = InternalIterableAPI.initializeForTesting(
             config: config,
             dateProvider: mockDateProvider,
@@ -64,28 +74,14 @@ class IterableApiCriteriaFetchTests: XCTestCase {
             notificationCenter: mockNotificationCenter
         )
         
-        // Set up global IterableAPI.implementation so foreground criteria fetch works
-        IterableAPI.implementation = internalApi
-        
         internalApi.setVisitorUsageTracked(isVisitorUsageTracked: true)
-        
-        // Reset the last criteria fetch time to bypass cooldown before foreground
+        sleep(5)
+        // Reset the last criteria fetch time to bypass cooldown
         internalApi.unknownUserManager.updateLastCriteriaFetch(currentTime: 0)
-        
-        // Wait briefly for the initial setup to complete
-        let shortWaitExpectation = expectation(description: "Short wait")
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-            shortWaitExpectation.fulfill()
-        }
-        wait(for: [shortWaitExpectation], timeout: 1.0)
-        
-        // Simulate app coming to foreground (this should trigger the second criteria fetch)
+        // Simulate app coming to foreground
         mockNotificationCenter.post(name: UIApplication.didBecomeActiveNotification, object: nil, userInfo: nil)
         
         wait(for: [expectation1], timeout: testExpectationTimeout)
-        
-        // Clean up
-        IterableAPI.implementation = nil
     }
     
     func testCriteriaFetchNotCalledWhenDisabled() {
@@ -146,7 +142,19 @@ class IterableApiCriteriaFetchTests: XCTestCase {
         // Set up localStorage to have visitor usage tracking enabled for the first criteria fetch during initialization
         localStorage.visitorUsageTracked = true
         
-        // Initialize and set up both test API and global implementation
+        IterableAPI.initializeForTesting(apiKey: IterableApiCriteriaFetchTests.apiKey,
+                                         config: config,
+                                         networkSession: mockNetworkSession,
+                                         localStorage: localStorage)
+
+        // Manually trigger the criteria fetch logic that happens in initialize2() but not in initializeForTesting()
+        if let implementation = IterableAPI.implementation, config.enableUnknownUserActivation, !implementation
+            .isSDKInitialized(), implementation
+            .getVisitorUsageTracked() {
+            implementation.unknownUserManager.getUnknownUserCriteria()
+            implementation.unknownUserManager.updateUnknownUserSession()
+        }
+
         internalApi = InternalIterableAPI.initializeForTesting(
             config: config,
             dateProvider: mockDateProvider,
@@ -156,35 +164,24 @@ class IterableApiCriteriaFetchTests: XCTestCase {
             notificationCenter: mockNotificationCenter
         )
         
-        // Set up global IterableAPI.implementation so foreground criteria fetch works
-        IterableAPI.implementation = internalApi
-        
         internalApi.setVisitorUsageTracked(isVisitorUsageTracked: true)
+        
+        sleep(5)
         
         // Reset the last criteria fetch time to bypass cooldown for first foreground
         internalApi.unknownUserManager.updateLastCriteriaFetch(currentTime: 0)
         
-        // Wait briefly for the initial setup to complete
-        let shortWaitExpectation = expectation(description: "Short wait")
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-            shortWaitExpectation.fulfill()
-        }
-        wait(for: [shortWaitExpectation], timeout: 1.0)
-        
-        // First foreground (should trigger fetch)
+        // First foreground
         mockNotificationCenter.post(name: UIApplication.didBecomeActiveNotification, object: nil, userInfo: nil)
         
-        // Second foreground after cooldown period (should trigger fetch)
+        // Second foreground after some time
         mockDateProvider.currentDate = mockDateProvider.currentDate.addingTimeInterval(130) // After cooldown
         mockNotificationCenter.post(name: UIApplication.didBecomeActiveNotification, object: nil, userInfo: nil)
         
-        // Third foreground during cooldown (should NOT trigger fetch)
+        // Third foreground during cooldown
         mockDateProvider.currentDate = mockDateProvider.currentDate.addingTimeInterval(10) // Within cooldown
         mockNotificationCenter.post(name: UIApplication.didBecomeActiveNotification, object: nil, userInfo: nil)
         
         wait(for: [expectation1, expectation2, expectation3], timeout: testExpectationTimeout)
-        
-        // Clean up
-        IterableAPI.implementation = nil
     }
 }
