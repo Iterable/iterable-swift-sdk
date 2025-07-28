@@ -1334,7 +1334,7 @@ class IterableAPITests: XCTestCase {
         internalAPI.setVisitorUsageTracked(isVisitorUsageTracked: true)
         
         XCTAssertEqual(mockLocalStorage.visitorConsentTimestamp, Int64(testDate.timeIntervalSince1970))
-        XCTAssertTrue(mockLocalStorage.anonymousUsageTrack)
+        XCTAssertTrue(mockLocalStorage.visitorUsageTracked)
     }
     
     func testSetVisitorUsageTrackedClearsConsentTimestamp() {
@@ -1355,7 +1355,7 @@ class IterableAPITests: XCTestCase {
         internalAPI.setVisitorUsageTracked(isVisitorUsageTracked: false)
         
         XCTAssertNil(mockLocalStorage.visitorConsentTimestamp)
-        XCTAssertFalse(mockLocalStorage.anonymousUsageTrack)
+        XCTAssertFalse(mockLocalStorage.visitorUsageTracked)
     }
     
     func testSetVisitorUsageTrackedMultipleCalls() {

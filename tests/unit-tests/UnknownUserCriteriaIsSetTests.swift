@@ -9,7 +9,7 @@ import XCTest
 
 @testable import IterableSDK
 
-class AnonymousUserCriteriaIsSetTests: XCTestCase {
+class UnknownUserCriteriaIsSetTests: XCTestCase {
     
     private let mockDataUserProperty = """
     {
@@ -284,13 +284,13 @@ class AnonymousUserCriteriaIsSetTests: XCTestCase {
     func testCompareDataIsSetUserPropertySuccess() {
         let eventItems: [[AnyHashable: Any]] = [["dataType": "user", "createdAt": 1699246745093, "phoneNumberDetails": "999999", "country": "UK", "eventTimeStamp": "1234567890", "shoppingCartItems.price": "33"]]
         let expectedCriteriaId = "1"
-        let matchedCriteriaId = CriteriaCompletionChecker(anonymousCriteria: data(from: mockDataUserProperty)!, anonymousEvents: eventItems).getMatchedCriteria()
+        let matchedCriteriaId = CriteriaCompletionChecker(unknownUserCriteria: data(from: mockDataUserProperty)!, unknownUserEvents: eventItems).getMatchedCriteria()
         XCTAssertEqual(matchedCriteriaId, expectedCriteriaId)
     }
     
     func testCompareDataIsSetUserPropertyFailure() {
         let eventItems: [[AnyHashable: Any]] = [["dataType": "user", "createdAt": 1699246745093, "phoneNumberDetails": "999999", "country": "", "eventTimeStamp": "", "shoppingCartItems.price": "33"]]
-        let matchedCriteriaId = CriteriaCompletionChecker(anonymousCriteria: data(from: mockDataUserProperty)!, anonymousEvents: eventItems).getMatchedCriteria()
+        let matchedCriteriaId = CriteriaCompletionChecker(unknownUserCriteria: data(from: mockDataUserProperty)!, unknownUserEvents: eventItems).getMatchedCriteria()
         XCTAssertEqual(matchedCriteriaId, nil)
     }
     
@@ -298,13 +298,13 @@ class AnonymousUserCriteriaIsSetTests: XCTestCase {
     func testCompareDataIsSetCustomEventSuccess() {
         let eventItems: [[AnyHashable: Any]] = [["dataType": "customEvent", "eventName":"button-clicked", "dataFields": ["button-clicked":"cc", "animal": "aa", "clickCount": "1", "total": "10"]]]
         let expectedCriteriaId = "1"
-        let matchedCriteriaId = CriteriaCompletionChecker(anonymousCriteria: data(from: mockDataCustomEvent)!, anonymousEvents: eventItems).getMatchedCriteria()
+        let matchedCriteriaId = CriteriaCompletionChecker(unknownUserCriteria: data(from: mockDataCustomEvent)!, unknownUserEvents: eventItems).getMatchedCriteria()
         XCTAssertEqual(matchedCriteriaId, expectedCriteriaId)
     }
     
     func testCompareDataIsSetCustomEventFailure() {
         let eventItems: [[AnyHashable: Any]] = [["dataType": "customEvent", "eventName":"vvv", "dataFields": ["button-clicked":"", "animal": "", "clickCount": "1", "total": "10"]]]
-        let matchedCriteriaId = CriteriaCompletionChecker(anonymousCriteria: data(from: mockDataCustomEvent)!, anonymousEvents: eventItems).getMatchedCriteria()
+        let matchedCriteriaId = CriteriaCompletionChecker(unknownUserCriteria: data(from: mockDataCustomEvent)!, unknownUserEvents: eventItems).getMatchedCriteria()
         XCTAssertEqual(matchedCriteriaId, nil)
     }
     
@@ -316,7 +316,7 @@ class AnonymousUserCriteriaIsSetTests: XCTestCase {
             "dataType": "purchase"
         ]]
         let expectedCriteriaId = "1"
-        let matchedCriteriaId = CriteriaCompletionChecker(anonymousCriteria: data(from: mockDataPurchase)!, anonymousEvents: eventItems).getMatchedCriteria()
+        let matchedCriteriaId = CriteriaCompletionChecker(unknownUserCriteria: data(from: mockDataPurchase)!, unknownUserEvents: eventItems).getMatchedCriteria()
         XCTAssertEqual(matchedCriteriaId, expectedCriteriaId)
     }
     
@@ -326,7 +326,7 @@ class AnonymousUserCriteriaIsSetTests: XCTestCase {
             "createdAt": 1699246745093,
             "dataType": "purchase"
         ]]
-        let matchedCriteriaId = CriteriaCompletionChecker(anonymousCriteria: data(from: mockDataPurchase)!, anonymousEvents: eventItems).getMatchedCriteria()
+        let matchedCriteriaId = CriteriaCompletionChecker(unknownUserCriteria: data(from: mockDataPurchase)!, unknownUserEvents: eventItems).getMatchedCriteria()
         XCTAssertEqual(matchedCriteriaId, nil)
     }
     
@@ -337,7 +337,7 @@ class AnonymousUserCriteriaIsSetTests: XCTestCase {
             "dataType": "updateCart"
         ]]
         let expectedCriteriaId = "1"
-        let matchedCriteriaId = CriteriaCompletionChecker(anonymousCriteria: data(from: mockDataUpdateCart)!, anonymousEvents: eventItems).getMatchedCriteria()
+        let matchedCriteriaId = CriteriaCompletionChecker(unknownUserCriteria: data(from: mockDataUpdateCart)!, unknownUserEvents: eventItems).getMatchedCriteria()
         XCTAssertEqual(matchedCriteriaId, expectedCriteriaId)
     }
     
@@ -347,7 +347,7 @@ class AnonymousUserCriteriaIsSetTests: XCTestCase {
             "createdAt": 1699246745093,
             "dataType": "updateCart"
         ]]
-        let matchedCriteriaId = CriteriaCompletionChecker(anonymousCriteria: data(from: mockDataUpdateCart)!, anonymousEvents: eventItems).getMatchedCriteria()
+        let matchedCriteriaId = CriteriaCompletionChecker(unknownUserCriteria: data(from: mockDataUpdateCart)!, unknownUserEvents: eventItems).getMatchedCriteria()
         XCTAssertEqual(matchedCriteriaId, nil)
     }
 }

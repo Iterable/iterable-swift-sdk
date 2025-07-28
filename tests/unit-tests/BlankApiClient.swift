@@ -24,7 +24,7 @@ class BlankApiClient: ApiClientProtocol {
         Pending()
     }
 
-    func trackAnonSession(createdAt: Int, withUserId userId: String, dataFields: [AnyHashable : Any]?, requestJson: [AnyHashable : Any]) -> IterableSDK.Pending<IterableSDK.SendRequestValue, IterableSDK.SendRequestError> {
+    func trackUnknownUserSession(createdAt: Int, withUserId userId: String, dataFields: [AnyHashable : Any]?, requestJson: [AnyHashable : Any]) -> IterableSDK.Pending<IterableSDK.SendRequestValue, IterableSDK.SendRequestError> {
         Pending()
     }
 

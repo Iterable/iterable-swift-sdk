@@ -70,11 +70,11 @@ class IterableUserDefaults {
         }
     }
 
-    var anonymousUsageTrack: Bool {
+    var visitorUsageTracked: Bool {
         get {
-            return bool(withKey: .anonymousUsageTrack)
+            return bool(withKey: .visitorUsageTracked)
         } set {
-            save(bool: newValue, withKey: .anonymousUsageTrack)
+            save(bool: newValue, withKey: .visitorUsageTracked)
         }
     }
 
@@ -86,19 +86,19 @@ class IterableUserDefaults {
         }
     }
 
-    var anonymousUserEvents: [[AnyHashable: Any]]? {
+    var unknownUserEvents: [[AnyHashable: Any]]? {
         get {
-            return eventData(withKey: .anonymousUserEvents)
+            return eventData(withKey: .unknownUserEvents)
         } set {
-            saveEventData(anonymousUserEvents: newValue, withKey: .anonymousUserEvents)
+            saveEventData(unknownUserEvents: newValue, withKey: .unknownUserEvents)
         }
     }
     
-    var anonymousUserUpdate: [AnyHashable: Any]? {
+    var unknownUserUpdate: [AnyHashable: Any]? {
         get {
-            return userUpdateData(withKey: .anonymousUserUpdate)
+            return userUpdateData(withKey: .unknownUserUpdate)
         } set {
-            saveUserUpdate(newValue, withKey: .anonymousUserUpdate)
+            saveUserUpdate(newValue, withKey: .unknownUserUpdate)
         }
     }
     
@@ -110,25 +110,25 @@ class IterableUserDefaults {
         }
     }
     
-    var anonymousSessions: IterableAnonSessionsWrapper? {
+    var unknownUserSessions: IterableUnknownUserSessionsWrapper? {
         get {
-            return anonSessionsData(withKey: .anonymousSessions)
+            return unknownUserSessionsData(withKey: .unknownUserSessions)
         } set {
-            saveAnonSessionsData(data: newValue, withKey: .anonymousSessions)
+            saveUnknownUserSessionsData(data: newValue, withKey: .unknownUserSessions)
         }
     }
     
     var body = [AnyHashable: Any]()
     
-    private func anonSessionsData(withKey key: UserDefaultsKey) -> IterableAnonSessionsWrapper? {
+    private func unknownUserSessionsData(withKey key: UserDefaultsKey) -> IterableUnknownUserSessionsWrapper? {
         if let savedData = UserDefaults.standard.data(forKey: key.value) {
-            let decodedData = try? JSONDecoder().decode(IterableAnonSessionsWrapper.self, from: savedData)
+            let decodedData = try? JSONDecoder().decode(IterableUnknownUserSessionsWrapper.self, from: savedData)
             return decodedData
         }
         return nil
     }
     
-    private func saveAnonSessionsData(data: IterableAnonSessionsWrapper?, withKey key: UserDefaultsKey) {
+    private func saveUnknownUserSessionsData(data: IterableUnknownUserSessionsWrapper?, withKey key: UserDefaultsKey) {
         if let encodedData = try? JSONEncoder().encode(data) {
             userDefaults.set(encodedData, forKey: key.value)
         }
@@ -146,8 +146,8 @@ class IterableUserDefaults {
         userDefaults.set(data, forKey: key.value)
     }
     
-    private func saveEventData(anonymousUserEvents: [[AnyHashable: Any]]?, withKey key: UserDefaultsKey) {
-        userDefaults.set(anonymousUserEvents, forKey: key.value)
+    private func saveEventData(unknownUserEvents: [[AnyHashable: Any]]?, withKey key: UserDefaultsKey) {
+        userDefaults.set(unknownUserEvents, forKey: key.value)
     }
     
     private func saveUserUpdate(_ update: [AnyHashable: Any]?, withKey key: UserDefaultsKey) {
@@ -337,11 +337,11 @@ class IterableUserDefaults {
         static let deviceId = UserDefaultsKey(value: Const.UserDefault.deviceId)
         static let sdkVersion = UserDefaultsKey(value: Const.UserDefault.sdkVersion)
         static let offlineMode = UserDefaultsKey(value: Const.UserDefault.offlineMode)
-        static let anonymousUserEvents = UserDefaultsKey(value: Const.UserDefault.anonymousUserEvents)
-        static let anonymousUserUpdate = UserDefaultsKey(value: Const.UserDefault.anonymousUserUpdate)
+        static let unknownUserEvents = UserDefaultsKey(value: Const.UserDefault.unknownUserEvents)
+        static let unknownUserUpdate = UserDefaultsKey(value: Const.UserDefault.unknownUserUpdate)
         static let criteriaData = UserDefaultsKey(value: Const.UserDefault.criteriaData)
-        static let anonymousSessions = UserDefaultsKey(value: Const.UserDefault.anonymousSessions)
-        static let anonymousUsageTrack = UserDefaultsKey(value: Const.UserDefault.anonymousUsageTrack)
+        static let unknownUserSessions = UserDefaultsKey(value: Const.UserDefault.unknownUserSessions)
+        static let visitorUsageTracked = UserDefaultsKey(value: Const.UserDefault.visitorUsageTracked)
         static let visitorConsentTimestamp = UserDefaultsKey(value: Const.UserDefault.visitorConsentTimestamp)
 
         static let isNotificationsEnabled = UserDefaultsKey(value: Const.UserDefault.isNotificationsEnabled)

@@ -28,10 +28,10 @@ class ConsentTrackingTests: XCTestCase {
         
         // Set up consent timestamp
         mockLocalStorage.visitorConsentTimestamp = ConsentTrackingTests.consentTimestamp
-        mockLocalStorage.anonymousUsageTrack = true
+        mockLocalStorage.visitorUsageTracked = true
         
         let config = IterableConfig()
-        config.enableAnonActivation = true
+        config.enableUnknownUserActivation = true
         
         internalAPI = InternalIterableAPI.initializeForTesting(
             apiKey: ConsentTrackingTests.apiKey,
@@ -123,7 +123,7 @@ class ConsentTrackingTests: XCTestCase {
         let expectation = XCTestExpectation(description: "Consent tracked on email set")
         
         // Set up replay scenario (no anonymous user ID)
-        mockLocalStorage.userIdAnnon = nil
+        mockLocalStorage.userIdUnknownUser = nil
         
         mockNetworkSession.responseCallback = { url in
             if url.absoluteString.contains(Const.Path.trackConsent) {
@@ -152,7 +152,7 @@ class ConsentTrackingTests: XCTestCase {
         let expectation = XCTestExpectation(description: "Consent tracked on userId set")
         
         // Set up replay scenario (no anonymous user ID)
-        mockLocalStorage.userIdAnnon = nil
+        mockLocalStorage.userIdUnknownUser = nil
         
         mockNetworkSession.responseCallback = { url in
             if url.absoluteString.contains(Const.Path.trackConsent) {
@@ -182,7 +182,7 @@ class ConsentTrackingTests: XCTestCase {
         expectation.isInverted = true
         
         // Set up scenario with existing anonymous user (no replay needed)
-        mockLocalStorage.userIdAnnon = "existing-anon-user-id"
+        mockLocalStorage.userIdUnknownUser = "existing-anon-user-id"
         
         mockNetworkSession.responseCallback = { url in
             if url.absoluteString.contains(Const.Path.trackConsent) {
@@ -201,7 +201,7 @@ class ConsentTrackingTests: XCTestCase {
         expectation.isInverted = true
         
         // Disable anonymous usage tracking
-        mockLocalStorage.anonymousUsageTrack = false
+        mockLocalStorage.visitorUsageTracked = false
         
         mockNetworkSession.responseCallback = { url in
             if url.absoluteString.contains(Const.Path.trackConsent) {
@@ -221,7 +221,7 @@ class ConsentTrackingTests: XCTestCase {
         
         // Create API with anon activation disabled
         let config = IterableConfig()
-        config.enableAnonActivation = false
+        config.enableUnknownUserActivation = false
         
         let apiWithoutAnonActivation = InternalIterableAPI.initializeForTesting(
             apiKey: ConsentTrackingTests.apiKey,

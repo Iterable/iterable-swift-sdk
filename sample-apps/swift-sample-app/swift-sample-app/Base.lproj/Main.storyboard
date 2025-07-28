@@ -35,7 +35,7 @@
                                     <segue destination="Ez8-MY-tka" kind="show" identifier="showCoffeeSegue" id="pgY-3d-VNl"/>
                                 </connections>
                             </tableViewCell>
-                            <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="default" accessoryType="checkmark" indentationWidth="10" reuseIdentifier="anonymousUsageTrackCell" id="nSd-28-WlN">
+                            <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="default" accessoryType="checkmark" indentationWidth="10" reuseIdentifier="visitorUsageTrackedCell" id="nSd-28-WlN">
                                 <rect key="frame" x="0.0" y="93.5" width="375" height="43.5"/>
                                 <autoresizingMask key="autoresizingMask"/>
                                 <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" preservesSuperviewLayoutMargins="YES" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="nSd-28-WlN" id="4YR-d9-FwM">

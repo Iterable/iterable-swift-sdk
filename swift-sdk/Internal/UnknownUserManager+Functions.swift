@@ -55,14 +55,14 @@ func getUTCDateTime() -> String {
 }
 
 struct CriteriaCompletionChecker {
-    init(anonymousCriteria: Data, anonymousEvents: [[AnyHashable: Any]]) {
-        self.anonymousEvents = anonymousEvents
-        self.anonymousCriteria = anonymousCriteria
+    init(unknownUserCriteria: Data, unknownUserEvents: [[AnyHashable: Any]]) {
+        self.unknownUserEvents = unknownUserEvents
+        self.unknownUserCriteria = unknownUserCriteria
     }
     
     func getMatchedCriteria() -> String? {
         var criteriaId: String? = nil
-        if let json = try? JSONSerialization.jsonObject(with: anonymousCriteria, options: []) as? [String: Any] {
+        if let json = try? JSONSerialization.jsonObject(with: unknownUserCriteria, options: []) as? [String: Any] {
             // Access the criteriaList
             if let criteriaList = json[JsonKey.criteriaSets] as? [[String: Any]] {
                 // Iterate over the criteria
@@ -98,7 +98,7 @@ struct CriteriaCompletionChecker {
     }
     
     func getNonCartEvents() -> [[AnyHashable: Any]] {
-        let nonPurchaseEvents = anonymousEvents.filter { dictionary in
+        let nonPurchaseEvents = unknownUserEvents.filter { dictionary in
             if let dataType = dictionary[JsonKey.eventType] as? String {
                 return dataType != EventType.purchase && dataType != EventType.updateCart
             }
@@ -169,7 +169,7 @@ struct CriteriaCompletionChecker {
     }
     
     func getEventsWithCartItems() -> [[AnyHashable: Any]] {
-        let purchaseEvents = anonymousEvents.filter { dictionary in
+        let purchaseEvents = unknownUserEvents.filter { dictionary in
             if let dataType = dictionary[JsonKey.eventType] as? String {
                 return dataType == EventType.purchase || dataType == EventType.updateCart
             }
@@ -685,6 +685,6 @@ struct CriteriaCompletionChecker {
         }
     }
     
-    private let anonymousCriteria: Data
-    private let anonymousEvents: [[AnyHashable: Any]]
+    private let unknownUserCriteria: Data
+    private let unknownUserEvents: [[AnyHashable: Any]]
 }

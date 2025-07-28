@@ -22,12 +22,12 @@ struct CriteriaItem: Codable {
     let total: Int?
 }
 
-struct IterableAnonSessions: Codable {
-    var totalAnonSessionCount: Int
-    var lastAnonSession: Int
-    var firstAnonSession: Int
+struct IterableUnknownUserSessions: Codable {
+    var totalUnknownUserSessionCount: Int
+    var lastUnknownUserSession: Int
+    var firstUnknownUserSession: Int
 }
 
-struct IterableAnonSessionsWrapper: Codable {
-    var itbl_anon_sessions: IterableAnonSessions
+struct IterableUnknownUserSessionsWrapper: Codable {
+    var itbl_unknown_user_sessions: IterableUnknownUserSessions
 }

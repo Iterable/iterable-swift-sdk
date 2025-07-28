@@ -8,13 +8,13 @@ import Foundation
 
 class MockLocalStorage: LocalStorageProtocol {
 
-    var userIdAnnon: String?
+    var userIdUnknownUser: String?
     
-    var anonymousUserEvents: [[AnyHashable : Any]]?
+    var unknownUserEvents: [[AnyHashable : Any]]?
     
     var criteriaData: Data?
     
-    var anonymousSessions: IterableSDK.IterableAnonSessionsWrapper?
+    var unknownUserSessions: IterableSDK.IterableUnknownUserSessionsWrapper?
     
     var userId: String? = nil
     
@@ -30,11 +30,11 @@ class MockLocalStorage: LocalStorageProtocol {
     
     var offlineMode: Bool = false
 
-    var anonymousUsageTrack: Bool = true
+    var visitorUsageTracked: Bool = true
     
     var visitorConsentTimestamp: Int64?
     
-    var anonymousUserUpdate: [AnyHashable : Any]?
+    var unknownUserUpdate: [AnyHashable : Any]?
 
     var isNotificationsEnabled: Bool = false
     

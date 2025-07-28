@@ -7,7 +7,7 @@ import Foundation
 protocol LocalStorageProtocol {
     var userId: String? { get set }
     
-    var userIdAnnon: String? { get set }
+    var userIdUnknownUser: String? { get set }
     
     var email: String? { get set }
     
@@ -21,17 +21,17 @@ protocol LocalStorageProtocol {
     
     var offlineMode: Bool { get set }
 
-    var anonymousUsageTrack: Bool { get set }
+    var visitorUsageTracked: Bool { get set }
+
+    var unknownUserEvents: [[AnyHashable: Any]]? { get set }
 
     var visitorConsentTimestamp: Int64? { get set }
-
-    var anonymousUserEvents: [[AnyHashable: Any]]? { get set }
     
-    var anonymousUserUpdate: [AnyHashable: Any]? { get set }
+    var unknownUserUpdate: [AnyHashable: Any]? { get set }
 
     var criteriaData: Data? { get set }
 
-    var anonymousSessions: IterableAnonSessionsWrapper? { get set }
+    var unknownUserSessions: IterableUnknownUserSessionsWrapper? { get set }
     
     var isNotificationsEnabled: Bool { get set }
     

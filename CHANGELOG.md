@@ -5,10 +5,10 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [6.6.0-beta3]
 
-- This release includes fixes for the Anonymous user activation private beta:
+- This release includes fixes for the Unknown user activation private beta:
     - Criteria is now fetched on foregrounding the app by default. This feature can be turned off setting enableForegroundCriteriaFetch flag to false. 
-    - anonymous user ids are only generated once when multiple track calls are made.
-- Anonymous user activation is currently in private beta. If you'd like to learn more about it or discuss using it, talk to your Iterable customer success manager (who can also provide detailed documentation).
+    - Unknown user ids are only generated once when multiple track calls are made.
+- Unknown user activation is currently in private beta. If you'd like to learn more about it or discuss using it, talk to your Iterable customer success manager (who can also provide detailed documentation).
 
 ## [6.6.0-beta2]
 
@@ -16,12 +16,12 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [6.6.0-beta1]
 
-- This release includes initial support for Anonymous user activation, a feature that allows marketers to convert valuable visitors into customers. With this feature, the SDK can:
-  - Fetch anonymous profile creation criteria from your Iterable project, and then automatically create Iterable user profiles for anonymous users who meet these criteria.
-  - Save information about a user's previous interactions with your application to their anonymous profile, after it's created.
-  - Display personalized messages for anonymous users (in-app, push, and embedded messages).
-  - Merge anonymous profiles into an existing, known user profiles (when needed).
-- Anonymous user activation is currently in private beta. If you'd like to learn more about it or discuss using it, talk to your Iterable customer success manager (who can also provide detailed documentation).
+- This release includes initial support for Unknown user activation, a feature that allows marketers to convert valuable visitors into customers. With this feature, the SDK can:
+  - Fetch unknown user profile creation criteria from your Iterable project, and then automatically create Iterable user profiles for Unknown users who meet these criteria.
+  - Save information about a user's previous interactions with your application to their unknown user profile, after it's created.
+  - Display personalized messages for Unknown users (in-app, push, and embedded messages).
+  - Merge unknown user profiles into an existing, known user profiles (when needed).
+- Unknown user activation is currently in private beta. If you'd like to learn more about it or discuss using it, talk to your Iterable customer success manager (who can also provide detailed documentation).
 
 ## [Unreleased]
 - Adding section for unreleased changes

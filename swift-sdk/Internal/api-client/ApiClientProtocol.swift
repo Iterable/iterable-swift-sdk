@@ -56,7 +56,7 @@ protocol ApiClientProtocol: AnyObject {
     
     func getCriteria() -> Pending<SendRequestValue, SendRequestError>
 
-    func trackAnonSession(createdAt: Int, withUserId userId: String, dataFields: [AnyHashable: Any]?, requestJson: [AnyHashable: Any])  -> Pending<SendRequestValue, SendRequestError>
+    func trackUnknownUserSession(createdAt: Int, withUserId userId: String, dataFields: [AnyHashable: Any]?, requestJson: [AnyHashable: Any])  -> Pending<SendRequestValue, SendRequestError>
     
     func trackConsent(consentTimestamp: Int64, email: String?, userId: String?, isUserKnown: Bool) -> Pending<SendRequestValue, SendRequestError>
     

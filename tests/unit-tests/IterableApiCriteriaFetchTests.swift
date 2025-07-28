@@ -48,11 +48,11 @@ class IterableApiCriteriaFetchTests: XCTestCase {
         }
         
         let config = IterableConfig()
-        config.enableAnonActivation = true
+        config.enableUnknownUserActivation = true
         config.enableForegroundCriteriaFetch = true
         
         // Set up localStorage to have visitor usage tracking enabled for the first criteria fetch during initialization
-        localStorage.anonymousUsageTrack = true
+        localStorage.visitorUsageTracked = true
         
         IterableAPI.initializeForTesting(apiKey: IterableApiCriteriaFetchTests.apiKey,
                                          config: config,
@@ -60,9 +60,9 @@ class IterableApiCriteriaFetchTests: XCTestCase {
                                          localStorage: localStorage)
         
         // Manually trigger the criteria fetch logic that happens in initialize2() but not in initializeForTesting()
-        if let implementation = IterableAPI.implementation, config.enableAnonActivation, !implementation.isSDKInitialized(), implementation.getVisitorUsageTracked() {
-            implementation.anonymousUserManager.getAnonCriteria()
-            implementation.anonymousUserManager.updateAnonSession()
+        if let implementation = IterableAPI.implementation, config.enableUnknownUserActivation, !implementation.isSDKInitialized(), implementation.getVisitorUsageTracked() {
+            implementation.unknownUserManager.getUnknownUserCriteria()
+            implementation.unknownUserManager.updateUnknownUserSession()
         }
         
         internalApi = InternalIterableAPI.initializeForTesting(
@@ -76,6 +76,8 @@ class IterableApiCriteriaFetchTests: XCTestCase {
         
         internalApi.setVisitorUsageTracked(isVisitorUsageTracked: true)
         sleep(5)
+        // Reset the last criteria fetch time to bypass cooldown
+        internalApi.unknownUserManager.updateLastCriteriaFetch(currentTime: 0)
         // Simulate app coming to foreground
         mockNotificationCenter.post(name: UIApplication.didBecomeActiveNotification, object: nil, userInfo: nil)
         
@@ -94,7 +96,7 @@ class IterableApiCriteriaFetchTests: XCTestCase {
         }
         
         let config = IterableConfig()
-        config.enableAnonActivation = true
+        config.enableUnknownUserActivation = true
         config.enableForegroundCriteriaFetch = false
         
         internalApi = InternalIterableAPI.initializeForTesting(
@@ -134,11 +136,11 @@ class IterableApiCriteriaFetchTests: XCTestCase {
         }
         
         let config = IterableConfig()
-        config.enableAnonActivation = true
+        config.enableUnknownUserActivation = true
         config.enableForegroundCriteriaFetch = true
         
         // Set up localStorage to have visitor usage tracking enabled for the first criteria fetch during initialization
-        localStorage.anonymousUsageTrack = true
+        localStorage.visitorUsageTracked = true
         
         IterableAPI.initializeForTesting(apiKey: IterableApiCriteriaFetchTests.apiKey,
                                          config: config,
@@ -146,9 +148,11 @@ class IterableApiCriteriaFetchTests: XCTestCase {
                                          localStorage: localStorage)
 
         // Manually trigger the criteria fetch logic that happens in initialize2() but not in initializeForTesting()
-        if let implementation = IterableAPI.implementation, config.enableAnonActivation, !implementation.isSDKInitialized(), implementation.getVisitorUsageTracked() {
-            implementation.anonymousUserManager.getAnonCriteria()
-            implementation.anonymousUserManager.updateAnonSession()
+        if let implementation = IterableAPI.implementation, config.enableUnknownUserActivation, !implementation
+            .isSDKInitialized(), implementation
+            .getVisitorUsageTracked() {
+            implementation.unknownUserManager.getUnknownUserCriteria()
+            implementation.unknownUserManager.updateUnknownUserSession()
         }
 
         internalApi = InternalIterableAPI.initializeForTesting(
@@ -163,6 +167,9 @@ class IterableApiCriteriaFetchTests: XCTestCase {
         internalApi.setVisitorUsageTracked(isVisitorUsageTracked: true)
         
         sleep(5)
+        
+        // Reset the last criteria fetch time to bypass cooldown for first foreground
+        internalApi.unknownUserManager.updateLastCriteriaFetch(currentTime: 0)
         
         // First foreground
         mockNotificationCenter.post(name: UIApplication.didBecomeActiveNotification, object: nil, userInfo: nil)

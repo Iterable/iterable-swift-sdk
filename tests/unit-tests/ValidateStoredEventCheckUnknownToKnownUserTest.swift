@@ -17,7 +17,7 @@ final class ValidateStoredEventCheckUnknownToKnownUserTest: XCTestCase, AuthProv
     let localStorage = MockLocalStorage()
 
     var auth: Auth {
-        Auth(userId: nil, email: nil, authToken: authToken, userIdAnon: nil)
+        Auth(userId: nil, email: nil, authToken: authToken, userIdUnknownUser: nil)
     }
 
     override func setUp() {
@@ -44,7 +44,7 @@ final class ValidateStoredEventCheckUnknownToKnownUserTest: XCTestCase, AuthProv
 
     func testCriteriaCustomEventCheck() {  // criteria not met with merge false with setUserId
         let config = IterableConfig()
-        config.enableAnonActivation = true
+        config.enableUnknownUserActivation = true
         IterableAPI.initializeForTesting(apiKey: ValidateStoredEventCheckUnknownToKnownUserTest.apiKey,
                                                                    config: config,
                                                                    networkSession: mockSession,
@@ -58,19 +58,19 @@ final class ValidateStoredEventCheckUnknownToKnownUserTest: XCTestCase, AuthProv
 
         IterableAPI.setUserId("testuser123")
 
-        if self.localStorage.anonymousUserEvents != nil {
+        if self.localStorage.unknownUserEvents != nil {
             XCTFail("Events are not replayed")
         } else {
-            XCTAssertNil(localStorage.anonymousUserEvents, "Expected events to be nil")
+            XCTAssertNil(localStorage.unknownUserEvents, "Expected events to be nil")
         }
 
         self.waitForDuration(seconds: 3)
 
         //Sync Completed
-        if self.localStorage.anonymousUserEvents != nil {
+        if self.localStorage.unknownUserEvents != nil {
             XCTFail("Expected local stored Event nil but found")
         } else {
-            XCTAssertNil(self.localStorage.anonymousUserEvents, "Event found nil as event Sync Completed")
+            XCTAssertNil(self.localStorage.unknownUserEvents, "Event found nil as event Sync Completed")
         }
     }
 
