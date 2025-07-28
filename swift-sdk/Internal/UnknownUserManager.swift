@@ -18,6 +18,7 @@ public class UnknownUserManager: UnknownUserManagerProtocol {
         self.localStorage = localStorage
         self.dateProvider = dateProvider
         self.notificationStateProvider = notificationStateProvider
+
         // Initialize lastCriteriaFetch to current time to make cooldown work properly
         self.lastCriteriaFetch = dateProvider.currentDate.timeIntervalSince1970 * 1000
     }
