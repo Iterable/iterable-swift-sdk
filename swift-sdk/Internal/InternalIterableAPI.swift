@@ -261,9 +261,17 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
         self.localStorage.userIdUnknownUser = nil
         
         if isVisitorUsageTracked && config.enableUnknownUserActivation {
-            ITBInfo("CONSENT GIVEN and UNKNOWN USER TRACKING ENABLED - Criteria fetched")
-            self.unknownUserManager.getUnknownUserCriteria()
-            self.unknownUserManager.updateUnknownUserSession()
+            let currentTime = dateProvider.currentDate.timeIntervalSince1970 * 1000  // Convert to milliseconds
+
+            // Only fetch criteria if cooldown period has passed
+            if (currentTime - unknownUserManager.getLastCriteriaFetch() >= Const.criteriaFetchingCooldown) {
+                ITBInfo("CONSENT GIVEN and UNKNOWN USER TRACKING ENABLED - Criteria fetched")
+                self.unknownUserManager.getUnknownUserCriteria()
+                self.unknownUserManager.updateUnknownUserSession()
+            } else {
+                ITBInfo("CONSENT GIVEN but criteria fetch skipped due to cooldown")
+                self.unknownUserManager.updateUnknownUserSession()
+            }
         }
     }
 
