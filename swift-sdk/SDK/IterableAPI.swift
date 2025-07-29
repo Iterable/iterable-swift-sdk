@@ -127,17 +127,9 @@ import UIKit
         }
         
         if let implementation, config.enableUnknownUserActivation, !implementation.isSDKInitialized(), implementation.getVisitorUsageTracked() {
-            let currentTime = Date().timeIntervalSince1970 * 1000  // Convert to milliseconds
-
-            // Only fetch criteria if cooldown period has passed
-            if (currentTime - implementation.unknownUserManager.getLastCriteriaFetch() >= Const.criteriaFetchingCooldown) {
-                ITBInfo("UUA ENABLED AND CONSENT GIVEN - Criteria fetched")
-                implementation.unknownUserManager.getUnknownUserCriteria()
-                implementation.unknownUserManager.updateUnknownUserSession()
-            } else {
-                ITBInfo("UUA ENABLED AND CONSENT GIVEN but criteria fetch skipped due to cooldown")
-                implementation.unknownUserManager.updateUnknownUserSession()
-            }
+            ITBInfo("UUA ENABLED AND CONSENT GIVEN - Criteria fetched")
+            implementation.unknownUserManager.getUnknownUserCriteria()
+            implementation.unknownUserManager.updateUnknownUserSession()
         }
     }
 
