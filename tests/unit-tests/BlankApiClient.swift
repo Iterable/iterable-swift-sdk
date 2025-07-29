@@ -7,6 +7,41 @@ import Foundation
 @testable import IterableSDK
 
 class BlankApiClient: ApiClientProtocol {
+    func trackConsent(consentTimestamp: Int64, email: String?, userId: String?, isUserKnown: Bool) -> IterableSDK.Pending<IterableSDK.SendRequestValue, IterableSDK.SendRequestError> {
+        Pending()
+    }
+
+    
+    func updateCart(items: [IterableSDK.CommerceItem], createdAt: Int) -> IterableSDK.Pending<IterableSDK.SendRequestValue, IterableSDK.SendRequestError> {
+        Pending()
+    }
+    
+    func track(purchase total: NSNumber, items: [IterableSDK.CommerceItem], dataFields: [AnyHashable : Any]?, createdAt: Int) -> IterableSDK.Pending<IterableSDK.SendRequestValue, IterableSDK.SendRequestError> {
+        Pending()
+    }
+    
+    func mergeUser(sourceEmail: String?, sourceUserId: String?, destinationEmail: String?, destinationUserId: String?) -> IterableSDK.Pending<IterableSDK.SendRequestValue, IterableSDK.SendRequestError> {
+        Pending()
+    }
+
+    func trackUnknownUserSession(createdAt: Int, withUserId userId: String, dataFields: [AnyHashable : Any]?, requestJson: [AnyHashable : Any]) -> IterableSDK.Pending<IterableSDK.SendRequestValue, IterableSDK.SendRequestError> {
+        Pending()
+    }
+
+    func getCriteria() -> IterableSDK.Pending<IterableSDK.SendRequestValue, IterableSDK.SendRequestError> {
+        Pending()
+    }
+    
+    
+    func track(event eventName: String, dataFields: [AnyHashable : Any]?) -> IterableSDK.Pending<IterableSDK.SendRequestValue, IterableSDK.SendRequestError> {
+        Pending()
+    }
+    
+    func track(event eventName: String, withBody body: [AnyHashable : Any]?) -> IterableSDK.Pending<IterableSDK.SendRequestValue, IterableSDK.SendRequestError> {
+        Pending()
+    }
+    
+    
     func register(registerTokenInfo: RegisterTokenInfo, notificationsEnabled: Bool) -> Pending<SendRequestValue, SendRequestError> {
         Pending()
     }
@@ -28,10 +63,6 @@ class BlankApiClient: ApiClientProtocol {
     }
     
     func track(pushOpen campaignId: NSNumber, templateId: NSNumber?, messageId: String, appAlreadyRunning: Bool, dataFields: [AnyHashable : Any]?) -> Pending<SendRequestValue, SendRequestError> {
-        Pending()
-    }
-    
-    func track(event eventName: String, dataFields: [AnyHashable : Any]?) -> Pending<SendRequestValue, SendRequestError> {
         Pending()
     }
     
@@ -76,6 +107,10 @@ class BlankApiClient: ApiClientProtocol {
     }
     
     func getRemoteConfiguration() -> Pending<RemoteConfiguration, SendRequestError> {
+        Pending()
+    }
+    
+    func mergeUser(sourceEmail: String, sourceUserId: String, destinationEmail: String, destinationUserId: String) -> IterableSDK.Pending<SendRequestValue, SendRequestError> {
         Pending()
     }
     
