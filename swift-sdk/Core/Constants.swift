@@ -202,7 +202,7 @@ enum JsonKey {
     static let actionIdentifier = "actionIdentifier"
     static let userText = "userText"
     static let appAlreadyRunning = "appAlreadyRunning"
-    static let unknownSessionContext = "anonSessionContext"
+    static let unknownSessionContext = "unknownSessionContext"
     
     static let html = "html"
     
