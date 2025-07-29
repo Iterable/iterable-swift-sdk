@@ -267,10 +267,10 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
             if (currentTime - unknownUserManager.getLastCriteriaFetch() >= Const.criteriaFetchingCooldown) {
                 ITBInfo("CONSENT GIVEN and UNKNOWN USER TRACKING ENABLED - Criteria fetched")
                 self.unknownUserManager.getUnknownUserCriteria()
+                self.unknownUserManager.updateUnknownUserSession()
+            } else {
+                ITBInfo("CONSENT GIVEN but criteria fetch skipped due to cooldown")
             }
-                
-            ITBInfo("CONSENT GIVEN but criteria fetch skipped due to cooldown")
-            self.unknownUserManager.updateUnknownUserSession()
         }
     }
 
