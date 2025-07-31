@@ -12,8 +12,9 @@ class InAppPresenterTests: XCTestCase {
     func testInAppPresenterDelegateExistence() {
         let htmlMessageViewController = IterableHtmlMessageViewController.create(parameters: getEmptyParameters(), onClickCallback: nil)
         
-        let inAppPresenter = InAppPresenter(topViewController: UIViewController(),
-                                            htmlMessageViewController: htmlMessageViewController)
+        let inAppPresenter = InAppPresenter(htmlMessageViewController: htmlMessageViewController,
+                                            message: getEmptyInAppMessage(),
+                                            displayValidator: { true })
         
         // a "no-op" to suppress warning
         _ = inAppPresenter.self
@@ -22,19 +23,20 @@ class InAppPresenterTests: XCTestCase {
     }
     
     func testInAppPresenterIsPresentingOnInit() {
-        _ = InAppPresenter(topViewController: UIViewController(),
-                           htmlMessageViewController: getEmptyHtmlMessageViewController())
+        _ = InAppPresenter(htmlMessageViewController: getEmptyHtmlMessageViewController(),
+                           message: getEmptyInAppMessage(),
+                           displayValidator: { true })
         
         XCTAssertFalse(InAppPresenter.isPresenting)
     }
     
-    func testInAppPresenterTimerFinished() {
+    func testInAppPresenterShowMethod() {
         let expectation1 = expectation(description: "delay timer executed")
         
-        let topViewController = UIViewController()
         let maxDelay = 0.75
-        let inAppPresenter = InAppPresenter(topViewController: topViewController,
-                                            htmlMessageViewController: getEmptyHtmlMessageViewController(),
+        let inAppPresenter = InAppPresenter(htmlMessageViewController: getEmptyHtmlMessageViewController(),
+                                            message: getEmptyInAppMessage(),
+                                            displayValidator: { true },
                                             maxDelay: maxDelay)
         
         inAppPresenter.show()
