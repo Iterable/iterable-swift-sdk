@@ -10,9 +10,11 @@ import UIKit
 import UserNotifications
 
 import IterableSDK
+import Firebase
+import FirebaseMessaging
 
 @UIApplicationMain
-class AppDelegate: UIResponder, UIApplicationDelegate {
+class AppDelegate: UIResponder, UIApplicationDelegate, MessagingDelegate {
     var window: UIWindow?
     
     // ITBL: Set your actual api key here.
@@ -21,12 +23,15 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     func application(_: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         // ITBL: Setup Notification
         setupNotifications()
+        FirebaseApp.configure()
+        Messaging.messaging().delegate = self
         
         // ITBL: Initialize API
         let config = IterableConfig()
         config.customActionDelegate = self
         config.urlDelegate = self
         config.inAppDisplayInterval = 1
+        config.useFirebaseMessaging = true
         
         IterableAPI.initialize(apiKey: iterableApiKey,
                                launchOptions: launchOptions,
@@ -103,7 +108,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     
     // ITBL:
     func application(_: UIApplication, didRegisterForRemoteNotificationsWithDeviceToken deviceToken: Data) {
-        IterableAPI.register(token: deviceToken)
+        if !deviceToken.hexString.isEmpty {
+            Messaging.messaging().apnsToken = deviceToken
+        }
     }
     
     func application(_: UIApplication, didFailToRegisterForRemoteNotificationsWithError _: Error) {}
@@ -132,7 +139,15 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             }
         }
     }
+    
+    @objc func messaging(_ messaging: Messaging, didReceiveRegistrationToken fcmToken: String?) {
+        print("Firebase token: \(String(describing: fcmToken))")
+        if let token = fcmToken {
+            IterableAPI.registerFCM(token: token)
+        }
+    }
 }
+
 
 // MARK: UNUserNotificationCenterDelegate
 
@@ -169,5 +184,11 @@ extension AppDelegate: IterableCustomActionDelegate {
             }
         }
         return false
+    }
+}
+
+extension Data {
+    public var hexString: String {
+        return map { String(format: "%02.2hhx", arguments: [$0]) }.joined()
     }
 }
