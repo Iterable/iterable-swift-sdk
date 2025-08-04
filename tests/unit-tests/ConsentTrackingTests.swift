@@ -96,6 +96,51 @@ class ConsentTrackingTests: XCTestCase {
         XCTAssertTrue(consentRequestReceived)
     }
     
+    func testConsentTimestampSentInMilliseconds() {
+        // Use a test date in seconds
+        let testDateInSeconds = Date(timeIntervalSince1970: 1639490139) // December 14, 2021
+        mockDateProvider.currentDate = testDateInSeconds
+        
+        // Set consent which should store timestamp in milliseconds
+        internalAPI.setVisitorUsageTracked(isVisitorUsageTracked: true)
+        
+        // Verify the timestamp was stored in milliseconds format
+        guard let storedTimestamp = mockLocalStorage.visitorConsentTimestamp else {
+            XCTFail("Expected visitorConsentTimestamp to be set after calling setVisitorUsageTracked(true)")
+            return
+        }
+        
+        let expectedTimestampInSeconds = Int64(testDateInSeconds.timeIntervalSince1970)
+        let expectedTimestampInMilliseconds = expectedTimestampInSeconds * 1000
+        
+        // Verify the stored timestamp is in milliseconds (much larger than seconds)
+        XCTAssertEqual(storedTimestamp, expectedTimestampInMilliseconds, "Stored timestamp should be in milliseconds")
+        XCTAssertTrue(storedTimestamp > expectedTimestampInSeconds, "Timestamp should be in milliseconds, not seconds")
+        
+        // Verify it converts back to the correct date when divided by 1000
+        let convertedDate = Date(timeIntervalSince1970: TimeInterval(storedTimestamp) / 1000.0)
+        XCTAssertEqual(convertedDate, testDateInSeconds, "Timestamp should convert back to original date when divided by 1000")
+        
+        // Verify the timestamp format: should be 13 digits (milliseconds since epoch)
+        let timestampString = String(storedTimestamp)
+        XCTAssertEqual(timestampString.count, 13, "Millisecond timestamp should have 13 digits")
+        
+        // Test that API call can be made with the millisecond timestamp (this verifies integration)
+        let expectation = XCTestExpectation(description: "API call completed")
+        _ = internalAPI.apiClient.trackConsent(
+            consentTimestamp: storedTimestamp,
+            email: nil,
+            userId: "test-user",
+            isUserKnown: false
+        ).onSuccess { _ in
+            expectation.fulfill()
+        }.onError { _ in
+            expectation.fulfill()
+        }
+        
+        wait(for: [expectation], timeout: 5.0)
+    }
+    
     func testConsentNotSentWhenNoConsentTimestamp() {
         let expectation = XCTestExpectation(description: "No consent request when no timestamp")
         expectation.isInverted = true

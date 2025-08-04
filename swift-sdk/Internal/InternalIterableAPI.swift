@@ -250,7 +250,7 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
         
         // Store consent timestamp when consent is given
         if isVisitorUsageTracked {
-            self.localStorage.visitorConsentTimestamp = Int64(dateProvider.currentDate.timeIntervalSince1970)
+            self.localStorage.visitorConsentTimestamp = Int64(dateProvider.currentDate.timeIntervalSince1970 * 1000)
         } else {
             self.localStorage.visitorConsentTimestamp = nil
         }
