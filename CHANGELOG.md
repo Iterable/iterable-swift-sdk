@@ -24,7 +24,11 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 - Unknown user activation is currently in private beta. If you'd like to learn more about it or discuss using it, talk to your Iterable customer success manager (who can also provide detailed documentation).
 
 ## [Unreleased]
-- Adding section for unreleased changes
+
+## [6.5.13]
+- Fixed in-app messages displaying in wrong window when using Stage Manager or multi-window scenarios on iPad.
+- Fixed redirect handling issue with deep links that was preventing proper URL following.
+- Improved action runner logic to properly validate allowed protocols before processing URL actions, ensuring better security and reliability.
 
 ## [6.5.12]
 - Made `IterableDataRegion` an `@objc` class for better Objective-C compatibility.
