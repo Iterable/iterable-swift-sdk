@@ -154,23 +154,17 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
             let merge = identityResolution?.mergeOnUnknownUserToKnown ?? config.identityResolution.mergeOnUnknownUserToKnown
             let replay = identityResolution?.replayOnVisitorToKnown ?? config.identityResolution.replayOnVisitorToKnown
             if config.enableUnknownUserActivation, let email = email {
-                // Capture original unknown user state before clearing it
-                let originalUnknownUserId = self?.localStorage.userIdUnknownUser
-                
                 self?.attemptAndProcessMerge(
                     merge: merge ?? true,
                     replay: replay ?? true,
                     destinationUser: email,
                     isEmail: true,
-                    failureHandler: failureHandler,
-                    onReplayComplete: {
-                        // Send consent for replay scenario only after replay events are successfully processed
-                        // Check if this is truly a replay scenario (no existing anonymous user before merge)
-                        if let replay, replay, originalUnknownUserId == nil {
-                            self?.sendConsentForReplayScenario(email: email, userId: nil)
-                        }
-                    }
+                    failureHandler: failureHandler
                 )
+                // Send consent for replay scenario only if replay events is enabled
+                if let replay, replay {
+                    self?.sendConsentForReplayScenario(email: email, userId: nil)
+                }
                 
                 self?.localStorage.userIdUnknownUser = nil
             }
@@ -205,9 +199,6 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
             }
             if config.enableUnknownUserActivation {
                 if let userId = userId, userId != (self?.localStorage.userIdUnknownUser ?? "") {
-                    // Capture original unknown user state before clearing it
-                    let originalUnknownUserId = self?.localStorage.userIdUnknownUser
-                    
                     let merge = identityResolution?.mergeOnUnknownUserToKnown ?? config.identityResolution.mergeOnUnknownUserToKnown
                     let replay = identityResolution?.replayOnVisitorToKnown ?? config.identityResolution.replayOnVisitorToKnown
                     self?.attemptAndProcessMerge(
@@ -215,15 +206,12 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
                         replay: replay ?? true,
                         destinationUser: userId,
                         isEmail: false,
-                        failureHandler: failureHandler,
-                        onReplayComplete: {
-                            // Send consent for replay scenario only after replay events are successfully processed
-                            // Check if this is truly a replay scenario (no existing anonymous user before merge)
-                            if let replay, replay, originalUnknownUserId == nil {
-                                self?.sendConsentForReplayScenario(email: nil, userId: userId)
-                            }
-                        }
+                        failureHandler: failureHandler
                     )
+                    // Send consent for replay scenario only if replay events is enabled
+                    if let replay, replay {
+                        self?.sendConsentForReplayScenario(email: nil, userId: userId)
+                    }
                 }
 
                 if !isUnknownUser {
@@ -242,14 +230,12 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
         logoutPreviousUser()
     }
     
-    func attemptAndProcessMerge(merge: Bool, replay: Bool, destinationUser: String?, isEmail: Bool, failureHandler: OnFailureHandler? = nil, onReplayComplete: (() -> Void)? = nil) {
+    func attemptAndProcessMerge(merge: Bool, replay: Bool, destinationUser: String?, isEmail: Bool, failureHandler: OnFailureHandler? = nil) {
         unknownUserMerge.tryMergeUser(destinationUser: destinationUser, isEmail: isEmail, merge: merge) { mergeResult, error in
             
             if mergeResult == MergeResult.mergenotrequired ||  mergeResult == MergeResult.mergesuccessful {
                 if (replay) {
                     self.unknownUserManager.syncEvents()
-                    // Execute the completion callback after replay events are synced
-                    onReplayComplete?()
                 }
             } else {
                 failureHandler?(error, nil)
