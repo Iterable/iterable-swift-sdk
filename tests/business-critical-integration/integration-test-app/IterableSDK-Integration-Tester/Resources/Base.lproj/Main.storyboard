@@ -12,7 +12,7 @@
         <!--Coffees-->
         <scene sceneID="QXh-yl-iFb">
             <objects>
-                <tableViewController storyboardIdentifier="CoffeeListTableViewController" id="AsM-Cj-iLA" customClass="CoffeeListTableViewController" customModule="swift_sample_app" sceneMemberID="viewController">
+                <tableViewController storyboardIdentifier="CoffeeListTableViewController" id="AsM-Cj-iLA" customClass="CoffeeListTableViewController" customModule="IterableSDK_Integration_Tester" sceneMemberID="viewController">
                     <tableView key="view" clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="28" sectionFooterHeight="28" id="mjV-bv-vMe">
                         <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -66,7 +66,7 @@
         <!--Coffee View Controller-->
         <scene sceneID="i7k-Hu-v2l">
             <objects>
-                <viewController storyboardIdentifier="CoffeeViewController" id="Ez8-MY-tka" customClass="CoffeeViewController" customModule="swift_sample_app" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="CoffeeViewController" id="Ez8-MY-tka" customClass="CoffeeViewController" customModule="IterableSDK_Integration_Tester" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="3Ae-g3-VjR">
                         <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -155,7 +155,7 @@
         <!--Login View Controller-->
         <scene sceneID="Lrp-We-A2i">
             <objects>
-                <viewController storyboardIdentifier="LoginViewController" id="8n5-2h-usW" customClass="LoginViewController" customModule="swift_sample_app" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="LoginViewController" id="8n5-2h-usW" customClass="LoginViewController" customModule="IterableSDK_Integration_Tester" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="xbL-cm-1Am">
                         <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -244,7 +244,7 @@
         <!--Embedded Messages View Controller-->
         <scene sceneID="ztZ-M0-K6L">
             <objects>
-                <viewController storyboardIdentifier="EmbeddedMessagesViewController" useStoryboardIdentifierAsRestorationIdentifier="YES" id="NCd-ML-V26" customClass="EmbeddedMessagesViewController" customModule="swift_sample_app" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="EmbeddedMessagesViewController" useStoryboardIdentifierAsRestorationIdentifier="YES" id="NCd-ML-V26" customClass="EmbeddedMessagesViewController" customModule="IterableSDK_Integration_Tester" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="13d-GB-fPy">
                         <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -291,7 +291,7 @@
                                     <inset key="sectionInset" minX="16" minY="0.0" maxX="16" maxY="0.0"/>
                                 </collectionViewFlowLayout>
                                 <cells>
-                                    <collectionViewCell opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" reuseIdentifier="IterableEmbeddedCardViewCell" id="j5R-CF-bu8" customClass="IterableEmbeddedCardViewCell" customModule="swift_sample_app" customModuleProvider="target">
+                                    <collectionViewCell opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" reuseIdentifier="IterableEmbeddedCardViewCell" id="j5R-CF-bu8" customClass="IterableEmbeddedCardViewCell" customModule="IterableSDK_Integration_Tester" customModuleProvider="target">
                                         <rect key="frame" x="16" y="10" width="350" height="400"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                         <collectionViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" insetsLayoutMarginsFromSafeArea="NO" id="700-KJ-1iU">

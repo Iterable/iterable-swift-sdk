@@ -3,6 +3,9 @@ xcuserdata
 
 .claude/
 
+tests/business-critical-integration/logs
+tests/business-critical-integration/config
+
 .swiftpm/
 
 .claude

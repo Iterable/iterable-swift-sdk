@@ -2,7 +2,7 @@
 
 # Simple script to run a single integration test locally
 TEST_TYPE="$1"
-CONFIG_FILE="$(dirname "$0")/../config/local-config.json"
+CONFIG_FILE="$(dirname "$0")/../config/test-config.json"
 
 if [[ ! -f "$CONFIG_FILE" ]]; then
     echo "❌ Local config not found. Run setup-local-environment.sh first."

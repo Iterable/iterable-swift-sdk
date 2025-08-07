@@ -16,7 +16,7 @@ NC='\033[0m' # No Color
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_ROOT="$(cd "$SCRIPT_DIR/../../.." && pwd)"
 CONFIG_DIR="$SCRIPT_DIR/../config"
-LOCAL_CONFIG_FILE="$CONFIG_DIR/local-config.json"
+LOCAL_CONFIG_FILE="$CONFIG_DIR/test-config.json"
 
 echo_header() {
     echo -e "${BLUE}============================================${NC}"
@@ -406,7 +406,7 @@ create_test_scripts() {
 
 # Simple script to run a single integration test locally
 TEST_TYPE="$1"
-CONFIG_FILE="$(dirname "$0")/../config/local-config.json"
+CONFIG_FILE="$(dirname "$0")/../config/test-config.json"
 
 if [[ ! -f "$CONFIG_FILE" ]]; then
     echo "❌ Local config not found. Run setup-local-environment.sh first."
@@ -438,7 +438,7 @@ EOF
 #!/bin/bash
 
 # Validate local environment setup
-CONFIG_FILE="$(dirname "$0")/../config/local-config.json"
+CONFIG_FILE="$(dirname "$0")/../config/test-config.json"
 SIMULATOR_FILE="$(dirname "$0")/../config/simulator-uuid.txt"
 
 echo "🔍 Validating local environment setup..."

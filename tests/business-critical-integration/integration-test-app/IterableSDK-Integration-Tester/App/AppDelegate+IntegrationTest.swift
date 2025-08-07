@@ -6,76 +6,16 @@ import IterableSDK
 extension AppDelegate {
 
     func configureForIntegrationTesting() {
-        // Check if we're running in integration test mode
-        guard ProcessInfo.processInfo.environment["INTEGRATION_TEST"] == "1" else {
-            return
-        }
-
-        print("🧪 Configuring app for integration testing...")
-
-        // Set up test user automatically
-        setupTestUser()
-
-        // Add test mode indicators to the UI
-        addTestModeIndicators()
+        // App is always in integration test mode now
+        print("🧪 App running in integration test mode...")
 
         // Register for test notifications
         registerForTestNotifications()
     }
 
-    private func setupTestUser() {
-        // Get test user email from environment
-        let testUserEmail = ProcessInfo.processInfo.environment["TEST_USER_EMAIL"] ?? "integration-test@example.com"
 
-        // Set the user email for Iterable
-        IterableAPI.email = testUserEmail
 
-        print("🧪 Test user configured: \(testUserEmail)")
 
-        // Update user profile with test data
-        let testUserData: [String: Any] = [
-            "testMode": true,
-            "environment": "local",
-            "platform": "iOS",
-            "testStartTime": Date().timeIntervalSince1970
-        ]
-
-        IterableAPI.updateUser(testUserData, mergeNestedObjects: false)
-    }
-
-    private func addTestModeIndicators() {
-        // Add visual indicators that we're in test mode
-        DispatchQueue.main.async {
-            if let window = self.window {
-                // Add a test mode banner
-                let testBanner = UIView()
-                testBanner.backgroundColor = UIColor.systemYellow
-                testBanner.translatesAutoresizingMaskIntoConstraints = false
-
-                let testLabel = UILabel()
-                testLabel.text = "🧪 INTEGRATION TEST MODE 🧪"
-                testLabel.textAlignment = .center
-                testLabel.font = UIFont.systemFont(ofSize: 12, weight: .bold)
-                testLabel.translatesAutoresizingMaskIntoConstraints = false
-
-                testBanner.addSubview(testLabel)
-                window.addSubview(testBanner)
-
-                NSLayoutConstraint.activate([
-                    testBanner.topAnchor.constraint(equalTo: window.safeAreaLayoutGuide.topAnchor),
-                    testBanner.leadingAnchor.constraint(equalTo: window.leadingAnchor),
-                    testBanner.trailingAnchor.constraint(equalTo: window.trailingAnchor),
-                    testBanner.heightAnchor.constraint(equalToConstant: 30),
-
-                    testLabel.centerXAnchor.constraint(equalTo: testBanner.centerXAnchor),
-                    testLabel.centerYAnchor.constraint(equalTo: testBanner.centerYAnchor)
-                ])
-
-                // Bring banner to front
-                window.bringSubviewToFront(testBanner)
-            }
-        }
-    }
 
     private func registerForTestNotifications() {
         // Register for test-specific notifications
@@ -148,6 +88,8 @@ extension AppDelegate {
         // Add test validation indicators
         addTestIndicator(text: "DEEP LINK PROCESSED", color: .systemOrange)
     }
+    
+
 
     private func addTestIndicator(text: String, color: UIColor) {
         DispatchQueue.main.async {
@@ -204,12 +146,8 @@ extension AppDelegate {
     }
 
     func enhancedApplicationDidBecomeActive(_ application: UIApplication) {
-        // Check if we're in test mode and bypass normal validation
-        if IntegrationTestHelper.shared.isInTestMode() {
-            print("🧪 App became active in test mode")
-            // Skip API key and login validation in test mode
-            return
-        }
+        // App is always in test mode
+        print("🧪 App became active in test mode")
     }
 
     // Enhanced push notification handling for testing

@@ -216,7 +216,7 @@ chmod +x ./scripts/run-tests-locally.sh
 
 You can modify test settings by editing:
 ```bash
-config/local-config.json
+config/test-config.json
 ```
 
 Common settings to adjust:

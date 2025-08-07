@@ -7,10 +7,10 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		8A24D33A2E44F30600B53850 /* IterableAppExtensions in Frameworks */ = {isa = PBXBuildFile; productRef = 8A24D3392E44F30600B53850 /* IterableAppExtensions */; };
+		8A24D33C2E44F30600B53850 /* IterableSDK in Frameworks */ = {isa = PBXBuildFile; productRef = 8A24D33B2E44F30600B53850 /* IterableSDK */; };
 		8AB716912E311CA0004AAB74 /* IterableAppExtensions in Frameworks */ = {isa = PBXBuildFile; productRef = 8AB716902E311CA0004AAB74 /* IterableAppExtensions */; };
 		8AB716932E311CA0004AAB74 /* IterableSDK in Frameworks */ = {isa = PBXBuildFile; productRef = 8AB716922E311CA0004AAB74 /* IterableSDK */; };
-		8AB716962E311DA0004AAB74 /* IterableAppExtensions in Frameworks */ = {isa = PBXBuildFile; productRef = 8AB716952E311DA0004AAB74 /* IterableAppExtensions */; };
-		8AB716982E311DA0004AAB74 /* IterableSDK in Frameworks */ = {isa = PBXBuildFile; productRef = 8AB716972E311DA0004AAB74 /* IterableSDK */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -103,8 +103,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				8AB716962E311DA0004AAB74 /* IterableAppExtensions in Frameworks */,
-				8AB716982E311DA0004AAB74 /* IterableSDK in Frameworks */,
+				8A24D33A2E44F30600B53850 /* IterableAppExtensions in Frameworks */,
+				8A24D33C2E44F30600B53850 /* IterableSDK in Frameworks */,
 				8AB716912E311CA0004AAB74 /* IterableAppExtensions in Frameworks */,
 				8AB716932E311CA0004AAB74 /* IterableSDK in Frameworks */,
 			);
@@ -169,8 +169,8 @@
 			packageProductDependencies = (
 				8AB716902E311CA0004AAB74 /* IterableAppExtensions */,
 				8AB716922E311CA0004AAB74 /* IterableSDK */,
-				8AB716952E311DA0004AAB74 /* IterableAppExtensions */,
-				8AB716972E311DA0004AAB74 /* IterableSDK */,
+				8A24D3392E44F30600B53850 /* IterableAppExtensions */,
+				8A24D33B2E44F30600B53850 /* IterableSDK */,
 			);
 			productName = "IterableSDK-Integration-Tester";
 			productReference = 8AB716122E3119A3004AAB74 /* IterableSDK-Integration-Tester.app */;
@@ -255,7 +255,7 @@
 			mainGroup = 8AB716092E3119A3004AAB74;
 			minimizedProjectReferenceProxies = 1;
 			packageReferences = (
-				8AB716942E311DA0004AAB74 /* XCRemoteSwiftPackageReference "iterable-swift-sdk" */,
+				8A24D3382E44F30600B53850 /* XCLocalSwiftPackageReference "../../../../swift-sdk" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 8AB716132E3119A3004AAB74 /* Products */;
@@ -615,34 +615,28 @@
 		};
 /* End XCConfigurationList section */
 
-/* Begin XCRemoteSwiftPackageReference section */
-		8AB716942E311DA0004AAB74 /* XCRemoteSwiftPackageReference "iterable-swift-sdk" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/Iterable/iterable-swift-sdk";
-			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = 6.5.12;
-			};
+/* Begin XCLocalSwiftPackageReference section */
+		8A24D3382E44F30600B53850 /* XCLocalSwiftPackageReference "../../../../swift-sdk" */ = {
+			isa = XCLocalSwiftPackageReference;
+			relativePath = "../../../../swift-sdk";
 		};
-/* End XCRemoteSwiftPackageReference section */
+/* End XCLocalSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
+		8A24D3392E44F30600B53850 /* IterableAppExtensions */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = IterableAppExtensions;
+		};
+		8A24D33B2E44F30600B53850 /* IterableSDK */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = IterableSDK;
+		};
 		8AB716902E311CA0004AAB74 /* IterableAppExtensions */ = {
 			isa = XCSwiftPackageProductDependency;
 			productName = IterableAppExtensions;
 		};
 		8AB716922E311CA0004AAB74 /* IterableSDK */ = {
 			isa = XCSwiftPackageProductDependency;
-			productName = IterableSDK;
-		};
-		8AB716952E311DA0004AAB74 /* IterableAppExtensions */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 8AB716942E311DA0004AAB74 /* XCRemoteSwiftPackageReference "iterable-swift-sdk" */;
-			productName = IterableAppExtensions;
-		};
-		8AB716972E311DA0004AAB74 /* IterableSDK */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 8AB716942E311DA0004AAB74 /* XCRemoteSwiftPackageReference "iterable-swift-sdk" */;
 			productName = IterableSDK;
 		};
 /* End XCSwiftPackageProductDependency section */

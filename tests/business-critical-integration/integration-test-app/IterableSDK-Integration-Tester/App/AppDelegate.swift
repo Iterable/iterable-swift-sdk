@@ -15,8 +15,71 @@ import IterableSDK
 class AppDelegate: UIResponder, UIApplicationDelegate {
     var window: UIWindow?
     
-    // ITBL: Set your actual api key here, or read from environment for integration testing
-    let iterableApiKey = ProcessInfo.processInfo.environment["ITERABLE_API_KEY"] ?? ""
+    // ITBL: Load API key from test config file
+    let iterableApiKey: String = {
+        guard let configApiKey = loadApiKeyFromConfig() else {
+            fatalError("❌ Required test-config.json file not found or missing mobileApiKey")
+        }
+        return configApiKey
+    }()
+    
+    private static func loadApiKeyFromConfig() -> String? {
+        guard let path = Bundle.main.path(forResource: "test-config", ofType: "json"),
+              let data = try? Data(contentsOf: URL(fileURLWithPath: path)),
+              let json = try? JSONSerialization.jsonObject(with: data) as? [String: Any],
+              let apiKey = json["mobileApiKey"] as? String,
+              !apiKey.isEmpty else {
+            print("❌ Could not load API key from test-config.json")
+            return nil
+        }
+        print("✅ Loaded API key from test-config.json")
+        return apiKey
+    }
+    
+    private static func loadTestUserEmailFromConfig() -> String? {
+        guard let path = Bundle.main.path(forResource: "test-config", ofType: "json"),
+              let data = try? Data(contentsOf: URL(fileURLWithPath: path)),
+              let json = try? JSONSerialization.jsonObject(with: data) as? [String: Any],
+              let email = json["testUserEmail"] as? String,
+              !email.isEmpty else {
+            print("❌ Could not load test user email from test-config.json")
+            return nil
+        }
+        print("✅ Loaded test user email from test-config.json")
+        return email
+    }
+    
+    private func setupTestModeUI() {
+        // Add visual indicator that we're always in test mode
+        DispatchQueue.main.async {
+            if let window = self.window {
+                let testBanner = UIView()
+                testBanner.backgroundColor = UIColor.systemYellow
+                testBanner.translatesAutoresizingMaskIntoConstraints = false
+
+                let testLabel = UILabel()
+                testLabel.text = "🧪 INTEGRATION TEST APP 🧪"
+                testLabel.textAlignment = .center
+                testLabel.font = UIFont.systemFont(ofSize: 12, weight: .bold)
+                testLabel.translatesAutoresizingMaskIntoConstraints = false
+
+                testBanner.addSubview(testLabel)
+                window.addSubview(testBanner)
+
+                NSLayoutConstraint.activate([
+                    testBanner.topAnchor.constraint(equalTo: window.safeAreaLayoutGuide.topAnchor),
+                    testBanner.leadingAnchor.constraint(equalTo: window.leadingAnchor),
+                    testBanner.trailingAnchor.constraint(equalTo: window.trailingAnchor),
+                    testBanner.heightAnchor.constraint(equalToConstant: 30),
+
+                    testLabel.centerXAnchor.constraint(equalTo: testBanner.centerXAnchor),
+                    testLabel.centerYAnchor.constraint(equalTo: testBanner.centerYAnchor)
+                ])
+
+                window.bringSubviewToFront(testBanner)
+            }
+        }
+    }
     
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         // ITBL: Setup Notification
@@ -32,8 +95,16 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
                                launchOptions: launchOptions,
                                config: config)
         
-        // Configure for integration testing if needed
-        configureForIntegrationTesting()
+        // Set user email from test config
+        guard let email = AppDelegate.loadTestUserEmailFromConfig() else {
+            fatalError("❌ Required test-config.json file not found or missing testUserEmail")
+        }
+        IterableAPI.email = email
+        print("✅ Configured test user email: \(email)")
+        
+        // Setup test mode indicators
+        setupTestModeUI()
+        
         enhancedApplicationDidFinishLaunching(application, launchOptions: launchOptions)
         
         return true
@@ -54,40 +125,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     }
     
     func applicationDidBecomeActive(_ application: UIApplication) {
-        // Restart any tasks that were paused (or not yet started) while the application was inactive. If the application was previously in the background, optionally refresh the user interface.
-        
-        // Check for integration test mode first
+        // App is always in test mode - no validation needed
         enhancedApplicationDidBecomeActive(application)
-        
-        // Skip normal validation if in test mode
-        if IntegrationTestHelper.shared.isInTestMode() {
-            return
-        }
-        
-        // ITBL:
-        // You don't need to do this in your app. Just set the correct value for 'iterableApiKey' when it is declared.
-        if iterableApiKey == "" {
-            let alert = UIAlertController(title: "API Key Required", message: "You must set Iterable API Key. Run this app again after setting 'AppDelegate.iterableApiKey'.", preferredStyle: .alert)
-            let action = UIAlertAction(title: "OK", style: .default) { _ in
-                exit(0)
-            }
-            alert.addAction(action)
-            window?.rootViewController?.present(alert, animated: true)
-            return
-        }
-        
-        // ITBL:
-        if !LoginViewController.checkIterableEmailOrUserId().eitherPresent {
-            let alert = UIAlertController(title: "Please Login", message: "You must set 'IterableAPI.email or IterableAPI.userId' before receiving push notifications from Iterable.", preferredStyle: .alert)
-            let action = UIAlertAction(title: "OK", style: .default) { _ in
-                let storyboard = UIStoryboard(name: "Main", bundle: nil)
-                let vc = storyboard.instantiateViewController(withIdentifier: "LoginNavController")
-                self.window?.rootViewController?.present(vc, animated: true)
-            }
-            alert.addAction(action)
-            window?.rootViewController?.present(alert, animated: true)
-            return
-        }
     }
     
     func applicationWillTerminate(_: UIApplication) {
