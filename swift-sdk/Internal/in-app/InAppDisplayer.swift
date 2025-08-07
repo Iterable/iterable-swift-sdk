@@ -61,29 +61,8 @@ class InAppDisplayer: InAppDisplayerProtocol {
         
         htmlMessageVC.modalPresentationStyle = .overFullScreen
         
-        // Create display validator that will be called after delay
-        let displayValidator: () -> Bool = {
-            // Check if another in-app is being presented
-            guard !InAppPresenter.isPresenting else {
-                return false
-            }
-            
-            // Check if we can get a top view controller
-            guard let topViewController = InAppDisplayer.getTopViewController() else {
-                return false
-            }
-            
-            // Check if another Iterable message is already displayed
-            guard !(topViewController is IterableHtmlMessageViewController) else {
-                return false
-            }
-            
-            return true
-        }
+        let presenter = InAppPresenter(htmlMessageViewController: htmlMessageVC, message: message)
         
-        let presenter = InAppPresenter(htmlMessageViewController: htmlMessageVC, 
-                                       message: message,
-                                       displayValidator: displayValidator)
         presenter.show()
         
         return .shown

@@ -13,8 +13,7 @@ class InAppPresenterTests: XCTestCase {
         let htmlMessageViewController = IterableHtmlMessageViewController.create(parameters: getEmptyParameters(), onClickCallback: nil)
         
         let inAppPresenter = InAppPresenter(htmlMessageViewController: htmlMessageViewController,
-                                            message: getEmptyInAppMessage(),
-                                            displayValidator: { true })
+                                            message: getEmptyInAppMessage())
         
         // a "no-op" to suppress warning
         _ = inAppPresenter.self
@@ -24,8 +23,7 @@ class InAppPresenterTests: XCTestCase {
     
     func testInAppPresenterIsPresentingOnInit() {
         _ = InAppPresenter(htmlMessageViewController: getEmptyHtmlMessageViewController(),
-                           message: getEmptyInAppMessage(),
-                           displayValidator: { true })
+                           message: getEmptyInAppMessage())
         
         XCTAssertFalse(InAppPresenter.isPresenting)
     }
@@ -36,7 +34,6 @@ class InAppPresenterTests: XCTestCase {
         let maxDelay = 0.75
         let inAppPresenter = InAppPresenter(htmlMessageViewController: getEmptyHtmlMessageViewController(),
                                             message: getEmptyInAppMessage(),
-                                            displayValidator: { true },
                                             maxDelay: maxDelay)
         
         inAppPresenter.show()
