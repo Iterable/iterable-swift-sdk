@@ -171,7 +171,7 @@ class NotificationExtensionTests: XCTestCase {
                         "openApp": true,
                         "action": [
                             "type": "openUrl",
-                            "data": "http://maps.apple.com/?ll=37.7828,-122.3984"
+                            "data": "https://maps.apple.com/?ll=37.7828,-122.3984"
                         ]
                     ],
                     [
@@ -383,7 +383,7 @@ class NotificationExtensionTests: XCTestCase {
                     "title": "Open App",
                     "action": [
                         "type": "openUrl",
-                        "data": "http://maps.apple.com/?ll=37.7828,-122.3984"
+                        "data": "https://maps.apple.com/?ll=37.7828,-122.3984"
                     ],
                 ] as [String : Any]],
             ] as [String : Any],
@@ -422,7 +422,7 @@ class NotificationExtensionTests: XCTestCase {
                     "title": "Open App",
                     "action": [
                         "type": "openUrl",
-                        "data": "http://maps.apple.com/?ll=37.7828,-122.3984"
+                        "data": "https://maps.apple.com/?ll=37.7828,-122.3984"
                     ],
                     "actionIcon": [
                         "iconType": "systemImage",
@@ -466,7 +466,7 @@ class NotificationExtensionTests: XCTestCase {
                     "title": "Open App",
                     "action": [
                         "type": "openUrl",
-                        "data": "http://maps.apple.com/?ll=37.7828,-122.3984"
+                        "data": "https://maps.apple.com/?ll=37.7828,-122.3984"
                     ],
                     "actionIcon": [
                         "iconType": "templateImage",
