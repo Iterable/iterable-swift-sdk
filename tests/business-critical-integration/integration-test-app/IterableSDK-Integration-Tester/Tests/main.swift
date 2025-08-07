@@ -30,7 +30,7 @@ let arguments = CommandLine.arguments
 var testType = "all"
 var verbose = false
 
-for (index, arg) in arguments.enumerated() {
+for (_, arg) in arguments.enumerated() {
     switch arg {
     case "push", "inapp", "embedded", "deeplink", "all":
         testType = arg

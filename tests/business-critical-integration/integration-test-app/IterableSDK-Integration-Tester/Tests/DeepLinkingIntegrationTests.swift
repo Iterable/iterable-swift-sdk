@@ -106,7 +106,7 @@ class DeepLinkingIntegrationTests: IntegrationTestBase {
         validatePushNotificationReceived()
         
         // Tap push notification to trigger deep link
-        let notification = app.banners.firstMatch
+        let notification = app.alerts.firstMatch
         if notification.exists {
             notification.tap()
         } else {

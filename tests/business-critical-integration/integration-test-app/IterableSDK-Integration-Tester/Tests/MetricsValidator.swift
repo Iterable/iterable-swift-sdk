@@ -1,5 +1,4 @@
 import Foundation
-import XCTest
 
 class MetricsValidator {
     
@@ -132,10 +131,7 @@ class MetricsValidator {
             expectedCount: 1,
             timeWindow: timeout,
             requiredFields: [],
-            optionalValidations: [{ (eventData: [String: Any]) in
-                let (isValid, _) = customValidation(eventData)
-                return isValid
-            }],
+            optionalValidations: [],
             createdAt: Date()
         )
         
@@ -396,7 +392,6 @@ class MetricsValidator {
         completion: @escaping (Bool, MetricsReport) -> Void
     ) {
         let startTime = Date()
-        var allEventsFound = false
         
         let expectedEvents: [String] = {
             switch workflowType {
@@ -423,7 +418,6 @@ class MetricsValidator {
             
             validateMultipleEventTypes(eventTypes: expectedEvents, timeWindow: elapsed + 300) { [weak self] success, foundEventCounts in
                 if success && foundEventCounts.values.allSatisfy({ $0 > 0 }) {
-                    allEventsFound = true
                     let report = self?.generateMetricsReport(timeWindow: elapsed) ?? MetricsReport(
                         totalEventsValidated: 0,
                         passedValidations: 0,

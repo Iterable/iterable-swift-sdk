@@ -1,5 +1,4 @@
 import Foundation
-import XCTest
 
 class IterableAPIClient {
     
@@ -84,7 +83,7 @@ class IterableAPIClient {
         let endpoint = "/api/users/update"
         recordAPICall(endpoint: endpoint)
         
-        var payload: [String: Any] = [
+        let payload: [String: Any] = [
             "email": email,
             "dataFields": dataFields
         ]
@@ -142,8 +141,8 @@ class IterableAPIClient {
             switch result {
             case .success(let data):
                 do {
-                    if let json = try JSONSerialization.jsonObject(with: data) as? [String: Any],
-                       let campaignId = json["campaignId"] as? String {
+                    let json = try JSONSerialization.jsonObject(with: data) as? [String: Any]
+                    if let campaignId = json?["campaignId"] as? String {
                         completion(true, campaignId)
                     } else if let campaignId = json?["campaignId"] as? Int {
                         completion(true, String(campaignId))
@@ -248,8 +247,8 @@ class IterableAPIClient {
             switch result {
             case .success(let data):
                 do {
-                    if let json = try JSONSerialization.jsonObject(with: data) as? [String: Any],
-                       let listId = json["id"] as? String {
+                    let json = try JSONSerialization.jsonObject(with: data) as? [String: Any]
+                    if let listId = json?["id"] as? String {
                         completion(true, listId)
                     } else if let listId = json?["id"] as? Int {
                         completion(true, String(listId))

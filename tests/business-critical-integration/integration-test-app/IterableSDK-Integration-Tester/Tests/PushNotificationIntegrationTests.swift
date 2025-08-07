@@ -60,7 +60,7 @@ class PushNotificationIntegrationTests: IntegrationTestBase {
         validatePushNotificationReceived()
         
         // Step 7: Test push notification tap and deep link handling
-        let notification = app.banners.firstMatch
+        let notification = app.alerts.firstMatch
         if notification.exists {
             notification.tap()
         } else {
@@ -203,7 +203,7 @@ class PushNotificationIntegrationTests: IntegrationTestBase {
         screenshotCapture.captureScreenshot(named: "silent-push-processed")
         
         // Verify no visible notification appeared
-        XCTAssertFalse(app.banners.firstMatch.exists)
+        XCTAssertFalse(app.alerts.firstMatch.exists)
         XCTAssertFalse(app.alerts.firstMatch.exists)
     }
     
@@ -231,7 +231,7 @@ class PushNotificationIntegrationTests: IntegrationTestBase {
         validateMetrics(eventType: "pushSend", expectedCount: 1)
         
         // Tap the notification to generate open event
-        let notification = app.banners.firstMatch
+        let notification = app.alerts.firstMatch
         if notification.waitForExistence(timeout: standardTimeout) {
             notification.tap()
         }
@@ -262,7 +262,7 @@ class PushNotificationIntegrationTests: IntegrationTestBase {
                 "category": "electronics"
             ],
             "customPayload": [
-                "userId": testUserEmail,
+                "userId": testUserEmail ?? "test@example.com",
                 "action": "view_product",
                 "metadata": [
                     "source": "integration_test",
@@ -274,7 +274,7 @@ class PushNotificationIntegrationTests: IntegrationTestBase {
         sendTestPushNotification(payload: customDataPushPayload)
         
         // Tap notification to process custom data
-        let notification = app.banners.firstMatch
+        let notification = app.alerts.firstMatch
         if notification.waitForExistence(timeout: standardTimeout) {
             notification.tap()
         }

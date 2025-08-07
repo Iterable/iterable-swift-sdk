@@ -37,16 +37,40 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
-		8AB7168E2E311A8D004AAB74 /* Exceptions for "IterableSDK-Integration-Tester" folder in "IterableSDK-Integration-Tester" target */ = {
+		8A24D3292E44EF9F00B53850 /* Exceptions for "IterableSDK-Integration-Tester" folder in "IterableSDK-Integration-TesterTests" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
-				SupportingFiles/Info.plist,
+				Tests/CampaignManager.swift,
 				Tests/DeepLinkingIntegrationTests.swift,
 				Tests/EmbeddedMessageIntegrationTests.swift,
 				Tests/InAppMessageIntegrationTests.swift,
 				Tests/IntegrationTestBase.swift,
+				Tests/IterableAPIClient.swift,
+				Tests/LocalIntegrationTest.swift,
 				Tests/main.swift,
+				Tests/MetricsValidator.swift,
 				Tests/PushNotificationIntegrationTests.swift,
+				Tests/PushNotificationSender.swift,
+				Tests/ScreenshotCapture.swift,
+			);
+			target = 8AB716272E3119A3004AAB74 /* IterableSDK-Integration-TesterTests */;
+		};
+		8AB7168E2E311A8D004AAB74 /* Exceptions for "IterableSDK-Integration-Tester" folder in "IterableSDK-Integration-Tester" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				SupportingFiles/Info.plist,
+				Tests/CampaignManager.swift,
+				Tests/DeepLinkingIntegrationTests.swift,
+				Tests/EmbeddedMessageIntegrationTests.swift,
+				Tests/InAppMessageIntegrationTests.swift,
+				Tests/IntegrationTestBase.swift,
+				Tests/IterableAPIClient.swift,
+				Tests/LocalIntegrationTest.swift,
+				Tests/main.swift,
+				Tests/MetricsValidator.swift,
+				Tests/PushNotificationIntegrationTests.swift,
+				Tests/PushNotificationSender.swift,
+				Tests/ScreenshotCapture.swift,
 			);
 			target = 8AB716112E3119A3004AAB74 /* IterableSDK-Integration-Tester */;
 		};
@@ -57,6 +81,7 @@
 			isa = PBXFileSystemSynchronizedRootGroup;
 			exceptions = (
 				8AB7168E2E311A8D004AAB74 /* Exceptions for "IterableSDK-Integration-Tester" folder in "IterableSDK-Integration-Tester" target */,
+				8A24D3292E44EF9F00B53850 /* Exceptions for "IterableSDK-Integration-Tester" folder in "IterableSDK-Integration-TesterTests" target */,
 			);
 			path = "IterableSDK-Integration-Tester";
 			sourceTree = "<group>";

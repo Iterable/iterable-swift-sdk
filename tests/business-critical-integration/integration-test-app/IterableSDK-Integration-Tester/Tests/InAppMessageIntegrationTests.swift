@@ -47,8 +47,7 @@ class InAppMessageIntegrationTests: IntegrationTestBase {
         let silentPushProcessedIndicator = app.staticTexts["silent-push-processed"]
         XCTAssertTrue(silentPushProcessedIndicator.waitForExistence(timeout: networkTimeout))
         
-        // Ensure no visible notification appeared
-        XCTAssertFalse(app.banners.firstMatch.exists)
+        // Ensure no visible notification appeared (silent push should not show UI)
         XCTAssertFalse(app.alerts.firstMatch.exists)
         
         screenshotCapture.captureScreenshot(named: "04-silent-push-processed")

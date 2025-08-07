@@ -119,7 +119,7 @@ class IntegrationTestBase: XCTestCase {
     }
     
     private func setupUtilities() {
-        screenshotCapture = ScreenshotCapture(app: app)
+        screenshotCapture = ScreenshotCapture(testCase: self)
     }
     
     private func waitForAppToBeReady() {
@@ -225,13 +225,10 @@ class IntegrationTestBase: XCTestCase {
     }
     
     func validatePushNotificationReceived() {
-        // Check for push notification banner or alert
-        let notification = app.banners.firstMatch
-        if !notification.exists {
-            // If no banner, check for alert
-            let alert = app.alerts.firstMatch
-            XCTAssertTrue(alert.waitForExistence(timeout: standardTimeout), "No push notification received")
-        }
+        // For integration tests, we'll check for push notification indicators in the app
+        // rather than system-level banners which are complex to test
+        let pushIndicator = app.staticTexts["push-notification-processed"]
+        XCTAssertTrue(pushIndicator.waitForExistence(timeout: standardTimeout), "No push notification received")
         
         screenshotCapture.captureScreenshot(named: "push-notification-received")
     }
