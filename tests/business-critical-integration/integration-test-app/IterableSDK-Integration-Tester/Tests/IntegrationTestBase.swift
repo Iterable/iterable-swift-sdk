@@ -68,14 +68,19 @@ class IntegrationTestBase: XCTestCase {
     // MARK: - Setup Helpers
     
     private func setupTestConfiguration() {
-        // Load configuration from environment variables
-        testUserEmail = ProcessInfo.processInfo.environment["TEST_USER_EMAIL"] ?? "integration-test@iterable.com"
-        testProjectId = ProcessInfo.processInfo.environment["TEST_PROJECT_ID"] ?? "test-project"
-        apiKey = ProcessInfo.processInfo.environment["ITERABLE_API_KEY"] ?? ""
-        serverKey = ProcessInfo.processInfo.environment["ITERABLE_SERVER_KEY"] ?? ""
+        // Load configuration from test-config.json
+        guard let configData = loadTestConfig() else {
+            XCTFail("Failed to load test-config.json")
+            return
+        }
         
-        XCTAssertFalse(apiKey.isEmpty, "ITERABLE_API_KEY must be set")
-        XCTAssertFalse(testProjectId.isEmpty, "TEST_PROJECT_ID must be set")
+        testUserEmail = configData["testUserEmail"] as? String ?? "integration-test@iterable.com"
+        testProjectId = configData["projectId"] as? String ?? "test-project"
+        apiKey = configData["mobileApiKey"] as? String ?? ""
+        serverKey = configData["serverApiKey"] as? String ?? ""
+        
+        XCTAssertFalse(apiKey.isEmpty, "mobileApiKey must be set in test-config.json")
+        XCTAssertFalse(testProjectId.isEmpty, "projectId must be set in test-config.json")
         
         // Load test configuration
         testConfig = TestConfiguration(
@@ -120,6 +125,17 @@ class IntegrationTestBase: XCTestCase {
     
     private func setupUtilities() {
         screenshotCapture = ScreenshotCapture(testCase: self)
+    }
+    
+    private func loadTestConfig() -> [String: Any]? {
+        guard let path = Bundle(for: type(of: self)).path(forResource: "test-config", ofType: "json"),
+              let data = try? Data(contentsOf: URL(fileURLWithPath: path)),
+              let json = try? JSONSerialization.jsonObject(with: data) as? [String: Any] else {
+            print("❌ Could not load test-config.json")
+            return nil
+        }
+        print("✅ Loaded test configuration from test-config.json")
+        return json
     }
     
     private func waitForAppToBeReady() {
