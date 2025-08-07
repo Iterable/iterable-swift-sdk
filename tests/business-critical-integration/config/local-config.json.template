@@ -1,0 +1,83 @@
+{
+  "apiKey": "YOUR_ITERABLE_API_KEY_HERE",
+  "serverKey": "YOUR_ITERABLE_SERVER_KEY_HERE",
+  "projectId": "your-test-project-id",
+  "testUserEmail": "integration-test@yourdomain.com",
+  "baseUrl": "https://api.iterable.com",
+  "environment": "local",
+  
+  "simulator": {
+    "deviceType": "iPhone 16 Pro",
+    "osVersion": "latest",
+    "preferredUUID": null,
+    "autoCreate": true,
+    "name": "Integration-Test-iPhone"
+  },
+  
+  "testing": {
+    "timeout": 60,
+    "retryAttempts": 3,
+    "pollInterval": 3,
+    "enableMocks": false,
+    "enableDebugLogging": true,
+    "screenshotMode": true,
+    "cleanupAfterTests": true
+  },
+  
+  "features": {
+    "pushNotifications": {
+      "enabled": true,
+      "requiresAPNsCertificate": false,
+      "mockDelivery": false,
+      "testTypes": ["standard", "silent", "deeplink", "buttons", "custom_data"]
+    },
+    "inAppMessages": {
+      "enabled": true,
+      "mockSilentPush": false,
+      "testTriggers": ["immediate", "event", "never"],
+      "testTypes": ["standard", "deeplink", "custom_data", "queue_management"]
+    },
+    "embeddedMessages": {
+      "enabled": true,
+      "mockEligibility": false,
+      "testPlacements": ["home", "product", "cart", "checkout"],
+      "testTypes": ["eligibility", "profile_updates", "list_subscription"]
+    },
+    "deepLinking": {
+      "enabled": true,
+      "mockUniversalLinks": false,
+      "testDomains": ["links.iterable.com"],
+      "testTypes": ["universal_links", "sms_links", "email_links", "push_links", "inapp_links"]
+    }
+  },
+  
+  "campaigns": {
+    "namePrefix": "local-integration-test",
+    "autoCleanup": true,
+    "maxRetentionDays": 1,
+    "createTestLists": true
+  },
+  
+  "reporting": {
+    "generateHTMLReport": true,
+    "includeScreenshots": true,
+    "includeMetrics": true,
+    "outputDirectory": "./reports",
+    "saveRawAPIResponses": false
+  },
+  
+  "development": {
+    "skipActualAPICalls": false,
+    "useMockBackend": false,
+    "localServerPort": 8080,
+    "enableDetailedLogging": true,
+    "saveNetworkTraffic": false
+  },
+  
+  "experimental": {
+    "parallelExecution": false,
+    "advancedMetricsValidation": true,
+    "crossPlatformTesting": false,
+    "performanceProfiling": false
+  }
+}

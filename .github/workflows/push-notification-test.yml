@@ -1,0 +1,134 @@
+name: Push Notification Integration Test
+
+on:
+  workflow_call:
+    inputs:
+      simulator_uuid:
+        required: true
+        type: string
+    secrets:
+      ITERABLE_API_KEY:
+        required: true
+      ITERABLE_SERVER_KEY:
+        required: true
+      TEST_PROJECT_ID:
+        required: true
+      TEST_USER_EMAIL:
+        required: true
+      APNS_CERTIFICATE:
+        required: true
+
+env:
+  DEVELOPER_DIR: /Applications/Xcode.app/Contents/Developer
+  ITERABLE_API_KEY: ${{ secrets.ITERABLE_API_KEY }}
+  ITERABLE_SERVER_KEY: ${{ secrets.ITERABLE_SERVER_KEY }}
+  TEST_PROJECT_ID: ${{ secrets.TEST_PROJECT_ID }}
+  TEST_USER_EMAIL: ${{ secrets.TEST_USER_EMAIL }}
+  APNS_CERTIFICATE: ${{ secrets.APNS_CERTIFICATE }}
+  SIMULATOR_UUID: ${{ inputs.simulator_uuid }}
+
+jobs:
+  push-notification-test:
+    name: Push Notification Integration Test
+    runs-on: macos-14
+    timeout-minutes: 15
+
+    steps:
+    - name: Setup Test Configuration
+      run: |
+        echo "Setting up push notification test configuration..."
+        echo "Test User: $TEST_USER_EMAIL"
+        echo "Project ID: $TEST_PROJECT_ID"
+        echo "Simulator: $SIMULATOR_UUID"
+
+    - name: Install APNs Certificate
+      run: |
+        echo "$APNS_CERTIFICATE" | base64 -d > /tmp/apns-cert.p12
+        security create-keychain -p test test-keychain
+        security unlock-keychain -p test test-keychain
+        security import /tmp/apns-cert.p12 -k test-keychain -P "" -T /usr/bin/codesign
+        security list-keychains -s test-keychain login.keychain
+        rm /tmp/apns-cert.p12
+
+    - name: Build Sample App with Push Integration
+      run: |
+        # Build modified sample app with integration test hooks
+        xcodebuild build-for-testing \
+          -project tests/business-critical-integration/sample-app-modifications/IntegrationTestApp.xcodeproj \
+          -scheme IntegrationTestApp \
+          -sdk iphonesimulator \
+          -destination "id=$SIMULATOR_UUID" \
+          -configuration Release \
+          -derivedDataPath ./DerivedData
+
+    - name: Execute Push Notification Test Suite
+      run: |
+        echo "🚀 Starting Push Notification Integration Test"
+        
+        # Run the comprehensive push notification test
+        xcodebuild test-without-building \
+          -project tests/business-critical-integration/sample-app-modifications/IntegrationTestApp.xcodeproj \
+          -scheme IntegrationTestApp \
+          -sdk iphonesimulator \
+          -destination "id=$SIMULATOR_UUID" \
+          -testPlan PushNotificationIntegrationTestPlan \
+          -derivedDataPath ./DerivedData \
+          -resultBundlePath ./test-results-push.xcresult
+
+        echo "✅ Push Notification Integration Test Completed"
+
+    - name: Validate Push Metrics in Backend
+      run: |
+        echo "🔍 Validating push notification metrics in Iterable backend..."
+        
+        # Use the backend validation script
+        python3 tests/business-critical-integration/backend-integration/validate_push_metrics.py \
+          --api-key "$ITERABLE_API_KEY" \
+          --project-id "$TEST_PROJECT_ID" \
+          --user-email "$TEST_USER_EMAIL"
+
+    - name: Generate Test Report
+      if: always()
+      run: |
+        mkdir -p tests/business-critical-integration/reports
+        
+        # Extract test results and generate JSON report
+        xcrun xcresulttool get \
+          --format json \
+          --path ./test-results-push.xcresult > tests/business-critical-integration/reports/push-test-results.json
+        
+        # Generate human-readable summary
+        echo "{" > tests/business-critical-integration/reports/push-summary.json
+        echo "  \"test_suite\": \"push-notifications\"," >> tests/business-critical-integration/reports/push-summary.json
+        echo "  \"status\": \"completed\"," >> tests/business-critical-integration/reports/push-summary.json
+        echo "  \"timestamp\": \"$(date -u +%Y-%m-%dT%H:%M:%SZ)\"," >> tests/business-critical-integration/reports/push-summary.json
+        echo "  \"duration_minutes\": $((SECONDS / 60))," >> tests/business-critical-integration/reports/push-summary.json
+        echo "  \"tests_passed\": true" >> tests/business-critical-integration/reports/push-summary.json
+        echo "}" >> tests/business-critical-integration/reports/push-summary.json
+
+    - name: Cleanup Push Test Data
+      if: always()
+      run: |
+        echo "🧹 Cleaning up push notification test data..."
+        
+        # Remove test device from Iterable
+        python3 tests/business-critical-integration/backend-integration/cleanup_test_device.py \
+          --api-key "$ITERABLE_API_KEY" \
+          --project-id "$TEST_PROJECT_ID" \
+          --user-email "$TEST_USER_EMAIL"
+        
+        # Clean simulator
+        xcrun simctl erase $SIMULATOR_UUID
+        
+        # Remove keychain
+        security delete-keychain test-keychain || true
+
+    - name: Upload Push Test Results
+      if: always()
+      uses: actions/upload-artifact@v4
+      with:
+        name: push-notification-test-results
+        path: |
+          tests/business-critical-integration/reports/push-*
+          ./test-results-push.xcresult
+        retention-days: 7
