@@ -26,10 +26,23 @@ echo_header "Build and Run Integration Test App"
 SIMULATOR_UUID_FILE="$INTEGRATION_ROOT/config/simulator-uuid.txt"
 if [[ -f "$SIMULATOR_UUID_FILE" ]]; then
     SIMULATOR_UUID=$(cat "$SIMULATOR_UUID_FILE")
-    echo_info "Using simulator: $SIMULATOR_UUID"
+    echo_info "Using simulator from config: $SIMULATOR_UUID"
 else
-    echo_error "No simulator configured. Run setup-local-environment.sh first"
-    exit 1
+    echo_warning "No simulator UUID file found, looking for 'Integration-Test-iPhone' simulator..."
+    SIMULATOR_UUID=$(xcrun simctl list devices | grep "Integration-Test-iPhone" | head -1 | grep -oE '\([A-F0-9-]{36}\)' | tr -d '()')
+    
+    if [[ -n "$SIMULATOR_UUID" ]]; then
+        echo_success "Found Integration-Test-iPhone simulator: $SIMULATOR_UUID"
+        # Save it for future use
+        mkdir -p "$INTEGRATION_ROOT/config"
+        echo "$SIMULATOR_UUID" > "$SIMULATOR_UUID_FILE"
+        echo_info "Saved simulator UUID to config file"
+    else
+        echo_error "No Integration-Test-iPhone simulator found. Available simulators:"
+        xcrun simctl list devices | grep iPhone | head -5
+        echo_info "Create one with: xcrun simctl create 'Integration-Test-iPhone' com.apple.CoreSimulator.SimDeviceType.iPhone-16-Pro com.apple.CoreSimulator.SimRuntime.iOS-18-1"
+        exit 1
+    fi
 fi
 
 # Check if simulator is running
