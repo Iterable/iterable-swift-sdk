@@ -39,6 +39,7 @@ extension DependencyContainerProtocol {
                      displayer: inAppDisplayer,
                      persister: inAppPersister,
                      inAppDelegate: config.inAppDelegate,
+                     inAppDisplayDelegate: config.inAppDisplayDelegate,
                      urlDelegate: config.urlDelegate,
                      customActionDelegate: config.customActionDelegate,
                      urlOpener: urlOpener,
