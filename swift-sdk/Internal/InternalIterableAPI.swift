@@ -48,6 +48,18 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
         }
     }
     
+    // MARK: - Pending Consent Tracking
+    
+    /// Holds consent data that should be sent once user creation is confirmed
+    private struct PendingConsentData {
+        let consentTimestamp: Int64
+        let email: String?
+        let userId: String?
+        let isUserKnown: Bool
+    }
+    
+    private var pendingConsentData: PendingConsentData?
+    
     var deviceMetadata: DeviceMetadata {
         DeviceMetadata(deviceId: deviceId,
                        platform: JsonValue.iOS,
@@ -154,24 +166,21 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
             let merge = identityResolution?.mergeOnUnknownUserToKnown ?? config.identityResolution.mergeOnUnknownUserToKnown
             let replay = identityResolution?.replayOnVisitorToKnown ?? config.identityResolution.replayOnVisitorToKnown
             if config.enableUnknownUserActivation, let email = email {
-                // Capture original unknown user state before clearing it
-                let originalUnknownUserId = self?.localStorage.userIdUnknownUser
+                // Prepare consent for replay scenario before merge
+                // Check if this is truly a replay scenario (no existing anonymous user before merge)
+                if let replay, replay, self?.localStorage.userIdUnknownUser == nil {
+                    self?.prepareConsentForReplayScenario(email: email, userId: nil)
+                }
                 
                 self?.attemptAndProcessMerge(
                     merge: merge ?? true,
                     replay: replay ?? true,
                     destinationUser: email,
                     isEmail: true,
-                    failureHandler: failureHandler,
-                    onReplayComplete: {
-                        // Send consent for replay scenario only after replay events are successfully processed
-                        // Check if this is truly a replay scenario (no existing anonymous user before merge)
-                        if let replay, replay, originalUnknownUserId == nil {
-                            self?.sendConsentForReplayScenario(email: email, userId: nil)
-                        }
-                    }
+                    failureHandler: failureHandler
                 )
                 
+                // Clear unknown user ID after merge for email login
                 self?.localStorage.userIdUnknownUser = nil
             }
         }
@@ -204,30 +213,28 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
                 return
             }
             if config.enableUnknownUserActivation {
-                // Capture original unknown user state before clearing it
-                let originalUnknownUserId = self?.localStorage.userIdUnknownUser
-                
                 if let userId = userId, userId != (self?.localStorage.userIdUnknownUser ?? "") {
                     let merge = identityResolution?.mergeOnUnknownUserToKnown ?? config.identityResolution.mergeOnUnknownUserToKnown
                     let replay = identityResolution?.replayOnVisitorToKnown ?? config.identityResolution.replayOnVisitorToKnown
+                    
+                    // Prepare consent for replay scenario before merge
+                    // Check if this is truly a replay scenario (no existing anonymous user before merge)
+                    if let replay, replay, self?.localStorage.userIdUnknownUser == nil {
+                        self?.prepareConsentForReplayScenario(email: nil, userId: userId)
+                    }
+                    
                     self?.attemptAndProcessMerge(
                         merge: merge ?? true,
                         replay: replay ?? true,
                         destinationUser: userId,
                         isEmail: false,
-                        failureHandler: failureHandler,
-                        onReplayComplete: {
-                            // Send consent for replay scenario only after replay events are successfully processed
-                            // Check if this is truly a replay scenario (no existing anonymous user before merge)
-                            if let replay, replay, originalUnknownUserId == nil {
-                                self?.sendConsentForReplayScenario(email: nil, userId: userId)
-                            }
-                        }
+                        failureHandler: failureHandler
                     )
-                }
-
-                if !isUnknownUser {
-                    self?.localStorage.userIdUnknownUser = nil
+                    
+                    // Clear unknown user ID after merge (unless this is an unknown user login)
+                    if !isUnknownUser {
+                        self?.localStorage.userIdUnknownUser = nil
+                    }
                 }
             }
         }
@@ -242,14 +249,12 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
         logoutPreviousUser()
     }
     
-    func attemptAndProcessMerge(merge: Bool, replay: Bool, destinationUser: String?, isEmail: Bool, failureHandler: OnFailureHandler? = nil, onReplayComplete: (() -> Void)? = nil) {
+    func attemptAndProcessMerge(merge: Bool, replay: Bool, destinationUser: String?, isEmail: Bool, failureHandler: OnFailureHandler? = nil) {
         unknownUserMerge.tryMergeUser(destinationUser: destinationUser, isEmail: isEmail, merge: merge) { mergeResult, error in
             
             if mergeResult == MergeResult.mergenotrequired ||  mergeResult == MergeResult.mergesuccessful {
                 if (replay) {
                     self.unknownUserManager.syncEvents()
-                    // Execute the completion callback after replay events are synced
-                    onReplayComplete?()
                 }
             } else {
                 failureHandler?(error, nil)
@@ -285,37 +290,54 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
         return self.localStorage.visitorUsageTracked
     }
 
-    /// Sends consent data for replay scenarios.
+    /// Prepares consent data for replay scenarios to be sent when user creation is confirmed.
     /// 
     /// A "replay scenario" occurs when a user signs up or logs in but does not meet the criteria
-    /// for immediate consent tracking. This method ensures that consent data is sent retroactively
-    /// if the following conditions are met:
-    /// - A consent timestamp exists (`visitorConsentTimestamp` is not nil).
-    /// - No anonymous user ID is present (`userIdAnnon` is nil).
-    /// - Anonymous usage tracking is enabled (`anonymousUsageTrack` is true).
+    /// for immediate consent tracking. This method stores consent data to be sent once user 
+    /// creation is confirmed through the registration success callback.
     ///
     /// This method is typically called during user sign-up or sign-in processes to ensure that
     /// consent data is properly recorded for compliance and analytics purposes.
-    private func sendConsentForReplayScenario(email: String?, userId: String?) {
+    private func prepareConsentForReplayScenario(email: String?, userId: String?) {
         guard let consentTimestamp = localStorage.visitorConsentTimestamp else {
             return
         }
         
-        // Only send consent if we have previous anonymous tracking consent but no anonymous user ID
+        // Only prepare consent if we have previous anonymous tracking consent but no anonymous user ID
         guard localStorage.userIdUnknownUser == nil && localStorage.visitorUsageTracked else {
             return
         }
         
-        apiClient.trackConsent(
+        // Store the consent data to be sent when user creation is confirmed
+        pendingConsentData = PendingConsentData(
             consentTimestamp: consentTimestamp,
             email: email,
             userId: userId,
             isUserKnown: true
-        ).onSuccess { _ in
-            ITBInfo("Consent tracked successfully for replay scenario")
-        }.onError { error in
-            ITBError("Failed to track consent for replay scenario: \(error)")
+        )
+        
+        ITBInfo("Consent data prepared for replay scenario - will send after user creation is confirmed")
+    }
+    
+    /// Sends any pending consent data now that user creation is confirmed
+    private func sendPendingConsentIfNeeded() {
+        guard let consentData = pendingConsentData else {
+            return
         }
+        
+        apiClient.trackConsent(
+            consentTimestamp: consentData.consentTimestamp,
+            email: consentData.email,
+            userId: consentData.userId,
+            isUserKnown: consentData.isUserKnown
+        ).onSuccess { _ in
+            ITBInfo("Pending consent tracked successfully after user creation")
+        }.onError { error in
+            ITBError("Failed to track pending consent after user creation: \(error)")
+        }
+        
+        // Clear the pending consent data
+        pendingConsentData = nil
     }
 
     // MARK: - API Request Calls
@@ -355,10 +377,14 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
         requestHandler.register(registerTokenInfo: registerTokenInfo,
                                 notificationStateProvider: notificationStateProvider,
                                 onSuccess: { (_ data: [AnyHashable: Any]?) in
+                                                // Send any pending consent now that user creation is confirmed
+                                                self.sendPendingConsentIfNeeded()
                                                 self._successCallback?(data)
                                                 onSuccess?(data)
                                 },
                                 onFailure: { (_ reason: String?, _ data: Data?) in
+                                                // Clear any pending consent on failure
+                                                self.pendingConsentData = nil
                                                 self._failureCallback?(reason, data)
                                                 onFailure?(reason, data)
                                 }
@@ -856,14 +882,17 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
         }, shouldIgnoreRetryPolicy: true)
     }
     
-    private func completeUserLogin(onloginSuccessCallBack: (()->())? = nil) {
+        private func completeUserLogin(onloginSuccessCallBack: (()->())? = nil) {
         ITBInfo()        
         guard isSDKInitialized() else { return }
         
         if config.autoPushRegistration {
             notificationStateProvider.registerForRemoteNotifications()
         } else {
-            _successCallback?([:])
+            // If auto push registration is disabled, send pending consent here
+            // since register() won't be called automatically
+            sendPendingConsentIfNeeded()
+            _successCallback?([:])            
         }
         
         _ = inAppManager.scheduleSync()
