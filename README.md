@@ -16,13 +16,6 @@ message, web push notification campaigns to your customers.
 
 This SDK helps you integrate your iOS apps with Iterable.
 
-## For AI Agents & Developers
-
-Looking for quick build and test scripts? Check out the [`agent/`](agent/) folder for:
-- **Build script**: `./agent/build.sh` (fast incremental builds)  
-- **Test script**: `./agent/test.sh` (comprehensive test runner)
-- **Documentation**: [`agent/AGENT_README.md`](agent/AGENT_README.md) (detailed guide)
-
 ## Supported iOS versions
 
 Iterable's iOS SDK supports iOS 10 and higher.
