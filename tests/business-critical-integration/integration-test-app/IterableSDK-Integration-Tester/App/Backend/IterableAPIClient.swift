@@ -158,28 +158,10 @@ class IterableAPIClient {
                 }
             case .failure(let error):
                 print("❌ Error with export endpoint: \(error)")
-                // Return mock data for testing
-                let mockUsers = self.createMockUsers()
-                completion(true, mockUsers)
+                // Don't return mock data, let the UI handle the error
+                completion(false, [])
             }
         }
-    }
-    
-    private func createMockUsers() -> [[String: Any]] {
-        return [
-            [
-                "email": "test@example.com",
-                "userId": "test-user-1",
-                "devices": [
-                    ["token": "mock-device-token-1", "platform": "iOS"]
-                ]
-            ],
-            [
-                "email": "demo@example.com", 
-                "userId": "demo-user-2",
-                "devices": []
-            ]
-        ]
     }
     
     func updateUserProfile(email: String, dataFields: [String: Any], completion: @escaping (Bool) -> Void) {

@@ -89,7 +89,7 @@ class NetworkMonitor: NSObject {
         // Swizzle URLSessionConfiguration to inject our protocol into ALL sessions
         URLSessionConfiguration.swizzleProtocolClasses()
         
-        print("🔍 NetworkMonitor: Started monitoring with URLProtocol registration and swizzling")
+        //print("🔍 NetworkMonitor: Started monitoring with URLProtocol registration and swizzling")
     }
     
     func addRequest(_ request: NetworkRequest) {
@@ -146,7 +146,7 @@ class NetworkMonitorURLProtocol: URLProtocol {
         let canHandle = scheme == "http" || scheme == "https"
         
         if canHandle {
-            print("🔍 URLProtocol canInit: YES for \(request.url?.absoluteString ?? "unknown")")
+            //print("🔍 URLProtocol canInit: YES for \(request.url?.absoluteString ?? "unknown")")
         }
         
         return canHandle
@@ -168,7 +168,7 @@ class NetworkMonitorURLProtocol: URLProtocol {
         requestId = networkRequest.id
         
         // Add request to monitor
-        print("📡 NetworkMonitor: Intercepted request to \(networkRequest.url.absoluteString)")
+        //print("📡 NetworkMonitor: Intercepted request to \(networkRequest.url.absoluteString)")
         NetworkMonitor.shared.addRequest(networkRequest)
         
         // Create session to make actual request
@@ -277,7 +277,7 @@ extension URLSessionConfiguration {
         if !protocols.contains(where: { $0 == NetworkMonitorURLProtocol.self }) {
             protocols.insert(NetworkMonitorURLProtocol.self, at: 0)
             protocolClasses = protocols
-            print("🔍 Injected NetworkMonitorURLProtocol into URLSessionConfiguration")
+            //print("🔍 Injected NetworkMonitorURLProtocol into URLSessionConfiguration")
         }
     }
 }

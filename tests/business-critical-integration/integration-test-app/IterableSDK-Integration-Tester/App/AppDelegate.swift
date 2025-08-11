@@ -110,9 +110,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         
         // Start network monitoring
         NetworkMonitor.shared.startMonitoring()
-        
-        // Test network monitoring with a fake request
-        makeTestNetworkRequest()
 
         return true
     }
@@ -228,26 +225,4 @@ extension AppDelegate: IterableCustomActionDelegate {
     }
     
     // MARK: - Test Network Monitoring
-    
-    private func makeTestNetworkRequest() {
-        print("🔍 Making test network request to verify monitoring...")
-        
-        // Delay to ensure monitoring is fully set up
-        DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
-            guard let url = URL(string: "https://httpbin.org/get?test=network_monitor") else { return }
-            
-            let task = URLSession.shared.dataTask(with: url) { data, response, error in
-                DispatchQueue.main.async {
-                    if let httpResponse = response as? HTTPURLResponse {
-                        print("✅ Test request completed with status: \(httpResponse.statusCode)")
-                    } else if let error = error {
-                        print("❌ Test request failed: \(error.localizedDescription)")
-                    }
-                }
-            }
-            
-            task.resume()
-            print("🚀 Test request sent to: \(url)")
-        }
-    }
 }

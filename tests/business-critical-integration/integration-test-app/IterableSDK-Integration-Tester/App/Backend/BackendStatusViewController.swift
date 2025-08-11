@@ -77,6 +77,18 @@ final class BackendStatusViewController: UIViewController {
         return label
     }()
     
+    private let errorLabel: UILabel = {
+        let label = UILabel()
+        label.text = ""
+        label.font = .systemFont(ofSize: 14, weight: .medium)
+        label.textColor = .systemRed
+        label.numberOfLines = 0
+        label.textAlignment = .center
+        label.isHidden = true
+        label.translatesAutoresizingMaskIntoConstraints = false
+        return label
+    }()
+    
     private let usersTableView: UITableView = {
         let tableView = UITableView()
         tableView.backgroundColor = .systemBackground
@@ -144,6 +156,7 @@ final class BackendStatusViewController: UIViewController {
         contentView.addSubview(refreshButton)
         contentView.addSubview(usersHeaderLabel)
         contentView.addSubview(usersCountLabel)
+        contentView.addSubview(errorLabel)
         contentView.addSubview(usersTableView)
         contentView.addSubview(sendPushButton)
         contentView.addSubview(activityIndicator)
@@ -192,8 +205,13 @@ final class BackendStatusViewController: UIViewController {
             usersCountLabel.centerYAnchor.constraint(equalTo: usersHeaderLabel.centerYAnchor),
             usersCountLabel.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -20),
             
+            // Error label
+            errorLabel.topAnchor.constraint(equalTo: usersHeaderLabel.bottomAnchor, constant: 8),
+            errorLabel.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 20),
+            errorLabel.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -20),
+            
             // Users table view
-            usersTableView.topAnchor.constraint(equalTo: usersHeaderLabel.bottomAnchor, constant: 16),
+            usersTableView.topAnchor.constraint(equalTo: errorLabel.bottomAnchor, constant: 8),
             usersTableView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 20),
             usersTableView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -20),
             usersTableView.heightAnchor.constraint(equalToConstant: 300),
@@ -262,16 +280,21 @@ final class BackendStatusViewController: UIViewController {
                     self?.usersCountLabel.text = "Count: \(users.count)"
                     self?.usersTableView.reloadData()
                     self?.updateSendPushButtonState()
+                    self?.hideError()
                     
                     if users.isEmpty {
                         print("⚠️ Successfully connected but no users found in project")
-                        self?.showAlert(title: "No Users Found", message: "Successfully connected to Iterable API but no users found in your project. Try registering a user first through the integration test app.")
+                        self?.showError("Successfully connected to Iterable API but no users found in your project.")
                     } else {
                         print("✅ Successfully loaded \(users.count) registered users")
                     }
                 } else {
                     print("❌ Failed to load registered users from Iterable API")
-                    self?.showAlert(title: "API Error", message: "Failed to load registered users from Iterable API. Check console for detailed error messages and verify your API keys are correct.")
+                    self?.registeredUsers = []
+                    self?.usersCountLabel.text = "Count: 0"
+                    self?.usersTableView.reloadData()
+                    self?.updateSendPushButtonState()
+                    self?.showError("Failed to load users from Iterable API. The endpoints /api/users/search and /api/export/userEvents returned 404 errors. Check your API keys and project configuration.")
                 }
             }
         }
@@ -323,6 +346,17 @@ final class BackendStatusViewController: UIViewController {
     
     private func loadServerKey() -> String? {
         return AppDelegate.loadServerKeyFromConfig()
+    }
+    
+    private func showError(_ message: String) {
+        errorLabel.text = message
+        errorLabel.isHidden = false
+        usersTableView.isHidden = true
+    }
+    
+    private func hideError() {
+        errorLabel.isHidden = true
+        usersTableView.isHidden = false
     }
     
     private func showAlert(title: String, message: String) {

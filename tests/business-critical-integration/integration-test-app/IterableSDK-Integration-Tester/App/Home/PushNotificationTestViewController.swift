@@ -40,6 +40,17 @@ final class PushNotificationTestViewController: UIViewController {
         return button
     }()
     
+    private let backToHomeButton: UIButton = {
+        let button = UIButton(type: .system)
+        button.setTitle("Back to Home Screen", for: .normal)
+        button.backgroundColor = .systemGray
+        button.setTitleColor(.white, for: .normal)
+        button.layer.cornerRadius = 8
+        button.heightAnchor.constraint(equalToConstant: 44).isActive = true
+        button.accessibilityIdentifier = "back-to-home-button"
+        return button
+    }()
+    
     // MARK: - Lifecycle
     
     override func viewDidLoad() {
@@ -58,6 +69,7 @@ final class PushNotificationTestViewController: UIViewController {
             registerButton,
             openSettingsButton,
             testPushButton,
+            backToHomeButton,
             statusView
         ])
         stack.axis = .vertical
@@ -77,6 +89,7 @@ final class PushNotificationTestViewController: UIViewController {
         registerButton.addTarget(self, action: #selector(registerForNotifications), for: .touchUpInside)
         openSettingsButton.addTarget(self, action: #selector(openNotificationSettings), for: .touchUpInside)
         testPushButton.addTarget(self, action: #selector(testLocalNotification), for: .touchUpInside)
+        backToHomeButton.addTarget(self, action: #selector(backToHomeScreen), for: .touchUpInside)
     }
     
     // MARK: - Actions
@@ -137,6 +150,11 @@ final class PushNotificationTestViewController: UIViewController {
                 }
             }
         }
+    }
+    
+    @objc private func backToHomeScreen() {
+        // Navigate back to the home screen
+        navigationController?.popToRootViewController(animated: true)
     }
     
     // MARK: - Helper Methods
