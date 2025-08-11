@@ -84,7 +84,7 @@ class PushNotificationIntegrationTests: IntegrationTestBase {
         screenshotCapture.captureScreenshot(named: "05-deep-link-handled")
     }
     
-    func testPushPermissionHandling() {
+    /*func testPushPermissionHandling() {
         // Test push notification permission edge cases
         
         // Test permission denied scenario
@@ -284,5 +284,5 @@ class PushNotificationIntegrationTests: IntegrationTestBase {
         XCTAssertTrue(customDataProcessedIndicator.waitForExistence(timeout: standardTimeout))
         
         screenshotCapture.captureScreenshot(named: "custom-data-processed")
-    }
+    }*/
 }

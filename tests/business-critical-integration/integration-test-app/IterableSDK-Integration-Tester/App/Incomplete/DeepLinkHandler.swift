@@ -6,6 +6,7 @@
 //  Copyright © 2018 Iterable. All rights reserved.
 //
 
+/*
 import Foundation
 import UIKit
 
@@ -117,3 +118,5 @@ struct DeepLinkHandler {
         }
     }
 }
+
+*/

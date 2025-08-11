@@ -1,3 +1,5 @@
+
+/*
 import Foundation
 import UIKit
 
@@ -56,3 +58,5 @@ func enhancedDidRegisterForRemoteNotifications(_ application: UIApplication, dev
 func setupIntegrationTestMode() {
     IntegrationTestHelper.shared.setupIntegrationTestMode()
 }
+
+*/

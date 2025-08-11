@@ -15,42 +15,8 @@ import IterableSDK
 class AppDelegate: UIResponder, UIApplicationDelegate {
     var window: UIWindow?
     
-    // ITBL: Load API key from test config file
-    let iterableApiKey: String = {
-        guard let configApiKey = loadApiKeyFromConfig() else {
-            fatalError("❌ Required test-config.json file not found or missing mobileApiKey")
-        }
-        return configApiKey
-    }()
-    
-    private static func loadApiKeyFromConfig() -> String? {
-        guard let path = Bundle.main.path(forResource: "test-config", ofType: "json"),
-              let data = try? Data(contentsOf: URL(fileURLWithPath: path)),
-              let json = try? JSONSerialization.jsonObject(with: data) as? [String: Any],
-              let apiKey = json["mobileApiKey"] as? String,
-              !apiKey.isEmpty else {
-            print("❌ Could not load API key from test-config.json")
-            return nil
-        }
-        print("✅ Loaded API key from test-config.json")
-        return apiKey
-    }
-    
-    private static func loadTestUserEmailFromConfig() -> String? {
-        guard let path = Bundle.main.path(forResource: "test-config", ofType: "json"),
-              let data = try? Data(contentsOf: URL(fileURLWithPath: path)),
-              let json = try? JSONSerialization.jsonObject(with: data) as? [String: Any],
-              let email = json["testUserEmail"] as? String,
-              !email.isEmpty else {
-            print("❌ Could not load test user email from test-config.json")
-            return nil
-        }
-        print("✅ Loaded test user email from test-config.json")
-        return email
-    }
-    
     private func setupTestModeUI() {
-        // Add visual indicator that we're always in test mode
+        // Add visual indicator that we're always in integration test mode
         DispatchQueue.main.async {
             if let window = self.window {
                 let testBanner = UIView()
@@ -62,6 +28,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
                 testLabel.textAlignment = .center
                 testLabel.font = UIFont.systemFont(ofSize: 12, weight: .bold)
                 testLabel.translatesAutoresizingMaskIntoConstraints = false
+                testLabel.accessibilityIdentifier = "app-ready-indicator"
 
                 testBanner.addSubview(testLabel)
                 window.addSubview(testBanner)
@@ -82,31 +49,15 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     }
     
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
-        // ITBL: Setup Notification
+        // Create window and set root to HomeViewController programmatically for a clean test UI
+        window = UIWindow(frame: UIScreen.main.bounds)
+        let root = UINavigationController(rootViewController: HomeViewController())
+        window?.rootViewController = root
+        window?.makeKeyAndVisible()
+
         setupNotifications()
-        
-        // ITBL: Initialize API
-        let config = IterableConfig()
-        config.customActionDelegate = self
-        config.urlDelegate = self
-        config.inAppDisplayInterval = 1
-        
-        IterableAPI.initialize(apiKey: iterableApiKey,
-                               launchOptions: launchOptions,
-                               config: config)
-        
-        // Set user email from test config
-        guard let email = AppDelegate.loadTestUserEmailFromConfig() else {
-            fatalError("❌ Required test-config.json file not found or missing testUserEmail")
-        }
-        IterableAPI.email = email
-        print("✅ Configured test user email: \(email)")
-        
-        // Setup test mode indicators
         setupTestModeUI()
-        
-        enhancedApplicationDidFinishLaunching(application, launchOptions: launchOptions)
-        
+
         return true
     }
     
@@ -126,7 +77,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     
     func applicationDidBecomeActive(_ application: UIApplication) {
         // App is always in test mode - no validation needed
-        enhancedApplicationDidBecomeActive(application)
     }
     
     func applicationWillTerminate(_: UIApplication) {
@@ -136,20 +86,18 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     // MARK: Silent Push for in-app
     
     func application(_ application: UIApplication, didReceiveRemoteNotification userInfo: [AnyHashable: Any], fetchCompletionHandler completionHandler: @escaping (UIBackgroundFetchResult) -> Void) {
-        enhancedDidReceiveRemoteNotification(application, userInfo: userInfo, fetchCompletionHandler: completionHandler)
     }
     
     // MARK: Deep link
     
     func application(_ application: UIApplication, continue userActivity: NSUserActivity, restorationHandler: @escaping ([UIUserActivityRestoring]?) -> Void) -> Bool {
-        return enhancedContinueUserActivity(application, userActivity: userActivity, restorationHandler: restorationHandler)
+        return false // No deep link handling in this test app
     }
     
     // MARK: Notification
     
     // ITBL:
     func application(_ application: UIApplication, didRegisterForRemoteNotificationsWithDeviceToken deviceToken: Data) {
-        enhancedDidRegisterForRemoteNotifications(application, deviceToken: deviceToken)
     }
     
     func application(_: UIApplication, didFailToRegisterForRemoteNotificationsWithError _: Error) {}
@@ -199,7 +147,8 @@ extension AppDelegate: UNUserNotificationCenterDelegate {
 extension AppDelegate: IterableURLDelegate {
     // return true if we handled the url
     func handle(iterableURL url: URL, inContext _: IterableActionContext) -> Bool {
-        DeepLinkHandler.handle(url: url)
+        //DeepLinkHandler.handle(url: url)
+        return false
     }
 }
 
@@ -211,7 +160,8 @@ extension AppDelegate: IterableCustomActionDelegate {
     func handle(iterableCustomAction action: IterableAction, inContext _: IterableActionContext) -> Bool {
         if action.type == "handleFindCoffee" {
             if let query = action.userInput {
-                return DeepLinkHandler.handle(url: URL(string: "https://example.com/coffee?q=\(query)")!)
+                return false
+                //return //DeepLinkHandler.handle(url: URL(string: "https://example.com/coffee?q=\(query)")!)
             }
         }
         return false

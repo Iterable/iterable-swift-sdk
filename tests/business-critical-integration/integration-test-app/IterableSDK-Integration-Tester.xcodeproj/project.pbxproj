@@ -35,18 +35,16 @@
 		8A24D3B12E4508F400B53850 /* Exceptions for "IterableSDK-Integration-Tester" folder in "IterableSDK-Integration-TesterUITests" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
-				Tests/CampaignManager.swift,
-				Tests/DeepLinkingIntegrationTests.swift,
-				Tests/EmbeddedMessageIntegrationTests.swift,
-				Tests/InAppMessageIntegrationTests.swift,
+				Tests/Incomplete/DeepLinkingIntegrationTests.swift,
+				Tests/Incomplete/EmbeddedMessageIntegrationTests.swift,
+				Tests/Incomplete/InAppMessageIntegrationTests.swift,
 				Tests/IntegrationTestBase.swift,
-				Tests/IterableAPIClient.swift,
-				Tests/LocalIntegrationTest.swift,
-				Tests/main.swift,
-				Tests/MetricsValidator.swift,
 				Tests/PushNotificationIntegrationTests.swift,
-				Tests/PushNotificationSender.swift,
-				Tests/ScreenshotCapture.swift,
+				Tests/Utilities/CampaignManager.swift,
+				Tests/Utilities/IterableAPIClient.swift,
+				Tests/Utilities/MetricsValidator.swift,
+				Tests/Utilities/PushNotificationSender.swift,
+				Tests/Utilities/ScreenshotCapture.swift,
 			);
 			target = 8AB716312E3119A3004AAB74 /* IterableSDK-Integration-TesterUITests */;
 		};
@@ -54,18 +52,16 @@
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
 				SupportingFiles/Info.plist,
-				Tests/CampaignManager.swift,
-				Tests/DeepLinkingIntegrationTests.swift,
-				Tests/EmbeddedMessageIntegrationTests.swift,
-				Tests/InAppMessageIntegrationTests.swift,
+				Tests/Incomplete/DeepLinkingIntegrationTests.swift,
+				Tests/Incomplete/EmbeddedMessageIntegrationTests.swift,
+				Tests/Incomplete/InAppMessageIntegrationTests.swift,
 				Tests/IntegrationTestBase.swift,
-				Tests/IterableAPIClient.swift,
-				Tests/LocalIntegrationTest.swift,
-				Tests/main.swift,
-				Tests/MetricsValidator.swift,
 				Tests/PushNotificationIntegrationTests.swift,
-				Tests/PushNotificationSender.swift,
-				Tests/ScreenshotCapture.swift,
+				Tests/Utilities/CampaignManager.swift,
+				Tests/Utilities/IterableAPIClient.swift,
+				Tests/Utilities/MetricsValidator.swift,
+				Tests/Utilities/PushNotificationSender.swift,
+				Tests/Utilities/ScreenshotCapture.swift,
 			);
 			target = 8AB716112E3119A3004AAB74 /* IterableSDK-Integration-Tester */;
 		};
@@ -289,7 +285,6 @@
 				INFOPLIST_FILE = "IterableSDK-Integration-Tester/SupportingFiles/Info.plist";
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
-				INFOPLIST_KEY_UIMainStoryboardFile = Main;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -317,7 +312,6 @@
 				INFOPLIST_FILE = "IterableSDK-Integration-Tester/SupportingFiles/Info.plist";
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
-				INFOPLIST_KEY_UIMainStoryboardFile = Main;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				LD_RUNPATH_SEARCH_PATHS = (

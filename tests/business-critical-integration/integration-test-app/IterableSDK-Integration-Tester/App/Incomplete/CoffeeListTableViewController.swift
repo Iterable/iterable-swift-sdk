@@ -6,6 +6,7 @@
 //  Copyright © 2018 Iterable. All rights reserved.
 //
 
+/*
 import UIKit
 
 import IterableSDK
@@ -139,9 +140,117 @@ extension CoffeeListTableViewController: UISearchResultsUpdating {
         }
         tableView.reloadData()
     }
+    
+    // MARK: - Integration Test Setup
+    
+    private func setupIntegrationTestMode() {
+        // Add test UI elements for integration testing
+        addSDKInitializationButton()
+        addTestUserButton()
+        addSDKStatusIndicator()
+    }
+    
+    private func addSDKInitializationButton() {
+        let initButton = UIButton(type: .system)
+        initButton.setTitle("Initialize SDK", for: .normal)
+        initButton.backgroundColor = .systemBlue
+        initButton.setTitleColor(.white, for: .normal)
+        initButton.layer.cornerRadius = 8
+        initButton.accessibilityIdentifier = "initialize-sdk-button"
+        initButton.addTarget(self, action: #selector(initializeSDKTapped), for: .touchUpInside)
+        
+        view.addSubview(initButton)
+        initButton.translatesAutoresizingMaskIntoConstraints = false
+        
+        NSLayoutConstraint.activate([
+            initButton.leadingAnchor.constraint(equalTo: view.centerXAnchor, constant: -210),
+            initButton.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -20),
+            initButton.widthAnchor.constraint(equalToConstant: 180),
+            initButton.heightAnchor.constraint(equalToConstant: 44)
+        ])
+    }
+    
+    private func addTestUserButton() {
+        let userButton = UIButton(type: .system)
+        userButton.setTitle("Add Test User", for: .normal)
+        userButton.backgroundColor = .systemGreen
+        userButton.setTitleColor(.white, for: .normal)
+        userButton.layer.cornerRadius = 8
+        userButton.accessibilityIdentifier = "add-test-user-button"
+        userButton.addTarget(self, action: #selector(addTestUserTapped), for: .touchUpInside)
+        
+        view.addSubview(userButton)
+        userButton.translatesAutoresizingMaskIntoConstraints = false
+        
+        NSLayoutConstraint.activate([
+            userButton.trailingAnchor.constraint(equalTo: view.centerXAnchor, constant: 210),
+            userButton.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -20),
+            userButton.widthAnchor.constraint(equalToConstant: 180),
+            userButton.heightAnchor.constraint(equalToConstant: 44)
+        ])
+    }
+    
+    private func addSDKStatusIndicator() {
+        let statusLabel = UILabel()
+        statusLabel.text = "SDK Not Initialized"
+        statusLabel.textAlignment = .center
+        statusLabel.font = UIFont.systemFont(ofSize: 14, weight: .medium)
+        statusLabel.textColor = .systemRed
+        statusLabel.accessibilityIdentifier = "sdk-status-indicator"
+        
+        view.addSubview(statusLabel)
+        statusLabel.translatesAutoresizingMaskIntoConstraints = false
+        
+        NSLayoutConstraint.activate([
+            statusLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            statusLabel.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -80),
+            statusLabel.widthAnchor.constraint(equalToConstant: 300),
+            statusLabel.heightAnchor.constraint(equalToConstant: 30)
+        ])
+    }
+    
+    @objc private func initializeSDKTapped() {
+        print("🧪 SDK Initialize button tapped")
+        
+        // Call AppDelegate method to initialize SDK
+        AppDelegate.initializeSDKForTesting()
+        
+        // Update status to show SDK is ready
+        updateStatusLabel(text: "SDK Initialized", color: .systemBlue, identifier: "sdk-ready-indicator")
+        
+        // Hide the initialize button
+        if let initButton = view.subviews.first(where: { $0.accessibilityIdentifier == "initialize-sdk-button" }) {
+            initButton.isHidden = true
+        }
+    }
+    
+    @objc private func addTestUserTapped() {
+        print("🧪 Add Test User button tapped")
+        
+        // Call AppDelegate method to add test user
+        AppDelegate.addTestUserForTesting()
+        
+        // Update status to show user is added
+        updateStatusLabel(text: "Test User Added - Ready for Testing", color: .systemGreen, identifier: "sdk-ready-indicator")
+        
+        // Hide the add user button
+        if let userButton = view.subviews.first(where: { $0.accessibilityIdentifier == "add-test-user-button" }) {
+            userButton.isHidden = true
+        }
+    }
+    
+    private func updateStatusLabel(text: String, color: UIColor, identifier: String) {
+        if let statusLabel = view.subviews.first(where: { $0.accessibilityIdentifier == "sdk-status-indicator" || $0.accessibilityIdentifier == "sdk-ready-indicator" }) as? UILabel {
+            statusLabel.text = text
+            statusLabel.textColor = color
+            statusLabel.accessibilityIdentifier = identifier
+        }
+    }
 }
 
 extension CoffeeListTableViewController: StoryboardInstantiable {
     static var storyboardName = "Main"
     static var storyboardId = "CoffeeListTableViewController"
 }
+
+*/

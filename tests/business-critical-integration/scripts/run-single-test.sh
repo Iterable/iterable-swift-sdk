@@ -115,21 +115,21 @@ if [ "$TEST_CLASS" = "all" ]; then
         -project IterableSDK-Integration-Tester.xcodeproj \
         -scheme IterableSDK-Integration-Tester \
         -destination "id=$SIMULATOR_UUID" \
-        > "$RAW_OUTPUT" 2>&1
+        2>&1 | tee "$RAW_OUTPUT" | xcpretty --color
 else
     # Run specific test class
     xcodebuild test \
         -project IterableSDK-Integration-Tester.xcodeproj \
         -scheme IterableSDK-Integration-Tester \
         -destination "id=$SIMULATOR_UUID" \
-        -only-testing "IterableSDK-Integration-TesterTests/$TEST_CLASS" \
-        > "$RAW_OUTPUT" 2>&1
+        -only-testing "IterableSDK-Integration-TesterUITests/$TEST_CLASS" \
+        2>&1 | tee "$RAW_OUTPUT" | xcpretty --color
 fi
 
-TEST_EXIT_CODE=$?
+TEST_EXIT_CODE=${PIPESTATUS[0]}
 
-# Process output with xcpretty and save both versions
-cat "$RAW_OUTPUT" | xcpretty --color | tee "$PRETTY_OUTPUT"
+# Pretty output was already shown, just save a copy
+cp "$RAW_OUTPUT" "$PRETTY_OUTPUT"
 
 # Save the raw output to logs
 mkdir -p "../logs"
