@@ -39,13 +39,7 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
     }
     
     var deviceId: String {
-        if let value = localStorage.deviceId {
-            return value
-        } else {
-            let value = IterableUtil.generateUUID()
-            localStorage.deviceId = value
-            return value
-        }
+        localStorage.deviceId
     }
     
     var deviceMetadata: DeviceMetadata {
