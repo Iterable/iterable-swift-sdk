@@ -39,8 +39,18 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
                 networkButton.translatesAutoresizingMaskIntoConstraints = false
                 networkButton.addTarget(self, action: #selector(self.showNetworkMonitor), for: .touchUpInside)
 
+                let backendButton = UIButton(type: .system)
+                backendButton.setTitle("⚙️ Backend", for: .normal)
+                backendButton.titleLabel?.font = UIFont.systemFont(ofSize: 11, weight: .semibold)
+                backendButton.backgroundColor = UIColor.systemPurple
+                backendButton.setTitleColor(.white, for: .normal)
+                backendButton.layer.cornerRadius = 6
+                backendButton.translatesAutoresizingMaskIntoConstraints = false
+                backendButton.addTarget(self, action: #selector(self.showBackendStatus), for: .touchUpInside)
+
                 testBanner.addSubview(testLabel)
                 testBanner.addSubview(networkButton)
+                testBanner.addSubview(backendButton)
                 window.addSubview(testBanner)
 
                 NSLayoutConstraint.activate([
@@ -55,7 +65,12 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
                     networkButton.trailingAnchor.constraint(equalTo: testBanner.trailingAnchor, constant: -10),
                     networkButton.centerYAnchor.constraint(equalTo: testBanner.centerYAnchor),
                     networkButton.widthAnchor.constraint(equalToConstant: 80),
-                    networkButton.heightAnchor.constraint(equalToConstant: 20)
+                    networkButton.heightAnchor.constraint(equalToConstant: 20),
+                    
+                    backendButton.leadingAnchor.constraint(equalTo: testBanner.leadingAnchor, constant: 10),
+                    backendButton.centerYAnchor.constraint(equalTo: testBanner.centerYAnchor),
+                    backendButton.widthAnchor.constraint(equalToConstant: 80),
+                    backendButton.heightAnchor.constraint(equalToConstant: 20)
                 ])
 
                 window.bringSubviewToFront(testBanner)
@@ -73,6 +88,16 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         rootViewController.present(navController, animated: true)
     }
     
+    @objc private func showBackendStatus() {
+        guard let rootViewController = window?.rootViewController else { return }
+        
+        let backendStatusVC = BackendStatusViewController()
+        let navController = UINavigationController(rootViewController: backendStatusVC)
+        navController.modalPresentationStyle = .fullScreen
+        
+        rootViewController.present(navController, animated: true)
+    }
+    
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         // Create window and set root to HomeViewController programmatically for a clean test UI
         window = UIWindow(frame: UIScreen.main.bounds)
@@ -80,7 +105,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         window?.rootViewController = root
         window?.makeKeyAndVisible()
 
-        setupNotifications()
+        //setupNotifications()
         setupTestModeUI()
         
         // Start network monitoring
@@ -129,6 +154,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     
     // ITBL:
     func application(_ application: UIApplication, didRegisterForRemoteNotificationsWithDeviceToken deviceToken: Data) {
+        // Register the device token with Iterable SDK and save it
+        AppDelegate.registerDeviceToken(deviceToken)
     }
     
     func application(_: UIApplication, didFailToRegisterForRemoteNotificationsWithError _: Error) {}
@@ -136,6 +163,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     // ITBL:
     // Ask for permission for notifications etc.
     // setup self as delegate to listen to push notifications.
+    /*
     private func setupNotifications() {
         UNUserNotificationCenter.current().delegate = self
         UNUserNotificationCenter.current().getNotificationSettings { settings in
@@ -157,6 +185,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             }
         }
     }
+     */
 }
 
 // MARK: UNUserNotificationCenterDelegate

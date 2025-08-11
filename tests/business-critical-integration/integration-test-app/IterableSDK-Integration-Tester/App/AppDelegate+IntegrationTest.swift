@@ -1,5 +1,6 @@
 
 import UIKit
+import UserNotifications
 import IterableSDK
 
 // MARK: - AppDelegate Integration Test Extensions
@@ -28,6 +29,18 @@ extension AppDelegate {
         }
         print("✅ Loaded test user email from test-config.json")
         return email
+    }
+    
+    static func loadServerKeyFromConfig() -> String {
+        guard let path = Bundle.main.path(forResource: "test-config", ofType: "json"),
+              let data = try? Data(contentsOf: URL(fileURLWithPath: path)),
+              let json = try? JSONSerialization.jsonObject(with: data) as? [String: Any],
+              let serverKey = json["serverApiKey"] as? String,
+              !serverKey.isEmpty else {
+            fatalError("❌ Could not load server key from test-config.json")
+        }
+        print("✅ Loaded server key from test-config.json")
+        return serverKey
     }
         
     static func initializeIterableSDK() {
@@ -64,6 +77,56 @@ extension AppDelegate {
         // This will clear email, userId, and authToken from keychain
         IterableAPI.logoutUser()
         print("✅ User logged out - keychain cleared")
+    }
+    
+    static func registerForPushNotifications() {
+        print("🔔 Requesting push notification authorization...")
+        
+        UNUserNotificationCenter.current().requestAuthorization(
+            options: [.alert, .badge, .sound]
+        ) { granted, error in
+            DispatchQueue.main.async {
+                if let error = error {
+                    print("❌ Push notification authorization error: \(error.localizedDescription)")
+                    return
+                }
+                
+                if granted {
+                    print("✅ Push notification authorization granted")
+                    UIApplication.shared.registerForRemoteNotifications()
+                } else {
+                    print("❌ Push notification authorization denied")
+                }
+            }
+        }
+    }
+    
+    // MARK: - Device Token Management
+    
+    static func registerDeviceToken(_ deviceToken: Data) {
+        // Save device token to UserDefaults for later retrieval
+        let tokenString = deviceToken.map { String(format: "%02.2hhx", $0) }.joined()
+        UserDefaults.standard.set(tokenString, forKey: "IterableDeviceToken")
+        UserDefaults.standard.set(Date(), forKey: "IterableDeviceTokenTimestamp")
+        
+        // Register with Iterable SDK
+        IterableAPI.register(token: deviceToken)
+        
+        print("✅ Device token registered and saved: \(tokenString)")
+    }
+    
+    static func getRegisteredDeviceToken() -> String? {
+        return UserDefaults.standard.string(forKey: "IterableDeviceToken")
+    }
+    
+    static func getDeviceTokenTimestamp() -> Date? {
+        return UserDefaults.standard.object(forKey: "IterableDeviceTokenTimestamp") as? Date
+    }
+    
+    static func clearDeviceToken() {
+        UserDefaults.standard.removeObject(forKey: "IterableDeviceToken")
+        UserDefaults.standard.removeObject(forKey: "IterableDeviceTokenTimestamp")
+        print("🗑️ Device token cleared from UserDefaults")
     }
     
 }

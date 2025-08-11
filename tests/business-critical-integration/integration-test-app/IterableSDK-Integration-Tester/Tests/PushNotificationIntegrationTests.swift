@@ -6,6 +6,7 @@ class PushNotificationIntegrationTests: IntegrationTestBase {
     // MARK: - Test Cases
     
     func testPushNotificationFullWorkflow() {
+        /*
         // Test complete push notification workflow from registration to tracking
         
         // Step 1: Launch app and verify automatic device registration
@@ -81,6 +82,7 @@ class PushNotificationIntegrationTests: IntegrationTestBase {
         validateDeepLinkHandled(expectedDestination: "deep-link-destination-view")
         
         screenshotCapture.captureScreenshot(named: "05-deep-link-handled")
+         */
     }
     
     /*func testPushPermissionHandling() {

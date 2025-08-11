@@ -77,6 +77,41 @@ final class HomeViewController: UIViewController, UITextFieldDelegate {
         return button
     }()
 
+    private let pushNotificationTestRow: UIView = {
+        let container = UIView()
+        container.backgroundColor = .systemGray6
+        container.layer.cornerRadius = 8
+        container.layer.borderWidth = 1
+        container.layer.borderColor = UIColor.systemGray4.cgColor
+        container.isUserInteractionEnabled = true
+        container.accessibilityIdentifier = "push-notification-test-row"
+        
+        let titleLabel = UILabel()
+        titleLabel.text = "Push Notification Integration Testing"
+        titleLabel.font = .systemFont(ofSize: 16, weight: .medium)
+        titleLabel.textColor = .label
+        titleLabel.translatesAutoresizingMaskIntoConstraints = false
+        
+        let chevronImageView = UIImageView(image: UIImage(systemName: "chevron.right"))
+        chevronImageView.tintColor = .systemGray3
+        chevronImageView.translatesAutoresizingMaskIntoConstraints = false
+        
+        container.addSubview(titleLabel)
+        container.addSubview(chevronImageView)
+        
+        NSLayoutConstraint.activate([
+            container.heightAnchor.constraint(equalToConstant: 50),
+            titleLabel.leadingAnchor.constraint(equalTo: container.leadingAnchor, constant: 16),
+            titleLabel.centerYAnchor.constraint(equalTo: container.centerYAnchor),
+            chevronImageView.trailingAnchor.constraint(equalTo: container.trailingAnchor, constant: -16),
+            chevronImageView.centerYAnchor.constraint(equalTo: container.centerYAnchor),
+            chevronImageView.widthAnchor.constraint(equalToConstant: 12),
+            chevronImageView.heightAnchor.constraint(equalToConstant: 20)
+        ])
+        
+        return container
+    }()
+
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .systemBackground
@@ -84,9 +119,6 @@ final class HomeViewController: UIViewController, UITextFieldDelegate {
         
         // Setup network monitoring
         NetworkMonitor.shared.startMonitoring()
-        
-        // Setup navigation
-        setupNavigation()
 
         initializeButton.addTarget(self, action: #selector(initializeSDK), for: .touchUpInside)
         userIdField.delegate = self
@@ -105,7 +137,8 @@ final class HomeViewController: UIViewController, UITextFieldDelegate {
                                                    emailField,
                                                    registerEmailButton,
                                                    logoutButton,
-                                                   statusView])
+                                                   statusView,
+                                                   pushNotificationTestRow])
         stack.axis = .vertical
         stack.alignment = .fill
         stack.spacing = 12
@@ -141,6 +174,8 @@ final class HomeViewController: UIViewController, UITextFieldDelegate {
         registerEmailButton.addTarget(self, action: #selector(registerEmail), for: .touchUpInside)
         registerUserIdButton.addTarget(self, action: #selector(registerUserId), for: .touchUpInside)
         logoutButton.addTarget(self, action: #selector(logout), for: .touchUpInside)
+        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(showPushNotificationTest))
+        pushNotificationTestRow.addGestureRecognizer(tapGesture)
     }
 
     @objc private func registerEmail() {
@@ -163,19 +198,16 @@ final class HomeViewController: UIViewController, UITextFieldDelegate {
     
     // MARK: - Navigation Setup
     
-    private func setupNavigation() {
-        let networkButton = UIBarButtonItem(
-            title: "Network Monitor",
-            style: .plain,
-            target: self,
-            action: #selector(showNetworkMonitor)
-        )
-        navigationItem.rightBarButtonItem = networkButton
-    }
-    
     @objc private func showNetworkMonitor() {
         let networkMonitorVC = NetworkMonitorViewController()
         let navController = UINavigationController(rootViewController: networkMonitorVC)
+        navController.modalPresentationStyle = .fullScreen
+        present(navController, animated: true)
+    }
+    
+    @objc private func showBackendStatus() {
+        let backendStatusVC = BackendStatusViewController()
+        let navController = UINavigationController(rootViewController: backendStatusVC)
         navController.modalPresentationStyle = .fullScreen
         present(navController, animated: true)
     }
@@ -188,6 +220,7 @@ final class HomeViewController: UIViewController, UITextFieldDelegate {
     
     private func updateButtonStates() {
         updateRegisterButtonStates()
+        updatePushNotificationButtonState()
     }
     
     private func updateRegisterButtonStates() {
@@ -201,6 +234,17 @@ final class HomeViewController: UIViewController, UITextFieldDelegate {
     private func configureButton(_ button: UIButton, enabled: Bool) {
         button.isEnabled = enabled
         button.alpha = enabled ? 1.0 : 0.5
+    }
+    
+    private func updatePushNotificationButtonState() {
+        let isSDKInitialized = IterableSDKStatusView.isSDKInitialized()
+        pushNotificationTestRow.isUserInteractionEnabled = isSDKInitialized
+        pushNotificationTestRow.alpha = isSDKInitialized ? 1.0 : 0.5
+    }
+    
+    @objc private func showPushNotificationTest() {
+        let pushTestVC = PushNotificationTestViewController()
+        navigationController?.pushViewController(pushTestVC, animated: true)
     }
 }
 

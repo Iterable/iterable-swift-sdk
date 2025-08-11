@@ -29,6 +29,28 @@ class NetworkRequestDetailViewController: UIViewController {
         return button
     }()
     
+    private let viewRequestBodyButton: UIButton = {
+        let button = UIButton(type: .system)
+        button.setTitle("View Request Body JSON", for: .normal)
+        button.backgroundColor = .systemGreen
+        button.setTitleColor(.white, for: .normal)
+        button.layer.cornerRadius = 8
+        button.heightAnchor.constraint(equalToConstant: 44).isActive = true
+        button.translatesAutoresizingMaskIntoConstraints = false
+        return button
+    }()
+    
+    private let copyDetailsButton: UIButton = {
+        let button = UIButton(type: .system)
+        button.setTitle("Copy Request Details", for: .normal)
+        button.backgroundColor = .systemOrange
+        button.setTitleColor(.white, for: .normal)
+        button.layer.cornerRadius = 8
+        button.heightAnchor.constraint(equalToConstant: 44).isActive = true
+        button.translatesAutoresizingMaskIntoConstraints = false
+        return button
+    }()
+    
     // MARK: - Properties
     
     private let request: NetworkRequest
@@ -63,8 +85,10 @@ class NetworkRequestDetailViewController: UIViewController {
         
         let stackView = UIStackView(arrangedSubviews: [
             requestSection,
+            viewRequestBodyButton,
             responseSection,
-            viewResponseButton
+            viewResponseButton,
+            copyDetailsButton
         ])
         stackView.axis = .vertical
         stackView.spacing = 20
@@ -90,6 +114,8 @@ class NetworkRequestDetailViewController: UIViewController {
         ])
         
         viewResponseButton.addTarget(self, action: #selector(viewResponseTapped), for: .touchUpInside)
+        viewRequestBodyButton.addTarget(self, action: #selector(viewRequestBodyTapped), for: .touchUpInside)
+        copyDetailsButton.addTarget(self, action: #selector(copyDetailsTapped), for: .touchUpInside)
     }
     
     private func configureData() {
@@ -104,9 +130,10 @@ class NetworkRequestDetailViewController: UIViewController {
             requestData["Header: \(key)"] = value
         }
         
-        // Add body if present
+        // Add body preview if present (truncated for overview)
         if let body = request.body, let bodyString = String(data: body, encoding: .utf8) {
-            requestData["Body"] = bodyString
+            let preview = bodyString.count > 200 ? String(bodyString.prefix(200)) + "..." : bodyString
+            requestData["Body Preview"] = preview
         }
         
         requestSection.configure(with: requestData)
@@ -141,6 +168,10 @@ class NetworkRequestDetailViewController: UIViewController {
             viewResponseButton.isEnabled = false
             viewResponseButton.alpha = 0.5
         }
+        
+        // Enable/disable request body button based on body availability
+        viewRequestBodyButton.isEnabled = request.body != nil
+        viewRequestBodyButton.alpha = request.body != nil ? 1.0 : 0.5
     }
     
     // MARK: - Actions
@@ -150,6 +181,108 @@ class NetworkRequestDetailViewController: UIViewController {
         
         let jsonVC = JSONViewerViewController(data: data, title: "Response")
         navigationController?.pushViewController(jsonVC, animated: true)
+    }
+    
+    @objc private func viewRequestBodyTapped() {
+        guard let body = request.body else { return }
+        
+        let jsonVC = JSONViewerViewController(data: body, title: "Request Body")
+        navigationController?.pushViewController(jsonVC, animated: true)
+    }
+    
+    @objc private func copyDetailsTapped() {
+        let details = generateRequestDetailsString()
+        UIPasteboard.general.string = details
+        
+        // Show feedback
+        let alert = UIAlertController(title: "Copied!", message: "Request details copied to clipboard", preferredStyle: .alert)
+        alert.addAction(UIAlertAction(title: "OK", style: .default))
+        present(alert, animated: true)
+    }
+    
+    private func generateRequestDetailsString() -> String {
+        var details = ""
+        
+        // Request section
+        details += "🔵 REQUEST DETAILS\n"
+        details += "==================\n"
+        details += "URL: \(request.url.absoluteString)\n"
+        details += "Method: \(request.method)\n"
+        details += "Timestamp: \(DateFormatter.fullFormatter.string(from: request.timestamp))\n\n"
+        
+        // Request headers
+        if !request.headers.isEmpty {
+            details += "📋 REQUEST HEADERS:\n"
+            for (key, value) in request.headers.sorted(by: { $0.key < $1.key }) {
+                details += "\(key): \(value)\n"
+            }
+            details += "\n"
+        }
+        
+        // Request body
+        if let body = request.body {
+            details += "📝 REQUEST BODY:\n"
+            if let bodyString = String(data: body, encoding: .utf8) {
+                // Try to format as JSON if possible
+                if let jsonData = try? JSONSerialization.jsonObject(with: body),
+                   let prettyData = try? JSONSerialization.data(withJSONObject: jsonData, options: .prettyPrinted),
+                   let prettyString = String(data: prettyData, encoding: .utf8) {
+                    details += prettyString
+                } else {
+                    details += bodyString
+                }
+            } else {
+                details += "[Binary data - \(body.count) bytes]"
+            }
+            details += "\n\n"
+        }
+        
+        // Response section
+        if let response = request.response {
+            details += "🟢 RESPONSE DETAILS\n"
+            details += "===================\n"
+            details += "Status Code: \(response.statusCode)\n"
+            details += "Timestamp: \(DateFormatter.fullFormatter.string(from: response.timestamp))\n"
+            
+            if let duration = request.duration {
+                details += "Duration: \(String(format: "%.3f", duration)) seconds\n"
+            }
+            details += "\n"
+            
+            // Response headers
+            if !response.headers.isEmpty {
+                details += "📋 RESPONSE HEADERS:\n"
+                for (key, value) in response.headers.sorted(by: { $0.key < $1.key }) {
+                    details += "\(key): \(value)\n"
+                }
+                details += "\n"
+            }
+            
+            // Response body
+            if let data = response.data {
+                details += "📄 RESPONSE BODY:\n"
+                if let jsonString = response.jsonString {
+                    details += jsonString
+                } else if let bodyString = String(data: data, encoding: .utf8) {
+                    details += bodyString
+                } else {
+                    details += "[Binary data - \(data.count) bytes]"
+                }
+                details += "\n\n"
+            }
+            
+            // Error if present
+            if let error = response.error {
+                details += "❌ ERROR:\n"
+                details += error.localizedDescription
+                details += "\n\n"
+            }
+        } else {
+            details += "⏳ RESPONSE: No response yet\n\n"
+        }
+        
+        details += "Generated by Iterable Integration Test App"
+        return details
     }
 }
 

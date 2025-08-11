@@ -110,6 +110,10 @@ final class IterableSDKStatusView: UIView {
     }
     
     private func isSDKInitialized() -> Bool {
+        return IterableSDKStatusView.isSDKInitialized()
+    }
+    
+    static func isSDKInitialized() -> Bool {
         // The correct check: SDK is initialized if the implementation property is not nil
         // This is the actual indicator that IterableAPI.initialize() was called
         

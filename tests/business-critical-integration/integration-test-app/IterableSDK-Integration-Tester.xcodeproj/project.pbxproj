@@ -35,9 +35,6 @@
 		8A24D3B12E4508F400B53850 /* Exceptions for "IterableSDK-Integration-Tester" folder in "IterableSDK-Integration-TesterUITests" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
-				Tests/Incomplete/DeepLinkingIntegrationTests.swift,
-				Tests/Incomplete/EmbeddedMessageIntegrationTests.swift,
-				Tests/Incomplete/InAppMessageIntegrationTests.swift,
 				Tests/IntegrationTestBase.swift,
 				Tests/PushNotificationIntegrationTests.swift,
 				Tests/Utilities/CampaignManager.swift,
