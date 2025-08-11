@@ -1,5 +1,4 @@
 import UIKit
-import IterableSDK
 
 final class HomeViewController: UIViewController, UITextFieldDelegate {
     
@@ -67,6 +66,17 @@ final class HomeViewController: UIViewController, UITextFieldDelegate {
         return button
     }()
 
+    private let logoutButton: UIButton = {
+        let button = UIButton(type: .system)
+        button.setTitle("Logout (Clear Keychain)", for: .normal)
+        button.backgroundColor = .systemRed
+        button.setTitleColor(.white, for: .normal)
+        button.layer.cornerRadius = 8
+        button.heightAnchor.constraint(equalToConstant: 40).isActive = true
+        button.accessibilityIdentifier = "logout-button"
+        return button
+    }()
+
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .systemBackground
@@ -88,6 +98,7 @@ final class HomeViewController: UIViewController, UITextFieldDelegate {
                                                    registerUserIdButton,
                                                    emailField,
                                                    registerEmailButton,
+                                                   logoutButton,
                                                    statusView])
         stack.axis = .vertical
         stack.alignment = .fill
@@ -123,6 +134,7 @@ final class HomeViewController: UIViewController, UITextFieldDelegate {
         super.viewDidAppear(animated)
         registerEmailButton.addTarget(self, action: #selector(registerEmail), for: .touchUpInside)
         registerUserIdButton.addTarget(self, action: #selector(registerUserId), for: .touchUpInside)
+        logoutButton.addTarget(self, action: #selector(logout), for: .touchUpInside)
     }
 
     @objc private func registerEmail() {
@@ -137,6 +149,10 @@ final class HomeViewController: UIViewController, UITextFieldDelegate {
         if let userId = trimmedUserId, !userId.isEmpty {
             AppDelegate.registerUserIDToIterableSDK(userId: userId)
         }
+    }
+
+    @objc private func logout() {
+        AppDelegate.logoutFromIterableSDK()
     }
 
     @objc private func onTextChanged() {

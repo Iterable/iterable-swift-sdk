@@ -60,4 +60,10 @@ extension AppDelegate {
         print("✅ Test user id configured: \(userId)")
     }
     
+    static func logoutFromIterableSDK() {
+        // This will clear email, userId, and authToken from keychain
+        IterableAPI.logoutUser()
+        print("✅ User logged out - keychain cleared")
+    }
+    
 }

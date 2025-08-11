@@ -1,5 +1,6 @@
 import UIKit
 import IterableSDK
+import ObjectiveC
 
 final class IterableSDKStatusView: UIView {
     
@@ -87,42 +88,51 @@ final class IterableSDKStatusView: UIView {
     }
     
     private func updateStatus() {
-        // Runtime class detection for initialization
+        // Check SDK initialization status
         let isInitialized = isSDKInitialized()
         
-        // Direct property access for user data
+        // Get user data - these can exist even without SDK initialization
+        // because they're stored in keychain and accessed directly
         let currentEmail = IterableAPI.email
         let currentUserId = IterableAPI.userId
         
+        // SDK Initialization status
         initializationStatusView.setValue(isInitialized ? "✓" : "✗", 
                                         color: isInitialized ? .systemGreen : .systemRed)
         
+        // Email status - can exist independently of SDK initialization
         emailStatusView.setValue(currentEmail ?? "Not set", 
                                color: currentEmail != nil ? .systemGreen : .systemOrange)
         
+        // UserId status - can exist independently of SDK initialization  
         userIdStatusView.setValue(currentUserId ?? "Not set", 
                                 color: currentUserId != nil ? .systemGreen : .systemOrange)
     }
     
     private func isSDKInitialized() -> Bool {
-        // Method 1: If we have user data, SDK must be initialized
-        if IterableAPI.email != nil || IterableAPI.userId != nil {
-            return true
-        }
+        // The correct check: SDK is initialized if the implementation property is not nil
+        // This is the actual indicator that IterableAPI.initialize() was called
         
-        // Method 2: If auth token exists, SDK is working
-        if IterableAPI.authToken != nil {
-            return true
-        }
+        // Method: Test if attributionInfo can store and retrieve values
+        // Before initialization: setting becomes no-op (implementation is nil)  
+        // After initialization: values get stored in the implementation
         
-        // Method 3: Check for any signs of SDK activity
-        if IterableAPI.lastPushPayload != nil || IterableAPI.attributionInfo != nil {
-            return true
-        }
+        let originalAttribution = IterableAPI.attributionInfo
         
-        // Method 4: Try the safest possible check - accessing sdkVersion always works
-        // If email/userId/authToken are all nil and no other signs, likely not initialized
-        return false
+        // Create a test attribution info
+        let testAttribution = IterableAttributionInfo(campaignId: 999999, templateId: 999999, messageId: "init_test")
+        
+        // Try to set it
+        IterableAPI.attributionInfo = testAttribution
+        
+        // Check if it was actually stored
+        let storedAttribution = IterableAPI.attributionInfo
+        let wasStored = storedAttribution?.campaignId == 999999 && storedAttribution?.messageId == "init_test"
+        
+        // Restore original value
+        IterableAPI.attributionInfo = originalAttribution
+        
+        return wasStored
     }
 }
 

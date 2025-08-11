@@ -1,6 +1,5 @@
 import XCTest
 import UserNotifications
-@testable import IterableSDK
 
 class PushNotificationIntegrationTests: IntegrationTestBase {
     
