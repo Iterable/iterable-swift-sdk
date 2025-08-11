@@ -322,8 +322,11 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
     /// Sends any pending consent data now that user creation is confirmed
     private func sendPendingConsentIfNeeded() {
         guard let consentData = pendingConsentData else {
+            ITBDebug("No pending consent to send")
             return
         }
+        
+        ITBDebug("Sending pending consent after user creation: email set=\(consentData.email != nil), userId set=\(consentData.userId != nil), timestamp=\(consentData.consentTimestamp)")
         
         apiClient.trackConsent(
             consentTimestamp: consentData.consentTimestamp,
@@ -378,12 +381,14 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
                                 notificationStateProvider: notificationStateProvider,
                                 onSuccess: { (_ data: [AnyHashable: Any]?) in
                                                 // Send any pending consent now that user creation is confirmed
+                                                ITBDebug("Device registration succeeded; attempting to send pending consent if any")
                                                 self.sendPendingConsentIfNeeded()
                                                 self._successCallback?(data)
                                                 onSuccess?(data)
                                 },
                                 onFailure: { (_ reason: String?, _ data: Data?) in
                                                 // Clear any pending consent on failure
+                                                ITBDebug("Device registration failed; clearing any pending consent")
                                                 self.pendingConsentData = nil
                                                 self._failureCallback?(reason, data)
                                                 onFailure?(reason, data)
@@ -891,6 +896,7 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
         } else {
             // If auto push registration is disabled, send pending consent here
             // since register() won't be called automatically
+            ITBDebug("Auto push registration disabled; attempting to send pending consent after login")
             sendPendingConsentIfNeeded()
             _successCallback?([:])            
         }
