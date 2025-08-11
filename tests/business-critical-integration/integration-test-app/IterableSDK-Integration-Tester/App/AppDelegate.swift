@@ -30,7 +30,17 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
                 testLabel.translatesAutoresizingMaskIntoConstraints = false
                 testLabel.accessibilityIdentifier = "app-ready-indicator"
 
+                let networkButton = UIButton(type: .system)
+                networkButton.setTitle("📡 Network", for: .normal)
+                networkButton.titleLabel?.font = UIFont.systemFont(ofSize: 11, weight: .semibold)
+                networkButton.backgroundColor = UIColor.systemBlue
+                networkButton.setTitleColor(.white, for: .normal)
+                networkButton.layer.cornerRadius = 6
+                networkButton.translatesAutoresizingMaskIntoConstraints = false
+                networkButton.addTarget(self, action: #selector(self.showNetworkMonitor), for: .touchUpInside)
+
                 testBanner.addSubview(testLabel)
+                testBanner.addSubview(networkButton)
                 window.addSubview(testBanner)
 
                 NSLayoutConstraint.activate([
@@ -40,12 +50,27 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
                     testBanner.heightAnchor.constraint(equalToConstant: 30),
 
                     testLabel.centerXAnchor.constraint(equalTo: testBanner.centerXAnchor),
-                    testLabel.centerYAnchor.constraint(equalTo: testBanner.centerYAnchor)
+                    testLabel.centerYAnchor.constraint(equalTo: testBanner.centerYAnchor),
+
+                    networkButton.trailingAnchor.constraint(equalTo: testBanner.trailingAnchor, constant: -10),
+                    networkButton.centerYAnchor.constraint(equalTo: testBanner.centerYAnchor),
+                    networkButton.widthAnchor.constraint(equalToConstant: 80),
+                    networkButton.heightAnchor.constraint(equalToConstant: 20)
                 ])
 
                 window.bringSubviewToFront(testBanner)
             }
         }
+    }
+    
+    @objc private func showNetworkMonitor() {
+        guard let rootViewController = window?.rootViewController else { return }
+        
+        let networkMonitorVC = NetworkMonitorViewController()
+        let navController = UINavigationController(rootViewController: networkMonitorVC)
+        navController.modalPresentationStyle = .fullScreen
+        
+        rootViewController.present(navController, animated: true)
     }
     
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
@@ -57,6 +82,12 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
         setupNotifications()
         setupTestModeUI()
+        
+        // Start network monitoring
+        NetworkMonitor.shared.startMonitoring()
+        
+        // Test network monitoring with a fake request
+        makeTestNetworkRequest()
 
         return true
     }
@@ -165,5 +196,29 @@ extension AppDelegate: IterableCustomActionDelegate {
             }
         }
         return false
+    }
+    
+    // MARK: - Test Network Monitoring
+    
+    private func makeTestNetworkRequest() {
+        print("🔍 Making test network request to verify monitoring...")
+        
+        // Delay to ensure monitoring is fully set up
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
+            guard let url = URL(string: "https://httpbin.org/get?test=network_monitor") else { return }
+            
+            let task = URLSession.shared.dataTask(with: url) { data, response, error in
+                DispatchQueue.main.async {
+                    if let httpResponse = response as? HTTPURLResponse {
+                        print("✅ Test request completed with status: \(httpResponse.statusCode)")
+                    } else if let error = error {
+                        print("❌ Test request failed: \(error.localizedDescription)")
+                    }
+                }
+            }
+            
+            task.resume()
+            print("🚀 Test request sent to: \(url)")
+        }
     }
 }

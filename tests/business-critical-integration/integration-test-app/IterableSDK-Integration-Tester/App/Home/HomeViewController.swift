@@ -81,6 +81,12 @@ final class HomeViewController: UIViewController, UITextFieldDelegate {
         super.viewDidLoad()
         view.backgroundColor = .systemBackground
         title = "Integration Test App"
+        
+        // Setup network monitoring
+        NetworkMonitor.shared.startMonitoring()
+        
+        // Setup navigation
+        setupNavigation()
 
         initializeButton.addTarget(self, action: #selector(initializeSDK), for: .touchUpInside)
         userIdField.delegate = self
@@ -153,6 +159,25 @@ final class HomeViewController: UIViewController, UITextFieldDelegate {
 
     @objc private func logout() {
         AppDelegate.logoutFromIterableSDK()
+    }
+    
+    // MARK: - Navigation Setup
+    
+    private func setupNavigation() {
+        let networkButton = UIBarButtonItem(
+            title: "Network Monitor",
+            style: .plain,
+            target: self,
+            action: #selector(showNetworkMonitor)
+        )
+        navigationItem.rightBarButtonItem = networkButton
+    }
+    
+    @objc private func showNetworkMonitor() {
+        let networkMonitorVC = NetworkMonitorViewController()
+        let navController = UINavigationController(rootViewController: networkMonitorVC)
+        navController.modalPresentationStyle = .fullScreen
+        present(navController, animated: true)
     }
 
     @objc private func onTextChanged() {
