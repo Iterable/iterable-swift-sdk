@@ -18,8 +18,43 @@ struct NetworkRequest {
         self.url = request.url ?? URL(string: "unknown")!
         self.method = request.httpMethod ?? "GET"
         self.headers = request.allHTTPHeaderFields ?? [:]
-        self.body = request.httpBody
+        
+        // Try to capture body from httpBody first, then from httpBodyStream
+        if let httpBody = request.httpBody {
+            self.body = httpBody
+        } else if let bodyStream = request.httpBodyStream {
+            // Try to read from stream
+            bodyStream.open()
+            defer { bodyStream.close() }
+            
+            let bufferSize = 1024
+            let buffer = UnsafeMutablePointer<UInt8>.allocate(capacity: bufferSize)
+            defer { buffer.deallocate() }
+            
+            var data = Data()
+            while bodyStream.hasBytesAvailable {
+                let bytesRead = bodyStream.read(buffer, maxLength: bufferSize)
+                if bytesRead > 0 {
+                    data.append(buffer, count: bytesRead)
+                } else {
+                    break
+                }
+            }
+            self.body = data.isEmpty ? nil : data
+        } else {
+            self.body = nil
+        }
+        
         self.timestamp = Date()
+    }
+    
+    init(id: UUID, url: URL, method: String, headers: [String: String], body: Data?, timestamp: Date) {
+        self.id = id
+        self.url = url
+        self.method = method
+        self.headers = headers
+        self.body = body
+        self.timestamp = timestamp
     }
     
     var statusCodeColor: UIColor {
@@ -157,18 +192,69 @@ class NetworkMonitorURLProtocol: URLProtocol {
     }
     
     override func startLoading() {
-        // Mark request to avoid recursion
-        let mutableRequest = NSMutableURLRequest(url: request.url!, cachePolicy: request.cachePolicy, timeoutInterval: request.timeoutInterval)
+        // Debug the original request
+        print("🔍 ORIGINAL REQUEST DEBUG:")
+        print("🔍 Method: \(request.httpMethod ?? "nil")")
+        print("🔍 URL: \(request.url?.absoluteString ?? "nil")")
+        print("🔍 httpBody: \(request.httpBody != nil ? "\(request.httpBody!.count) bytes" : "nil")")
+        print("🔍 httpBodyStream: \(request.httpBodyStream != nil ? "exists" : "nil")")
+        if let body = request.httpBody, let bodyString = String(data: body, encoding: .utf8) {
+            print("🔍 Original body content: \(String(bodyString.prefix(200)))")
+        }
+        
+        // Create NSMutableURLRequest properly to avoid recursion
+        let mutableRequest = NSMutableURLRequest(url: request.url!)
         mutableRequest.httpMethod = request.httpMethod ?? "GET"
         mutableRequest.allHTTPHeaderFields = request.allHTTPHeaderFields
-        mutableRequest.httpBody = request.httpBody
+        mutableRequest.cachePolicy = request.cachePolicy
+        mutableRequest.timeoutInterval = request.timeoutInterval
+        
+        // Handle body - convert stream to data if needed
+        var capturedBodyData: Data? = nil
+        if let httpBody = request.httpBody {
+            mutableRequest.httpBody = httpBody
+            capturedBodyData = httpBody
+            print("🔍 Using httpBody directly")
+        } else if let bodyStream = request.httpBodyStream {
+            // Read stream into data and set both
+            let streamData = readDataFromStream(bodyStream)
+            capturedBodyData = streamData
+            mutableRequest.httpBody = streamData
+            print("🔍 Converted httpBodyStream to httpBody: \(streamData?.count ?? 0) bytes")
+        }
+        
+        // Mark to avoid infinite recursion
         URLProtocol.setProperty(true, forKey: NetworkMonitorURLProtocol.networkMonitorKey, in: mutableRequest)
         
-        let networkRequest = NetworkRequest(request: mutableRequest as URLRequest)
+        print("🔍 AFTER COPY:")
+        print("🔍 Copied httpBody: \(mutableRequest.httpBody != nil ? "\(mutableRequest.httpBody!.count) bytes" : "nil")")
+        print("🔍 Copied httpBodyStream: \(mutableRequest.httpBodyStream != nil ? "exists" : "nil")")
+        
+        // Create network request with captured body data
+        var networkRequest = NetworkRequest(request: mutableRequest as URLRequest)
+        // Override body with our captured data if we read from stream
+        if let capturedData = capturedBodyData {
+            networkRequest = NetworkRequest(
+                id: networkRequest.id,
+                url: networkRequest.url,
+                method: networkRequest.method,
+                headers: networkRequest.headers,
+                body: capturedData,
+                timestamp: networkRequest.timestamp
+            )
+        }
         requestId = networkRequest.id
         
         // Add request to monitor
-        //print("📡 NetworkMonitor: Intercepted request to \(networkRequest.url.absoluteString)")
+        print("📡 NetworkMonitor: Intercepted \(mutableRequest.httpMethod ?? "GET") request to \(networkRequest.url.absoluteString)")
+        if let body = mutableRequest.httpBody {
+            print("📡 NetworkMonitor: Request body size: \(body.count) bytes")
+            if let bodyString = String(data: body, encoding: .utf8) {
+                print("📡 NetworkMonitor: Request body preview: \(String(bodyString.prefix(200)))")
+            }
+        } else {
+            print("📡 NetworkMonitor: No request body found")
+        }
         NetworkMonitor.shared.addRequest(networkRequest)
         
         // Create session to make actual request
@@ -208,6 +294,27 @@ class NetworkMonitorURLProtocol: URLProtocol {
     
     override func stopLoading() {
         dataTask?.cancel()
+    }
+    
+    private func readDataFromStream(_ stream: InputStream) -> Data? {
+        stream.open()
+        defer { stream.close() }
+        
+        let bufferSize = 1024
+        let buffer = UnsafeMutablePointer<UInt8>.allocate(capacity: bufferSize)
+        defer { buffer.deallocate() }
+        
+        var data = Data()
+        while stream.hasBytesAvailable {
+            let bytesRead = stream.read(buffer, maxLength: bufferSize)
+            if bytesRead > 0 {
+                data.append(buffer, count: bytesRead)
+            } else {
+                break
+            }
+        }
+        
+        return data.isEmpty ? nil : data
     }
 }
 

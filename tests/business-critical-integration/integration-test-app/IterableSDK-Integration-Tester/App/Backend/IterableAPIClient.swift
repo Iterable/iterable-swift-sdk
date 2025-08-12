@@ -80,86 +80,47 @@ class IterableAPIClient {
         }
     }
     
-    func getRegisteredUsers(completion: @escaping (Bool, [[String: Any]]) -> Void) {
-        let endpoint = "/api/users/search"
-        recordAPICall(endpoint: endpoint)
-        
-        // Use search endpoint with empty query to get recent users
-        let payload: [String: Any] = [
-            "maxResults": 100,
-            "dataFields": [
-                "email": "",
-                "userId": ""
-            ]
-        ]
-        
-        performAPIRequest(
-            endpoint: endpoint,
-            method: "POST",
-            body: payload,
-            useServerKey: true
-        ) { result in
-            switch result {
-            case .success(let data):
-                do {
-                    if let json = try JSONSerialization.jsonObject(with: data) as? [String: Any] {
-                        if let users = json["users"] as? [[String: Any]] {
-                            completion(true, users)
-                        } else if let result = json["result"] as? [[String: Any]] {
-                            completion(true, result)
-                        } else {
-                            // If the response format is different, try to extract any user data
-                            print("📊 Response format: \(json.keys)")
-                            completion(true, [])
-                        }
-                    } else {
-                        completion(true, [])
-                    }
-                } catch {
-                    print("❌ Error parsing users response: \(error)")
-                    completion(false, [])
-                }
-            case .failure(let error):
-                print("❌ Error getting registered users with search endpoint: \(error)")
-                // Try fallback method using export endpoint
-                self.tryExportUsersEndpoint(completion: completion)
-            }
+    func getTestUserDetails(completion: @escaping (Bool, [String: Any]?) -> Void) {
+        guard let testUserEmail = AppDelegate.loadTestUserEmailFromConfig() else {
+            print("❌ Could not load test user email from config")
+            completion(false, nil)
+            return
         }
+        
+        print("🔍 Getting details for test user: \(testUserEmail)")
+        
+        // Use the /api/users/getByEmail endpoint to get specific user details
+        getUserByEmail(email: testUserEmail, completion: completion)
     }
     
-    private func tryExportUsersEndpoint(completion: @escaping (Bool, [[String: Any]]) -> Void) {
-        let endpoint = "/api/export/userEvents"
+    private func getUserByEmail(email: String, completion: @escaping (Bool, [String: Any]?) -> Void) {
+        // URL encode the email to handle special characters
+        let encodedEmail = email.addingPercentEncoding(withAllowedCharacters: .urlPathAllowed) ?? email
+        let endpoint = "/api/users/\(encodedEmail)"
         recordAPICall(endpoint: endpoint)
-        
-        let payload: [String: Any] = [
-            "range": "Today",
-            "dataTypeName": "user"
-        ]
         
         performAPIRequest(
             endpoint: endpoint,
-            method: "POST",
-            body: payload,
+            method: "GET", 
+            body: nil,
             useServerKey: true
         ) { result in
             switch result {
             case .success(let data):
                 do {
                     if let json = try JSONSerialization.jsonObject(with: data) as? [String: Any] {
-                        print("📊 Export response format: \(json.keys)")
-                        // For now, return empty array but log the response structure
-                        completion(true, [])
+                        // The response should contain the user data directly
+                        completion(true, json)
                     } else {
-                        completion(true, [])
+                        completion(false, nil)
                     }
                 } catch {
-                    print("❌ Error parsing export response: \(error)")
-                    completion(false, [])
+                    print("❌ Error parsing user response: \(error)")
+                    completion(false, nil)
                 }
             case .failure(let error):
-                print("❌ Error with export endpoint: \(error)")
-                // Don't return mock data, let the UI handle the error
-                completion(false, [])
+                print("❌ Error getting user by email: \(error)")
+                completion(false, nil)
             }
         }
     }

@@ -121,7 +121,17 @@ class NetworkRequestDetailViewController: UIViewController {
     private func configureData() {
         // Configure request section
         var requestData: [String: String] = [:]
-        requestData["URL"] = request.url.absoluteString
+        if let components = URLComponents(url: request.url, resolvingAgainstBaseURL: false) {
+            requestData["Path"] = components.path
+            // Add query params as separate rows
+            if let items = components.queryItems, !items.isEmpty {
+                for item in items.sorted(by: { $0.name < $1.name }) {
+                    requestData["Param: \(item.name)"] = item.value ?? ""
+                }
+            }
+        } else {
+            requestData["Path"] = request.url.path
+        }
         requestData["Method"] = request.method
         requestData["Timestamp"] = DateFormatter.fullFormatter.string(from: request.timestamp)
         
@@ -169,9 +179,19 @@ class NetworkRequestDetailViewController: UIViewController {
             viewResponseButton.alpha = 0.5
         }
         
-        // Enable/disable request body button based on body availability
-        viewRequestBodyButton.isEnabled = request.body != nil
-        viewRequestBodyButton.alpha = request.body != nil ? 1.0 : 0.5
+        // Show request body button only for non-GET methods and when body exists
+        let isGetMethod = request.method.uppercased() == "GET"
+        let hasBody = request.body != nil
+        let shouldShow = !isGetMethod && hasBody
+        
+        print("🔍 Request body button logic: method=\(request.method), hasBody=\(hasBody), shouldShow=\(shouldShow)")
+        if let body = request.body {
+            print("🔍 Body size: \(body.count) bytes")
+        }
+        
+        viewRequestBodyButton.isHidden = !shouldShow
+        viewRequestBodyButton.isEnabled = shouldShow
+        viewRequestBodyButton.alpha = shouldShow ? 1.0 : 0.5
     }
     
     // MARK: - Actions

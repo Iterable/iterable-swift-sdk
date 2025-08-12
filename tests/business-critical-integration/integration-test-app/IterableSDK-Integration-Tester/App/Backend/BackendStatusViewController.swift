@@ -6,7 +6,7 @@ final class BackendStatusViewController: UIViewController {
     
     private var apiClient: IterableAPIClient?
     private var pushSender: PushNotificationSender?
-    private var registeredUsers: [[String: Any]] = []
+    private var testUserData: [String: Any]?
     
     // MARK: - UI Components
     
@@ -60,17 +60,17 @@ final class BackendStatusViewController: UIViewController {
         return button
     }()
     
-    private let usersHeaderLabel: UILabel = {
+    private let testUserHeaderLabel: UILabel = {
         let label = UILabel()
-        label.text = "Registered Users"
+        label.text = "Test User Details"
         label.font = .systemFont(ofSize: 20, weight: .semibold)
         label.translatesAutoresizingMaskIntoConstraints = false
         return label
     }()
     
-    private let usersCountLabel: UILabel = {
+    private let testUserStatusLabel: UILabel = {
         let label = UILabel()
-        label.text = "Count: 0"
+        label.text = "Status: Not Loaded"
         label.font = .systemFont(ofSize: 16, weight: .medium)
         label.textColor = .systemGray
         label.translatesAutoresizingMaskIntoConstraints = false
@@ -89,7 +89,7 @@ final class BackendStatusViewController: UIViewController {
         return label
     }()
     
-    private let usersTableView: UITableView = {
+    private let userDetailsTableView: UITableView = {
         let tableView = UITableView()
         tableView.backgroundColor = .systemBackground
         tableView.layer.cornerRadius = 8
@@ -154,10 +154,10 @@ final class BackendStatusViewController: UIViewController {
         contentView.addSubview(statusLabel)
         contentView.addSubview(connectionStatusView)
         contentView.addSubview(refreshButton)
-        contentView.addSubview(usersHeaderLabel)
-        contentView.addSubview(usersCountLabel)
+        contentView.addSubview(testUserHeaderLabel)
+        contentView.addSubview(testUserStatusLabel)
         contentView.addSubview(errorLabel)
-        contentView.addSubview(usersTableView)
+        contentView.addSubview(userDetailsTableView)
         contentView.addSubview(sendPushButton)
         contentView.addSubview(activityIndicator)
         
@@ -197,27 +197,27 @@ final class BackendStatusViewController: UIViewController {
             refreshButton.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -20),
             refreshButton.heightAnchor.constraint(equalToConstant: 44),
             
-            // Users header
-            usersHeaderLabel.topAnchor.constraint(equalTo: refreshButton.bottomAnchor, constant: 30),
-            usersHeaderLabel.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 20),
+            // Test user header
+            testUserHeaderLabel.topAnchor.constraint(equalTo: refreshButton.bottomAnchor, constant: 30),
+            testUserHeaderLabel.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 20),
             
-            // Users count
-            usersCountLabel.centerYAnchor.constraint(equalTo: usersHeaderLabel.centerYAnchor),
-            usersCountLabel.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -20),
+            // Test user status
+            testUserStatusLabel.centerYAnchor.constraint(equalTo: testUserHeaderLabel.centerYAnchor),
+            testUserStatusLabel.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -20),
             
             // Error label
-            errorLabel.topAnchor.constraint(equalTo: usersHeaderLabel.bottomAnchor, constant: 8),
+            errorLabel.topAnchor.constraint(equalTo: testUserHeaderLabel.bottomAnchor, constant: 8),
             errorLabel.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 20),
             errorLabel.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -20),
             
-            // Users table view
-            usersTableView.topAnchor.constraint(equalTo: errorLabel.bottomAnchor, constant: 8),
-            usersTableView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 20),
-            usersTableView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -20),
-            usersTableView.heightAnchor.constraint(equalToConstant: 300),
+            // User details table view
+            userDetailsTableView.topAnchor.constraint(equalTo: errorLabel.bottomAnchor, constant: 8),
+            userDetailsTableView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 20),
+            userDetailsTableView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -20),
+            userDetailsTableView.heightAnchor.constraint(equalToConstant: 300),
             
             // Send push button
-            sendPushButton.topAnchor.constraint(equalTo: usersTableView.bottomAnchor, constant: 20),
+            sendPushButton.topAnchor.constraint(equalTo: userDetailsTableView.bottomAnchor, constant: 20),
             sendPushButton.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 20),
             sendPushButton.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -20),
             sendPushButton.heightAnchor.constraint(equalToConstant: 44),
@@ -230,9 +230,9 @@ final class BackendStatusViewController: UIViewController {
     }
     
     private func setupTableView() {
-        usersTableView.delegate = self
-        usersTableView.dataSource = self
-        usersTableView.register(UserTableViewCell.self, forCellReuseIdentifier: "UserCell")
+        userDetailsTableView.delegate = self
+        userDetailsTableView.dataSource = self
+        userDetailsTableView.register(UITableViewCell.self, forCellReuseIdentifier: "UserDetailCell")
     }
     
     private func setupActions() {
@@ -270,31 +270,32 @@ final class BackendStatusViewController: UIViewController {
         activityIndicator.startAnimating()
         refreshButton.isEnabled = false
         
-        apiClient.getRegisteredUsers { [weak self] success, users in
+        apiClient.getTestUserDetails { [weak self] success, userData in
             DispatchQueue.main.async {
                 self?.activityIndicator.stopAnimating()
                 self?.refreshButton.isEnabled = true
                 
-                if success {
-                    self?.registeredUsers = users
-                    self?.usersCountLabel.text = "Count: \(users.count)"
-                    self?.usersTableView.reloadData()
+                if success, let userData = userData {
+                    self?.testUserData = userData
+                    self?.testUserStatusLabel.text = "Status: Loaded"
+                    self?.testUserStatusLabel.textColor = .systemGreen
+                    self?.userDetailsTableView.reloadData()
                     self?.updateSendPushButtonState()
                     self?.hideError()
                     
-                    if users.isEmpty {
-                        print("⚠️ Successfully connected but no users found in project")
-                        self?.showError("Successfully connected to Iterable API but no users found in your project.")
+                    if let email = userData["email"] as? String {
+                        print("✅ Successfully loaded test user details for: \(email)")
                     } else {
-                        print("✅ Successfully loaded \(users.count) registered users")
+                        print("✅ Successfully loaded test user details")
                     }
                 } else {
-                    print("❌ Failed to load registered users from Iterable API")
-                    self?.registeredUsers = []
-                    self?.usersCountLabel.text = "Count: 0"
-                    self?.usersTableView.reloadData()
+                    print("❌ Failed to load test user details from Iterable API")
+                    self?.testUserData = nil
+                    self?.testUserStatusLabel.text = "Status: Failed to Load"
+                    self?.testUserStatusLabel.textColor = .systemRed
+                    self?.userDetailsTableView.reloadData()
                     self?.updateSendPushButtonState()
-                    self?.showError("Failed to load users from Iterable API. The endpoints /api/users/search and /api/export/userEvents returned 404 errors. Check your API keys and project configuration.")
+                    self?.showError("Failed to load test user details from Iterable API. Check that the test user exists and your API keys are correct.")
                 }
             }
         }
@@ -335,9 +336,9 @@ final class BackendStatusViewController: UIViewController {
     }
     
     private func updateSendPushButtonState() {
-        let hasUsers = !registeredUsers.isEmpty
-        sendPushButton.isEnabled = hasUsers
-        sendPushButton.alpha = hasUsers ? 1.0 : 0.5
+        let hasUserData = testUserData != nil
+        sendPushButton.isEnabled = hasUserData
+        sendPushButton.alpha = hasUserData ? 1.0 : 0.5
     }
     
     private func loadAPIKey() -> String? {
@@ -351,12 +352,12 @@ final class BackendStatusViewController: UIViewController {
     private func showError(_ message: String) {
         errorLabel.text = message
         errorLabel.isHidden = false
-        usersTableView.isHidden = true
+        userDetailsTableView.isHidden = true
     }
     
     private func hideError() {
         errorLabel.isHidden = true
-        usersTableView.isHidden = false
+        userDetailsTableView.isHidden = false
     }
     
     private func showAlert(title: String, message: String) {
@@ -370,13 +371,99 @@ final class BackendStatusViewController: UIViewController {
 
 extension BackendStatusViewController: UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return registeredUsers.count
+        guard let userData = testUserData else { return 0 }
+        
+        // Show user details and devices as separate rows
+        var count = 0
+        
+        // Basic user info rows
+        if userData["email"] != nil { count += 1 }
+        if userData["userId"] != nil { count += 1 }
+        if userData["signupDate"] != nil { count += 1 }
+        
+        // Device rows
+        if let devices = userData["devices"] as? [[String: Any]] {
+            count += devices.count > 0 ? devices.count + 1 : 1 // +1 for "Devices" header
+        } else {
+            count += 1 // "No devices" row
+        }
+        
+        return count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: "UserCell", for: indexPath) as! UserTableViewCell
-        let user = registeredUsers[indexPath.row]
-        cell.configure(with: user)
+        let cell = tableView.dequeueReusableCell(withIdentifier: "UserDetailCell", for: indexPath)
+        
+        guard let userData = testUserData else {
+            cell.textLabel?.text = "No data"
+            cell.detailTextLabel?.text = ""
+            return cell
+        }
+        
+        var currentRow = 0
+        
+        // Basic user info
+        if let email = userData["email"] as? String {
+            if indexPath.row == currentRow {
+                cell.textLabel?.text = "Email"
+                cell.detailTextLabel?.text = email
+                return cell
+            }
+            currentRow += 1
+        }
+        
+        if let userId = userData["userId"] as? String {
+            if indexPath.row == currentRow {
+                cell.textLabel?.text = "User ID"
+                cell.detailTextLabel?.text = userId
+                return cell
+            }
+            currentRow += 1
+        }
+        
+        if let signupDate = userData["signupDate"] as? String {
+            if indexPath.row == currentRow {
+                cell.textLabel?.text = "Signup Date"
+                cell.detailTextLabel?.text = signupDate
+                return cell
+            }
+            currentRow += 1
+        }
+        
+        // Devices section
+        if let devices = userData["devices"] as? [[String: Any]] {
+            if indexPath.row == currentRow {
+                // Devices header
+                cell.textLabel?.text = "Devices"
+                cell.detailTextLabel?.text = "\(devices.count) registered"
+                cell.textLabel?.font = .boldSystemFont(ofSize: 16)
+                return cell
+            }
+            currentRow += 1
+            
+            // Individual devices
+            let deviceIndex = indexPath.row - currentRow
+            if deviceIndex < devices.count {
+                let device = devices[deviceIndex]
+                let platform = device["platform"] as? String ?? "Unknown"
+                let token = device["token"] as? String ?? "No token"
+                let truncatedToken = token.count > 20 ? String(token.prefix(10)) + "..." + String(token.suffix(10)) : token
+                
+                cell.textLabel?.text = "\(platform) Device"
+                cell.detailTextLabel?.text = truncatedToken
+                cell.textLabel?.font = .systemFont(ofSize: 14)
+                return cell
+            }
+        } else {
+            if indexPath.row == currentRow {
+                cell.textLabel?.text = "Devices"
+                cell.detailTextLabel?.text = "No devices registered"
+                return cell
+            }
+        }
+        
+        cell.textLabel?.text = "Unknown"
+        cell.detailTextLabel?.text = ""
         return cell
     }
 }

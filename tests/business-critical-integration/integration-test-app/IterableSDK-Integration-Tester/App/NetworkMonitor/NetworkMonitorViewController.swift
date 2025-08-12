@@ -147,6 +147,27 @@ extension NetworkMonitorViewController: UITableViewDataSource, UITableViewDelega
         cell.configure(with: requests[indexPath.row])
         return cell
     }
+
+    func tableView(_ tableView: UITableView, accessoryButtonTappedForRowWith indexPath: IndexPath) {
+        let request = requests[indexPath.row]
+        guard let components = URLComponents(url: request.url, resolvingAgainstBaseURL: false),
+              let items = components.queryItems, !items.isEmpty else { return }
+
+        let alert = UIAlertController(title: "Request Parameters", message: nil, preferredStyle: .actionSheet)
+        for item in items {
+            let value = item.value ?? ""
+            alert.addAction(UIAlertAction(title: "\(item.name) = \(value)", style: .default, handler: nil))
+        }
+        alert.addAction(UIAlertAction(title: "Close", style: .cancel, handler: nil))
+
+        // For iPad safety
+        if let pop = alert.popoverPresentationController, let cell = tableView.cellForRow(at: indexPath) {
+            pop.sourceView = cell
+            pop.sourceRect = cell.bounds
+        }
+
+        present(alert, animated: true)
+    }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
@@ -179,6 +200,12 @@ class NetworkRequestCell: UITableViewCell {
         label.numberOfLines = 2
         return label
     }()
+
+    private let paramsButton: UIButton = {
+        let button = UIButton(type: .detailDisclosure)
+        button.isHidden = true
+        return button
+    }()
     
     private let statusLabel: UILabel = {
         let label = UILabel()
@@ -205,7 +232,7 @@ class NetworkRequestCell: UITableViewCell {
     }
     
     private func setupCell() {
-        [methodLabel, urlLabel, statusLabel, timestampLabel].forEach {
+        [methodLabel, urlLabel, statusLabel, timestampLabel, paramsButton].forEach {
             $0.translatesAutoresizingMaskIntoConstraints = false
             contentView.addSubview($0)
         }
@@ -225,13 +252,29 @@ class NetworkRequestCell: UITableViewCell {
             
             timestampLabel.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -8),
             timestampLabel.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -16),
-            timestampLabel.widthAnchor.constraint(equalToConstant: 80)
+            timestampLabel.widthAnchor.constraint(equalToConstant: 80),
+
+            paramsButton.centerYAnchor.constraint(equalTo: urlLabel.centerYAnchor),
+            paramsButton.leadingAnchor.constraint(equalTo: urlLabel.trailingAnchor, constant: 4),
+            paramsButton.trailingAnchor.constraint(lessThanOrEqualTo: statusLabel.leadingAnchor, constant: -4)
         ])
     }
     
     func configure(with request: NetworkRequest) {
         methodLabel.text = request.method
-        urlLabel.text = request.url.absoluteString
+        // Show only path (hide query)
+        if let components = URLComponents(url: request.url, resolvingAgainstBaseURL: false) {
+            let path = components.path
+            urlLabel.text = path
+            // Show params button only if query items exist
+            let hasParams = !(components.queryItems ?? []).isEmpty
+            paramsButton.isHidden = true // we use tableView accessory instead
+            accessoryType = hasParams ? .detailDisclosureButton : .none
+        } else {
+            urlLabel.text = request.url.path
+            paramsButton.isHidden = true
+            accessoryType = .none
+        }
         
         if let response = request.response {
             statusLabel.text = "\(response.statusCode)"
