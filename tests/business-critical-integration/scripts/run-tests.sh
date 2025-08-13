@@ -160,19 +160,23 @@ validate_environment() {
     
     echo_success "API keys configured (Mobile + Server)"
     
-    # Check simulator
-    SIMULATOR_UUID_FILE="$CONFIG_DIR/simulator-uuid.txt"
-    if [[ -f "$SIMULATOR_UUID_FILE" ]]; then
-        SIMULATOR_UUID=$(cat "$SIMULATOR_UUID_FILE")
-        if xcrun simctl list devices | grep -q "$SIMULATOR_UUID"; then
-            echo_success "Test simulator available: $SIMULATOR_UUID"
+    # Check simulator from JSON config
+    if command -v jq &> /dev/null; then
+        SIMULATOR_UUID=$(jq -r '.simulator.simulatorUuid' "$LOCAL_CONFIG_FILE" 2>/dev/null || echo "")
+        if [[ -n "$SIMULATOR_UUID" && "$SIMULATOR_UUID" != "null" ]]; then
+            if xcrun simctl list devices | grep -q "$SIMULATOR_UUID"; then
+                echo_success "Test simulator available: $SIMULATOR_UUID"
+            else
+                echo_warning "Configured simulator not found, will create new one"
+                SIMULATOR_UUID=""
+            fi
         else
-            echo_warning "Configured simulator not found, will create new one"
+            echo_info "No configured simulator, will create one"
             SIMULATOR_UUID=""
         fi
     else
-        echo_info "No configured simulator, will create one"
-        SIMULATOR_UUID=""
+        echo_error "jq not available - cannot read simulator UUID from config"
+        exit 1
     fi
     
     # Check Xcode
