@@ -15,7 +15,7 @@ NC='\033[0m' # No Color
 # Configuration
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_ROOT="$(cd "$SCRIPT_DIR/../../.." && pwd)"
-CONFIG_DIR="$SCRIPT_DIR/../config"
+CONFIG_DIR="$SCRIPT_DIR/../integration-test-app/config"
 LOCAL_CONFIG_FILE="$CONFIG_DIR/test-config.json"
 REPORTS_DIR="$SCRIPT_DIR/../reports"
 SCREENSHOTS_DIR="$SCRIPT_DIR/../screenshots"

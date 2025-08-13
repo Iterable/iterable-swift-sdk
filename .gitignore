@@ -4,7 +4,7 @@ xcuserdata
 .claude/
 
 tests/business-critical-integration/logs
-tests/business-critical-integration/config
+tests/business-critical-integration/integration-test-app/config
 
 .swiftpm/
 

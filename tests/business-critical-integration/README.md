@@ -20,14 +20,24 @@ Before you start, make sure you have:
 - An active Iterable account
 - Basic familiarity with Terminal/Command Line
 
-## 🔑 Step 1: Get Your Iterable API Keys
+## 🔑 Step 1: Get Your Iterable Project ID
 
 ### 1.1 Log into Iterable
 
 1. Go to [Iterable.com](https://iterable.com) and log into your account
-2. If you don't have an account, sign up for a free trial
 
-### 1.2 Understanding API Key Types
+
+### 1.2 Get Your Project ID 
+
+![Project ID](documentation/PROJECT_ID_SCREENSHOT.png)
+
+1. In Settings, click on [Project Settings](https://app.iterable.com/settings/project) 
+2. Your Project ID is shown at the top
+3. Copy this ID for later use
+
+## 🛠 Step 2: Set Up the Testing Environment
+
+### 2.1 Understanding API Key Types
 
 **IMPORTANT:** You need **BOTH** types of API keys for complete integration testing:
 
@@ -45,26 +55,24 @@ Before you start, make sure you have:
 - Allows "Update users, track events and trigger messages from Iterable's mobile SDKs"
 - **Required:** Your iOS app uses this for all SDK operations
 
-### 1.3 Get Your API Keys
+### 2.2 Get Your API Keys
 
-1. In the Iterable dashboard, click on **Settings** (gear icon) in the top right
-2. Select **API Keys** from the left sidebar
+1. In the Iterable dashboard, click on **Integrations** tab
+2. Select **API Keys** from the drop down menu (You can click [here](https://app.iterable.com/settings/apiKeys) to go there directly)
 3. Click **"Create New API Key"** 
 4. **Create TWO keys:**
    - One with **"Server-side"** type (for user management)
    - One with **"Mobile"** type (for SDK testing)
+   - **Important** - While creating the mobile key do not select **JWT Authentication** checkbox.
+
+   ![JWT SCREENSHOT](documentation/JWT_SCREENSHOT.png)
+
+
 5. Name them clearly like "Integration Tests - Server" and "Integration Tests - Mobile"
-6. Copy both keys - you'll need them in the next step
+
 
 > **📝 Note:** Both API keys look like this: `sk_1a2b3c4d5e6f7g8h9i0j`
 
-### 1.4 Get Your Project ID (Optional)
-
-1. Still in Settings, click on **Project Settings**
-2. Your Project ID is shown at the top
-3. Copy this ID for later use
-
-## 🛠 Step 2: Set Up the Testing Environment
 
 ### 2.1 Open Terminal
 

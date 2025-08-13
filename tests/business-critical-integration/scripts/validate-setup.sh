@@ -1,8 +1,8 @@
 #!/bin/bash
 
 # Validate local environment setup
-CONFIG_FILE="$(dirname "$0")/../config/test-config.json"
-SIMULATOR_FILE="$(dirname "$0")/../config/simulator-uuid.txt"
+CONFIG_FILE="$(dirname "$0")/../integration-test-app/config/test-config.json"
+SIMULATOR_FILE="$(dirname "$0")/../integration-test-app/config/simulator-uuid.txt"
 
 echo "🔍 Validating local environment setup..."
 

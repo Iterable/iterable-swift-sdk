@@ -23,7 +23,7 @@ INTEGRATION_ROOT="$SCRIPT_DIR/.."
 echo_header "Build and Run Integration Test App"
 
 # Check simulator
-SIMULATOR_UUID_FILE="$INTEGRATION_ROOT/config/simulator-uuid.txt"
+SIMULATOR_UUID_FILE="$INTEGRATION_ROOT/integration-test-app/config/simulator-uuid.txt"
 if [[ -f "$SIMULATOR_UUID_FILE" ]]; then
     SIMULATOR_UUID=$(cat "$SIMULATOR_UUID_FILE")
     echo_info "Using simulator from config: $SIMULATOR_UUID"

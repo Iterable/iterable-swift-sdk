@@ -15,7 +15,7 @@ NC='\033[0m' # No Color
 # Configuration
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_ROOT="$(cd "$SCRIPT_DIR/../../.." && pwd)"
-CONFIG_DIR="$SCRIPT_DIR/../config"
+CONFIG_DIR="$SCRIPT_DIR/../integration-test-app/config"
 LOCAL_CONFIG_FILE="$CONFIG_DIR/test-config.json"
 
 echo_header() {
@@ -177,14 +177,19 @@ configure_api_keys() {
     fi
     
     echo_info "We need THREE things from you to get started:"
-    echo_warning "1. 🔑 SERVER-SIDE API Key - for creating users and backend operations"
-    echo_warning "2. 📱 MOBILE API Key - for Swift SDK integration testing"  
-    echo_warning "3. 🏗️  PROJECT ID - your Iterable project identifier"
+    echo_warning "1. 🏗️  PROJECT ID - your Iterable project identifier"
+    echo_warning "2. 🔑 SERVER-SIDE API Key - for creating users and backend operations"
+    echo_warning "3. 📱 MOBILE API Key - for Swift SDK integration testing"  
     echo
     echo_info "If you don't have these keys:"
     echo_info "• Log into your Iterable account"
-    echo_info "• Go to Settings > API Keys" 
+    echo_info "• Go to [Settings > Project Settings](https://app.iterable.com/settings/project)" 
+    echo_info "• Your Project ID is shown at the top"
+    echo_info "• Click on the 'API Keys' in the integrations tab (https://app.iterable.com/settings/apiKeys)"
     echo_info "• Create API keys for both 'Server-side' and 'Mobile' types"
+    echo_info "• For the mobile key, do not select JWT authentication"
+    echo_info "• See the README in the business-critical-integration folder for more details"
+    echo_info "• You can also use the setup-local-environment.sh script to get these values for you"
     echo
     
     # Get Project ID first
@@ -312,90 +317,7 @@ create_test_user() {
     echo_info "Use this email for all integration tests"
 }
 
-setup_test_project() {
-    echo_header "Setting Up Test Project Structure"
-    
-    # Create a simple Xcode project for local testing
-    LOCAL_PROJECT_DIR="$SCRIPT_DIR/../LocalIntegrationTest"
-    
-    if [[ ! -d "$LOCAL_PROJECT_DIR" ]]; then
-        mkdir -p "$LOCAL_PROJECT_DIR"
-        
-        # Create a basic Package.swift for the test project
-        cat > "$LOCAL_PROJECT_DIR/Package.swift" << 'EOF'
-// swift-tools-version:5.7
-import PackageDescription
 
-let package = Package(
-    name: "LocalIntegrationTest",
-    platforms: [
-        .iOS(.v14)
-    ],
-    dependencies: [
-        .package(path: "../../../")
-    ],
-    targets: [
-        .target(
-            name: "LocalIntegrationTest",
-            dependencies: ["IterableSDK"],
-            path: "Sources"
-        ),
-        .testTarget(
-            name: "LocalIntegrationTestTests",
-            dependencies: ["LocalIntegrationTest"],
-            path: "Tests"
-        )
-    ]
-)
-EOF
-        
-        # Create source directories
-        mkdir -p "$LOCAL_PROJECT_DIR/Sources/LocalIntegrationTest"
-        mkdir -p "$LOCAL_PROJECT_DIR/Tests/LocalIntegrationTestTests"
-        
-        # Create a simple main file
-        cat > "$LOCAL_PROJECT_DIR/Sources/LocalIntegrationTest/LocalIntegrationTest.swift" << 'EOF'
-import Foundation
-import IterableSDK
-
-public class LocalIntegrationTest {
-    public static func configure() {
-        print("LocalIntegrationTest configured")
-    }
-}
-EOF
-        
-        echo_success "Created local test project structure"
-    else
-        echo_info "Local test project already exists"
-    fi
-}
-
-install_dependencies() {
-    echo_header "Installing Dependencies"
-    
-    # Check if we're in the Swift SDK directory
-    if [[ ! -f "$PROJECT_ROOT/Package.swift" ]]; then
-        echo_error "Not in Swift SDK root directory. Please run from the swift-sdk project root."
-        exit 1
-    fi
-    
-    # Build the SDK first to ensure it compiles
-    echo_info "Building Iterable Swift SDK..."
-    cd "$PROJECT_ROOT"
-    
-    if swift build > /dev/null 2>&1; then
-        echo_success "Swift SDK builds successfully"
-    else
-        echo_warning "Swift SDK build had issues, but continuing..."
-    fi
-    
-    # Install any additional Python dependencies for backend validation
-    if command -v python3 &> /dev/null; then
-        echo_info "Installing Python dependencies for backend validation..."
-        python3 -m pip install requests --user --quiet 2>/dev/null || echo_info "Python requests already installed or not available"
-    fi
-}
 
 create_test_scripts() {
     echo_header "Creating Local Test Scripts"
@@ -406,7 +328,7 @@ create_test_scripts() {
 
 # Simple script to run a single integration test locally
 TEST_TYPE="$1"
-CONFIG_FILE="$(dirname "$0")/../config/test-config.json"
+CONFIG_FILE="$(dirname "$0")/../integration-test-app/config/test-config.json"
 
 if [[ ! -f "$CONFIG_FILE" ]]; then
     echo "❌ Local config not found. Run setup-local-environment.sh first."
@@ -416,7 +338,7 @@ fi
 echo "🧪 Running $TEST_TYPE integration test locally..."
 
 # Extract simulator UUID
-SIMULATOR_UUID=$(cat "$(dirname "$0")/../config/simulator-uuid.txt" 2>/dev/null || echo "")
+SIMULATOR_UUID=$(cat "$(dirname "$0")/../integration-test-app/config/simulator-uuid.txt" 2>/dev/null || echo "")
 
 if [[ -z "$SIMULATOR_UUID" ]]; then
     echo "❌ Simulator UUID not found. Run setup-local-environment.sh first."
@@ -438,8 +360,8 @@ EOF
 #!/bin/bash
 
 # Validate local environment setup
-CONFIG_FILE="$(dirname "$0")/../config/test-config.json"
-SIMULATOR_FILE="$(dirname "$0")/../config/simulator-uuid.txt"
+CONFIG_FILE="$(dirname "$0")/../integration-test-app/config/test-config.json"
+SIMULATOR_FILE="$(dirname "$0")/../integration-test-app/config/simulator-uuid.txt"
 
 echo "🔍 Validating local environment setup..."
 
@@ -490,16 +412,19 @@ main() {
     echo_info "for running business critical integration tests."
     echo
     
-    # Get credentials FIRST before anything else
+    # Setup directory structure FIRST
+    setup_directories
+    
+    # Get credentials and configure API keys
     configure_api_keys
-    create_test_user  # Create test user immediately after getting credentials
     
     check_requirements
-    setup_directories  
     setup_ios_simulator
-    setup_test_project
-    install_dependencies
+    
     create_test_scripts
+    
+    # Create test user after config file is created
+    create_test_user
     
     echo_header "Setup Complete! 🎉"
     echo_success "Local environment is configured for integration testing"
