@@ -122,7 +122,7 @@ The script will then automatically:
 Run this command to test push notification functionality:
 
 ```bash
-./scripts/run-tests-locally.sh push
+./scripts/run-tests.sh push
 ```
 
 You should see output like:
@@ -138,7 +138,7 @@ You should see output like:
 To test everything at once:
 
 ```bash
-./scripts/run-tests-locally.sh all
+./scripts/run-tests.sh all
 ```
 
 ### 3.3 Run with Detailed Output
@@ -146,7 +146,7 @@ To test everything at once:
 For more detailed information during testing:
 
 ```bash
-./scripts/run-tests-locally.sh all --verbose
+./scripts/run-tests.sh all --verbose
 ```
 
 ## 📱 Step 4: Test with the Sample App
@@ -212,7 +212,7 @@ After running tests, check these folders:
 **Solution:** Run this command to fix permissions:
 ```bash
 chmod +x ./scripts/setup-local-environment.sh
-chmod +x ./scripts/run-tests-locally.sh
+chmod +x ./scripts/run-tests.sh
 ```
 
 ### Problem: Tests show warnings but no failures
@@ -236,23 +236,23 @@ Common settings to adjust:
 
 ```bash
 # Test only push notifications
-./scripts/run-tests-locally.sh push
+./scripts/run-tests.sh push
 
 # Test only in-app messages  
-./scripts/run-tests-locally.sh inapp
+./scripts/run-tests.sh inapp
 
 # Test only embedded messages
-./scripts/run-tests-locally.sh embedded
+./scripts/run-tests.sh embedded
 
 # Test only deep linking
-./scripts/run-tests-locally.sh deeplink
+./scripts/run-tests.sh deeplink
 ```
 
 ### Viewing Detailed Logs
 
 To see everything that's happening:
 ```bash
-./scripts/run-tests-locally.sh all --verbose --no-cleanup
+./scripts/run-tests.sh all --verbose --no-cleanup
 ```
 
 ## 📞 Getting Help
@@ -264,7 +264,7 @@ To see everything that's happening:
 
 ### View Help Information
 ```bash
-./scripts/run-tests-locally.sh --help
+./scripts/run-tests.sh --help
 ```
 
 ### Common Commands Reference
@@ -272,8 +272,8 @@ To see everything that's happening:
 | Command | What It Does |
 |---------|-------------|
 | `./scripts/setup-local-environment.sh` | Initial setup |
-| `./scripts/run-tests-locally.sh all` | Run all tests |
-| `./scripts/run-tests-locally.sh push --verbose` | Test push with details |
+| `./scripts/run-tests.sh all` | Run all tests |
+| `./scripts/run-tests.sh push --verbose` | Test push with details |
 | `open reports/` | View test reports in Finder |
 
 ## 🎉 What's Next?

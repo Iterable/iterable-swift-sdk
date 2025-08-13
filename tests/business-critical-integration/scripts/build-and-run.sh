@@ -22,27 +22,31 @@ INTEGRATION_ROOT="$SCRIPT_DIR/.."
 
 echo_header "Build and Run Integration Test App"
 
-# Check simulator
-SIMULATOR_UUID_FILE="$INTEGRATION_ROOT/integration-test-app/config/simulator-uuid.txt"
-if [[ -f "$SIMULATOR_UUID_FILE" ]]; then
-    SIMULATOR_UUID=$(cat "$SIMULATOR_UUID_FILE")
-    echo_info "Using simulator from config: $SIMULATOR_UUID"
-else
-    echo_warning "No simulator UUID file found, looking for 'Integration-Test-iPhone' simulator..."
-    SIMULATOR_UUID=$(xcrun simctl list devices | grep "Integration-Test-iPhone" | head -1 | grep -oE '\([A-F0-9-]{36}\)' | tr -d '()')
-    
-    if [[ -n "$SIMULATOR_UUID" ]]; then
-        echo_success "Found Integration-Test-iPhone simulator: $SIMULATOR_UUID"
-        # Save it for future use
-        mkdir -p "$INTEGRATION_ROOT/config"
-        echo "$SIMULATOR_UUID" > "$SIMULATOR_UUID_FILE"
-        echo_info "Saved simulator UUID to config file"
+# Check simulator from JSON config
+CONFIG_FILE="$INTEGRATION_ROOT/integration-test-app/config/test-config.json"
+if [[ -f "$CONFIG_FILE" ]] && command -v jq &> /dev/null; then
+    SIMULATOR_UUID=$(jq -r '.simulator.simulatorUuid' "$CONFIG_FILE" 2>/dev/null || echo "")
+    if [[ -n "$SIMULATOR_UUID" && "$SIMULATOR_UUID" != "null" ]]; then
+        echo_info "Using simulator from JSON config: $SIMULATOR_UUID"
     else
-        echo_error "No Integration-Test-iPhone simulator found. Available simulators:"
-        xcrun simctl list devices | grep iPhone | head -5
-        echo_info "Create one with: xcrun simctl create 'Integration-Test-iPhone' com.apple.CoreSimulator.SimDeviceType.iPhone-16-Pro com.apple.CoreSimulator.SimRuntime.iOS-18-1"
-        exit 1
+        echo_warning "No simulator UUID in JSON config, looking for 'Integration-Test-iPhone' simulator..."
+        SIMULATOR_UUID=$(xcrun simctl list devices | grep "Integration-Test-iPhone" | head -1 | grep -oE '\([A-F0-9-]{36}\)' | tr -d '()')
+        
+        if [[ -n "$SIMULATOR_UUID" ]]; then
+            echo_success "Found Integration-Test-iPhone simulator: $SIMULATOR_UUID"
+            # Update JSON config with simulator UUID
+            jq --arg uuid "$SIMULATOR_UUID" '.simulator.simulatorUuid = $uuid' "$CONFIG_FILE" > "$CONFIG_FILE.tmp" && mv "$CONFIG_FILE.tmp" "$CONFIG_FILE"
+            echo_info "Updated JSON config with simulator UUID"
+        else
+            echo_error "No Integration-Test-iPhone simulator found. Available simulators:"
+            xcrun simctl list devices | grep iPhone | head -5
+            echo_info "Create one with: xcrun simctl create 'Integration-Test-iPhone' com.apple.CoreSimulator.SimDeviceType.iPhone-16-Pro com.apple.CoreSimulator.SimRuntime.iOS-18-1"
+            exit 1
+        fi
     fi
+else
+    echo_error "JSON config file not found or jq not available"
+    exit 1
 fi
 
 # Check if simulator is running

@@ -138,9 +138,13 @@ setup_ios_simulator() {
         fi
     fi
     
-    # Store simulator UUID for later use
-    echo "$SIMULATOR_UUID" > "$CONFIG_DIR/simulator-uuid.txt"
-    echo_success "Simulator UUID saved: $SIMULATOR_UUID"
+    # Update JSON config with simulator UUID
+    if command -v jq &> /dev/null; then
+        jq --arg uuid "$SIMULATOR_UUID" '.simulator.simulatorUuid = $uuid' "$LOCAL_CONFIG_FILE" > "$LOCAL_CONFIG_FILE.tmp" && mv "$LOCAL_CONFIG_FILE.tmp" "$LOCAL_CONFIG_FILE"
+        echo_success "Simulator UUID saved to JSON config: $SIMULATOR_UUID"
+    else
+        echo_warning "jq not available, cannot update JSON config with simulator UUID"
+    fi
     
     # Boot the simulator
     echo_info "Booting simulator..."
@@ -227,7 +231,8 @@ configure_api_keys() {
   "environment": "local",
   "simulator": {
     "deviceType": "iPhone 16 Pro",
-    "osVersion": "latest"
+    "osVersion": "latest",
+    "simulatorUuid": ""
   },
   "testing": {
     "timeout": 60,
@@ -318,94 +323,6 @@ create_test_user() {
 }
 
 
-
-create_test_scripts() {
-    echo_header "Creating Local Test Scripts"
-    
-    # Create a simple test runner script
-    cat > "$SCRIPT_DIR/run-single-test.sh" << 'EOF'
-#!/bin/bash
-
-# Simple script to run a single integration test locally
-TEST_TYPE="$1"
-CONFIG_FILE="$(dirname "$0")/../integration-test-app/config/test-config.json"
-
-if [[ ! -f "$CONFIG_FILE" ]]; then
-    echo "❌ Local config not found. Run setup-local-environment.sh first."
-    exit 1
-fi
-
-echo "🧪 Running $TEST_TYPE integration test locally..."
-
-# Extract simulator UUID
-SIMULATOR_UUID=$(cat "$(dirname "$0")/../integration-test-app/config/simulator-uuid.txt" 2>/dev/null || echo "")
-
-if [[ -z "$SIMULATOR_UUID" ]]; then
-    echo "❌ Simulator UUID not found. Run setup-local-environment.sh first."
-    exit 1
-fi
-
-# Boot simulator if needed
-xcrun simctl boot "$SIMULATOR_UUID" 2>/dev/null || true
-
-echo "✅ Test setup complete. Simulator: $SIMULATOR_UUID"
-echo "📝 Next: Implement actual test execution for $TEST_TYPE"
-EOF
-    
-    chmod +x "$SCRIPT_DIR/run-single-test.sh"
-    echo_success "Created run-single-test.sh"
-    
-    # Create validation script
-    cat > "$SCRIPT_DIR/validate-setup.sh" << 'EOF'
-#!/bin/bash
-
-# Validate local environment setup
-CONFIG_FILE="$(dirname "$0")/../integration-test-app/config/test-config.json"
-SIMULATOR_FILE="$(dirname "$0")/../integration-test-app/config/simulator-uuid.txt"
-
-echo "🔍 Validating local environment setup..."
-
-# Check config file
-if [[ -f "$CONFIG_FILE" ]]; then
-    echo "✅ Configuration file exists"
-    if command -v jq &> /dev/null; then
-        API_KEY=$(jq -r '.apiKey' "$CONFIG_FILE")
-        if [[ "$API_KEY" != "null" && -n "$API_KEY" ]]; then
-            echo "✅ API key configured"
-        else
-            echo "❌ API key not configured"
-        fi
-    fi
-else
-    echo "❌ Configuration file missing"
-fi
-
-# Check simulator
-if [[ -f "$SIMULATOR_FILE" ]]; then
-    SIMULATOR_UUID=$(cat "$SIMULATOR_FILE")
-    if xcrun simctl list devices | grep -q "$SIMULATOR_UUID"; then
-        echo "✅ Test simulator exists: $SIMULATOR_UUID"
-    else
-        echo "❌ Test simulator not found"
-    fi
-else
-    echo "❌ Simulator configuration missing"
-fi
-
-# Check Xcode
-if command -v xcodebuild &> /dev/null; then
-    echo "✅ Xcode available"
-else
-    echo "❌ Xcode not found"
-fi
-
-echo "🎯 Local environment validation complete"
-EOF
-    
-    chmod +x "$SCRIPT_DIR/validate-setup.sh"
-    echo_success "Created validate-setup.sh"
-}
-
 main() {
     echo_header "Iterable Swift SDK - Local Integration Test Setup"
     echo_info "This script will configure your local development environment"
@@ -420,10 +337,7 @@ main() {
     
     check_requirements
     setup_ios_simulator
-    
-    create_test_scripts
-    
-    # Create test user after config file is created
+        
     create_test_user
     
     echo_header "Setup Complete! 🎉"
@@ -431,13 +345,13 @@ main() {
     echo
     echo_info "Next steps:"
     echo_info "1. Run: ./scripts/validate-setup.sh"
-    echo_info "2. Run: ./scripts/run-tests-locally.sh push"
+    echo_info "2. Run: ./scripts/run-tests.sh push"
     echo_info "3. Check reports in: ./reports/"
     echo
     echo_info "Configuration saved to: $LOCAL_CONFIG_FILE"
     echo_warning "Keep your API credentials secure!"
     echo
-    echo_info "For help: ./scripts/run-tests-locally.sh --help"
+    echo_info "For help: ./scripts/run-tests.sh --help"
 }
 
 # Run main function
