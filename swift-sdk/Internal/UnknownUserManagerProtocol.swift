@@ -17,4 +17,8 @@ import Foundation
     func getUnknownUserCriteria()
     func syncEvents()
     func clearVisitorEventsAndUserData()
+    // Consent helpers
+    func prepareConsent(email: String?, userId: String?, isUserKnown: Bool)
+    func sendPendingConsent()
+    func clearPendingConsent()
 }
