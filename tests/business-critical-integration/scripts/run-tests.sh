@@ -204,8 +204,14 @@ setup_simulator() {
         if [[ -n "$RUNTIME" ]]; then
             echo_info "Creating simulator: $SIMULATOR_NAME with $RUNTIME"
             SIMULATOR_UUID=$(xcrun simctl create "$SIMULATOR_NAME" "$DEVICE_TYPE" "$RUNTIME")
-            echo "$SIMULATOR_UUID" > "$CONFIG_DIR/simulator-uuid.txt"
-            echo_success "Created simulator: $SIMULATOR_UUID"
+            # Update JSON config with simulator UUID
+            if command -v jq &> /dev/null; then
+                jq --arg uuid "$SIMULATOR_UUID" '.simulator.simulatorUuid = $uuid' "$LOCAL_CONFIG_FILE" > "$LOCAL_CONFIG_FILE.tmp" && mv "$LOCAL_CONFIG_FILE.tmp" "$LOCAL_CONFIG_FILE"
+                echo_success "Created simulator and updated JSON config: $SIMULATOR_UUID"
+            else
+                echo_warning "jq not available, cannot update JSON config"
+                echo_success "Created simulator: $SIMULATOR_UUID"
+            fi
         else
             echo_error "No iOS runtime available"
             exit 1
