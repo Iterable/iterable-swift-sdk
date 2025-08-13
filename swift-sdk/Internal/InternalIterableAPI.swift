@@ -169,7 +169,7 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
                 // Prepare consent for replay scenario before merge
                 // Check if this is truly a replay scenario (no existing anonymous user before merge)
                 if let replay, replay, self?.localStorage.userIdUnknownUser == nil {
-                    self?.prepareConsentForReplayScenario(email: email, userId: nil)
+                    self?.prepareConsent(email: email, userId: nil)
                 }
                 
                 self?.attemptAndProcessMerge(
@@ -220,7 +220,7 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
                     // Prepare consent for replay scenario before merge
                     // Check if this is truly a replay scenario (no existing anonymous user before merge)
                     if let replay, replay, self?.localStorage.userIdUnknownUser == nil {
-                        self?.prepareConsentForReplayScenario(email: nil, userId: userId)
+                        self?.prepareConsent(email: nil, userId: userId)
                     }
                     
                     self?.attemptAndProcessMerge(
@@ -290,15 +290,15 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
         return self.localStorage.visitorUsageTracked
     }
 
-    /// Prepares consent data for replay scenarios to be sent when user creation is confirmed.
-    /// 
+    /// Prepares consent data to be sent when user registration is confirmed during "replay scenario".
+    ///
     /// A "replay scenario" occurs when a user signs up or logs in but does not meet the criteria
     /// for immediate consent tracking. This method stores consent data to be sent once user 
-    /// creation is confirmed through the registration success callback.
+    /// registration is confirmed through the registration success callback.
     ///
     /// This method is typically called during user sign-up or sign-in processes to ensure that
     /// consent data is properly recorded for compliance and analytics purposes.
-    private func prepareConsentForReplayScenario(email: String?, userId: String?) {
+    private func prepareConsent(email: String?, userId: String?) {
         guard let consentTimestamp = localStorage.visitorConsentTimestamp else {
             return
         }
@@ -308,7 +308,7 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
             return
         }
         
-        // Store the consent data to be sent when user creation is confirmed
+        // Store the consent data to be sent when user registration is confirmed
         pendingConsentData = PendingConsentData(
             consentTimestamp: consentTimestamp,
             email: email,
@@ -316,17 +316,17 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
             isUserKnown: true
         )
         
-        ITBInfo("Consent data prepared for replay scenario - will send after user creation is confirmed")
+        ITBInfo("Consent data prepared for replay scenario - will send after user registration is confirmed")
     }
     
     /// Sends any pending consent data now that user creation is confirmed
-    private func sendPendingConsentIfNeeded() {
+    private func sendPendingConsent() {
         guard let consentData = pendingConsentData else {
             ITBDebug("No pending consent to send")
             return
         }
         
-        ITBDebug("Sending pending consent after user creation: email set=\(consentData.email != nil), userId set=\(consentData.userId != nil), timestamp=\(consentData.consentTimestamp)")
+        ITBDebug("Sending pending consent after user registration: email set=\(consentData.email != nil), userId set=\(consentData.userId != nil), timestamp=\(consentData.consentTimestamp)")
         
         apiClient.trackConsent(
             consentTimestamp: consentData.consentTimestamp,
@@ -334,9 +334,9 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
             userId: consentData.userId,
             isUserKnown: consentData.isUserKnown
         ).onSuccess { _ in
-            ITBInfo("Pending consent tracked successfully after user creation")
+            ITBInfo("Pending consent tracked successfully after user registration")
         }.onError { error in
-            ITBError("Failed to track pending consent after user creation: \(error)")
+            ITBError("Failed to track pending consent after user registration: \(error)")
         }
         
         // Clear the pending consent data
@@ -380,9 +380,9 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
         requestHandler.register(registerTokenInfo: registerTokenInfo,
                                 notificationStateProvider: notificationStateProvider,
                                 onSuccess: { (_ data: [AnyHashable: Any]?) in
-                                                // Send any pending consent now that user creation is confirmed
+                                                // Send any pending consent now that user registration is confirmed
                                                 ITBDebug("Device registration succeeded; attempting to send pending consent if any")
-                                                self.sendPendingConsentIfNeeded()
+                                                self.sendPendingConsent()
                                                 self._successCallback?(data)
                                                 onSuccess?(data)
                                 },
@@ -887,7 +887,7 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
         }, shouldIgnoreRetryPolicy: true)
     }
     
-        private func completeUserLogin(onloginSuccessCallBack: (()->())? = nil) {
+    private func completeUserLogin(onloginSuccessCallBack: (()->())? = nil) {
         ITBInfo()        
         guard isSDKInitialized() else { return }
         
@@ -897,7 +897,7 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
             // If auto push registration is disabled, send pending consent here
             // since register() won't be called automatically
             ITBDebug("Auto push registration disabled; attempting to send pending consent after login")
-            sendPendingConsentIfNeeded()
+            sendPendingConsent()
             _successCallback?([:])            
         }
         
