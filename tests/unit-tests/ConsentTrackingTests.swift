@@ -32,6 +32,8 @@ class ConsentTrackingTests: XCTestCase {
         
         let config = IterableConfig()
         config.enableUnknownUserActivation = true
+        // Needed so register(token:) can succeed in tests
+        config.pushIntegrationName = "test-push-integration"
         
         internalAPI = InternalIterableAPI.initializeForTesting(
             apiKey: ConsentTrackingTests.apiKey,
@@ -189,6 +191,8 @@ class ConsentTrackingTests: XCTestCase {
         }
         
         internalAPI.setEmail(ConsentTrackingTests.testEmail)
+        // Consent is sent after successful device registration
+        internalAPI.register(token: "test-token")
         
         wait(for: [expectation], timeout: 5.0)
     }
@@ -218,6 +222,8 @@ class ConsentTrackingTests: XCTestCase {
         }
         
         internalAPI.setUserId(ConsentTrackingTests.testUserId)
+        // Consent is sent after successful device registration
+        internalAPI.register(token: "test-token")
         
         wait(for: [expectation], timeout: 5.0)
     }
@@ -237,6 +243,8 @@ class ConsentTrackingTests: XCTestCase {
         }
         
         internalAPI.setEmail(ConsentTrackingTests.testEmail)
+        // Consent is sent after successful device registration
+        internalAPI.register(token: "test-token")
         
         wait(for: [expectation], timeout: 2.0)
     }
@@ -256,6 +264,8 @@ class ConsentTrackingTests: XCTestCase {
         }
         
         internalAPI.setEmail(ConsentTrackingTests.testEmail)
+        // Consent is sent after successful device registration
+        internalAPI.register(token: "test-token")
         
         wait(for: [expectation], timeout: 2.0)
     }
@@ -302,7 +312,13 @@ class ConsentTrackingTests: XCTestCase {
             return MockNetworkSession.MockResponse(statusCode: 200)
         }
         
-        internalAPI.setEmail(ConsentTrackingTests.testEmail)
+        // Directly invoke consent tracking to verify error handling
+        internalAPI.apiClient.trackConsent(
+            consentTimestamp: ConsentTrackingTests.consentTimestamp,
+            email: ConsentTrackingTests.testEmail,
+            userId: nil,
+            isUserKnown: true
+        )
         
         wait(for: [expectation], timeout: 5.0)
         // Test should not crash on error - error is logged internally
@@ -333,7 +349,13 @@ class ConsentTrackingTests: XCTestCase {
             }
         }
         
-        internalAPI.setEmail(ConsentTrackingTests.testEmail)
+        // Invoke via API client to validate device info payload
+        internalAPI.apiClient.trackConsent(
+            consentTimestamp: ConsentTrackingTests.consentTimestamp,
+            email: ConsentTrackingTests.testEmail,
+            userId: nil,
+            isUserKnown: true
+        )
         
         wait(for: [expectation], timeout: 5.0)
     }
