@@ -30,6 +30,16 @@ public class UnknownUserManager: UnknownUserManagerProtocol {
     private(set) var lastCriteriaFetch: Double = 0
     private var isCriteriaMatched = false
 
+    // MARK: - Pending Consent Tracking
+    /// Holds consent data that should be sent once user creation or registration is confirmed
+    private struct PendingConsentData {
+        let consentTimestamp: Int64
+        let email: String?
+        let userId: String?
+        let isUserKnown: Bool
+    }
+    private var pendingConsentData: PendingConsentData?
+
     /// Tracks an unknown user event and store it locally
     public func trackUnknownUserEvent(name: String, dataFields: [AnyHashable: Any]?) {
         var body = [AnyHashable: Any]()
@@ -87,6 +97,60 @@ public class UnknownUserManager: UnknownUserManagerProtocol {
             localStorage.unknownUserSessions = unknownUserSessionWrapper
         }
     }
+
+    // MARK: - Consent helpers (moved from InternalIterableAPI)
+    /// Prepares consent data to be sent when user registration is confirmed during "replay scenario".
+    public func prepareConsent(email: String?, userId: String?, isUserKnown: Bool) {
+        guard let consentTimestamp = localStorage.visitorConsentTimestamp else {
+            return
+        }
+        
+        // prepare consent if we have previous anonymous tracking consent
+        guard localStorage.visitorUsageTracked else {
+            return
+        }
+
+        pendingConsentData = PendingConsentData(
+            consentTimestamp: consentTimestamp,
+            email: email,
+            userId: userId,
+            isUserKnown: isUserKnown
+        )
+        ITBInfo("Prepared pending consent for replay scenario - will send after user registration is confirmed")
+    }
+
+    /// Sends any pending consent data now that user creation/registration is confirmed
+    public func sendPendingConsent() {
+        guard let consentData = pendingConsentData else {
+            ITBDebug("No pending consent to send")
+            return
+        }
+
+        ITBDebug("Sending pending consent: email set=\(consentData.email != nil), userId set=\(consentData.userId != nil), known=\(consentData.isUserKnown), timestamp=\(consentData.consentTimestamp)")
+
+        IterableAPI.implementation?.apiClient.trackConsent(
+            consentTimestamp: consentData.consentTimestamp,
+            email: consentData.email,
+            userId: consentData.userId,
+            isUserKnown: consentData.isUserKnown
+        ).onSuccess { _ in
+            ITBInfo("Pending consent tracked successfully")
+        }.onError { error in
+            ITBError("Failed to track pending consent: \(error)")
+        }
+
+        // Clear the pending consent data
+        pendingConsentData = nil
+    }
+
+    /// Clears any pending consent data without sending
+    public func clearPendingConsent() {
+        pendingConsentData = nil
+    }
+
+    
+
+    // Removed build-and-send overload; callers should `prepareConsent(..., isUserKnown:)` then `sendPendingConsent()`
     
     /// Syncs unsynced data which might have failed to sync when calling syncEvents for the first time after criterias met
     public func syncNonSyncedEvents() {
@@ -191,10 +255,10 @@ public class UnknownUserManager: UnknownUserManagerProtocol {
                 self.localStorage.userIdUnknownUser = userId
                 self.config.unknownUserHandler?.onUnknownUserCreated(userId: userId)
                 
-                IterableAPI.implementation?.setUserId(userId, isUnknownUser: true)
+                // Prepare and send consent after anonymous session creation
+                self.prepareConsent(email: nil, userId: userId, isUserKnown: false)
                 
-                // Send consent data after session creation
-                self.sendConsentAfterCriteriaMatch(userId: userId)
+                IterableAPI.implementation?.setUserId(userId, isUnknownUser: true)
                 
                 self.syncNonSyncedEvents()
             }
@@ -268,24 +332,5 @@ public class UnknownUserManager: UnknownUserManagerProtocol {
         }
         
         localStorage.unknownUserEvents = eventsDataObjects
-    }
-    
-    /// Sends consent data after user meets criteria and anonymous user is created
-    private func sendConsentAfterCriteriaMatch(userId: String) {
-        guard let consentTimestamp = localStorage.visitorConsentTimestamp else {
-            ITBInfo("No consent timestamp found, skipping consent tracking")
-            return
-        }
-        
-        IterableAPI.implementation?.apiClient.trackConsent(
-            consentTimestamp: consentTimestamp,
-            email: nil,
-            userId: userId,
-            isUserKnown: false
-        ).onSuccess { _ in
-            ITBInfo("Consent tracked successfully for criteria match")
-        }.onError { error in
-            ITBError("Failed to track consent for criteria match: \(error)")
-        }
     }
 }
