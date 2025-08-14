@@ -104,8 +104,9 @@ public class UnknownUserManager: UnknownUserManagerProtocol {
         guard let consentTimestamp = localStorage.visitorConsentTimestamp else {
             return
         }
-        // Only prepare consent if we have previous anonymous tracking consent but no anonymous user ID
-        guard localStorage.userIdUnknownUser == nil && localStorage.visitorUsageTracked else {
+        
+        // prepare consent if we have previous anonymous tracking consent
+        guard localStorage.visitorUsageTracked else {
             return
         }
 
@@ -254,11 +255,10 @@ public class UnknownUserManager: UnknownUserManagerProtocol {
                 self.localStorage.userIdUnknownUser = userId
                 self.config.unknownUserHandler?.onUnknownUserCreated(userId: userId)
                 
-                IterableAPI.implementation?.setUserId(userId, isUnknownUser: true)
-                
                 // Prepare and send consent after anonymous session creation
                 self.prepareConsent(email: nil, userId: userId, isUserKnown: false)
-                self.sendPendingConsent()
+                
+                IterableAPI.implementation?.setUserId(userId, isUnknownUser: true)
                 
                 self.syncNonSyncedEvents()
             }
@@ -333,6 +333,4 @@ public class UnknownUserManager: UnknownUserManagerProtocol {
         
         localStorage.unknownUserEvents = eventsDataObjects
     }
-    
-    // Removed dedicated consent sender; unified via sendPendingConsent(email:userId:isUserKnown:)
 }
