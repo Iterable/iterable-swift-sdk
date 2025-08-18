@@ -97,11 +97,8 @@ final class PushNotificationTestViewController: UIViewController {
     @objc private func registerForNotifications() {
         AppDelegate.registerForPushNotifications()
         
-        // Show immediate feedback
-        showAlert(
-            title: "Push Notification Request",
-            message: "Push notification permission request sent. Check the console and status view for updates."
-        )
+        // No alert needed - the status view will update automatically
+        print("📱 Push notification permission requested")
     }
     
     @objc private func openNotificationSettings() {

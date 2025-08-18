@@ -12,6 +12,51 @@ YELLOW='\033[1;33m'
 BLUE='\033[0;34m'
 NC='\033[0m' # No Color
 
+# Global cleanup flag to prevent infinite loops
+CLEANUP_IN_PROGRESS=false
+
+# Emergency cleanup function for signal handling
+emergency_cleanup() {
+    local exit_code=$?
+    local signal_name="$1"
+    
+    # Prevent infinite loops if cleanup itself is interrupted
+    if [[ "$CLEANUP_IN_PROGRESS" == true ]]; then
+        echo_error "Cleanup already in progress, forcing exit..."
+        exit 1
+    fi
+    
+    CLEANUP_IN_PROGRESS=true
+    
+    echo ""
+    echo_warning "Script interrupted by $signal_name signal!"
+    echo_info "Performing emergency cleanup..."
+    
+    # Skip device clearing as it's not needed
+    
+    # Stop and clean simulator if possible
+    local SIMULATOR_UUID_TO_CLEAN="${SIMULATOR_UUID:-}"
+    if [[ -z "$SIMULATOR_UUID_TO_CLEAN" ]] && [[ -f "$LOCAL_CONFIG_FILE" ]]; then
+        SIMULATOR_UUID_TO_CLEAN=$(jq -r '.simulatorUuid // ""' "$LOCAL_CONFIG_FILE" 2>/dev/null || echo "")
+    fi
+    
+    if [[ -n "$SIMULATOR_UUID_TO_CLEAN" ]] && [[ "$SIMULATOR_UUID_TO_CLEAN" != "null" ]] && command -v xcrun >/dev/null 2>&1; then
+        echo_info "Cleaning up simulator: $SIMULATOR_UUID_TO_CLEAN"
+        xcrun simctl shutdown "$SIMULATOR_UUID_TO_CLEAN" 2>/dev/null || true
+    fi
+    
+    # Clean up any background processes
+    jobs -p | xargs -r kill 2>/dev/null || true
+    
+    echo_warning "Emergency cleanup completed. Exiting with code $exit_code"
+    exit $exit_code
+}
+
+# Set up signal traps for clean exit
+trap 'emergency_cleanup "SIGINT"' INT
+trap 'emergency_cleanup "SIGTERM"' TERM
+trap 'emergency_cleanup "EXIT"' EXIT
+
 # Configuration
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_ROOT="$(cd "$SCRIPT_DIR/../../.." && pwd)"
@@ -264,37 +309,24 @@ prepare_test_environment() {
 build_test_project() {
     echo_header "Building Test Project"
     
-    cd "$PROJECT_ROOT"
-    
-    # Skip SDK build due to macOS compatibility issues with notification extension
-    echo_info "Skipping Swift SDK build (focusing on iOS sample app testing)"
-    echo_success "Proceeding with sample app build for iOS simulator"
-    
-    # Build the sample app for testing
-    SAMPLE_APP_PATH="$PROJECT_ROOT/tests/business-critical-integration/integration-test-app"
-    if [[ -d "$SAMPLE_APP_PATH" ]]; then
-        echo_info "Building sample app for testing..."
-        cd "$SAMPLE_APP_PATH"
-        
-        BUILD_LOG="$LOGS_DIR/sample-app-build.log"
-        if xcodebuild build \
-            -project swift-sample-app.xcodeproj \
-            -scheme swift-sample-app \
-            -sdk iphonesimulator \
-            -destination "id=$SIMULATOR_UUID" \
-            -configuration Debug \
-            > "$BUILD_LOG" 2>&1; then
-            echo_success "Sample app build successful"
-        else
-            echo_warning "Sample app build had issues, but continuing..."
-            if [[ "$VERBOSE" == true ]]; then
-                tail -20 "$BUILD_LOG"
-            fi
-        fi
-    else
-        echo_warning "Sample app not found, creating minimal test project"
-        create_minimal_test_project
+    if [[ "$DRY_RUN" == true ]]; then
+        echo_info "[DRY RUN] Would build test project using build.sh"
+        return 0
     fi
+    
+    # Use the existing build script to build the integration test app
+    echo_info "Running build script..."
+    "$SCRIPT_DIR/build.sh"
+    local BUILD_EXIT_CODE=$?
+    
+    if [[ $BUILD_EXIT_CODE -eq 0 ]]; then
+        echo_success "Integration test project built successfully"
+    else
+        echo_error "Build failed with exit code: $BUILD_EXIT_CODE"
+        return $BUILD_EXIT_CODE
+    fi
+    
+    return 0
 }
 
 create_minimal_test_project() {
@@ -320,145 +352,93 @@ EOF
     echo_success "Created minimal test project"
 }
 
-clear_devices_for_testing() {
-    local PHASE="$1"  # "pre-test" or "post-test"
+clean_test_environment_before_tests() {
+    echo_header "Cleaning Test Environment"
     
-    echo_header "Device Clearing ($PHASE)"
-    
-    # Load configuration to get test user email and API keys
-    if [[ ! -f "$LOCAL_CONFIG_FILE" ]]; then
-        echo_warning "Configuration file not found: $LOCAL_CONFIG_FILE"
-        echo_warning "Skipping device clearing - manual cleanup may be required"
+    if [[ "$DRY_RUN" == true ]]; then
+        echo_info "[DRY RUN] Would clean test environment before tests"
         return 0
     fi
     
-    local TEST_USER_EMAIL=$(jq -r '.testUserEmail // .userEmail // "integration-test@iterable.com"' "$LOCAL_CONFIG_FILE")
-    local MOBILE_KEY=$(jq -r '.mobileApiKey // ""' "$LOCAL_CONFIG_FILE")
-    local SERVER_KEY=$(jq -r '.serverApiKey // ""' "$LOCAL_CONFIG_FILE")
+    echo_info "Resetting simulator to clean state..."
     
-    if [[ -z "$MOBILE_KEY" || "$MOBILE_KEY" == "null" ]]; then
-        echo_warning "Mobile API key not found in configuration"
-        echo_warning "Skipping device clearing - manual cleanup may be required"
-        return 0
+    # Shutdown the simulator first
+    xcrun simctl shutdown "$SIMULATOR_UUID" 2>/dev/null || true
+    
+    # Erase the simulator to get a completely clean state
+    if xcrun simctl erase "$SIMULATOR_UUID"; then
+        echo_success "Simulator erased successfully"
+    else
+        echo_warning "Failed to erase simulator, but continuing..."
     fi
     
-    echo_info "Clearing devices for user: $TEST_USER_EMAIL"
-    echo_info "Phase: $PHASE"
+    # Boot the simulator again
+    echo_info "Booting clean simulator..."
+    xcrun simctl boot "$SIMULATOR_UUID"
     
-    # Get all devices for the test user
-    local ENCODED_EMAIL=$(printf %s "$TEST_USER_EMAIL" | jq -sRr @uri)
-    local USER_RESPONSE=$(curl -s -X GET "https://api.iterable.com/api/users/$ENCODED_EMAIL" \
-        -H "Api-Key: $SERVER_KEY" \
-        -H "Content-Type: application/json")
+    # Wait for simulator to be ready
+    echo_info "Waiting for simulator to be ready..."
+    sleep 5
     
-    # Extract device tokens
-    local DEVICE_TOKENS=$(echo "$USER_RESPONSE" | jq -r '
-        try (
-            .user.dataFields.devices[]? | 
-            select(.endpointEnabled == true) | 
-            .token
-        ) catch empty' 2>/dev/null | grep -v '^null$' | grep -v '^$' || true)
+    echo_success "Test environment cleaned and ready"
+}
+
+run_xcode_tests() {
+    local TEST_CLASS="$1"
+    local TEST_METHOD="$2"
     
-    if [[ -z "$DEVICE_TOKENS" ]]; then
-        echo_info "No active devices found for $TEST_USER_EMAIL"
-        return 0
+    echo_info "Running XCTest: $TEST_CLASS${TEST_METHOD:+.$TEST_METHOD}"
+    
+    # Navigate to the integration test app directory
+    cd "$SCRIPT_DIR/../integration-test-app"
+    
+    # Build test report file
+    local TEST_CLASS_LOWER=$(echo "$TEST_CLASS" | tr '[:upper:]' '[:lower:]')
+    local TEST_REPORT="$REPORTS_DIR/${TEST_CLASS_LOWER}-$(date +%Y%m%d-%H%M%S).json"
+    
+    # Run the specific test using xcodebuild test-without-building
+    local XCODEBUILD_CMD=(
+        xcodebuild
+        -project IterableSDK-Integration-Tester.xcodeproj
+        -scheme "IterableSDK-Integration-Tester"
+        -configuration Debug
+        -sdk iphonesimulator
+        -destination "id=$SIMULATOR_UUID"
+        -disable-concurrent-destination-testing
+        test-without-building
+    )
+    
+    # Add specific test if provided
+    if [[ -n "$TEST_METHOD" ]]; then
+        XCODEBUILD_CMD+=(-only-testing "IterableSDK-Integration-TesterUITests/$TEST_CLASS/$TEST_METHOD")
+    else
+        XCODEBUILD_CMD+=(-only-testing "IterableSDK-Integration-TesterUITests/$TEST_CLASS")
     fi
     
-    local DEVICE_COUNT=$(echo "$DEVICE_TOKENS" | wc -l | tr -d ' ')
-    echo_info "Found $DEVICE_COUNT active device(s) to disable"
+    # Run the test
+    echo_info "Executing: ${XCODEBUILD_CMD[*]}"
+    "${XCODEBUILD_CMD[@]}"
+    local EXIT_CODE=$?
     
-    # Disable each device
-    local DISABLED_COUNT=0
-    local FAILED_COUNT=0
-    
-    while IFS= read -r token; do
-        if [[ -n "$token" ]]; then
-            echo_info "Disabling device: ${token:0:16}..."
-            
-            local DISABLE_RESPONSE=$(curl -s -X POST "https://api.iterable.com/api/users/disableDevice" \
-                -H "Api-Key: $MOBILE_KEY" \
-                -H "Content-Type: application/json" \
-                -d "{
-                    \"email\": \"$TEST_USER_EMAIL\",
-                    \"token\": \"$token\"
-                }")
-            
-            # Check if the disable request was successful
-            if echo "$DISABLE_RESPONSE" | jq -e '.code == "Success"' > /dev/null 2>&1; then
-                echo_success "Device disabled successfully"
-                ((DISABLED_COUNT++))
-            else
-                echo_warning "Failed to disable device: $DISABLE_RESPONSE"
-                ((FAILED_COUNT++))
-            fi
-        fi
-    done <<< "$DEVICE_TOKENS"
-    
-    echo_success "Device clearing completed ($PHASE)"
-    echo_info "Devices disabled: $DISABLED_COUNT"
-    if [[ $FAILED_COUNT -gt 0 ]]; then
-        echo_warning "Failed to disable: $FAILED_COUNT devices"
+    if [[ $EXIT_CODE -eq 0 ]]; then
+        echo_success "$TEST_CLASS tests completed successfully"
+    else
+        echo_warning "$TEST_CLASS tests failed with exit code: $EXIT_CODE"
     fi
     
-    # Wait for changes to propagate
-    if [[ $DISABLED_COUNT -gt 0 ]]; then
-        echo_info "Waiting for device changes to propagate..."
-        sleep 5
-    fi
+    return $EXIT_CODE
 }
 
 run_push_notification_tests() {
     echo_header "Running Push Notification Integration Tests"
     
     if [[ "$DRY_RUN" == true ]]; then
-        echo_info "[DRY RUN] Would run push notification tests"
-        echo_info "[DRY RUN] - Clear devices before testing"
-        echo_info "[DRY RUN] - Device registration validation"
-        echo_info "[DRY RUN] - Standard push notification"
-        echo_info "[DRY RUN] - Silent push notification"
-        echo_info "[DRY RUN] - Push with deep links"
-        echo_info "[DRY RUN] - Push with action buttons"
-        echo_info "[DRY RUN] - Push metrics validation"
-        echo_info "[DRY RUN] - Clear devices after testing"
-        return
+        echo_info "[DRY RUN] Would run push notification tests using xcodebuild test-without-building"
+        return 0
     fi
     
-    # Clear devices before testing to ensure clean state
-    clear_devices_for_testing "pre-test"
-    
-    # Create test report
-    TEST_REPORT="$REPORTS_DIR/push-notification-test-$(date +%Y%m%d-%H%M%S).json"
-    
-    echo_info "Starting push notification test sequence..."
-    
-    # Test 1: Device Registration
-    echo_info "Test 1: Device registration validation"
-    run_test_with_timeout "device_registration" "$TIMEOUT"
-    
-    # Test 2: Standard Push
-    echo_info "Test 2: Standard push notification"
-    run_test_with_timeout "standard_push" "$TIMEOUT"
-    
-    # Test 3: Silent Push
-    echo_info "Test 3: Silent push notification"
-    run_test_with_timeout "silent_push" "$TIMEOUT"
-    
-    # Test 4: Push with Deep Links
-    echo_info "Test 4: Push with deep links"
-    run_test_with_timeout "push_deeplink" "$TIMEOUT"
-    
-    # Test 5: Push Metrics
-    echo_info "Test 5: Push metrics validation"
-    run_test_with_timeout "push_metrics" "$TIMEOUT"
-    
-    # Clear devices after testing to clean up
-    clear_devices_for_testing "post-test"
-    
-    # Generate report
-    generate_test_report "push_notification" "$TEST_REPORT"
-    
-    echo_success "Push notification tests completed"
-    echo_info "Report: $TEST_REPORT"
+    # Run the specific push notification test method
+    run_xcode_tests "PushNotificationIntegrationTests" "testPushNotificationFullWorkflow"
 }
 
 run_inapp_message_tests() {
@@ -696,35 +676,52 @@ main() {
     prepare_test_environment
     build_test_project
     
+    # Clean test environment before running tests
+    clean_test_environment_before_tests
+    
+    # Ready to run tests
+    
     # Run the specified tests
+    local OVERALL_TEST_EXIT_CODE=0
     case "$TEST_TYPE" in
         push)
-            run_push_notification_tests
+            run_push_notification_tests || OVERALL_TEST_EXIT_CODE=$?
             ;;
         inapp)
-            run_inapp_message_tests
+            run_inapp_message_tests || OVERALL_TEST_EXIT_CODE=$?
             ;;
         embedded)
-            run_embedded_message_tests
+            run_embedded_message_tests || OVERALL_TEST_EXIT_CODE=$?
             ;;
         deeplink)
-            run_deep_linking_tests
+            run_deep_linking_tests || OVERALL_TEST_EXIT_CODE=$?
             ;;
         all)
-            run_push_notification_tests
-            run_inapp_message_tests
-            run_embedded_message_tests
-            run_deep_linking_tests
+            run_push_notification_tests || OVERALL_TEST_EXIT_CODE=$?
+            run_inapp_message_tests || OVERALL_TEST_EXIT_CODE=$?
+            run_embedded_message_tests || OVERALL_TEST_EXIT_CODE=$?
+            run_deep_linking_tests || OVERALL_TEST_EXIT_CODE=$?
             ;;
     esac
+    
+    # Tests completed
     
     cleanup_test_environment
     
     echo_header "Test Execution Complete! 🎉"
-    echo_success "Local integration tests finished successfully"
+    if [[ $OVERALL_TEST_EXIT_CODE -eq 0 ]]; then
+        echo_success "Local integration tests finished successfully"
+    else
+        echo_warning "Local integration tests completed with errors (exit code: $OVERALL_TEST_EXIT_CODE)"
+    fi
     echo_info "Reports available in: $REPORTS_DIR"
     echo_info "Screenshots saved in: $SCREENSHOTS_DIR"
     echo_info "Logs available in: $LOGS_DIR"
+    
+    # Disable EXIT trap for normal exit since we're cleaning up properly
+    trap - EXIT
+    
+    exit $OVERALL_TEST_EXIT_CODE
 }
 
 # Run main function with all arguments

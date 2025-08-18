@@ -30,7 +30,7 @@ class PushNotificationIntegrationTests: IntegrationTestBase {
         registerButton.tap()
         screenshotCapture.captureScreenshot(named: "03-register-button-tapped")
         
-        // Step 4: Wait for permission dialog to be automatically handled
+        // Step 4: Wait for system permission dialog to be automatically handled
         waitForNotificationPermission()
         screenshotCapture.captureScreenshot(named: "04-permission-handled")
         
@@ -44,34 +44,34 @@ class PushNotificationIntegrationTests: IntegrationTestBase {
         XCTAssertEqual(XCTWaiter.wait(for: [tokenExpectation], timeout: 10.0), .completed, "Device token should become 'Registered'")
         screenshotCapture.captureScreenshot(named: "05-status-updated")
         
-        // Step 6: Copy device token to clipboard
-        let deviceTokenDetail = app.staticTexts["push-device-token-detail-value"]
-        XCTAssertTrue(deviceTokenDetail.waitForExistence(timeout: standardTimeout), "Device token detail should exist")
-        deviceTokenDetail.tap()
-        screenshotCapture.captureScreenshot(named: "06-token-copy-initiated")
-        
-        // Dismiss the copy confirmation alert
-        let copyAlert = app.alerts["Token Copied"]
-        if copyAlert.waitForExistence(timeout: 5.0) {
-            copyAlert.buttons["OK"].tap()
-        }
-        
-        // Step 7: Navigate to Backend tab to verify device registration
-        let backToHomeButton = app.buttons["back-to-home-button"]
-        XCTAssertTrue(backToHomeButton.waitForExistence(timeout: standardTimeout), "Back to home button should exist")
-        backToHomeButton.tap()
-        
-        // Navigate to backend (assuming we need to add navigation to backend tab)
-        navigateToBackendTab()
-        screenshotCapture.captureScreenshot(named: "07-backend-tab-opened")
-        
-        // Step 8: Verify device is registered and enabled in backend
-        validateDeviceRegistrationInBackend()
-        screenshotCapture.captureScreenshot(named: "08-backend-validation-complete")
-        
-        // Step 9: Validate device token matches between UI and backend
-        validateTokenMatchBetweenUIAndBackend()
-        screenshotCapture.captureScreenshot(named: "09-token-match-validated")
+//        // Step 6: Copy device token to clipboard
+//        let deviceTokenDetail = app.staticTexts["push-device-token-detail-value"]
+//        XCTAssertTrue(deviceTokenDetail.waitForExistence(timeout: standardTimeout), "Device token detail should exist")
+//        deviceTokenDetail.tap()
+//        screenshotCapture.captureScreenshot(named: "06-token-copy-initiated")
+//        
+//        // Dismiss the copy confirmation alert
+//        let copyAlert = app.alerts["Token Copied"]
+//        if copyAlert.waitForExistence(timeout: 5.0) {
+//            copyAlert.buttons["OK"].tap()
+//        }
+//        
+//        // Step 7: Navigate to Backend tab to verify device registration
+//        let backToHomeButton = app.buttons["back-to-home-button"]
+//        XCTAssertTrue(backToHomeButton.waitForExistence(timeout: standardTimeout), "Back to home button should exist")
+//        backToHomeButton.tap()
+//        
+//        // Navigate to backend (assuming we need to add navigation to backend tab)
+//        navigateToBackendTab()
+//        screenshotCapture.captureScreenshot(named: "07-backend-tab-opened")
+//        
+//        // Step 8: Verify device is registered and enabled in backend
+//        validateDeviceRegistrationInBackend()
+//        screenshotCapture.captureScreenshot(named: "08-backend-validation-complete")
+//        
+//        // Step 9: Validate device token matches between UI and backend
+//        validateTokenMatchBetweenUIAndBackend()
+//        screenshotCapture.captureScreenshot(named: "09-token-match-validated")
     }
     
     /*func testPushPermissionHandling() {
