@@ -27,7 +27,11 @@ jobs:
         github.event_name == 'pull_request' && 
         (
           contains(github.event.pull_request.labels.*.name, 'bcit') ||
+          contains(github.event.pull_request.labels.*.name, 'BCIT') ||
           contains(github.event.pull_request.labels.*.name, 'bcit-push') ||
+          contains(github.event.pull_request.labels.*.name, 'BCIT-PUSH') ||
+          contains(github.event.pull_request.labels.*.name, 'Bcit') ||
+          contains(github.event.pull_request.labels.*.name, 'Bcit-Push') ||
           github.event.action != 'labeled'
         )
       )
