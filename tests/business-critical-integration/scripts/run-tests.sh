@@ -320,19 +320,111 @@ EOF
     echo_success "Created minimal test project"
 }
 
+clear_devices_for_testing() {
+    local PHASE="$1"  # "pre-test" or "post-test"
+    
+    echo_header "Device Clearing ($PHASE)"
+    
+    # Load configuration to get test user email and API keys
+    if [[ ! -f "$LOCAL_CONFIG_FILE" ]]; then
+        echo_warning "Configuration file not found: $LOCAL_CONFIG_FILE"
+        echo_warning "Skipping device clearing - manual cleanup may be required"
+        return 0
+    fi
+    
+    local TEST_USER_EMAIL=$(jq -r '.testUserEmail // .userEmail // "integration-test@iterable.com"' "$LOCAL_CONFIG_FILE")
+    local MOBILE_KEY=$(jq -r '.mobileApiKey // ""' "$LOCAL_CONFIG_FILE")
+    local SERVER_KEY=$(jq -r '.serverApiKey // ""' "$LOCAL_CONFIG_FILE")
+    
+    if [[ -z "$MOBILE_KEY" || "$MOBILE_KEY" == "null" ]]; then
+        echo_warning "Mobile API key not found in configuration"
+        echo_warning "Skipping device clearing - manual cleanup may be required"
+        return 0
+    fi
+    
+    echo_info "Clearing devices for user: $TEST_USER_EMAIL"
+    echo_info "Phase: $PHASE"
+    
+    # Get all devices for the test user
+    local ENCODED_EMAIL=$(printf %s "$TEST_USER_EMAIL" | jq -sRr @uri)
+    local USER_RESPONSE=$(curl -s -X GET "https://api.iterable.com/api/users/$ENCODED_EMAIL" \
+        -H "Api-Key: $SERVER_KEY" \
+        -H "Content-Type: application/json")
+    
+    # Extract device tokens
+    local DEVICE_TOKENS=$(echo "$USER_RESPONSE" | jq -r '
+        try (
+            .user.dataFields.devices[]? | 
+            select(.endpointEnabled == true) | 
+            .token
+        ) catch empty' 2>/dev/null | grep -v '^null$' | grep -v '^$' || true)
+    
+    if [[ -z "$DEVICE_TOKENS" ]]; then
+        echo_info "No active devices found for $TEST_USER_EMAIL"
+        return 0
+    fi
+    
+    local DEVICE_COUNT=$(echo "$DEVICE_TOKENS" | wc -l | tr -d ' ')
+    echo_info "Found $DEVICE_COUNT active device(s) to disable"
+    
+    # Disable each device
+    local DISABLED_COUNT=0
+    local FAILED_COUNT=0
+    
+    while IFS= read -r token; do
+        if [[ -n "$token" ]]; then
+            echo_info "Disabling device: ${token:0:16}..."
+            
+            local DISABLE_RESPONSE=$(curl -s -X POST "https://api.iterable.com/api/users/disableDevice" \
+                -H "Api-Key: $MOBILE_KEY" \
+                -H "Content-Type: application/json" \
+                -d "{
+                    \"email\": \"$TEST_USER_EMAIL\",
+                    \"token\": \"$token\"
+                }")
+            
+            # Check if the disable request was successful
+            if echo "$DISABLE_RESPONSE" | jq -e '.code == "Success"' > /dev/null 2>&1; then
+                echo_success "Device disabled successfully"
+                ((DISABLED_COUNT++))
+            else
+                echo_warning "Failed to disable device: $DISABLE_RESPONSE"
+                ((FAILED_COUNT++))
+            fi
+        fi
+    done <<< "$DEVICE_TOKENS"
+    
+    echo_success "Device clearing completed ($PHASE)"
+    echo_info "Devices disabled: $DISABLED_COUNT"
+    if [[ $FAILED_COUNT -gt 0 ]]; then
+        echo_warning "Failed to disable: $FAILED_COUNT devices"
+    fi
+    
+    # Wait for changes to propagate
+    if [[ $DISABLED_COUNT -gt 0 ]]; then
+        echo_info "Waiting for device changes to propagate..."
+        sleep 5
+    fi
+}
+
 run_push_notification_tests() {
     echo_header "Running Push Notification Integration Tests"
     
     if [[ "$DRY_RUN" == true ]]; then
         echo_info "[DRY RUN] Would run push notification tests"
+        echo_info "[DRY RUN] - Clear devices before testing"
         echo_info "[DRY RUN] - Device registration validation"
         echo_info "[DRY RUN] - Standard push notification"
         echo_info "[DRY RUN] - Silent push notification"
         echo_info "[DRY RUN] - Push with deep links"
         echo_info "[DRY RUN] - Push with action buttons"
         echo_info "[DRY RUN] - Push metrics validation"
+        echo_info "[DRY RUN] - Clear devices after testing"
         return
     fi
+    
+    # Clear devices before testing to ensure clean state
+    clear_devices_for_testing "pre-test"
     
     # Create test report
     TEST_REPORT="$REPORTS_DIR/push-notification-test-$(date +%Y%m%d-%H%M%S).json"
@@ -358,6 +450,9 @@ run_push_notification_tests() {
     # Test 5: Push Metrics
     echo_info "Test 5: Push metrics validation"
     run_test_with_timeout "push_metrics" "$TIMEOUT"
+    
+    # Clear devices after testing to clean up
+    clear_devices_for_testing "post-test"
     
     # Generate report
     generate_test_report "push_notification" "$TEST_REPORT"

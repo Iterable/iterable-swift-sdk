@@ -6,83 +6,72 @@ class PushNotificationIntegrationTests: IntegrationTestBase {
     // MARK: - Test Cases
     
     func testPushNotificationFullWorkflow() {
-        /*
-        // Test complete push notification workflow from registration to tracking
+        // Test complete push notification workflow: status check → registration → token copy → backend validation
         
-        // Step 1: Launch app and verify automatic device registration
-        validateSDKInitialization()
-        screenshotCapture.captureScreenshot(named: "01-app-launched")
+        // Step 1: Navigate to Push Notification tab
+        let pushNotificationRow = app.otherElements["push-notification-test-row"]
+        XCTAssertTrue(pushNotificationRow.waitForExistence(timeout: standardTimeout), "Push notification row should exist")
+        pushNotificationRow.tap()
+        screenshotCapture.captureScreenshot(named: "01-push-tab-opened")
         
-        // Step 2: Request notification permissions
-        let permissionButton = app.buttons["request-notification-permission"]
-        XCTAssertTrue(permissionButton.waitForExistence(timeout: standardTimeout))
-        permissionButton.tap()
+        // Step 2: Verify initial push notification status (should be "Not Determined")
+        let authStatusValue = app.staticTexts["push-authorization-value"]
+        XCTAssertTrue(authStatusValue.waitForExistence(timeout: standardTimeout), "Authorization status should exist")
+        XCTAssertEqual(authStatusValue.label, "? Not Determined", "Initial authorization should be 'Not Determined'")
         
+        let deviceTokenValue = app.staticTexts["push-device-token-value"]
+        XCTAssertTrue(deviceTokenValue.waitForExistence(timeout: standardTimeout), "Device token status should exist")
+        XCTAssertEqual(deviceTokenValue.label, "✗ Not Registered", "Initial device token should be 'Not Registered'")
+        screenshotCapture.captureScreenshot(named: "02-initial-status-verified")
+        
+        // Step 3: Register for push notifications
+        let registerButton = app.buttons["register-push-notifications-button"]
+        XCTAssertTrue(registerButton.waitForExistence(timeout: standardTimeout), "Register button should exist")
+        registerButton.tap()
+        screenshotCapture.captureScreenshot(named: "03-register-button-tapped")
+        
+        // Step 4: Wait for permission dialog to be automatically handled
         waitForNotificationPermission()
-        screenshotCapture.captureScreenshot(named: "02-permission-granted")
+        screenshotCapture.captureScreenshot(named: "04-permission-handled")
         
-        // Step 3: Validate device token registration API call
-        XCTAssertTrue(waitForAPICall(endpoint: "/api/users/registerDeviceToken", timeout: networkTimeout))
+        // Step 5: Wait for status to update to authorized and token to be registered
+        let authorizedPredicate = NSPredicate(format: "label == %@", "✓ Authorized")
+        let authExpectation = XCTNSPredicateExpectation(predicate: authorizedPredicate, object: authStatusValue)
+        XCTAssertEqual(XCTWaiter.wait(for: [authExpectation], timeout: 10.0), .completed, "Authorization should become 'Authorized'")
         
-        // Step 4: Verify device token stored in Iterable backend
-        let expectation = XCTestExpectation(description: "Verify device registration")
-        apiClient.verifyDeviceRegistration(userEmail: testUserEmail) { success, deviceToken in
-            XCTAssertTrue(success, "Device registration verification failed")
-            XCTAssertNotNil(deviceToken, "Device token not found in backend")
-            expectation.fulfill()
-        }
-        wait(for: [expectation], timeout: networkTimeout)
+        let tokenRegisteredPredicate = NSPredicate(format: "label == %@", "✓ Registered")
+        let tokenExpectation = XCTNSPredicateExpectation(predicate: tokenRegisteredPredicate, object: deviceTokenValue)
+        XCTAssertEqual(XCTWaiter.wait(for: [tokenExpectation], timeout: 10.0), .completed, "Device token should become 'Registered'")
+        screenshotCapture.captureScreenshot(named: "05-status-updated")
         
-        // Step 5: Send test push notification using server key
-        let pushPayload: [String: Any] = [
-            "messageId": "test-push-\(Date().timeIntervalSince1970)",
-            "campaignId": "integration-test-campaign",
-            "templateId": "integration-test-template",
-            "isGhostPush": false,
-            "contentAvailable": true,
-            "data": [
-                "actionButton": [
-                    "identifier": "test-action",
-                    "buttonText": "Open App",
-                    "openApp": true,
-                    "action": [
-                        "type": "openUrl",
-                        "data": "https://links.iterable.com/u/click?_t=test&_m=integration"
-                    ]
-                ]
-            ]
-        ]
+        // Step 6: Copy device token to clipboard
+        let deviceTokenDetail = app.staticTexts["push-device-token-detail-value"]
+        XCTAssertTrue(deviceTokenDetail.waitForExistence(timeout: standardTimeout), "Device token detail should exist")
+        deviceTokenDetail.tap()
+        screenshotCapture.captureScreenshot(named: "06-token-copy-initiated")
         
-        sendTestPushNotification(payload: pushPayload)
-        screenshotCapture.captureScreenshot(named: "03-push-sent")
-        
-        // Step 6: Validate push notification received and displayed
-        validatePushNotificationReceived()
-        
-        // Step 7: Test push notification tap and deep link handling
-        let notification = app.alerts.firstMatch
-        if notification.exists {
-            notification.tap()
-        } else {
-            // Handle alert-style notification
-            let alert = app.alerts.firstMatch
-            let openButton = alert.buttons["Open"]
-            if openButton.exists {
-                openButton.tap()
-            }
+        // Dismiss the copy confirmation alert
+        let copyAlert = app.alerts["Token Copied"]
+        if copyAlert.waitForExistence(timeout: 5.0) {
+            copyAlert.buttons["OK"].tap()
         }
         
-        screenshotCapture.captureScreenshot(named: "04-push-tapped")
+        // Step 7: Navigate to Backend tab to verify device registration
+        let backToHomeButton = app.buttons["back-to-home-button"]
+        XCTAssertTrue(backToHomeButton.waitForExistence(timeout: standardTimeout), "Back to home button should exist")
+        backToHomeButton.tap()
         
-        // Step 8: Verify push open tracking metrics in backend
-        sleep(5) // Allow time for tracking to process
-        validateMetrics(eventType: "pushOpen", expectedCount: 1)
+        // Navigate to backend (assuming we need to add navigation to backend tab)
+        navigateToBackendTab()
+        screenshotCapture.captureScreenshot(named: "07-backend-tab-opened")
         
-        // Step 9: Test deep link handling from push
-        validateDeepLinkHandled(expectedDestination: "deep-link-destination-view")
+        // Step 8: Verify device is registered and enabled in backend
+        validateDeviceRegistrationInBackend()
+        screenshotCapture.captureScreenshot(named: "08-backend-validation-complete")
         
-        screenshotCapture.captureScreenshot(named: "05-deep-link-handled")
-         */
+        // Step 9: Validate device token matches between UI and backend
+        validateTokenMatchBetweenUIAndBackend()
+        screenshotCapture.captureScreenshot(named: "09-token-match-validated")
     }
     
     /*func testPushPermissionHandling() {

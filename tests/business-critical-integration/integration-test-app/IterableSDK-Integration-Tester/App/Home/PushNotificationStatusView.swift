@@ -66,6 +66,23 @@ final class PushNotificationStatusView: UIView {
         containerStackView.addArrangedSubview(deviceTokenStatusView)
         containerStackView.addArrangedSubview(deviceTokenDetailView)
         
+        // Add accessibility identifiers for testing
+        authorizationStatusView.accessibilityIdentifier = "push-authorization-status"
+        authorizationStatusView.setValueAccessibilityIdentifier("push-authorization-value")
+        alertStatusView.accessibilityIdentifier = "push-alert-status"
+        alertStatusView.setValueAccessibilityIdentifier("push-alert-value")
+        badgeStatusView.accessibilityIdentifier = "push-badge-status"
+        badgeStatusView.setValueAccessibilityIdentifier("push-badge-value")
+        soundStatusView.accessibilityIdentifier = "push-sound-status"
+        soundStatusView.setValueAccessibilityIdentifier("push-sound-value")
+        deviceTokenStatusView.accessibilityIdentifier = "push-device-token-status"
+        deviceTokenStatusView.setValueAccessibilityIdentifier("push-device-token-value")
+        deviceTokenDetailView.accessibilityIdentifier = "push-device-token-detail"
+        deviceTokenDetailView.setValueAccessibilityIdentifier("push-device-token-detail-value")
+        
+        // Make device token detail tappable for copying
+        deviceTokenDetailView.makeValueTappable(target: self, action: #selector(copyDeviceTokenToClipboard))
+        
         NSLayoutConstraint.activate([
             containerStackView.topAnchor.constraint(equalTo: topAnchor, constant: 16),
             containerStackView.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 16),
@@ -213,6 +230,38 @@ final class PushNotificationStatusView: UIView {
             deviceTokenDetailView.setValue("No token available", color: .systemGray)
         }
     }
+    
+    @objc private func copyDeviceTokenToClipboard() {
+        guard let deviceToken = AppDelegate.getRegisteredDeviceToken() else {
+            print("⚠️ No device token available to copy")
+            return
+        }
+        
+        UIPasteboard.general.string = deviceToken
+        print("📋 Device token copied to clipboard: \(String(deviceToken.prefix(16)))...")
+        
+        // Show visual feedback
+        if let parentVC = findViewController() {
+            let alert = UIAlertController(
+                title: "Token Copied",
+                message: "Device token has been copied to clipboard",
+                preferredStyle: .alert
+            )
+            alert.addAction(UIAlertAction(title: "OK", style: .default))
+            parentVC.present(alert, animated: true)
+        }
+    }
+    
+    private func findViewController() -> UIViewController? {
+        var responder: UIResponder? = self
+        while responder != nil {
+            if let viewController = responder as? UIViewController {
+                return viewController
+            }
+            responder = responder?.next
+        }
+        return nil
+    }
 }
 
 // MARK: - StatusRowView
@@ -274,5 +323,19 @@ private final class StatusRowView: UIView {
     func setValue(_ value: String, color: UIColor) {
         valueLabel.text = value
         valueLabel.textColor = color
+    }
+    
+    func setValueAccessibilityIdentifier(_ identifier: String) {
+        valueLabel.accessibilityIdentifier = identifier
+    }
+    
+    func getValue() -> String? {
+        return valueLabel.text
+    }
+    
+    func makeValueTappable(target: Any?, action: Selector) {
+        let tapGesture = UITapGestureRecognizer(target: target, action: action)
+        valueLabel.isUserInteractionEnabled = true
+        valueLabel.addGestureRecognizer(tapGesture)
     }
 }

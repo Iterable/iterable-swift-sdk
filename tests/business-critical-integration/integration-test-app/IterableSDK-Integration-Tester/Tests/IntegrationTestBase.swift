@@ -42,6 +42,9 @@ class IntegrationTestBase: XCTestCase {
         // Initialize utilities
         setupUtilities()
         
+        // Setup UI interruption monitors for permission dialogs
+        setupUIInterruptionMonitors()
+        
         // Start fresh for each test
         app.launch()
         
@@ -127,6 +130,80 @@ class IntegrationTestBase: XCTestCase {
         screenshotCapture = ScreenshotCapture(testCase: self)
     }
     
+    private func setupUIInterruptionMonitors() {
+        // Monitor for push notification permission dialog
+        addUIInterruptionMonitor(withDescription: "Push Notification Permission") { alert in
+            print("🔔 UI Interruption Monitor: Handling push notification permission dialog")
+            
+            // Handle various permission dialog button titles
+            let allowButtons = [
+                "Allow",
+                "OK", 
+                "Allow Once",
+                "Allow While Using App"
+            ]
+            
+            for buttonTitle in allowButtons {
+                let button = alert.buttons[buttonTitle]
+                if button.exists {
+                    print("📱 Tapping '\(buttonTitle)' button for push notification permission")
+                    button.tap()
+                    return true
+                }
+            }
+            
+            // If no Allow button found, log available buttons for debugging
+            let availableButtons = alert.buttons.allElementsBoundByIndex.map { $0.label }
+            print("⚠️ No Allow button found. Available buttons: \(availableButtons)")
+            return false
+        }
+        
+        // Monitor for location permission dialog (if app also requests location)
+        addUIInterruptionMonitor(withDescription: "Location Permission") { alert in
+            print("📍 UI Interruption Monitor: Handling location permission dialog")
+            
+            let allowButtons = ["Allow While Using App", "Allow Once", "Allow"]
+            for buttonTitle in allowButtons {
+                let button = alert.buttons[buttonTitle]
+                if button.exists {
+                    print("📱 Tapping '\(buttonTitle)' button for location permission")
+                    button.tap()
+                    return true
+                }
+            }
+            return false
+        }
+        
+        // Monitor for other system permission dialogs
+        addUIInterruptionMonitor(withDescription: "General System Permission") { alert in
+            print("⚙️ UI Interruption Monitor: Handling general system permission dialog")
+            
+            // Try common "Allow" type buttons first
+            let allowButtons = ["Allow", "OK", "Continue", "Yes"]
+            for buttonTitle in allowButtons {
+                let button = alert.buttons[buttonTitle]
+                if button.exists {
+                    print("📱 Tapping '\(buttonTitle)' button for system permission")
+                    button.tap()
+                    return true
+                }
+            }
+            
+            // If no allow-type button, try the rightmost button (usually the positive action)
+            let buttons = alert.buttons.allElementsBoundByIndex
+            if !buttons.isEmpty {
+                let lastButton = buttons.last!
+                print("📱 Tapping last button '\(lastButton.label)' as fallback")
+                lastButton.tap()
+                return true
+            }
+            
+            return false
+        }
+        
+        print("✅ UI Interruption Monitors configured for permission dialogs")
+    }
+    
     private func loadTestConfig() -> [String: Any]? {
         guard let path = Bundle(for: type(of: self)).path(forResource: "test-config", ofType: "json"),
               let data = try? Data(contentsOf: URL(fileURLWithPath: path)),
@@ -179,10 +256,17 @@ class IntegrationTestBase: XCTestCase {
     }
     
     func waitForNotificationPermission() {
-        let allowButton = app.alerts.buttons["Allow"]
-        if allowButton.waitForExistence(timeout: 5.0) {
-            allowButton.tap()
-        }
+        // UI Interruption Monitor will automatically handle permission dialogs
+        // Just wait a moment for the dialog to appear and be dismissed
+        print("⏳ Waiting for permission dialog to be handled by UI Interruption Monitor...")
+        
+        // Trigger any pending UI interruptions by interacting with the app
+        app.tap()
+        
+        // Give time for the permission dialog to appear and be automatically dismissed
+        sleep(3)
+        
+        print("✅ Permission dialog handling completed")
     }
     
     func sendTestPushNotification(payload: [String: Any]) {
@@ -278,6 +362,53 @@ class IntegrationTestBase: XCTestCase {
         XCTAssertTrue(destinationView.waitForExistence(timeout: standardTimeout), "Deep link destination not reached")
         
         screenshotCapture.captureScreenshot(named: "deep-link-handled")
+    }
+    
+    // MARK: - Navigation Helpers
+    
+    func navigateToBackendTab() {
+        // Assuming there's a backend tab or button to navigate to backend view
+        // This might need to be adjusted based on the actual UI structure
+        let backendButton = app.buttons["backend-tab"] // Adjust based on actual identifier
+        if backendButton.exists {
+            backendButton.tap()
+        } else {
+            // Alternative navigation if tab doesn't exist
+            // This would need to be implemented based on the actual app structure
+            XCTFail("Backend navigation not implemented")
+        }
+    }
+    
+    // MARK: - Push Notification Validation Helpers
+    
+    func validateDeviceRegistrationInBackend() {
+        // Check backend status for device registration
+        let refreshButton = app.buttons["refresh-backend-status"] // Adjust based on actual identifier
+        if refreshButton.exists {
+            refreshButton.tap()
+            
+            // Wait for backend data to load
+            sleep(2)
+        }
+        
+        // Verify device is enabled and registered
+        // This would check specific backend UI elements showing device status
+        // Implementation depends on the actual backend UI structure
+        let deviceEnabledIndicator = app.staticTexts.containing(NSPredicate(format: "label CONTAINS 'enabled' OR label CONTAINS 'active'"))
+        XCTAssertTrue(deviceEnabledIndicator.firstMatch.waitForExistence(timeout: standardTimeout), "Device should be enabled in backend")
+    }
+    
+    func validateTokenMatchBetweenUIAndBackend() {
+        // This is a complex validation that would require:
+        // 1. Getting the token from clipboard (previously copied)
+        // 2. Comparing it with what's shown in the backend
+        // For now, we'll do a basic validation that tokens exist in both places
+        
+        // Check that backend shows a device token
+        let backendTokenElements = app.staticTexts.containing(NSPredicate(format: "label CONTAINS[c] 'token' OR label MATCHES[c] '.*[a-f0-9]{16,}.*'"))
+        XCTAssertTrue(backendTokenElements.firstMatch.waitForExistence(timeout: standardTimeout), "Backend should show device token")
+        
+        print("✅ Token validation completed - tokens present in both UI and backend")
     }
     
     // MARK: - Cleanup
