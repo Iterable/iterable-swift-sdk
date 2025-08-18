@@ -20,7 +20,10 @@ echo "Building Iterable SDK Integration Tester app and tests..."
 
 # Navigate to the project directory
 PROJECT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+echo "🔍 Project directory: $PROJECT_DIR"
 cd "$PROJECT_DIR/integration-test-app"
+echo "🔍 Current directory: $(pwd)"
+echo "🔍 Looking for project file: $(ls -la *.xcodeproj 2>/dev/null || echo 'No .xcodeproj files found')"
 
 # Create temporary files for build outputs
 MAIN_OUTPUT=$(mktemp)
