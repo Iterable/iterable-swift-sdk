@@ -497,7 +497,7 @@
 /* Begin XCLocalSwiftPackageReference section */
 		8A24D3382E44F30600B53850 /* XCLocalSwiftPackageReference "../../../../swift-sdk" */ = {
 			isa = XCLocalSwiftPackageReference;
-			relativePath = "../../../../swift-sdk";
+			relativePath = "../../../";
 		};
 /* End XCLocalSwiftPackageReference section */
 
