@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 77;
+	objectVersion = 70;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -32,7 +32,7 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
-		8A24D3B12E4508F400B53850 /* Exceptions for "IterableSDK-Integration-Tester" folder in "IterableSDK-Integration-TesterUITests" target */ = {
+		8A24D3B12E4508F400B53850 /* PBXFileSystemSynchronizedBuildFileExceptionSet */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
 				Tests/IntegrationTestBase.swift,
@@ -45,7 +45,7 @@
 			);
 			target = 8AB716312E3119A3004AAB74 /* IterableSDK-Integration-TesterUITests */;
 		};
-		8AB7168E2E311A8D004AAB74 /* Exceptions for "IterableSDK-Integration-Tester" folder in "IterableSDK-Integration-Tester" target */ = {
+		8AB7168E2E311A8D004AAB74 /* PBXFileSystemSynchronizedBuildFileExceptionSet */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
 				SupportingFiles/Info.plist,
@@ -65,20 +65,8 @@
 /* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
-		8AB716142E3119A3004AAB74 /* IterableSDK-Integration-Tester */ = {
-			isa = PBXFileSystemSynchronizedRootGroup;
-			exceptions = (
-				8AB7168E2E311A8D004AAB74 /* Exceptions for "IterableSDK-Integration-Tester" folder in "IterableSDK-Integration-Tester" target */,
-				8A24D3B12E4508F400B53850 /* Exceptions for "IterableSDK-Integration-Tester" folder in "IterableSDK-Integration-TesterUITests" target */,
-			);
-			path = "IterableSDK-Integration-Tester";
-			sourceTree = "<group>";
-		};
-		8AB716352E3119A3004AAB74 /* IterableSDK-Integration-TesterUITests */ = {
-			isa = PBXFileSystemSynchronizedRootGroup;
-			path = "IterableSDK-Integration-TesterUITests";
-			sourceTree = "<group>";
-		};
+		8AB716142E3119A3004AAB74 /* IterableSDK-Integration-Tester */ = {isa = PBXFileSystemSynchronizedRootGroup; exceptions = (8AB7168E2E311A8D004AAB74 /* PBXFileSystemSynchronizedBuildFileExceptionSet */, 8A24D3B12E4508F400B53850 /* PBXFileSystemSynchronizedBuildFileExceptionSet */, ); explicitFileTypes = {}; explicitFolders = (); path = "IterableSDK-Integration-Tester"; sourceTree = "<group>"; };
+		8AB716352E3119A3004AAB74 /* IterableSDK-Integration-TesterUITests */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = "IterableSDK-Integration-TesterUITests"; sourceTree = "<group>"; };
 /* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -202,6 +190,7 @@
 				};
 			};
 			buildConfigurationList = 8AB7160D2E3119A3004AAB74 /* Build configuration list for PBXProject "IterableSDK-Integration-Tester" */;
+			compatibilityVersion = "Xcode 15.0";
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
 			knownRegions = (
@@ -213,7 +202,6 @@
 			packageReferences = (
 				8A24D3382E44F30600B53850 /* XCLocalSwiftPackageReference "../../../../swift-sdk" */,
 			);
-			preferredProjectObjectVersion = 77;
 			productRefGroup = 8AB716132E3119A3004AAB74 /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
