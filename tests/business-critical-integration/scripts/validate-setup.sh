@@ -41,4 +41,36 @@ else
     echo "❌ Xcode not found"
 fi
 
+# Check Xcode project
+PROJECT_DIR="$(dirname "$0")/../integration-test-app"
+PROJECT_FILE="$PROJECT_DIR/IterableSDK-Integration-Tester.xcodeproj"
+FULL_PROJECT_PATH="$(cd "$PROJECT_DIR" && pwd)/IterableSDK-Integration-Tester.xcodeproj"
+
+if [[ -d "$PROJECT_FILE" ]]; then
+    echo "✅ Xcode project exists"
+    echo "📁 Project path: $FULL_PROJECT_PATH"
+    
+    # Try to load the project and list targets
+    echo "🔍 Validating Xcode project can be loaded..."
+    cd "$PROJECT_DIR"
+    
+    if xcodebuild -list -project IterableSDK-Integration-Tester.xcodeproj &> /dev/null; then
+        echo "✅ Xcode project loads successfully"
+        
+        # Show available targets and schemes
+        echo "📋 Available targets and schemes:"
+        xcodebuild -list -project IterableSDK-Integration-Tester.xcodeproj
+    else
+        echo "❌ Xcode project failed to load"
+        echo "🔍 Project location: $FULL_PROJECT_PATH"
+        echo "🔍 Directory contents:"
+        ls -la "$PROJECT_DIR/"
+    fi
+else
+    echo "❌ Xcode project not found"
+    echo "🔍 Expected location: $FULL_PROJECT_PATH"
+    echo "🔍 Directory contents:"
+    ls -la "$PROJECT_DIR/" 2>/dev/null || echo "Directory does not exist"
+fi
+
 echo "🎯 Local environment validation complete"
