@@ -26,7 +26,7 @@ PARAM_PROJECT_ID="$1"
 PARAM_SERVER_KEY="$2"
 PARAM_MOBILE_KEY="$3"
 
-# Check if all parameters were provided
+# Check if all parameters were provided and not empty
 if [[ -n "$PARAM_PROJECT_ID" && -n "$PARAM_SERVER_KEY" && -n "$PARAM_MOBILE_KEY" ]]; then
     SKIP_INTERACTIVE=true
 else
@@ -380,6 +380,14 @@ main() {
     echo_info "This script will configure your local development environment"
     echo_info "for running business critical integration tests."
     echo
+    
+    # Debug: Show what parameters were received
+    echo_info "Parameters received: PROJECT_ID='$PARAM_PROJECT_ID', SERVER_KEY_LENGTH=${#PARAM_SERVER_KEY}, MOBILE_KEY_LENGTH=${#PARAM_MOBILE_KEY}"
+    if [[ "$SKIP_INTERACTIVE" == true ]]; then
+        echo_info "All parameters provided - running in non-interactive mode"
+    else
+        echo_info "Missing parameters - running in interactive mode"
+    fi
     
     # Setup directory structure FIRST
     setup_directories
