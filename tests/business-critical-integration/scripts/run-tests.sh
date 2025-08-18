@@ -404,7 +404,7 @@ run_xcode_tests() {
         -configuration Debug
         -sdk iphonesimulator
         -destination "id=$SIMULATOR_UUID"
-        -disable-concurrent-destination-testing
+        -parallel-testing-enabled NO
         test-without-building
     )
     
@@ -415,10 +415,34 @@ run_xcode_tests() {
         XCODEBUILD_CMD+=(-only-testing "IterableSDK-Integration-TesterUITests/$TEST_CLASS")
     fi
     
-    # Run the test
+    # Run the test with verbose output
     echo_info "Executing: ${XCODEBUILD_CMD[*]}"
-    "${XCODEBUILD_CMD[@]}"
-    local EXIT_CODE=$?
+    "${XCODEBUILD_CMD[@]}" 2>&1 | tee "$TEST_REPORT.log"
+    local EXIT_CODE=${PIPESTATUS[0]}
+    
+    # If test failed, try to extract and show the failure reason
+    if [[ $EXIT_CODE -ne 0 ]]; then
+        echo_error "Test failed with exit code: $EXIT_CODE"
+        echo_info "Attempting to extract failure details..."
+        
+        # Try to get failure details from the log
+        if [[ -f "$TEST_REPORT.log" ]]; then
+            echo_info "Recent test output:"
+            tail -50 "$TEST_REPORT.log"
+            echo ""
+            
+            # Look for specific error patterns
+            echo_info "Searching for error details..."
+            grep -i "error\|fail\|exception\|assert" "$TEST_REPORT.log" | tail -10 || echo "No specific error patterns found"
+        fi
+        
+        # Try to extract from xcresult if available
+        local XCRESULT_PATH=$(find /Users/$(whoami)/Library/Developer/Xcode/DerivedData -name "*.xcresult" -type d | grep "IterableSDK-Integration-Tester" | head -1)
+        if [[ -n "$XCRESULT_PATH" ]] && command -v xcrun >/dev/null 2>&1; then
+            echo_info "Extracting failure details from xcresult..."
+            xcrun xcresulttool get --format json --path "$XCRESULT_PATH" | jq -r '.issues.testFailureSummaries[]?.message // empty' 2>/dev/null | head -5 || echo "Could not extract xcresult details"
+        fi
+    fi
     
     if [[ $EXIT_CODE -eq 0 ]]; then
         echo_success "$TEST_CLASS tests completed successfully"
