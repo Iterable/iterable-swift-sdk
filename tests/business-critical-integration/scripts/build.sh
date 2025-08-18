@@ -23,7 +23,23 @@ PROJECT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 echo "🔍 Project directory: $PROJECT_DIR"
 cd "$PROJECT_DIR/integration-test-app"
 echo "🔍 Current directory: $(pwd)"
-echo "🔍 Looking for project file: $(ls -la *.xcodeproj 2>/dev/null || echo 'No .xcodeproj files found')"
+echo "🔍 Contents of current directory:"
+ls -la
+echo "🔍 Looking for .xcodeproj files:"
+find . -name "*.xcodeproj" -type d
+echo "🔍 Checking if target project exists:"
+if [[ -d "IterableSDK-Integration-Tester.xcodeproj" ]]; then
+    echo "✅ Project file found: IterableSDK-Integration-Tester.xcodeproj"
+    echo "🔍 Project file details:"
+    ls -la "IterableSDK-Integration-Tester.xcodeproj"
+else
+    echo "❌ Project file NOT found: IterableSDK-Integration-Tester.xcodeproj"
+    echo "Available items in current directory:"
+    ls -la
+    echo "🔍 All .xcodeproj directories in current path:"
+    find . -maxdepth 2 -name "*.xcodeproj" -type d
+    exit 1
+fi
 
 # Create temporary files for build outputs
 MAIN_OUTPUT=$(mktemp)
