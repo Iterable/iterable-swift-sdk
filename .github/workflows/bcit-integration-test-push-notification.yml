@@ -2,10 +2,7 @@ name: BCIT Push Notification Integration Test
 
 on:
   pull_request:
-    paths:
-      - 'tests/business-critical-integration/**'
-      - '.github/workflows/integration-test-push-notification.yml'
-    types: [opened, synchronize, reopened, labeled]
+    types: [labeled]
   workflow_dispatch:
     inputs:
       ref:
@@ -25,14 +22,13 @@ jobs:
       github.event_name == 'workflow_dispatch' ||
       (
         github.event_name == 'pull_request' && 
-        (
+        github.event.action == 'labeled' && (
           contains(github.event.pull_request.labels.*.name, 'bcit') ||
           contains(github.event.pull_request.labels.*.name, 'BCIT') ||
           contains(github.event.pull_request.labels.*.name, 'bcit-push') ||
           contains(github.event.pull_request.labels.*.name, 'BCIT-PUSH') ||
           contains(github.event.pull_request.labels.*.name, 'Bcit') ||
-          contains(github.event.pull_request.labels.*.name, 'Bcit-Push') ||
-          github.event.action != 'labeled'
+          contains(github.event.pull_request.labels.*.name, 'Bcit-Push')
         )
       )
 
