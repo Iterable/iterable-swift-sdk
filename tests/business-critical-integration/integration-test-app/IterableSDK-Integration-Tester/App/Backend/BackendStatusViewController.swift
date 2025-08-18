@@ -113,7 +113,7 @@ final class BackendStatusViewController: UIViewController {
     
     private let resetDevicesButton: UIButton = {
         let button = UIButton(type: .system)
-        button.setTitle("Reset User Devices", for: .normal)
+        button.setTitle("Disable User Devices", for: .normal)
         button.backgroundColor = .systemRed
         button.setTitleColor(.white, for: .normal)
         button.layer.cornerRadius = 8
