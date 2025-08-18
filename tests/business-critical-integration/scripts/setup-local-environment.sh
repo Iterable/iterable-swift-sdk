@@ -2,6 +2,9 @@
 
 # Business Critical Integration Tests - Local Environment Setup
 # This script configures your local macOS environment for running integration tests
+#
+# Usage: ./setup-local-environment.sh [PROJECT_ID] [SERVER_API_KEY] [MOBILE_API_KEY]
+# If parameters are provided, the script will skip interactive prompts
 
 set -e
 
@@ -17,6 +20,18 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_ROOT="$(cd "$SCRIPT_DIR/../../.." && pwd)"
 CONFIG_DIR="$SCRIPT_DIR/../integration-test-app/config"
 LOCAL_CONFIG_FILE="$CONFIG_DIR/test-config.json"
+
+# Parse command line arguments
+PARAM_PROJECT_ID="$1"
+PARAM_SERVER_KEY="$2"
+PARAM_MOBILE_KEY="$3"
+
+# Check if all parameters were provided
+if [[ -n "$PARAM_PROJECT_ID" && -n "$PARAM_SERVER_KEY" && -n "$PARAM_MOBILE_KEY" ]]; then
+    SKIP_INTERACTIVE=true
+else
+    SKIP_INTERACTIVE=false
+fi
 
 echo_header() {
     echo -e "${BLUE}============================================${NC}"
@@ -159,66 +174,82 @@ setup_ios_simulator() {
 configure_api_keys() {
     echo_header "Configuring API Keys and Credentials"
     
-    # Check if config already exists
-    if [[ -f "$LOCAL_CONFIG_FILE" ]]; then
-        echo_info "Local configuration already exists at: $LOCAL_CONFIG_FILE"
-        read -p "Do you want to reconfigure? (y/n): " -n 1 -r
-        echo
-        if [[ ! $REPLY =~ ^[Yy]$ ]]; then
-            echo_info "Skipping API key configuration"
-            # Load existing config values
-            if command -v jq &> /dev/null; then
-                PROJECT_ID=$(jq -r '.projectId' "$LOCAL_CONFIG_FILE")
-                SERVER_KEY=$(jq -r '.serverApiKey' "$LOCAL_CONFIG_FILE") 
-                MOBILE_KEY=$(jq -r '.mobileApiKey' "$LOCAL_CONFIG_FILE")
-                TEST_USER_EMAIL=$(jq -r '.testUserEmail' "$LOCAL_CONFIG_FILE")
-                echo_info "Loaded existing configuration"
-            else
-                echo_warning "jq not available, cannot load existing config"
+    # If running non-interactively with parameters, use them directly
+    if [[ "$SKIP_INTERACTIVE" == true ]]; then
+        PROJECT_ID="$PARAM_PROJECT_ID"
+        SERVER_KEY="$PARAM_SERVER_KEY"
+        MOBILE_KEY="$PARAM_MOBILE_KEY"
+        TEST_USER_EMAIL="integration-test-user@test.com"
+        echo_info "Running in non-interactive mode with provided parameters"
+        echo_info "Using provided parameters:"
+        echo_info "Project ID: $PROJECT_ID"
+        echo_info "Server API Key: ${SERVER_KEY:0:8}***"
+        echo_info "Mobile API Key: ${MOBILE_KEY:0:8}***"
+    else
+        # Check if config already exists
+        if [[ -f "$LOCAL_CONFIG_FILE" ]]; then
+            echo_info "Local configuration already exists at: $LOCAL_CONFIG_FILE"
+            read -p "Do you want to reconfigure? (y/n): " -n 1 -r
+            echo
+            if [[ ! $REPLY =~ ^[Yy]$ ]]; then
+                echo_info "Skipping API key configuration"
+                # Load existing config values
+                if command -v jq &> /dev/null; then
+                    PROJECT_ID=$(jq -r '.projectId' "$LOCAL_CONFIG_FILE")
+                    SERVER_KEY=$(jq -r '.serverApiKey' "$LOCAL_CONFIG_FILE") 
+                    MOBILE_KEY=$(jq -r '.mobileApiKey' "$LOCAL_CONFIG_FILE")
+                    TEST_USER_EMAIL=$(jq -r '.testUserEmail' "$LOCAL_CONFIG_FILE")
+                    echo_info "Loaded existing configuration"
+                else
+                    echo_warning "jq not available, cannot load existing config"
+                fi
+                return
             fi
-            return
         fi
     fi
     
-    echo_info "We need THREE things from you to get started:"
-    echo_warning "1. 🏗️  PROJECT ID - your Iterable project identifier"
-    echo_warning "2. 🔑 SERVER-SIDE API Key - for creating users and backend operations"
-    echo_warning "3. 📱 MOBILE API Key - for Swift SDK integration testing"  
-    echo
-    echo_info "If you don't have these keys:"
-    echo_info "• Log into your Iterable account"
-    echo_info "• Go to [Settings > Project Settings](https://app.iterable.com/settings/project)" 
-    echo_info "• Your Project ID is shown at the top"
-    echo_info "• Click on the 'API Keys' in the integrations tab (https://app.iterable.com/settings/apiKeys)"
-    echo_info "• Create API keys for both 'Server-side' and 'Mobile' types"
-    echo_info "• For the mobile key, do not select JWT authentication"
-    echo_info "• See the README in the business-critical-integration folder for more details"
-    echo_info "• You can also use the setup-local-environment.sh script to get these values for you"
-    echo
-    
-    # Get Project ID first
-    read -p "📋 Enter your Iterable Project ID: " PROJECT_ID
-    if [[ -z "$PROJECT_ID" ]]; then
-        echo_error "Project ID is required"
-        exit 1
+    # Only show interactive prompts if not using command line parameters
+    if [[ "$SKIP_INTERACTIVE" != true ]]; then
+        echo_info "We need THREE things from you to get started:"
+        echo_warning "1. 🏗️  PROJECT ID - your Iterable project identifier"
+        echo_warning "2. 🔑 SERVER-SIDE API Key - for creating users and backend operations"
+        echo_warning "3. 📱 MOBILE API Key - for Swift SDK integration testing"  
+        echo
+        echo_info "If you don't have these keys:"
+        echo_info "• Log into your Iterable account"
+        echo_info "• Go to [Settings > Project Settings](https://app.iterable.com/settings/project)" 
+        echo_info "• Your Project ID is shown at the top"
+        echo_info "• Click on the 'API Keys' in the integrations tab (https://app.iterable.com/settings/apiKeys)"
+        echo_info "• Create API keys for both 'Server-side' and 'Mobile' types"
+        echo_info "• For the mobile key, do not select JWT authentication"
+        echo_info "• See the README in the business-critical-integration folder for more details"
+        echo_info "• You can also use the setup-local-environment.sh script to get these values for you"
+        echo
+        
+        # Get Project ID first
+        read -p "📋 Enter your Iterable Project ID: " PROJECT_ID
+        if [[ -z "$PROJECT_ID" ]]; then
+            echo_error "Project ID is required"
+            exit 1
+        fi
+        
+        # Get Server-side key  
+        read -p "🔑 Enter your SERVER-SIDE API Key (for user management): " SERVER_KEY
+        if [[ -z "$SERVER_KEY" ]]; then
+            echo_error "Server-side API Key is required"
+            exit 1
+        fi
+        
+        # Get Mobile key
+        read -p "📱 Enter your MOBILE API Key (for SDK testing): " MOBILE_KEY
+        if [[ -z "$MOBILE_KEY" ]]; then
+            echo_error "Mobile API Key is required"
+            exit 1
+        fi
+        
+        # Set test user email  
+        TEST_USER_EMAIL="integration-test-user@test.com"
     fi
-    
-    # Get Server-side key  
-    read -p "🔑 Enter your SERVER-SIDE API Key (for user management): " SERVER_KEY
-    if [[ -z "$SERVER_KEY" ]]; then
-        echo_error "Server-side API Key is required"
-        exit 1
-    fi
-    
-    # Get Mobile key
-    read -p "📱 Enter your MOBILE API Key (for SDK testing): " MOBILE_KEY
-    if [[ -z "$MOBILE_KEY" ]]; then
-        echo_error "Mobile API Key is required"
-        exit 1
-    fi
-    
-    # Set test user email  
-    TEST_USER_EMAIL="integration-test-user@test.com"
     
     # Create local config file
     cat > "$LOCAL_CONFIG_FILE" << EOF
@@ -323,7 +354,28 @@ create_test_user() {
 }
 
 
+show_usage() {
+    echo "Usage: $0 [PROJECT_ID] [SERVER_API_KEY] [MOBILE_API_KEY]"
+    echo "       $0 --help"
+    echo
+    echo "Parameters:"
+    echo "  PROJECT_ID      Your Iterable project identifier"
+    echo "  SERVER_API_KEY  Server-side API key for user management"
+    echo "  MOBILE_API_KEY  Mobile API key for SDK testing"
+    echo
+    echo "Examples:"
+    echo "  $0                                    # Interactive mode"
+    echo "  $0 12345 server_key mobile_key       # Non-interactive mode"
+    echo "  $0 --help                            # Show this help"
+}
+
 main() {
+    # Check for help flag
+    if [[ "$1" == "--help" || "$1" == "-h" ]]; then
+        show_usage
+        exit 0
+    fi
+    
     echo_header "Iterable Swift SDK - Local Integration Test Setup"
     echo_info "This script will configure your local development environment"
     echo_info "for running business critical integration tests."
@@ -351,7 +403,8 @@ main() {
     echo_info "Configuration saved to: $LOCAL_CONFIG_FILE"
     echo_warning "Keep your API credentials secure!"
     echo
-    echo_info "For help: ./scripts/run-tests.sh --help"
+    echo_info "Script usage: ./scripts/setup-local-environment.sh --help"
+    echo_info "Test runner help: ./scripts/run-tests.sh --help"
 }
 
 # Run main function

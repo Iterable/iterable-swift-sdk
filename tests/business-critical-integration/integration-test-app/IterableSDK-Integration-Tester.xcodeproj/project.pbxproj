@@ -9,8 +9,7 @@
 /* Begin PBXBuildFile section */
 		8A24D33A2E44F30600B53850 /* IterableAppExtensions in Frameworks */ = {isa = PBXBuildFile; productRef = 8A24D3392E44F30600B53850 /* IterableAppExtensions */; };
 		8A24D33C2E44F30600B53850 /* IterableSDK in Frameworks */ = {isa = PBXBuildFile; productRef = 8A24D33B2E44F30600B53850 /* IterableSDK */; };
-		8A24D3A32E44F6E700B53850 /* test-config.json in Resources */ = {isa = PBXBuildFile; fileRef = 8A24D39E2E44F6E700B53850 /* test-config.json */; };
-		8A24D3B22E45097A00B53850 /* test-config.json in Resources */ = {isa = PBXBuildFile; fileRef = 8A24D39E2E44F6E700B53850 /* test-config.json */; };
+		8A8CA9A82E5333C600BF3385 /* test-config.json in Resources */ = {isa = PBXBuildFile; fileRef = 8A8CA9A62E5333C600BF3385 /* test-config.json */; };
 		8AB716912E311CA0004AAB74 /* IterableAppExtensions in Frameworks */ = {isa = PBXBuildFile; productRef = 8AB716902E311CA0004AAB74 /* IterableAppExtensions */; };
 		8AB716932E311CA0004AAB74 /* IterableSDK in Frameworks */ = {isa = PBXBuildFile; productRef = 8AB716922E311CA0004AAB74 /* IterableSDK */; };
 /* End PBXBuildFile section */
@@ -26,7 +25,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		8A24D39E2E44F6E700B53850 /* test-config.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "test-config.json"; sourceTree = "<group>"; };
+		8A8CA9A62E5333C600BF3385 /* test-config.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "test-config.json"; sourceTree = "<group>"; };
 		8AB716122E3119A3004AAB74 /* IterableSDK-Integration-Tester.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "IterableSDK-Integration-Tester.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		8AB716322E3119A3004AAB74 /* IterableSDK-Integration-TesterUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "IterableSDK-Integration-TesterUITests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
@@ -103,19 +102,18 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		8A24D3A02E44F6E700B53850 /* config */ = {
+		8A8CA9A72E5333C600BF3385 /* config */ = {
 			isa = PBXGroup;
 			children = (
-				8A24D39E2E44F6E700B53850 /* test-config.json */,
+				8A8CA9A62E5333C600BF3385 /* test-config.json */,
 			);
-			name = config;
-			path = ../config;
-			sourceTree = SOURCE_ROOT;
+			path = config;
+			sourceTree = "<group>";
 		};
 		8AB716092E3119A3004AAB74 = {
 			isa = PBXGroup;
 			children = (
-				8A24D3A02E44F6E700B53850 /* config */,
+				8A8CA9A72E5333C600BF3385 /* config */,
 				8AB716142E3119A3004AAB74 /* IterableSDK-Integration-Tester */,
 				8AB716352E3119A3004AAB74 /* IterableSDK-Integration-TesterUITests */,
 				8AB716132E3119A3004AAB74 /* Products */,
@@ -230,7 +228,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				8A24D3A32E44F6E700B53850 /* test-config.json in Resources */,
+				8A8CA9A82E5333C600BF3385 /* test-config.json in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -238,7 +236,6 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				8A24D3B22E45097A00B53850 /* test-config.json in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
