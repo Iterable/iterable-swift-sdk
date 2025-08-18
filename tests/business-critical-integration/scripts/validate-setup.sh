@@ -42,9 +42,16 @@ else
 fi
 
 # Check Xcode project
-PROJECT_DIR="$(dirname "$0")/../integration-test-app"
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+PROJECT_DIR="$SCRIPT_DIR/../integration-test-app"
 PROJECT_FILE="$PROJECT_DIR/IterableSDK-Integration-Tester.xcodeproj"
-FULL_PROJECT_PATH="$(cd "$PROJECT_DIR" && pwd)/IterableSDK-Integration-Tester.xcodeproj"
+
+# Get absolute path safely
+if [[ -d "$PROJECT_DIR" ]]; then
+    FULL_PROJECT_PATH="$(cd "$PROJECT_DIR" && pwd)/IterableSDK-Integration-Tester.xcodeproj"
+else
+    FULL_PROJECT_PATH="$PROJECT_DIR/IterableSDK-Integration-Tester.xcodeproj (directory not found)"
+fi
 
 if [[ -d "$PROJECT_FILE" ]]; then
     echo "✅ Xcode project exists"
@@ -64,13 +71,24 @@ if [[ -d "$PROJECT_FILE" ]]; then
         echo "❌ Xcode project failed to load"
         echo "🔍 Project location: $FULL_PROJECT_PATH"
         echo "🔍 Directory contents:"
-        ls -la "$PROJECT_DIR/"
+        if [[ -d "$PROJECT_DIR" ]]; then
+            ls -la "$PROJECT_DIR/"
+        else
+            echo "Directory $PROJECT_DIR does not exist"
+        fi
     fi
 else
     echo "❌ Xcode project not found"
     echo "🔍 Expected location: $FULL_PROJECT_PATH"
     echo "🔍 Directory contents:"
-    ls -la "$PROJECT_DIR/" 2>/dev/null || echo "Directory does not exist"
+    if [[ -d "$PROJECT_DIR" ]]; then
+        ls -la "$PROJECT_DIR/"
+    else
+        echo "Directory $PROJECT_DIR does not exist"
+        echo "🔍 Script directory: $SCRIPT_DIR"
+        echo "🔍 Contents of script directory parent:"
+        ls -la "$SCRIPT_DIR/../" 2>/dev/null || echo "Parent directory not accessible"
+    fi
 fi
 
 echo "🎯 Local environment validation complete"
