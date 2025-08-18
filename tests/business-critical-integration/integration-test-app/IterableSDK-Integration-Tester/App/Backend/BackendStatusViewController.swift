@@ -111,6 +111,41 @@ final class BackendStatusViewController: UIViewController {
         return button
     }()
     
+    private let resetDevicesButton: UIButton = {
+        let button = UIButton(type: .system)
+        button.setTitle("Reset User Devices", for: .normal)
+        button.backgroundColor = .systemRed
+        button.setTitleColor(.white, for: .normal)
+        button.layer.cornerRadius = 8
+        button.translatesAutoresizingMaskIntoConstraints = false
+        return button
+    }()
+    
+    private let reenableDevicesButton: UIButton = {
+        let button = UIButton(type: .system)
+        button.setTitle("Re-enable User Devices", for: .normal)
+        button.backgroundColor = .systemGreen
+        button.setTitleColor(.white, for: .normal)
+        button.layer.cornerRadius = 8
+        button.translatesAutoresizingMaskIntoConstraints = false
+        return button
+    }()
+    
+    private let showDisabledDevicesSwitch: UISwitch = {
+        let toggle = UISwitch()
+        toggle.isOn = false
+        toggle.translatesAutoresizingMaskIntoConstraints = false
+        return toggle
+    }()
+    
+    private let showDisabledLabel: UILabel = {
+        let label = UILabel()
+        label.text = "Show Disabled Devices"
+        label.font = .systemFont(ofSize: 16)
+        label.translatesAutoresizingMaskIntoConstraints = false
+        return label
+    }()
+    
     private let activityIndicator: UIActivityIndicatorView = {
         let indicator = UIActivityIndicatorView(style: .medium)
         indicator.translatesAutoresizingMaskIntoConstraints = false
@@ -157,8 +192,12 @@ final class BackendStatusViewController: UIViewController {
         contentView.addSubview(testUserHeaderLabel)
         contentView.addSubview(testUserStatusLabel)
         contentView.addSubview(errorLabel)
+        contentView.addSubview(showDisabledLabel)
+        contentView.addSubview(showDisabledDevicesSwitch)
         contentView.addSubview(userDetailsTableView)
         contentView.addSubview(sendPushButton)
+        contentView.addSubview(resetDevicesButton)
+        contentView.addSubview(reenableDevicesButton)
         contentView.addSubview(activityIndicator)
         
         NSLayoutConstraint.activate([
@@ -210,8 +249,15 @@ final class BackendStatusViewController: UIViewController {
             errorLabel.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 20),
             errorLabel.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -20),
             
+            // Show disabled devices toggle
+            showDisabledLabel.topAnchor.constraint(equalTo: errorLabel.bottomAnchor, constant: 12),
+            showDisabledLabel.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 20),
+            
+            showDisabledDevicesSwitch.centerYAnchor.constraint(equalTo: showDisabledLabel.centerYAnchor),
+            showDisabledDevicesSwitch.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -20),
+            
             // User details table view
-            userDetailsTableView.topAnchor.constraint(equalTo: errorLabel.bottomAnchor, constant: 8),
+            userDetailsTableView.topAnchor.constraint(equalTo: showDisabledLabel.bottomAnchor, constant: 12),
             userDetailsTableView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 20),
             userDetailsTableView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -20),
             userDetailsTableView.heightAnchor.constraint(equalToConstant: 300),
@@ -221,7 +267,19 @@ final class BackendStatusViewController: UIViewController {
             sendPushButton.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 20),
             sendPushButton.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -20),
             sendPushButton.heightAnchor.constraint(equalToConstant: 44),
-            sendPushButton.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -20),
+            
+            // Reset devices button
+            resetDevicesButton.topAnchor.constraint(equalTo: sendPushButton.bottomAnchor, constant: 12),
+            resetDevicesButton.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 20),
+            resetDevicesButton.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -20),
+            resetDevicesButton.heightAnchor.constraint(equalToConstant: 44),
+            
+            // Re-enable devices button
+            reenableDevicesButton.topAnchor.constraint(equalTo: resetDevicesButton.bottomAnchor, constant: 12),
+            reenableDevicesButton.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 20),
+            reenableDevicesButton.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -20),
+            reenableDevicesButton.heightAnchor.constraint(equalToConstant: 44),
+            reenableDevicesButton.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -20),
             
             // Activity indicator
             activityIndicator.centerXAnchor.constraint(equalTo: refreshButton.centerXAnchor),
@@ -238,6 +296,35 @@ final class BackendStatusViewController: UIViewController {
     private func setupActions() {
         refreshButton.addTarget(self, action: #selector(refreshBackendStatus), for: .touchUpInside)
         sendPushButton.addTarget(self, action: #selector(sendPushNotification), for: .touchUpInside)
+        resetDevicesButton.addTarget(self, action: #selector(resetUserDevices), for: .touchUpInside)
+        reenableDevicesButton.addTarget(self, action: #selector(reenableUserDevices), for: .touchUpInside)
+        showDisabledDevicesSwitch.addTarget(self, action: #selector(toggleShowDisabledDevices), for: .valueChanged)
+    }
+    
+    @objc private func toggleShowDisabledDevices() {
+        // Reload the table view to apply the filter
+        userDetailsTableView.reloadData()
+    }
+    
+    // MARK: - Device Filtering Helper
+    
+    private func getFilteredDevices() -> [[String: Any]] {
+        guard let userData = testUserData,
+              let allDevices = userData["devices"] as? [[String: Any]] else {
+            return []
+        }
+        
+        if showDisabledDevicesSwitch.isOn {
+            // Show all devices
+            return allDevices
+        } else {
+            // Show only enabled devices
+            return allDevices.filter { device in
+                let endpointEnabled = device["endpointEnabled"] as? Bool ?? false
+                let notificationsEnabled = device["notificationsEnabled"] as? Bool ?? false
+                return endpointEnabled && notificationsEnabled
+            }
+        }
     }
     
     private func setupBackendClient() {
@@ -328,6 +415,110 @@ final class BackendStatusViewController: UIViewController {
         }
     }
     
+    @objc private func resetUserDevices() {
+        guard let apiClient = apiClient,
+              let testUserEmail = AppDelegate.loadTestUserEmailFromConfig() else {
+            showAlert(title: "Error", message: "Backend client not initialized or test user email not found")
+            return
+        }
+        
+        // Show confirmation alert
+        let alert = UIAlertController(
+            title: "Reset User Devices", 
+            message: "This will disable ALL registered devices for the test user:\n\(testUserEmail)\n\nAre you sure?", 
+            preferredStyle: .alert
+        )
+        
+        alert.addAction(UIAlertAction(title: "Cancel", style: .cancel))
+        alert.addAction(UIAlertAction(title: "Reset Devices", style: .destructive) { [weak self] _ in
+            self?.performDeviceReset(apiClient: apiClient, email: testUserEmail)
+        })
+        
+        present(alert, animated: true)
+    }
+    
+    @objc private func reenableUserDevices() {
+        guard let apiClient = apiClient,
+              let testUserEmail = AppDelegate.loadTestUserEmailFromConfig() else {
+            showAlert(title: "Error", message: "Backend client not initialized or test user email not found")
+            return
+        }
+        
+        // Show confirmation alert
+        let alert = UIAlertController(
+            title: "Re-enable User Devices", 
+            message: "This will re-enable ALL disabled devices for the test user:\n\(testUserEmail)\n\nAre you sure?", 
+            preferredStyle: .alert
+        )
+        
+        alert.addAction(UIAlertAction(title: "Cancel", style: .cancel))
+        alert.addAction(UIAlertAction(title: "Re-enable Devices", style: .default) { [weak self] _ in
+            self?.performDeviceReenable(apiClient: apiClient, email: testUserEmail)
+        })
+        
+        present(alert, animated: true)
+    }
+    
+    private func performDeviceReset(apiClient: IterableAPIClient, email: String) {
+        resetDevicesButton.isEnabled = false
+        resetDevicesButton.setTitle("Resetting...", for: .normal)
+        
+        print("🔄 Starting device reset for user: \(email)")
+        
+        apiClient.disableAllUserDevices(email: email) { [weak self] success, deviceCount in
+            DispatchQueue.main.async {
+                self?.resetDevicesButton.isEnabled = true
+                self?.resetDevicesButton.setTitle("Reset User Devices", for: .normal)
+                
+                if success {
+                    let message = "Successfully disabled \(deviceCount) device(s) for the test user."
+                    print("✅ Device reset completed: \(deviceCount) devices disabled")
+                    self?.showAlert(title: "Success", message: message) { [weak self] in
+                        // Refresh the backend status to show updated device list
+                        self?.refreshBackendStatus()
+                    }
+                } else {
+                    let message = "Failed to reset all devices. Some devices may have been disabled. Check the console for details."
+                    print("❌ Device reset partially failed")
+                    self?.showAlert(title: "Partial Failure", message: message) { [weak self] in
+                        // Still refresh to show current state
+                        self?.refreshBackendStatus()
+                    }
+                }
+            }
+        }
+    }
+    
+    private func performDeviceReenable(apiClient: IterableAPIClient, email: String) {
+        reenableDevicesButton.isEnabled = false
+        reenableDevicesButton.setTitle("Re-enabling...", for: .normal)
+        
+        print("🔄 Starting device re-enable for user: \(email)")
+        
+        apiClient.reenableAllUserDevices(email: email) { [weak self] success, deviceCount in
+            DispatchQueue.main.async {
+                self?.reenableDevicesButton.isEnabled = true
+                self?.reenableDevicesButton.setTitle("Re-enable User Devices", for: .normal)
+                
+                if success {
+                    let message = "Successfully re-enabled \(deviceCount) device(s) for the test user."
+                    print("✅ Device re-enable completed: \(deviceCount) devices re-enabled")
+                    self?.showAlert(title: "Success", message: message) { [weak self] in
+                        // Refresh the backend status to show updated device list
+                        self?.refreshBackendStatus()
+                    }
+                } else {
+                    let message = "Failed to re-enable all devices. Some devices may have been re-enabled. Check the console for details."
+                    print("❌ Device re-enable partially failed")
+                    self?.showAlert(title: "Partial Failure", message: message) { [weak self] in
+                        // Still refresh to show current state
+                        self?.refreshBackendStatus()
+                    }
+                }
+            }
+        }
+    }
+    
     // MARK: - Helper Methods
     
     private func updateConnectionStatus(_ connected: Bool, message: String) {
@@ -360,9 +551,11 @@ final class BackendStatusViewController: UIViewController {
         userDetailsTableView.isHidden = false
     }
     
-    private func showAlert(title: String, message: String) {
+    private func showAlert(title: String, message: String, completion: (() -> Void)? = nil) {
         let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
-        alert.addAction(UIAlertAction(title: "OK", style: .default))
+        alert.addAction(UIAlertAction(title: "OK", style: .default) { _ in
+            completion?()
+        })
         present(alert, animated: true)
     }
 }
@@ -378,12 +571,13 @@ extension BackendStatusViewController: UITableViewDataSource {
         
         // Basic user info rows
         if userData["email"] != nil { count += 1 }
-        if userData["userId"] != nil { count += 1 }
+        if userData["itblUserId"] != nil { count += 1 }
         if userData["signupDate"] != nil { count += 1 }
         
-        // Device rows
-        if let devices = userData["devices"] as? [[String: Any]] {
-            count += devices.count > 0 ? devices.count + 1 : 1 // +1 for "Devices" header
+        // Device rows (using filtered devices)
+        let filteredDevices = getFilteredDevices()
+        if !filteredDevices.isEmpty {
+            count += filteredDevices.count + 1 // +1 for "Devices" header
         } else {
             count += 1 // "No devices" row
         }
@@ -412,7 +606,7 @@ extension BackendStatusViewController: UITableViewDataSource {
             currentRow += 1
         }
         
-        if let userId = userData["userId"] as? String {
+        if let userId = userData["itblUserId"] as? String {
             if indexPath.row == currentRow {
                 cell.textLabel?.text = "User ID"
                 cell.detailTextLabel?.text = userId
@@ -430,12 +624,19 @@ extension BackendStatusViewController: UITableViewDataSource {
             currentRow += 1
         }
         
-        // Devices section
-        if let devices = userData["devices"] as? [[String: Any]] {
+        // Devices section (using filtered devices)
+        let filteredDevices = getFilteredDevices()
+        let allDevices = userData["devices"] as? [[String: Any]] ?? []
+        
+        if !filteredDevices.isEmpty {
             if indexPath.row == currentRow {
-                // Devices header
-                cell.textLabel?.text = "Devices"
-                cell.detailTextLabel?.text = "\(devices.count) registered"
+                // Devices header with count info
+                let headerText = showDisabledDevicesSwitch.isOn ? 
+                    "Devices (\(filteredDevices.count) total)" : 
+                    "Enabled Devices (\(filteredDevices.count) of \(allDevices.count))"
+                
+                cell.textLabel?.text = headerText
+                cell.detailTextLabel?.text = ""
                 cell.textLabel?.font = .boldSystemFont(ofSize: 16)
                 return cell
             }
@@ -443,21 +644,42 @@ extension BackendStatusViewController: UITableViewDataSource {
             
             // Individual devices
             let deviceIndex = indexPath.row - currentRow
-            if deviceIndex < devices.count {
-                let device = devices[deviceIndex]
+            if deviceIndex < filteredDevices.count {
+                let device = filteredDevices[deviceIndex]
                 let platform = device["platform"] as? String ?? "Unknown"
+                let systemName = device["systemName"] as? String ?? ""
+                let systemVersion = device["systemVersion"] as? String ?? ""
                 let token = device["token"] as? String ?? "No token"
-                let truncatedToken = token.count > 20 ? String(token.prefix(10)) + "..." + String(token.suffix(10)) : token
+                let enabled = device["endpointEnabled"] as? Bool ?? false
+                let notificationsEnabled = device["notificationsEnabled"] as? Bool ?? false
                 
-                cell.textLabel?.text = "\(platform) Device"
+                // Create a more descriptive device label
+                var deviceLabel = platform
+                if !systemName.isEmpty && !systemVersion.isEmpty {
+                    deviceLabel += " (\(systemName) \(systemVersion))"
+                }
+                
+                // Show token with status indicators
+                let statusIndicator = (enabled && notificationsEnabled) ? "✅" : "❌"
+                let truncatedToken = token.count > 20 ? String(token.prefix(8)) + "..." + String(token.suffix(8)) : token
+                
+                cell.textLabel?.text = "\(statusIndicator) \(deviceLabel)"
                 cell.detailTextLabel?.text = truncatedToken
                 cell.textLabel?.font = .systemFont(ofSize: 14)
+                cell.detailTextLabel?.font = .systemFont(ofSize: 12)
+                cell.detailTextLabel?.textColor = .systemGray
                 return cell
             }
         } else {
             if indexPath.row == currentRow {
+                let noDevicesText = showDisabledDevicesSwitch.isOn ? 
+                    "No devices registered" : 
+                    "No enabled devices (\(allDevices.count) disabled)"
+                
                 cell.textLabel?.text = "Devices"
-                cell.detailTextLabel?.text = "No devices registered"
+                cell.detailTextLabel?.text = noDevicesText
+                cell.textLabel?.font = .boldSystemFont(ofSize: 16)
+                cell.detailTextLabel?.textColor = .systemOrange
                 return cell
             }
         }
@@ -473,6 +695,62 @@ extension BackendStatusViewController: UITableViewDataSource {
 extension BackendStatusViewController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         return 60
+    }
+    
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        tableView.deselectRow(at: indexPath, animated: true)
+        
+        guard let userData = testUserData else { return }
+        
+        var currentRow = 0
+        
+        // Skip basic user info rows
+        if userData["email"] != nil { currentRow += 1 }
+        if userData["itblUserId"] != nil { currentRow += 1 }
+        if userData["signupDate"] != nil { currentRow += 1 }
+        
+        // Check if it's a device row (using filtered devices)
+        let filteredDevices = getFilteredDevices()
+        if !filteredDevices.isEmpty {
+            currentRow += 1 // Skip header row
+            
+            let deviceIndex = indexPath.row - currentRow
+            if deviceIndex >= 0 && deviceIndex < filteredDevices.count {
+                let device = filteredDevices[deviceIndex]
+                if let token = device["token"] as? String {
+                    showDeviceTokenDetails(device: device, token: token)
+                }
+            }
+        }
+    }
+    
+    private func showDeviceTokenDetails(device: [String: Any], token: String) {
+        let platform = device["platform"] as? String ?? "Unknown"
+        let systemName = device["systemName"] as? String ?? ""
+        let systemVersion = device["systemVersion"] as? String ?? ""
+        let enabled = device["endpointEnabled"] as? Bool ?? false
+        let notificationsEnabled = device["notificationsEnabled"] as? Bool ?? false
+        let deviceId = device["deviceId"] as? String ?? "N/A"
+        
+        var deviceInfo = "\(platform)"
+        if !systemName.isEmpty && !systemVersion.isEmpty {
+            deviceInfo += " (\(systemName) \(systemVersion))"
+        }
+        deviceInfo += "\n\nDevice ID: \(deviceId)"
+        deviceInfo += "\nEndpoint Enabled: \(enabled ? "Yes" : "No")"
+        deviceInfo += "\nNotifications Enabled: \(notificationsEnabled ? "Yes" : "No")"
+        deviceInfo += "\n\nDevice Token:\n\(token)"
+        
+        let alert = UIAlertController(title: "Device Details", message: deviceInfo, preferredStyle: .alert)
+        
+        // Add copy token action
+        alert.addAction(UIAlertAction(title: "Copy Token", style: .default) { _ in
+            UIPasteboard.general.string = token
+            print("📋 Device token copied to clipboard")
+        })
+        
+        alert.addAction(UIAlertAction(title: "Close", style: .cancel))
+        present(alert, animated: true)
     }
 }
 
@@ -535,7 +813,7 @@ class UserTableViewCell: UITableViewCell {
     
     func configure(with user: [String: Any]) {
         emailLabel.text = user["email"] as? String ?? "Unknown"
-        userIdLabel.text = "ID: \(user["userId"] as? String ?? "N/A")"
+        userIdLabel.text = "ID: \(user["itblUserId"] as? String ?? "N/A")"
         
         // Set status based on device registration
         if let devices = user["devices"] as? [[String: Any]], !devices.isEmpty {

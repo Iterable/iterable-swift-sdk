@@ -48,21 +48,24 @@ class IterableAPIClient {
     // MARK: - User Management
     
     func verifyDeviceRegistration(userEmail: String, completion: @escaping (Bool, String?) -> Void) {
-        let endpoint = "/api/users/getByEmail"
+        // Use the same endpoint as getUserByEmail to get consistent structure
+        let encodedEmail = userEmail.addingPercentEncoding(withAllowedCharacters: .urlPathAllowed) ?? userEmail
+        let endpoint = "/api/users/\(encodedEmail)"
         recordAPICall(endpoint: endpoint)
         
         performAPIRequest(
             endpoint: endpoint,
             method: "GET",
-            parameters: ["email": userEmail],
-            useServerKey: false
+            body: nil,
+            useServerKey: true
         ) { result in
             switch result {
             case .success(let data):
                 do {
                     if let json = try JSONSerialization.jsonObject(with: data) as? [String: Any],
                        let user = json["user"] as? [String: Any],
-                       let devices = user["devices"] as? [[String: Any]] {
+                       let dataFields = user["dataFields"] as? [String: Any],
+                       let devices = dataFields["devices"] as? [[String: Any]] {
                         
                         let deviceToken = devices.first?["token"] as? String
                         completion(devices.count > 0, deviceToken)
@@ -108,10 +111,29 @@ class IterableAPIClient {
             switch result {
             case .success(let data):
                 do {
-                    if let json = try JSONSerialization.jsonObject(with: data) as? [String: Any] {
-                        // The response should contain the user data directly
-                        completion(true, json)
+                    if let json = try JSONSerialization.jsonObject(with: data) as? [String: Any],
+                       let user = json["user"] as? [String: Any],
+                       let dataFields = user["dataFields"] as? [String: Any] {
+                        
+                        // Create a flattened user object that combines user info and dataFields
+                        var flattenedUser: [String: Any] = [:]
+                        
+                        // Add basic user info
+                        flattenedUser["email"] = user["email"]
+                        
+                        // Add dataFields content
+                        for (key, value) in dataFields {
+                            flattenedUser[key] = value
+                        }
+                        
+                        // Handle devices specifically - they're in dataFields
+                        if let devices = dataFields["devices"] as? [[String: Any]] {
+                            flattenedUser["devices"] = devices
+                        }
+                        
+                        completion(true, flattenedUser)
                     } else {
+                        print("❌ Error: Expected JSON structure with user.dataFields not found")
                         completion(false, nil)
                     }
                 } catch {
@@ -168,6 +190,184 @@ class IterableAPIClient {
             case .failure(let error):
                 print("⚠️ Warning: Error cleaning up test user: \(error)")
                 completion(true) // Don't fail tests due to cleanup issues
+            }
+        }
+    }
+    
+    func disableAllUserDevices(email: String, completion: @escaping (Bool, Int) -> Void) {
+        // First get all devices for the user
+        getUserDevices(email: email) { [weak self] devices in
+            guard let self = self, let devices = devices, !devices.isEmpty else {
+                print("ℹ️ No devices found for user: \(email)")
+                completion(true, 0)
+                return
+            }
+            
+            print("📱 Found \(devices.count) device(s) to disable for user: \(email)")
+            
+            let dispatchGroup = DispatchGroup()
+            var successCount = 0
+            var failureCount = 0
+            
+            for device in devices {
+                if let token = device["token"] as? String {
+                    dispatchGroup.enter()
+                    self.disableDevice(email: email, token: token) { success in
+                        if success {
+                            successCount += 1
+                            print("✅ Disabled device: \(String(token.prefix(16)))...")
+                        } else {
+                            failureCount += 1
+                            print("❌ Failed to disable device: \(String(token.prefix(16)))...")
+                        }
+                        dispatchGroup.leave()
+                    }
+                }
+            }
+            
+            dispatchGroup.notify(queue: .main) {
+                let totalDevices = successCount + failureCount
+                print("📊 Device disable results: \(successCount)/\(totalDevices) successful")
+                completion(failureCount == 0, successCount)
+            }
+        }
+    }
+    
+    func reenableAllUserDevices(email: String, completion: @escaping (Bool, Int) -> Void) {
+        // First get all devices for the user
+        getUserDevices(email: email) { [weak self] devices in
+            guard let self = self, let devices = devices, !devices.isEmpty else {
+                print("ℹ️ No devices found for user: \(email)")
+                completion(true, 0)
+                return
+            }
+            
+            // Filter for disabled devices only
+            let disabledDevices = devices.filter { device in
+                let endpointEnabled = device["endpointEnabled"] as? Bool ?? false
+                let notificationsEnabled = device["notificationsEnabled"] as? Bool ?? false
+                return !endpointEnabled || !notificationsEnabled
+            }
+            
+            guard !disabledDevices.isEmpty else {
+                print("ℹ️ No disabled devices found for user: \(email)")
+                completion(true, 0)
+                return
+            }
+            
+            print("📱 Found \(disabledDevices.count) disabled device(s) to re-enable for user: \(email)")
+            
+            let dispatchGroup = DispatchGroup()
+            var successCount = 0
+            var failureCount = 0
+            
+            for device in disabledDevices {
+                if let token = device["token"] as? String {
+                    dispatchGroup.enter()
+                    self.enableDevice(email: email, token: token) { success in
+                        if success {
+                            successCount += 1
+                            print("✅ Re-enabled device: \(String(token.prefix(16)))...")
+                        } else {
+                            failureCount += 1
+                            print("❌ Failed to re-enable device: \(String(token.prefix(16)))...")
+                        }
+                        dispatchGroup.leave()
+                    }
+                }
+            }
+            
+            dispatchGroup.notify(queue: .main) {
+                let totalDevices = successCount + failureCount
+                print("📊 Device re-enable results: \(successCount)/\(totalDevices) successful")
+                completion(failureCount == 0, successCount)
+            }
+        }
+    }
+    
+    private func getUserDevices(email: String, completion: @escaping ([[String: Any]]?) -> Void) {
+        let encodedEmail = email.addingPercentEncoding(withAllowedCharacters: .urlPathAllowed) ?? email
+        let endpoint = "/api/users/\(encodedEmail)"
+        
+        performAPIRequest(
+            endpoint: endpoint,
+            method: "GET",
+            body: nil,
+            useServerKey: true
+        ) { result in
+            switch result {
+            case .success(let data):
+                do {
+                    if let json = try JSONSerialization.jsonObject(with: data) as? [String: Any],
+                       let user = json["user"] as? [String: Any],
+                       let dataFields = user["dataFields"] as? [String: Any],
+                       let devices = dataFields["devices"] as? [[String: Any]] {
+                        completion(devices)
+                    } else {
+                        completion(nil)
+                    }
+                } catch {
+                    print("❌ Error parsing user devices: \(error)")
+                    completion(nil)
+                }
+            case .failure(let error):
+                print("❌ Error fetching user devices: \(error)")
+                completion(nil)
+            }
+        }
+    }
+    
+    private func disableDevice(email: String, token: String, completion: @escaping (Bool) -> Void) {
+        let endpoint = "/api/users/disableDevice"
+        recordAPICall(endpoint: endpoint)
+        
+        let payload: [String: Any] = [
+            "email": email,
+            "token": token
+        ]
+        
+        performAPIRequest(
+            endpoint: endpoint,
+            method: "POST",
+            body: payload,
+            useServerKey: false  // Use mobile API key instead of server key
+        ) { result in
+            switch result {
+            case .success(_):
+                completion(true)
+            case .failure(let error):
+                print("❌ Error disabling device: \(error)")
+                completion(false)
+            }
+        }
+    }
+    
+    private func enableDevice(email: String, token: String, completion: @escaping (Bool) -> Void) {
+        let endpoint = "/api/users/registerDeviceToken"
+        recordAPICall(endpoint: endpoint)
+        
+        let payload: [String: Any] = [
+            "email": email,
+            "device": [
+                "token": token,
+                "platform": "APNS_SANDBOX", // Default to sandbox for testing
+                "applicationName": "com.sumeru.IterableSDK-Integration-Tester",
+                "dataFields": [:]
+            ]
+        ]
+        
+        performAPIRequest(
+            endpoint: endpoint,
+            method: "POST",
+            body: payload,
+            useServerKey: false  // Use mobile API key
+        ) { result in
+            switch result {
+            case .success(_):
+                completion(true)
+            case .failure(let error):
+                print("❌ Error enabling device: \(error)")
+                completion(false)
             }
         }
     }
