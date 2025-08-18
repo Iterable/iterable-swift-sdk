@@ -1,4 +1,4 @@
-name: Push Notification Integration Test
+name: BCIT Push Notification Integration Test
 
 on:
   pull_request:
