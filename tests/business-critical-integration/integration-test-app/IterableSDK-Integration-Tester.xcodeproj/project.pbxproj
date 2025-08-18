@@ -190,7 +190,7 @@
 				};
 			};
 			buildConfigurationList = 8AB7160D2E3119A3004AAB74 /* Build configuration list for PBXProject "IterableSDK-Integration-Tester" */;
-			compatibilityVersion = "Xcode 15.0";
+			compatibilityVersion = "Xcode 14.0";
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
 			knownRegions = (
