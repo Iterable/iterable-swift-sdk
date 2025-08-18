@@ -34,6 +34,13 @@ class PushNotificationIntegrationTests: IntegrationTestBase {
         waitForNotificationPermission()
         screenshotCapture.captureScreenshot(named: "04-permission-handled")
         
+        // Step 4.5: Navigate back to push notification screen if we ended up on home screen
+        if !authStatusValue.exists && pushNotificationRow.exists {
+            print("🔄 Navigating back to push notification screen after permission dialog")
+            pushNotificationRow.tap()
+            screenshotCapture.captureScreenshot(named: "04.5-back-to-push-screen")
+        }
+        
         // Step 5: Wait for status to update to authorized and token to be registered
         let authorizedPredicate = NSPredicate(format: "label == %@", "✓ Authorized")
         let authExpectation = XCTNSPredicateExpectation(predicate: authorizedPredicate, object: authStatusValue)
