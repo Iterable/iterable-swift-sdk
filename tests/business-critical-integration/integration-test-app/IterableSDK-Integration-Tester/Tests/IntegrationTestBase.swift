@@ -146,14 +146,22 @@ class IntegrationTestBase: XCTestCase {
     }
     
     private func initializeSDKForTesting() {
+        // First verify SDK is not initialized - should show X mark
+        let sdkReadyIndicator = app.staticTexts["sdk-ready-indicator"]
+        XCTAssertTrue(sdkReadyIndicator.waitForExistence(timeout: standardTimeout))
+        XCTAssertEqual(sdkReadyIndicator.label, "✗", "SDK should show X mark when not initialized")
+        
+        screenshotCapture.captureScreenshot(named: "sdk-before-initialization")
+        
         // Tap the initialize SDK button in test app
         let initializeButton = app.buttons["initialize-sdk-button"]
         XCTAssertTrue(initializeButton.waitForExistence(timeout: standardTimeout))
         initializeButton.tap()
         
-        // Wait for SDK initialization to complete
-        let sdkReadyIndicator = app.staticTexts["sdk-ready-indicator"]
-        XCTAssertTrue(sdkReadyIndicator.waitForExistence(timeout: standardTimeout))
+        // Wait for SDK initialization to complete - look for checkmark
+        let checkmarkPredicate = NSPredicate(format: "label == %@", "✓")
+        let checkmarkExpectation = XCTNSPredicateExpectation(predicate: checkmarkPredicate, object: sdkReadyIndicator)
+        XCTAssertEqual(XCTWaiter.wait(for: [checkmarkExpectation], timeout: 5.0), .completed, "SDK initialization should show checkmark")
         
         screenshotCapture.captureScreenshot(named: "sdk-initialized")
     }
@@ -235,8 +243,10 @@ class IntegrationTestBase: XCTestCase {
     // MARK: - Validation Helpers
     
     func validateSDKInitialization() {
-        // Verify SDK is properly initialized
-        XCTAssertTrue(app.staticTexts["sdk-ready-indicator"].exists)
+        // Verify SDK is properly initialized - check for checkmark
+        let sdkReadyIndicator = app.staticTexts["sdk-ready-indicator"]
+        XCTAssertTrue(sdkReadyIndicator.exists, "SDK ready indicator should exist")
+        XCTAssertEqual(sdkReadyIndicator.label, "✓", "SDK should show checkmark when initialized")
         XCTAssertTrue(waitForAPICall(endpoint: "/api/users/registerDeviceToken"))
     }
     

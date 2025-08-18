@@ -61,6 +61,12 @@ final class IterableSDKStatusView: UIView {
         containerStackView.addArrangedSubview(emailStatusView)
         containerStackView.addArrangedSubview(userIdStatusView)
         
+        // Add accessibility identifiers for testing
+        initializationStatusView.accessibilityIdentifier = "sdk-initialization-status"
+        initializationStatusView.setValueAccessibilityIdentifier("sdk-ready-indicator")
+        emailStatusView.accessibilityIdentifier = "sdk-email-status"
+        userIdStatusView.accessibilityIdentifier = "sdk-user-id-status"
+        
         NSLayoutConstraint.activate([
             containerStackView.topAnchor.constraint(equalTo: topAnchor, constant: 16),
             containerStackView.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 16),
@@ -199,5 +205,9 @@ private final class StatusRowView: UIView {
     func setValue(_ value: String, color: UIColor) {
         valueLabel.text = value
         valueLabel.textColor = color
+    }
+    
+    func setValueAccessibilityIdentifier(_ identifier: String) {
+        valueLabel.accessibilityIdentifier = identifier
     }
 }
