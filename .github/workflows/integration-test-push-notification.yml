@@ -5,6 +5,7 @@ on:
     paths:
       - 'tests/business-critical-integration/**'
       - '.github/workflows/integration-test-push-notification.yml'
+    types: [opened, synchronize, reopened, labeled]
   workflow_dispatch:
     inputs:
       ref:
@@ -20,6 +21,16 @@ jobs:
     name: Push Notification Integration Test
     runs-on: macos-latest
     timeout-minutes: 30
+    if: >
+      github.event_name == 'workflow_dispatch' ||
+      (
+        github.event_name == 'pull_request' && 
+        (
+          contains(github.event.pull_request.labels.*.name, 'bcit') ||
+          contains(github.event.pull_request.labels.*.name, 'bcit-push') ||
+          github.event.action != 'labeled'
+        )
+      )
 
     steps:
     - name: Checkout Repository
