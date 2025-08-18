@@ -18,7 +18,7 @@ env:
 
 jobs:
   push-notification-test:
-    name: Push Notification Integration Test
+    name: BCIT Push Notification Integration Test
     runs-on: macos-latest
     timeout-minutes: 30
     if: >
