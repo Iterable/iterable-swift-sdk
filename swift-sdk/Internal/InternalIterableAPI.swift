@@ -349,7 +349,7 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
                 ITBInfo("Pending consent tracked successfully after user registration")
             }
         }.onError { [weak self] error in
-            if !isRetryAttempt && self?.config.enableConsentRetry == true {
+            if !isRetryAttempt {
                 ITBInfo("First consent tracking attempt failed, retrying once: \(error)")
                 self?.trackConsentWithRetry(consentData: consentData, isRetryAttempt: true)
             } else {

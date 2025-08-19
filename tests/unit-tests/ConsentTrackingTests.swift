@@ -362,7 +362,7 @@ class ConsentTrackingTests: XCTestCase {
     
     // MARK: - Retry Mechanism Tests
     
-    func testConsentRetryOnFailureWhenEnabled() {
+    func testConsentRetryOnFailure() {
         let retryExpectation = XCTestExpectation(description: "Consent retry after initial failure")
         var requestCount = 0
         var firstCallFailed = false
@@ -388,10 +388,9 @@ class ConsentTrackingTests: XCTestCase {
             return MockNetworkSession.MockResponse(statusCode: 200)
         }
         
-        // Ensure retry is enabled (default behavior)
+        // Set up config for test
         let config = IterableConfig()
         config.enableUnknownUserActivation = true
-        config.enableConsentRetry = true
         config.pushIntegrationName = "test-push-integration"
         
         let testAPI = InternalIterableAPI.initializeForTesting(
@@ -413,49 +412,6 @@ class ConsentTrackingTests: XCTestCase {
         XCTAssertEqual(requestCount, 2, "Should have made exactly 2 requests")
     }
     
-    func testConsentNoRetryWhenDisabled() {
-        let noRetryExpectation = XCTestExpectation(description: "No retry when disabled")
-        noRetryExpectation.isInverted = true
-        var requestCount = 0
-        
-        // Set up retry scenario (no anonymous user ID for replay)  
-        mockLocalStorage.userIdUnknownUser = nil
-        
-        mockNetworkSession.responseCallback = { url in
-            if url.absoluteString.contains(Const.Path.trackConsent) {
-                requestCount += 1
-                if requestCount == 2 {
-                    noRetryExpectation.fulfill() // This should NOT happen
-                }
-                // First attempt fails with 500 error
-                return MockNetworkSession.MockResponse(statusCode: 500, error: NSError(domain: "TestError", code: 500, userInfo: nil))
-            }
-            return MockNetworkSession.MockResponse(statusCode: 200)
-        }
-        
-        // Disable retry
-        let config = IterableConfig()
-        config.enableUnknownUserActivation = true
-        config.enableConsentRetry = false
-        config.pushIntegrationName = "test-push-integration"
-        
-        let testAPI = InternalIterableAPI.initializeForTesting(
-            apiKey: ConsentTrackingTests.apiKey,
-            config: config,
-            dateProvider: mockDateProvider,
-            networkSession: mockNetworkSession,
-            localStorage: mockLocalStorage
-        )
-        
-        testAPI.setEmail(ConsentTrackingTests.testEmail)
-        // Consent is sent after successful device registration
-        testAPI.register(token: "test-token")
-        
-        wait(for: [noRetryExpectation], timeout: 3.0)
-        
-        XCTAssertEqual(requestCount, 1, "Should have made exactly 1 request when retry is disabled")
-    }
-    
     func testConsentNoRetryOnSuccess() {
         let successExpectation = XCTestExpectation(description: "Success on first attempt")
         var requestCount = 0
@@ -473,10 +429,9 @@ class ConsentTrackingTests: XCTestCase {
             return MockNetworkSession.MockResponse(statusCode: 200)
         }
         
-        // Ensure retry is enabled
+        // Set up config for test
         let config = IterableConfig()
         config.enableUnknownUserActivation = true
-        config.enableConsentRetry = true
         config.pushIntegrationName = "test-push-integration"
         
         let testAPI = InternalIterableAPI.initializeForTesting(
@@ -518,10 +473,9 @@ class ConsentTrackingTests: XCTestCase {
             return MockNetworkSession.MockResponse(statusCode: 200)
         }
         
-        // Ensure retry is enabled
+        // Set up config for test
         let config = IterableConfig()
         config.enableUnknownUserActivation = true
-        config.enableConsentRetry = true  
         config.pushIntegrationName = "test-push-integration"
         
         let testAPI = InternalIterableAPI.initializeForTesting(
