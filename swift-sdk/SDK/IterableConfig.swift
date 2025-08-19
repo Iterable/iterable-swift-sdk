@@ -173,5 +173,9 @@ public class IterableConfig: NSObject {
     
     /// The type of mobile framework we are using.
     public var mobileFrameworkInfo: IterableAPIMobileFrameworkInfo?
+    
+    /// When set to `true`, IterableSDK will retry consent tracking once if the initial attempt fails.
+    /// This ensures consent data is reliably tracked during user registration.
+    public var enableConsentRetry = true
 }
 

@@ -328,19 +328,35 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
         
         ITBDebug("Sending pending consent after user registration: email set=\(consentData.email != nil), userId set=\(consentData.userId != nil), timestamp=\(consentData.consentTimestamp)")
         
+        // Track consent with retry logic if enabled
+        trackConsentWithRetry(consentData: consentData, isRetryAttempt: false)
+        
+        // Clear the pending consent data
+        pendingConsentData = nil
+    }
+    
+    /// Tracks consent with optional retry mechanism
+    private func trackConsentWithRetry(consentData: PendingConsentData, isRetryAttempt: Bool) {
         apiClient.trackConsent(
             consentTimestamp: consentData.consentTimestamp,
             email: consentData.email,
             userId: consentData.userId,
             isUserKnown: consentData.isUserKnown
         ).onSuccess { _ in
-            ITBInfo("Pending consent tracked successfully after user registration")
-        }.onError { error in
-            ITBError("Failed to track pending consent after user registration: \(error)")
+            if isRetryAttempt {
+                ITBInfo("Pending consent tracked successfully on retry attempt after user registration")
+            } else {
+                ITBInfo("Pending consent tracked successfully after user registration")
+            }
+        }.onError { [weak self] error in
+            if !isRetryAttempt && self?.config.enableConsentRetry == true {
+                ITBInfo("First consent tracking attempt failed, retrying once: \(error)")
+                self?.trackConsentWithRetry(consentData: consentData, isRetryAttempt: true)
+            } else {
+                let attemptDescription = isRetryAttempt ? "retry attempt" : "initial attempt"
+                ITBError("Failed to track pending consent after user registration (\(attemptDescription)): \(error)")
+            }
         }
-        
-        // Clear the pending consent data
-        pendingConsentData = nil
     }
 
     // MARK: - API Request Calls
