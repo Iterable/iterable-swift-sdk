@@ -113,6 +113,7 @@ jobs:
         run: pod lib lint --allow-warnings
 
       - name: Upload coverage report to codecov.io
-        env:
-          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
-        run: bash <(curl -s https://codecov.io/bash) -X gcov -J 'IterableSDK' -J 'IterableAppExtensions' -B main -C ${{ github.sha }} -r ${{ github.repository }}
+        uses: codecov/codecov-action@v4.1.0
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          slug: Iterable/iterable-swift-sdk
