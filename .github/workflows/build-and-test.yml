@@ -26,9 +26,16 @@ jobs:
       - name: Print available simulators
         run: xcrun simctl list devices | cat
 
+      - name: Get latest stable iOS version
+        id: ios-version
+        run: |
+          LATEST_IOS=$(xcrun simctl list runtimes | grep "iOS 18" | grep -v "watchOS" | grep -v "beta" | grep -v "Beta" | tail -1 | sed 's/.*iOS \([0-9]*\.[0-9]*\).*/\1/')
+          echo "version=$LATEST_IOS" >> $GITHUB_OUTPUT
+          echo "Latest stable iOS version: $LATEST_IOS"
+
       - name: Build and test
         run: |
-          xcodebuild test -project swift-sdk.xcodeproj -scheme swift-sdk -sdk iphonesimulator -destination 'platform=iOS Simulator,name=iPhone 16 Pro,OS=18.2' -enableCodeCoverage YES -resultBundlePath TestResults.xcresult CODE_SIGNING_REQUIRED=NO | xcpretty && exit ${PIPESTATUS[0]}
+          xcodebuild test -project swift-sdk.xcodeproj -scheme swift-sdk -sdk iphonesimulator -destination 'platform=iOS Simulator,name=iPhone 16 Pro,OS=${{ steps.ios-version.outputs.version }}' -enableCodeCoverage YES -resultBundlePath TestResults.xcresult CODE_SIGNING_REQUIRED=NO | xcpretty && exit ${PIPESTATUS[0]}
  
       - name: Process test results
         run: |
