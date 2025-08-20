@@ -20,9 +20,13 @@ sed -e "s/\(apiKey = \).*$/\1\"$api_key\"/" \
 -e "s/\(inAppCampaignId = \).*$/\1\NSNumber($in_app_campaign_id)/" \
 -e "s/\(inAppTemplateId = \).*$/\1\NSNumber($in_app_template_id)/" $e2e_folder/CI.swift.template > $e2e_folder/CI.swift
 
+echo "Detecting latest stable iOS version..."
+LATEST_IOS=$(xcrun simctl list runtimes | grep "iOS 18" | grep -v "watchOS" | grep -v "beta" | grep -v "Beta" | tail -1 | sed 's/.*iOS \([0-9]*\.[0-9]*\).*/\1/')
+echo "Using iOS version: $LATEST_IOS"
+
 xcodebuild -project swift-sdk.xcodeproj \
            -scheme endpoint-tests \
            -sdk iphonesimulator \
-           -destination 'platform=iOS Simulator,OS=18.1,name=iPhone 16 Pro' \
+           -destination "platform=iOS Simulator,OS=$LATEST_IOS,name=iPhone 16 Pro" \
            -resultBundlePath TestResults.xcresult \
            test | xcpretty
