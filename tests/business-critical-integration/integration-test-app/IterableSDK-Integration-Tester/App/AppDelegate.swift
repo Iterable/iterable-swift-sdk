@@ -105,7 +105,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         window?.rootViewController = root
         window?.makeKeyAndVisible()
 
-        //setupNotifications()
+        setupNotifications()
         setupTestModeUI()
         
         // Start network monitoring
@@ -158,31 +158,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     func application(_: UIApplication, didFailToRegisterForRemoteNotificationsWithError _: Error) {}
     
     // ITBL:
-    // Ask for permission for notifications etc.
-    // setup self as delegate to listen to push notifications.
-    /*
+    // Setup self as delegate to listen to push notifications.
+    // Note: This only sets up the delegate, doesn't request permissions automatically
     private func setupNotifications() {
         UNUserNotificationCenter.current().delegate = self
-        UNUserNotificationCenter.current().getNotificationSettings { settings in
-            if settings.authorizationStatus != .authorized {
-                // not authorized, ask for permission
-                UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .badge, .sound]) { success, _ in
-                    if success {
-                        DispatchQueue.main.async {
-                            UIApplication.shared.registerForRemoteNotifications()
-                        }
-                    }
-                    // TODO: Handle error etc.
-                }
-            } else {
-                // already authorized
-                DispatchQueue.main.async {
-                    UIApplication.shared.registerForRemoteNotifications()
-                }
-            }
-        }
     }
-     */
 }
 
 // MARK: UNUserNotificationCenterDelegate
