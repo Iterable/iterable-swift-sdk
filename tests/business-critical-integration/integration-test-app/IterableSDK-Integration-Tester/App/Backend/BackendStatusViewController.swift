@@ -314,17 +314,54 @@ final class BackendStatusViewController: UIViewController {
             return []
         }
         
+        var filteredDevices: [[String: Any]]
+        
         if showDisabledDevicesSwitch.isOn {
             // Show all devices
-            return allDevices
+            filteredDevices = allDevices
         } else {
             // Show only enabled devices
-            return allDevices.filter { device in
+            filteredDevices = allDevices.filter { device in
                 let endpointEnabled = device["endpointEnabled"] as? Bool ?? false
                 let notificationsEnabled = device["notificationsEnabled"] as? Bool ?? false
                 return endpointEnabled && notificationsEnabled
             }
         }
+        
+        // Sort devices to put current device first
+        return sortDevicesWithCurrentFirst(filteredDevices)
+    }
+    
+    private func sortDevicesWithCurrentFirst(_ devices: [[String: Any]]) -> [[String: Any]] {
+        guard let currentDeviceToken = AppDelegate.getRegisteredDeviceToken() else {
+            return devices
+        }
+        
+        var currentDevice: [String: Any]?
+        var otherDevices: [[String: Any]] = []
+        
+        for device in devices {
+            if let deviceToken = device["token"] as? String, deviceToken == currentDeviceToken {
+                currentDevice = device
+            } else {
+                otherDevices.append(device)
+            }
+        }
+        
+        // Return current device first, then others
+        if let current = currentDevice {
+            return [current] + otherDevices
+        } else {
+            return otherDevices
+        }
+    }
+    
+    private func isCurrentDevice(_ device: [String: Any]) -> Bool {
+        guard let currentDeviceToken = AppDelegate.getRegisteredDeviceToken(),
+              let deviceToken = device["token"] as? String else {
+            return false
+        }
+        return deviceToken == currentDeviceToken
     }
     
     private func setupBackendClient() {
@@ -335,7 +372,7 @@ final class BackendStatusViewController: UIViewController {
             return
         }
         
-        let projectId = "integration-test"
+        let projectId = AppDelegate.loadProjectIdFromConfig()
         apiClient = IterableAPIClient(apiKey: apiKey, serverKey: serverKey, projectId: projectId)
         pushSender = PushNotificationSender(apiClient: apiClient!, serverKey: serverKey, projectId: projectId)
         
@@ -566,23 +603,13 @@ extension BackendStatusViewController: UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         guard let userData = testUserData else { return 0 }
         
-        // Show user details and devices as separate rows
-        var count = 0
-        
-        // Basic user info rows
-        if userData["email"] != nil { count += 1 }
-        if userData["itblUserId"] != nil { count += 1 }
-        if userData["signupDate"] != nil { count += 1 }
-        
-        // Device rows (using filtered devices)
+        // Only show device rows
         let filteredDevices = getFilteredDevices()
         if !filteredDevices.isEmpty {
-            count += filteredDevices.count + 1 // +1 for "Devices" header
+            return filteredDevices.count + 1 // +1 for "Devices" header
         } else {
-            count += 1 // "No devices" row
+            return 1 // "No devices" row
         }
-        
-        return count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
@@ -594,42 +621,12 @@ extension BackendStatusViewController: UITableViewDataSource {
             return cell
         }
         
-        var currentRow = 0
-        
-        // Basic user info
-        if let email = userData["email"] as? String {
-            if indexPath.row == currentRow {
-                cell.textLabel?.text = "Email"
-                cell.detailTextLabel?.text = email
-                return cell
-            }
-            currentRow += 1
-        }
-        
-        if let userId = userData["itblUserId"] as? String {
-            if indexPath.row == currentRow {
-                cell.textLabel?.text = "User ID"
-                cell.detailTextLabel?.text = userId
-                return cell
-            }
-            currentRow += 1
-        }
-        
-        if let signupDate = userData["signupDate"] as? String {
-            if indexPath.row == currentRow {
-                cell.textLabel?.text = "Signup Date"
-                cell.detailTextLabel?.text = signupDate
-                return cell
-            }
-            currentRow += 1
-        }
-        
         // Devices section (using filtered devices)
         let filteredDevices = getFilteredDevices()
         let allDevices = userData["devices"] as? [[String: Any]] ?? []
         
         if !filteredDevices.isEmpty {
-            if indexPath.row == currentRow {
+            if indexPath.row == 0 {
                 // Devices header with count info
                 let headerText = showDisabledDevicesSwitch.isOn ? 
                     "Devices (\(filteredDevices.count) total)" : 
@@ -638,12 +635,12 @@ extension BackendStatusViewController: UITableViewDataSource {
                 cell.textLabel?.text = headerText
                 cell.detailTextLabel?.text = ""
                 cell.textLabel?.font = .boldSystemFont(ofSize: 16)
+                cell.backgroundColor = .systemBackground
                 return cell
             }
-            currentRow += 1
             
             // Individual devices
-            let deviceIndex = indexPath.row - currentRow
+            let deviceIndex = indexPath.row - 1
             if deviceIndex < filteredDevices.count {
                 let device = filteredDevices[deviceIndex]
                 let platform = device["platform"] as? String ?? "Unknown"
@@ -659,19 +656,31 @@ extension BackendStatusViewController: UITableViewDataSource {
                     deviceLabel += " (\(systemName) \(systemVersion))"
                 }
                 
-                // Show token with status indicators
+                // Show token with status indicators and current device indicator
                 let statusIndicator = (enabled && notificationsEnabled) ? "✅" : "❌"
+                let currentDeviceIndicator = isCurrentDevice(device) ? " 📱 This Device" : ""
                 let truncatedToken = token.count > 20 ? String(token.prefix(8)) + "..." + String(token.suffix(8)) : token
                 
-                cell.textLabel?.text = "\(statusIndicator) \(deviceLabel)"
+                cell.textLabel?.text = "\(statusIndicator) \(deviceLabel)\(currentDeviceIndicator)"
                 cell.detailTextLabel?.text = truncatedToken
-                cell.textLabel?.font = .systemFont(ofSize: 14)
+                
+                // Style current device differently
+                if isCurrentDevice(device) {
+                    cell.textLabel?.font = .systemFont(ofSize: 14, weight: .bold)
+                    cell.textLabel?.textColor = .systemBlue
+                    cell.backgroundColor = UIColor.systemBlue.withAlphaComponent(0.1)
+                } else {
+                    cell.textLabel?.font = .systemFont(ofSize: 14)
+                    cell.textLabel?.textColor = .label
+                    cell.backgroundColor = .systemBackground
+                }
+                
                 cell.detailTextLabel?.font = .systemFont(ofSize: 12)
                 cell.detailTextLabel?.textColor = .systemGray
                 return cell
             }
         } else {
-            if indexPath.row == currentRow {
+            if indexPath.row == 0 {
                 let noDevicesText = showDisabledDevicesSwitch.isOn ? 
                     "No devices registered" : 
                     "No enabled devices (\(allDevices.count) disabled)"
@@ -680,6 +689,7 @@ extension BackendStatusViewController: UITableViewDataSource {
                 cell.detailTextLabel?.text = noDevicesText
                 cell.textLabel?.font = .boldSystemFont(ofSize: 16)
                 cell.detailTextLabel?.textColor = .systemOrange
+                cell.backgroundColor = .systemBackground
                 return cell
             }
         }
@@ -702,19 +712,11 @@ extension BackendStatusViewController: UITableViewDelegate {
         
         guard let userData = testUserData else { return }
         
-        var currentRow = 0
-        
-        // Skip basic user info rows
-        if userData["email"] != nil { currentRow += 1 }
-        if userData["itblUserId"] != nil { currentRow += 1 }
-        if userData["signupDate"] != nil { currentRow += 1 }
-        
         // Check if it's a device row (using filtered devices)
         let filteredDevices = getFilteredDevices()
-        if !filteredDevices.isEmpty {
-            currentRow += 1 // Skip header row
-            
-            let deviceIndex = indexPath.row - currentRow
+        if !filteredDevices.isEmpty && indexPath.row > 0 {
+            // Skip header row (row 0)
+            let deviceIndex = indexPath.row - 1
             if deviceIndex >= 0 && deviceIndex < filteredDevices.count {
                 let device = filteredDevices[deviceIndex]
                 if let token = device["token"] as? String {

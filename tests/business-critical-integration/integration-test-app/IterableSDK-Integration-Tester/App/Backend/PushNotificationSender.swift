@@ -75,28 +75,10 @@ class PushNotificationSender {
         
         let payload: [String: Any] = [
             "recipientEmail": userEmail,
-            "campaignId": Int(campaignId) ?? 0,
-            "messageId": messageId,
-            "sendAt": "immediate",
-            "allowRepeatMarketingCampaigns": true,
-            "dataFields": [
-                "testType": "standard_push",
-                "timestamp": Date().timeIntervalSince1970
-            ],
-            "pushPayload": [
-                "alert": [
-                    "title": title,
-                    "body": body
-                ],
-                "badge": 1,
-                "sound": "default",
-                "contentAvailable": false
-            ],
-            "metadata": [
-                "source": "integration_test",
-                "test_type": "standard_push",
-                "project_id": projectId
-            ]
+            "campaignId": 14679102,
+            "allowRepeatMarketingSends": true,
+            "dataFields": [:],
+            "metadata": [:]
         ]
         
         let notificationInfo = PushNotificationInfo(
@@ -123,31 +105,12 @@ class PushNotificationSender {
         let messageId = generateMessageId()
         let campaignId = generateCampaignId()
         
-        var dataFields = customData
-        dataFields["silentPush"] = true
-        dataFields["triggerType"] = triggerType
-        dataFields["timestamp"] = Date().timeIntervalSince1970
-        
         let payload: [String: Any] = [
             "recipientEmail": userEmail,
-            "campaignId": Int(campaignId) ?? 0,
-            "messageId": messageId,
-            "sendAt": "immediate",
-            "allowRepeatMarketingCampaigns": true,
-            "dataFields": dataFields,
-            "pushPayload": [
-                "contentAvailable": true,
-                "isGhostPush": true,
-                "badge": NSNull(),
-                "sound": NSNull(),
-                "alert": NSNull()
-            ],
-            "metadata": [
-                "source": "integration_test",
-                "test_type": "silent_push",
-                "trigger_type": triggerType,
-                "project_id": projectId
-            ]
+            "campaignId": 14679102,
+            "allowRepeatMarketingSends": true,
+            "dataFields": [:],
+            "metadata": [:]
         ]
         
         let notificationInfo = PushNotificationInfo(

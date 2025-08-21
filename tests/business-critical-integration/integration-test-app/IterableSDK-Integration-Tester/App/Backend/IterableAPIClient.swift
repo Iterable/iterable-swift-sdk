@@ -453,20 +453,10 @@ class IterableAPIClient {
     func sendSilentPush(to userEmail: String, triggerType: String, completion: @escaping (Bool, Error?) -> Void) {
         let payload: [String: Any] = [
             "recipientEmail": userEmail,
-            "campaignId": Int.random(in: 10000...99999),
-            "dataFields": [
-                "silentPush": true,
-                "triggerType": triggerType,
-                "timestamp": Date().timeIntervalSince1970
-            ],
-            "sendAt": "immediate",
-            "pushPayload": [
-                "contentAvailable": true,
-                "isGhostPush": true,
-                "badge": NSNull(),
-                "sound": NSNull(),
-                "alert": NSNull()
-            ]
+            "campaignId": 14679102,
+            "allowRepeatMarketingSends": true,
+            "dataFields": [:],
+            "metadata": [:]
         ]
         
         sendPushNotification(to: userEmail, payload: payload, completion: completion)

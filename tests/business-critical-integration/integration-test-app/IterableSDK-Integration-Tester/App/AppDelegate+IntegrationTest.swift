@@ -42,6 +42,18 @@ extension AppDelegate {
         print("✅ Loaded server key from test-config.json")
         return serverKey
     }
+    
+    static func loadProjectIdFromConfig() -> String {
+        guard let path = Bundle.main.path(forResource: "test-config", ofType: "json"),
+              let data = try? Data(contentsOf: URL(fileURLWithPath: path)),
+              let json = try? JSONSerialization.jsonObject(with: data) as? [String: Any],
+              let projectId = json["projectId"] as? String,
+              !projectId.isEmpty else {
+            fatalError("❌ Could not load project ID from test-config.json")
+        }
+        print("✅ Loaded project ID from test-config.json: \(projectId)")
+        return projectId
+    }
         
     static func initializeIterableSDK() {
         guard let appDelegate = UIApplication.shared.delegate as? AppDelegate else {
