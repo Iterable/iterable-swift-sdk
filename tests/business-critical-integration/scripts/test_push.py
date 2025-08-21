@@ -165,7 +165,7 @@ class APNsPushSender:
         Send push notification to device.
         
         Args:
-            device_token: 64-character hex device token
+            device_token: Device token (64, 128, or 160 hex characters)
             payload: APNs payload dictionary
             bundle_id: App bundle identifier
             priority: Notification priority (5=low, 10=high)
@@ -235,8 +235,9 @@ class APNsPushSender:
     
     def _validate_device_token(self, token: str) -> bool:
         """Validate device token format."""
-        if len(token) != 64:
-            print(f"❌ Invalid token length: {len(token)} (expected 64)")
+        # iOS device tokens: 32 bytes (64 hex), 64 bytes (128 hex), or 80 bytes (160 hex)
+        if len(token) not in [64, 128, 160]:
+            print(f"❌ Invalid token length: {len(token)} (expected 64, 128, or 160 characters)")
             return False
             
         try:
@@ -284,8 +285,8 @@ def prompt_for_missing_args(args):
         else:
             print("📱 Device token is required")
         while True:
-            token = input("Enter 64-character hex device token: ").strip()
-            if len(token) == 64:
+            token = input("Enter device token (64, 128, or 160 hex characters): ").strip()
+            if len(token) in [64, 128, 160]:
                 try:
                     int(token, 16)  # Validate hex
                     args.token = token
@@ -293,7 +294,7 @@ def prompt_for_missing_args(args):
                 except ValueError:
                     print("❌ Invalid format: must be hexadecimal")
             else:
-                print(f"❌ Invalid length: {len(token)} (expected 64 characters)")
+                print(f"❌ Invalid length: {len(token)} (expected 64, 128, or 160 characters)")
         if args.interactive:
             print("✅ Device token configured")
             print()
@@ -391,7 +392,7 @@ Examples:
     # Required arguments (but we'll prompt if missing)
     parser.add_argument(
         "--token", 
-        help="64-character hex device token"
+        help="Device token (64, 128, or 160 hex characters)"
     )
     parser.add_argument(
         "--cert", 

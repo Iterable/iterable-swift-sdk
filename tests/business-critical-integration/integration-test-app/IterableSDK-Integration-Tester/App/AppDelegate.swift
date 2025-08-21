@@ -152,6 +152,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     // ITBL:
     func application(_ application: UIApplication, didRegisterForRemoteNotificationsWithDeviceToken deviceToken: Data) {
         // Register the device token with Iterable SDK and save it
+        print("Received device token: \(deviceToken.map { String(format: "%02.2hhx", $0) }.joined())")
         AppDelegate.registerDeviceToken(deviceToken)
     }
     
