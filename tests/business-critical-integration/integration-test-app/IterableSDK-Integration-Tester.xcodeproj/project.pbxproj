@@ -200,7 +200,7 @@
 			mainGroup = 8AB716092E3119A3004AAB74;
 			minimizedProjectReferenceProxies = 1;
 			packageReferences = (
-				8A24D3382E44F30600B53850 /* XCLocalSwiftPackageReference "../../../../swift-sdk" */,
+				8A24D3382E44F30600B53850 /* XCLocalSwiftPackageReference "../../../" */,
 			);
 			productRefGroup = 8AB716132E3119A3004AAB74 /* Products */;
 			projectDirPath = "";
@@ -265,6 +265,7 @@
 				CODE_SIGN_ENTITLEMENTS = "IterableSDK-Integration-Tester/SupportingFiles/iterablesdk-integration-tester.entitlements";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = BP98Z28R86;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = "IterableSDK-Integration-Tester/SupportingFiles/Info.plist";
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
@@ -292,6 +293,7 @@
 				CODE_SIGN_ENTITLEMENTS = "IterableSDK-Integration-Tester/SupportingFiles/iterablesdk-integration-tester.entitlements";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = BP98Z28R86;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = "IterableSDK-Integration-Tester/SupportingFiles/Info.plist";
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
@@ -495,9 +497,9 @@
 /* End XCConfigurationList section */
 
 /* Begin XCLocalSwiftPackageReference section */
-		8A24D3382E44F30600B53850 /* XCLocalSwiftPackageReference "../../../../swift-sdk" */ = {
+		8A24D3382E44F30600B53850 /* XCLocalSwiftPackageReference "../../../" */ = {
 			isa = XCLocalSwiftPackageReference;
-			relativePath = "../../../";
+			relativePath = ../../../;
 		};
 /* End XCLocalSwiftPackageReference section */
 
