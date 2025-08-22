@@ -32,20 +32,20 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
                 let networkButton = UIButton(type: .system)
                 networkButton.setTitle("📡 Network", for: .normal)
-                networkButton.titleLabel?.font = UIFont.systemFont(ofSize: 11, weight: .semibold)
+                networkButton.titleLabel?.font = UIFont.systemFont(ofSize: 12, weight: .semibold)
                 networkButton.backgroundColor = UIColor.systemBlue
                 networkButton.setTitleColor(.white, for: .normal)
-                networkButton.layer.cornerRadius = 6
+                networkButton.layer.cornerRadius = 8
                 networkButton.translatesAutoresizingMaskIntoConstraints = false
                 networkButton.accessibilityIdentifier = "network-monitor-button"
                 networkButton.addTarget(self, action: #selector(self.showNetworkMonitor), for: .touchUpInside)
 
                 let backendButton = UIButton(type: .system)
                 backendButton.setTitle("⚙️ Backend", for: .normal)
-                backendButton.titleLabel?.font = UIFont.systemFont(ofSize: 11, weight: .semibold)
+                backendButton.titleLabel?.font = UIFont.systemFont(ofSize: 12, weight: .semibold)
                 backendButton.backgroundColor = UIColor.systemPurple
                 backendButton.setTitleColor(.white, for: .normal)
-                backendButton.layer.cornerRadius = 6
+                backendButton.layer.cornerRadius = 8
                 backendButton.translatesAutoresizingMaskIntoConstraints = false
                 backendButton.accessibilityIdentifier = "backend-tab"
                 backendButton.addTarget(self, action: #selector(self.showBackendStatus), for: .touchUpInside)
@@ -59,20 +59,20 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
                     testBanner.topAnchor.constraint(equalTo: window.safeAreaLayoutGuide.topAnchor),
                     testBanner.leadingAnchor.constraint(equalTo: window.leadingAnchor),
                     testBanner.trailingAnchor.constraint(equalTo: window.trailingAnchor),
-                    testBanner.heightAnchor.constraint(equalToConstant: 30),
+                    testBanner.heightAnchor.constraint(equalToConstant: 40),
 
                     testLabel.centerXAnchor.constraint(equalTo: testBanner.centerXAnchor),
                     testLabel.centerYAnchor.constraint(equalTo: testBanner.centerYAnchor),
 
-                    networkButton.trailingAnchor.constraint(equalTo: testBanner.trailingAnchor, constant: -10),
+                    networkButton.trailingAnchor.constraint(equalTo: testBanner.trailingAnchor, constant: -20),
                     networkButton.centerYAnchor.constraint(equalTo: testBanner.centerYAnchor),
-                    networkButton.widthAnchor.constraint(equalToConstant: 80),
-                    networkButton.heightAnchor.constraint(equalToConstant: 20),
+                    networkButton.widthAnchor.constraint(equalToConstant: 100),
+                    networkButton.heightAnchor.constraint(equalToConstant: 28),
                     
-                    backendButton.leadingAnchor.constraint(equalTo: testBanner.leadingAnchor, constant: 10),
+                    backendButton.leadingAnchor.constraint(equalTo: testBanner.leadingAnchor, constant: 20),
                     backendButton.centerYAnchor.constraint(equalTo: testBanner.centerYAnchor),
-                    backendButton.widthAnchor.constraint(equalToConstant: 80),
-                    backendButton.heightAnchor.constraint(equalToConstant: 20)
+                    backendButton.widthAnchor.constraint(equalToConstant: 100),
+                    backendButton.heightAnchor.constraint(equalToConstant: 28)
                 ])
 
                 window.bringSubviewToFront(testBanner)

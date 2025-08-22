@@ -513,18 +513,28 @@ class IntegrationTestBase: XCTestCase {
     }
     
     func navigateToNetworkMonitor() {
-        // Navigate to network monitor to view API calls
+        // Wait for UI to settle and ensure network monitor button is hittable
         let networkMonitorButton = app.buttons["network-monitor-button"]
-        if networkMonitorButton.exists {
-            networkMonitorButton.tap()
-        } else {
-            // Alternative: use navigation bar button if available
-            let navBarButton = app.navigationBars.buttons["Network"]
-            if navBarButton.exists {
-                navBarButton.tap()
+        XCTAssertTrue(networkMonitorButton.waitForExistence(timeout: standardTimeout), "Network monitor button should exist")
+        
+        // Wait for the button to become hittable (not obscured)
+        let hittablePredicate = NSPredicate(format: "isHittable == true")
+        let hittableExpectation = XCTNSPredicateExpectation(predicate: hittablePredicate, object: networkMonitorButton)
+        let result = XCTWaiter.wait(for: [hittableExpectation], timeout: 10.0)
+        
+        if result != .completed {
+            // If button is not hittable, try scrolling or waiting a bit more
+            print("⚠️ Network monitor button not hittable, attempting to make it accessible...")
+            sleep(2)
+            
+            // Force tap using coordinate if button exists but not hittable
+            if networkMonitorButton.exists {
+                networkMonitorButton.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.5)).tap()
             } else {
-                XCTFail("Network monitor navigation not found")
+                XCTFail("Network monitor button not found after waiting")
             }
+        } else {
+            networkMonitorButton.tap()
         }
     }
     
