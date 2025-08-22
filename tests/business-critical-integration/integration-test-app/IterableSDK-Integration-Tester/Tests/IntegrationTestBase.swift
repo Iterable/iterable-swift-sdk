@@ -32,10 +32,12 @@ class IntegrationTestBase: XCTestCase {
             return isFast
         }
         
-        // Check if running from Xcode build (default to fast mode)
-        if ProcessInfo.processInfo.environment["XCODE_RUNNING_FOR_PREVIEWS"] != nil ||
-           ProcessInfo.processInfo.environment["__XCODE_BUILT_PRODUCTS_DIR_PATHS"] != nil {
-            print("🚀 Fast Test Mode: ENABLED (detected Xcode build environment)")
+        // Check if running from manual Xcode IDE (not script-driven xcodebuild)
+        let isXcodeIDE = ProcessInfo.processInfo.environment["XCODE_RUNNING_FOR_PREVIEWS"] != nil
+        let isScriptDriven = ProcessInfo.processInfo.environment["INTEGRATION_TEST"] != nil
+        
+        if isXcodeIDE && !isScriptDriven {
+            print("🚀 Fast Test Mode: ENABLED (detected manual Xcode IDE run)")
             return true
         }
         
@@ -50,6 +52,9 @@ class IntegrationTestBase: XCTestCase {
         try super.setUpWithError()
         
         continueAfterFailure = false
+        
+        // Log test mode for visibility
+        print("🧪 Test Mode: \(fastTest ? "FAST (skipping detailed validations)" : "COMPREHENSIVE (full validation suite)")")
         
         // Initialize test configuration
         setupTestConfiguration()
@@ -417,9 +422,9 @@ class IntegrationTestBase: XCTestCase {
         let titleElement = springboard.staticTexts.containing(titlePredicate).firstMatch
         let bodyElement = springboard.staticTexts.containing(bodyPredicate).firstMatch
         
-        // Actively wait for notification banner to appear (up to 10 seconds)
+        // Actively wait for notification banner to appear (up to 20 seconds)
         var attempts = 0
-        let maxAttempts = 20 // 10 seconds with 0.5 second intervals
+        let maxAttempts = 40 // 20 seconds with 0.5 second intervals
         
         while attempts < maxAttempts {
             if titleElement.exists && bodyElement.exists {
@@ -455,7 +460,7 @@ class IntegrationTestBase: XCTestCase {
         }
         
         // If we get here, we didn't find the notification within the timeout
-        XCTFail("Push notification with title '\(expectedTitle)' and body '\(expectedBody)' was not received within 10 seconds")
+        XCTFail("Push notification with title '\(expectedTitle)' and body '\(expectedBody)' was not received within 20 seconds")
     }
     
     func validateInAppMessageDisplayed() {
