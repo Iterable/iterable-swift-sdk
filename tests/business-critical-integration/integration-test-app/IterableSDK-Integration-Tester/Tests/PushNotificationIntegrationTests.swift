@@ -44,7 +44,31 @@ class PushNotificationIntegrationTests: IntegrationTestBase {
             screenshotCapture.captureScreenshot(named: "04.5-back-to-push-screen")
         }
         
-        // Step 5: Wait for status to update to authorized and token to be registered
+        // Step 5: Check network monitor for registerDeviceToken call BEFORE verifying token status
+        if fastTest == false {
+            navigateToNetworkMonitor()
+            screenshotCapture.captureScreenshot(named: "05-network-tab-opened")
+            
+            // Wait up to 10 seconds for the registerDeviceToken call to appear in network monitor
+            print("⏳ Waiting for registerDeviceToken network call to appear...")
+            sleep(5) // Give it 5 seconds for the call to be made and appear in monitor
+            
+            // Verify register device token call was made with 200 status
+            verifyNetworkCallWithSuccess(endpoint: "registerDeviceToken", description: "Register device token API call should be made with 200 status")
+            screenshotCapture.captureScreenshot(named: "06-register-token-call-verified")
+            
+            // Navigate back to push notification screen
+            let closeNetworkButton = app.buttons["Close"]
+            if closeNetworkButton.exists {
+                closeNetworkButton.tap()
+            }
+            
+            // Navigate back to push notification tab to continue verification
+            pushNotificationRow.tap()
+            screenshotCapture.captureScreenshot(named: "07-back-to-push-screen")
+        }
+        
+        // Step 6: Wait for status to update to authorized and token to be registered
         let authorizedPredicate = NSPredicate(format: "label == %@", "✓ Authorized")
         let authExpectation = XCTNSPredicateExpectation(predicate: authorizedPredicate, object: authStatusValue)
         XCTAssertEqual(XCTWaiter.wait(for: [authExpectation], timeout: 10.0), .completed, "Authorization should become 'Authorized'")
@@ -52,28 +76,12 @@ class PushNotificationIntegrationTests: IntegrationTestBase {
          let tokenRegisteredPredicate = NSPredicate(format: "label == %@", "✓ Registered")
          let tokenExpectation = XCTNSPredicateExpectation(predicate: tokenRegisteredPredicate, object: deviceTokenValue)
          XCTAssertEqual(XCTWaiter.wait(for: [tokenExpectation], timeout: 10.0), .completed, "Device token should become 'Registered'")
-        screenshotCapture.captureScreenshot(named: "05-status-updated")
-        
-        // Step 6: Navigate to Network tab to verify register device token API call was made
-        if fastTest == false {
-            navigateToNetworkMonitor()
-            screenshotCapture.captureScreenshot(named: "06-network-tab-opened")
-            
-            // Verify register device token call was made with 200 status
-            verifyNetworkCallWithSuccess(endpoint: "registerDeviceToken", description: "Register device token API call should be made with 200 status")
-            screenshotCapture.captureScreenshot(named: "07-register-token-call-verified")
-            
-            // Navigate back to home
-            let closeNetworkButton = app.buttons["Close"]
-            if closeNetworkButton.exists {
-                closeNetworkButton.tap()
-            }
-        }
+        screenshotCapture.captureScreenshot(named: "08-status-updated")
         
         sleep(2) // Wait a bit before navigating to backend
         
         navigateToBackendTab()
-        screenshotCapture.captureScreenshot(named: "08-backend-tab-opened")
+        screenshotCapture.captureScreenshot(named: "09-backend-tab-opened")
 
         if fastTest == false {
             
@@ -95,13 +103,13 @@ class PushNotificationIntegrationTests: IntegrationTestBase {
             XCTAssertTrue(enabledDevicesHeader.firstMatch.waitForExistence(timeout: standardTimeout), "Backend should show 'Enabled Devices' section")
             
             print("✅ Device registration validated - 'This Device' found in backend")
-            screenshotCapture.captureScreenshot(named: "09-backend-device-verified")
+            screenshotCapture.captureScreenshot(named: "10-backend-device-verified")
             
             // Step 9: Test push notification from backend
             let testPushButton = app.buttons["test-push-notification-button"]
             XCTAssertTrue(testPushButton.waitForExistence(timeout: standardTimeout), "Test push notification button should exist")
             testPushButton.tap()
-            screenshotCapture.captureScreenshot(named: "10-test-push-sent")
+            screenshotCapture.captureScreenshot(named: "11-test-push-sent")
             
             // Step 9.5: Handle the "Success" popup by pressing OK
             let successAlert = app.alerts.firstMatch
@@ -109,28 +117,28 @@ class PushNotificationIntegrationTests: IntegrationTestBase {
                 let okButton = successAlert.buttons["OK"]
                 if okButton.exists {
                     okButton.tap()
-                    screenshotCapture.captureScreenshot(named: "10.5-success-popup-dismissed")
+                    screenshotCapture.captureScreenshot(named: "11.5-success-popup-dismissed")
                 }
             }
             
             // Step 10: Verify push notification was received
             // Actively wait for push notification instead of sleeping
             validateSpecificPushNotificationReceived(expectedTitle: "Integration Test", expectedBody: "This is an integration test simple push")
-            screenshotCapture.captureScreenshot(named: "11-push-notification-received")
+            screenshotCapture.captureScreenshot(named: "12-push-notification-received")
         }
         
         // Step 11: Test deep link push notification flow
         print("🔗 Starting deep link push notification test...")
         
         // Navigate back to backend tab (should already be there)
-        screenshotCapture.captureScreenshot(named: "12-backend-tab-for-deep-link")
+        screenshotCapture.captureScreenshot(named: "13-backend-tab-for-deep-link")
         
         // Send deep link push notification using campaign 14695444
         let deepLinkPushButton = app.buttons["test-deep-link-push-button"]
         XCTAssertTrue(deepLinkPushButton.waitForExistence(timeout: standardTimeout), "Deep link push button should exist")
         XCTAssertTrue(deepLinkPushButton.isEnabled, "Deep link push button should be enabled")
         deepLinkPushButton.tap()
-        screenshotCapture.captureScreenshot(named: "13-deep-link-push-sent")
+        screenshotCapture.captureScreenshot(named: "14-deep-link-push-sent")
         
         // Handle success alert: "Success - Deep link push notification sent successfully! Campaign ID: 14695444"
         let deepLinkSuccessAlert = app.alerts["Success"]
@@ -143,14 +151,14 @@ class PushNotificationIntegrationTests: IntegrationTestBase {
         let deepLinkSuccessOKButton = deepLinkSuccessAlert.buttons["OK"]
         XCTAssertTrue(deepLinkSuccessOKButton.exists, "Success alert OK button should exist")
         deepLinkSuccessOKButton.tap()
-        screenshotCapture.captureScreenshot(named: "14-success-alert-dismissed")
+        screenshotCapture.captureScreenshot(named: "15-success-alert-dismissed")
         
         // Wait for deep link push notification to arrive and validate its content
         print("🔔 Waiting for deep link push notification to arrive...")
         
         // Validate the deep link push notification content and tap it
         validateSpecificPushNotificationReceived(expectedTitle: "Integration Test", expectedBody: "This is an enhanced push campaign")
-        screenshotCapture.captureScreenshot(named: "14.5-deep-link-push-received")
+        screenshotCapture.captureScreenshot(named: "15.5-deep-link-push-received")
         
         // The validateSpecificPushNotificationReceived method will automatically tap the push notification
         // This will trigger the deep link and open the app
@@ -162,18 +170,18 @@ class PushNotificationIntegrationTests: IntegrationTestBase {
         let deepLinkMessage = deepLinkAlert.staticTexts.element(boundBy: 1)
         XCTAssertTrue(deepLinkMessage.label.contains("tester://"), "Deep link alert should contain tester:// URL")
         
-        screenshotCapture.captureScreenshot(named: "15-deep-link-alert-shown")
+        screenshotCapture.captureScreenshot(named: "16-deep-link-alert-shown")
         
         // Dismiss the deep link alert
         let deepLinkOKButton = deepLinkAlert.buttons["OK"]
         XCTAssertTrue(deepLinkOKButton.exists, "Deep link alert OK button should exist")
         deepLinkOKButton.tap()
-        screenshotCapture.captureScreenshot(named: "16-deep-link-alert-dismissed")
+        screenshotCapture.captureScreenshot(named: "17-deep-link-alert-dismissed")
         
         // Close the backend tab
         let closeButton = app.buttons["backend-close-button"]
         closeButton.tap()
-        screenshotCapture.captureScreenshot(named: "17-backend-tab-closed")
+        screenshotCapture.captureScreenshot(named: "18-backend-tab-closed")
         
         // Navigate to Network tab to verify trackPushOpen was called
         if fastTest == false {
@@ -181,17 +189,17 @@ class PushNotificationIntegrationTests: IntegrationTestBase {
             sleep(1)
             
             navigateToNetworkMonitor()
-            screenshotCapture.captureScreenshot(named: "18-network-tab-opened")
+            screenshotCapture.captureScreenshot(named: "19-network-tab-opened")
             
             // Verify trackPushOpen call was made with 200 status for the deep link push
             verifyNetworkCallWithSuccess(endpoint: "trackPushOpen", description: "Track push open API call should be made for deep link push")
-            screenshotCapture.captureScreenshot(named: "19-track-push-open-verified")
+            screenshotCapture.captureScreenshot(named: "20-track-push-open-verified")
             
             // Close network monitor
             let closeNetworkButton = app.buttons["Close"]
             if closeNetworkButton.exists {
                 closeNetworkButton.tap()
-                screenshotCapture.captureScreenshot(named: "20-network-tab-closed")
+                screenshotCapture.captureScreenshot(named: "21-network-tab-closed")
             }
         }
         
