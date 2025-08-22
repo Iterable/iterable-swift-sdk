@@ -18,11 +18,30 @@ class ScreenshotCapture {
         // Check for SCREENSHOTS_DIR environment variable first, then use project path
         var screenshotsPath: String
         
-        if let envPath = ProcessInfo.processInfo.environment["SCREENSHOTS_DIR"] {
+        if let envPath = ProcessInfo.processInfo.environment["SCREENSHOTS_DIR"], !envPath.isEmpty {
             screenshotsPath = envPath
+            print("📸 Using SCREENSHOTS_DIR environment variable: \(screenshotsPath)")
         } else {
-            // Use project screenshots directory
-            screenshotsPath = "/Users/sumeru.chatterjee/Projects/swift-sdk/tests/business-critical-integration/screenshots"
+            // Use project screenshots directory - try to find it dynamically first
+            let possiblePaths = [
+                "../screenshots",
+                "../../screenshots", 
+                "../../../screenshots",
+                "../../../../screenshots"
+            ]
+            
+            var foundPath: String?
+            for path in possiblePaths {
+                let expandedPath = NSString(string: path).expandingTildeInPath
+                if FileManager.default.fileExists(atPath: expandedPath) || 
+                   (try? FileManager.default.createDirectory(atPath: expandedPath, withIntermediateDirectories: true)) != nil {
+                    foundPath = expandedPath
+                    break
+                }
+            }
+            
+            screenshotsPath = foundPath ?? possiblePaths[0]
+            print("📸 Using fallback screenshots path: \(screenshotsPath)")
         }
         
         let projectURL = URL(fileURLWithPath: screenshotsPath)
