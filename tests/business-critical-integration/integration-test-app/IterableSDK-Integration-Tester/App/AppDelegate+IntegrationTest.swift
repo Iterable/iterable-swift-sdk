@@ -88,7 +88,11 @@ extension AppDelegate {
     static func logoutFromIterableSDK() {
         // This will clear email, userId, and authToken from keychain
         IterableAPI.logoutUser()
-        print("✅ User logged out - keychain cleared")
+        
+        // Also clear device token from UserDefaults
+        clearDeviceToken()
+        
+        print("✅ User logged out - keychain and device token cleared")
     }
     
     static func registerForPushNotifications() {
