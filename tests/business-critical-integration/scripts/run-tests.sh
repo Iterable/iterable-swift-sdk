@@ -72,6 +72,7 @@ VERBOSE=false
 DRY_RUN=false
 CLEANUP=true
 TIMEOUT=60
+FAST_TEST=false
 
 echo_header() {
     echo -e "${BLUE}============================================${NC}"
@@ -111,6 +112,7 @@ OPTIONS:
   --dry-run, -d     Show what would be done without executing
   --no-cleanup, -n  Skip cleanup after tests
   --timeout <sec>   Set test timeout in seconds (default: 60)
+  --fast-test, -f   Enable fast test mode (skip detailed UI validations)
   --help, -h        Show this help message
 
 EXAMPLES:
@@ -118,6 +120,7 @@ EXAMPLES:
   $0 all --verbose           # Run all tests with verbose output
   $0 inapp --timeout 120     # Run in-app tests with 2 minute timeout
   $0 embedded --dry-run      # Preview embedded message tests
+  $0 push --fast-test        # Run push tests in fast mode (skip UI validations)
 
 SETUP:
   Run ./setup-local-environment.sh first to configure your environment.
@@ -147,6 +150,10 @@ parse_arguments() {
             --timeout)
                 TIMEOUT="$2"
                 shift 2
+                ;;
+            --fast-test|-f)
+                FAST_TEST=true
+                shift
                 ;;
             --help|-h)
                 show_help
@@ -301,6 +308,10 @@ prepare_test_environment() {
     
     if [[ "$VERBOSE" == true ]]; then
         export ENABLE_DEBUG_LOGGING="1"
+    fi
+    
+    if [[ "$FAST_TEST" == true ]]; then
+        export FAST_TEST="true"
     fi
     
     echo_success "Test environment prepared"
@@ -693,6 +704,7 @@ main() {
     echo_info "Verbose: $VERBOSE"
     echo_info "Dry Run: $DRY_RUN"
     echo_info "Cleanup: $CLEANUP"
+    echo_info "Fast Test: $FAST_TEST"
     echo
     
     validate_environment

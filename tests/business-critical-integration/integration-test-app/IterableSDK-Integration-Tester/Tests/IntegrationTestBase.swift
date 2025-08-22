@@ -23,7 +23,22 @@ class IntegrationTestBase: XCTestCase {
     let longTimeout: TimeInterval = 60.0
     let networkTimeout: TimeInterval = 45.0
     
-    let fastTest = true
+    // Check for fast test mode from environment variable or launch arguments
+    let fastTest: Bool = {
+        // First check launch arguments
+        if let fastTestArg = ProcessInfo.processInfo.environment["FAST_TEST"] {
+            return fastTestArg.lowercased() == "true" || fastTestArg == "1"
+        }
+        
+        // Check if running from Xcode build (default to fast mode)
+        if ProcessInfo.processInfo.environment["XCODE_RUNNING_FOR_PREVIEWS"] != nil ||
+           ProcessInfo.processInfo.environment["__XCODE_BUILT_PRODUCTS_DIR_PATHS"] != nil {
+            return true
+        }
+        
+        // Default to false for comprehensive testing
+        return false
+    }()
     
     // MARK: - Setup & Teardown
     
@@ -55,6 +70,7 @@ class IntegrationTestBase: XCTestCase {
         
         // Initialize SDK with test configuration
         initializeSDKForTesting()
+        
     }
     
     override func tearDownWithError() throws {
@@ -111,7 +127,8 @@ class IntegrationTestBase: XCTestCase {
         app.launchEnvironment = [
             "INTEGRATION_TEST": "1",
             "API_ENDPOINT": testConfig.apiEndpoint,
-            "ENABLE_LOGGING": "1"
+            "ENABLE_LOGGING": "1",
+            "FAST_TEST": ProcessInfo.processInfo.environment["FAST_TEST"] ?? "true"
         ]
     }
     
