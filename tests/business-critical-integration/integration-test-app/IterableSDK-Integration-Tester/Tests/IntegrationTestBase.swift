@@ -487,15 +487,28 @@ class IntegrationTestBase: XCTestCase {
     // MARK: - Navigation Helpers
     
     func navigateToBackendTab() {
-        // Assuming there's a backend tab or button to navigate to backend view
-        // This might need to be adjusted based on the actual UI structure
-        let backendButton = app.buttons["backend-tab"] // Adjust based on actual identifier
-        if backendButton.exists {
-            backendButton.tap()
+        // Wait for UI to settle and ensure backend button is hittable
+        let backendButton = app.buttons["backend-tab"]
+        XCTAssertTrue(backendButton.waitForExistence(timeout: standardTimeout), "Backend button should exist")
+        
+        // Wait for the button to become hittable (not obscured)
+        let hittablePredicate = NSPredicate(format: "isHittable == true")
+        let hittableExpectation = XCTNSPredicateExpectation(predicate: hittablePredicate, object: backendButton)
+        let result = XCTWaiter.wait(for: [hittableExpectation], timeout: 10.0)
+        
+        if result != .completed {
+            // If button is not hittable, try scrolling or waiting a bit more
+            print("⚠️ Backend button not hittable, attempting to make it accessible...")
+            sleep(2)
+            
+            // Force tap using coordinate if button exists but not hittable
+            if backendButton.exists {
+                backendButton.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.5)).tap()
+            } else {
+                XCTFail("Backend button not found after waiting")
+            }
         } else {
-            // Alternative navigation if tab doesn't exist
-            // This would need to be implemented based on the actual app structure
-            XCTFail("Backend navigation not implemented")
+            backendButton.tap()
         }
     }
     
