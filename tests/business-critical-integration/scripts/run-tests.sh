@@ -305,6 +305,7 @@ prepare_test_environment() {
     export TEST_PROJECT_ID="$PROJECT_ID"
     export SIMULATOR_UUID="$SIMULATOR_UUID"
     export TEST_TIMEOUT="$TIMEOUT"
+    export SCREENSHOTS_DIR="$SCREENSHOTS_DIR"
     
     if [[ "$VERBOSE" == true ]]; then
         export ENABLE_DEBUG_LOGGING="1"

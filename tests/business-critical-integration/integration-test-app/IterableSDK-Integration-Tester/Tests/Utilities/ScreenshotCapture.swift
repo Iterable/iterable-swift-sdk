@@ -14,9 +14,29 @@ class ScreenshotCapture {
     init(testCase: XCTestCase) {
         self.testCase = testCase
         
-        // Create screenshots directory in the app's documents directory
-        let documentsPath = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!
-        self.screenshotDirectory = documentsPath.appendingPathComponent("Screenshots")
+        // Create screenshots directory in the project's screenshots folder
+        // Check for SCREENSHOTS_DIR environment variable first, then use project path
+        var screenshotsPath: String
+        
+        if let envPath = ProcessInfo.processInfo.environment["SCREENSHOTS_DIR"] {
+            screenshotsPath = envPath
+        } else {
+            // Use project screenshots directory
+            screenshotsPath = "/Users/sumeru.chatterjee/Projects/swift-sdk/tests/business-critical-integration/screenshots"
+        }
+        
+        let projectURL = URL(fileURLWithPath: screenshotsPath)
+        
+        // Check if we can write to the project screenshots directory
+        if FileManager.default.fileExists(atPath: screenshotsPath) || 
+           (try? FileManager.default.createDirectory(at: projectURL, withIntermediateDirectories: true)) != nil {
+            self.screenshotDirectory = projectURL
+        } else {
+            // Fallback to documents directory
+            print("⚠️ Cannot write to project screenshots directory, using Documents folder")
+            let documentsPath = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!
+            self.screenshotDirectory = documentsPath.appendingPathComponent("Screenshots")
+        }
         
         // Create the directory if it doesn't exist
         try? FileManager.default.createDirectory(at: screenshotDirectory, withIntermediateDirectories: true)

@@ -137,7 +137,8 @@ class IntegrationTestBase: XCTestCase {
             "INTEGRATION_TEST": "1",
             "API_ENDPOINT": testConfig.apiEndpoint,
             "ENABLE_LOGGING": "1",
-            "FAST_TEST": ProcessInfo.processInfo.environment["FAST_TEST"] ?? "true"
+            "FAST_TEST": ProcessInfo.processInfo.environment["FAST_TEST"] ?? "true",
+            "SCREENSHOTS_DIR": ProcessInfo.processInfo.environment["SCREENSHOTS_DIR"] ?? ""
         ]
     }
     
