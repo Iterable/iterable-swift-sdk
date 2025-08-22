@@ -270,6 +270,121 @@ class ConsentTrackingTests: XCTestCase {
         wait(for: [expectation], timeout: 2.0)
     }
     
+    // MARK: - Event Replay Configuration Tests
+    
+    func testSendPendingConsentWhenReplayEnabled() {
+        let expectation = XCTestExpectation(description: "Consent sent when replay enabled")
+        
+        // Set up scenario where replay is explicitly enabled
+        let config = IterableConfig()
+        config.enableUnknownUserActivation = true
+        config.pushIntegrationName = "test-push-integration"
+        config.identityResolution.replayOnVisitorToKnown = true
+        
+        let testAPI = InternalIterableAPI.initializeForTesting(
+            apiKey: ConsentTrackingTests.apiKey,
+            config: config,
+            dateProvider: mockDateProvider,
+            networkSession: mockNetworkSession,
+            localStorage: mockLocalStorage
+        )
+        
+        // Set up pending consent scenario
+        mockLocalStorage.visitorUsageTracked = true
+        mockLocalStorage.visitorConsentTimestamp = ConsentTrackingTests.consentTimestamp
+        mockLocalStorage.userIdUnknownUser = nil // No existing anonymous user
+        
+        var consentRequestReceived = false
+        mockNetworkSession.responseCallback = { url in
+            if url.absoluteString.contains(Const.Path.trackConsent) {
+                consentRequestReceived = true
+                expectation.fulfill()
+            }
+            return MockNetworkSession.MockResponse(statusCode: 200)
+        }
+        
+        testAPI.setEmail(ConsentTrackingTests.testEmail)
+        // This should trigger sendPendingConsent in the registration success callback
+        testAPI.register(token: "test-token")
+        
+        wait(for: [expectation], timeout: 5.0)
+        XCTAssertTrue(consentRequestReceived, "Expected consent request when replay is enabled")
+    }
+    
+    func testSendPendingConsentSkippedWhenReplayDisabled() {
+        let expectation = XCTestExpectation(description: "Consent not sent when replay disabled")
+        expectation.isInverted = true
+        
+        // Set up scenario where replay is explicitly disabled
+        let config = IterableConfig()
+        config.enableUnknownUserActivation = true
+        config.pushIntegrationName = "test-push-integration"
+        config.identityResolution.replayOnVisitorToKnown = false
+        
+        let testAPI = InternalIterableAPI.initializeForTesting(
+            apiKey: ConsentTrackingTests.apiKey,
+            config: config,
+            dateProvider: mockDateProvider,
+            networkSession: mockNetworkSession,
+            localStorage: mockLocalStorage
+        )
+        
+        // Set up pending consent scenario
+        mockLocalStorage.visitorUsageTracked = true
+        mockLocalStorage.visitorConsentTimestamp = ConsentTrackingTests.consentTimestamp
+        mockLocalStorage.userIdUnknownUser = nil // No existing anonymous user
+        
+        mockNetworkSession.responseCallback = { url in
+            if url.absoluteString.contains(Const.Path.trackConsent) {
+                expectation.fulfill() // This should NOT happen
+            }
+            return MockNetworkSession.MockResponse(statusCode: 200)
+        }
+        
+        testAPI.setEmail(ConsentTrackingTests.testEmail)
+        // This should NOT trigger sendPendingConsent due to replay being disabled
+        testAPI.register(token: "test-token")
+        
+        wait(for: [expectation], timeout: 2.0)
+    }
+    
+    func testSendPendingConsentSkippedInLoginFlowWhenReplayDisabled() {
+        let expectation = XCTestExpectation(description: "Consent not sent in login flow when replay disabled")
+        expectation.isInverted = true
+        
+        // Set up scenario with auto push registration disabled and replay disabled
+        let config = IterableConfig()
+        config.enableUnknownUserActivation = true
+        config.pushIntegrationName = "test-push-integration"
+        config.autoPushRegistration = false // This triggers the alternative code path
+        config.identityResolution.replayOnVisitorToKnown = false
+        
+        let testAPI = InternalIterableAPI.initializeForTesting(
+            apiKey: ConsentTrackingTests.apiKey,
+            config: config,
+            dateProvider: mockDateProvider,
+            networkSession: mockNetworkSession,
+            localStorage: mockLocalStorage
+        )
+        
+        // Set up pending consent scenario
+        mockLocalStorage.visitorUsageTracked = true
+        mockLocalStorage.visitorConsentTimestamp = ConsentTrackingTests.consentTimestamp
+        mockLocalStorage.userIdUnknownUser = nil // No existing anonymous user
+        
+        mockNetworkSession.responseCallback = { url in
+            if url.absoluteString.contains(Const.Path.trackConsent) {
+                expectation.fulfill() // This should NOT happen
+            }
+            return MockNetworkSession.MockResponse(statusCode: 200)
+        }
+        
+        // This should NOT trigger sendPendingConsent due to replay being disabled
+        testAPI.setEmail(ConsentTrackingTests.testEmail)
+        
+        wait(for: [expectation], timeout: 2.0)
+    }
+
     func testConsentNotSentWhenAnonActivationDisabled() {
         let expectation = XCTestExpectation(description: "No consent when anon activation disabled")
         expectation.isInverted = true
