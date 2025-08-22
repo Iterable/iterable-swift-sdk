@@ -535,6 +535,7 @@ class IntegrationTestBase: XCTestCase {
         if closeButton.exists {
             closeButton.tap()
         }
+        
     }
     
     /// Reusable wrapper function to verify network calls exist and have 200 status codes

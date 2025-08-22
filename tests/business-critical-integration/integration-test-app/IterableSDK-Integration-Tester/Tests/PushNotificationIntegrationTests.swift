@@ -70,6 +70,8 @@ class PushNotificationIntegrationTests: IntegrationTestBase {
             }
         }
         
+        sleep(2) // Wait a bit before navigating to backend
+        
         navigateToBackendTab()
         screenshotCapture.captureScreenshot(named: "08-backend-tab-opened")
         
