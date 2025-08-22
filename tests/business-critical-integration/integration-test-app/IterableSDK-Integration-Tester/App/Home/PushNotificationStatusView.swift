@@ -209,8 +209,8 @@ final class PushNotificationStatusView: UIView {
         
         soundStatusView.setValue(soundText, color: soundColor)
         
-        // Device Token Status using our enhanced method
-        if let deviceToken = AppDelegate.getRegisteredDeviceToken() {
+        // Device Token Status - only show as registered if we received token in current session
+        if AppDelegate.hasValidDeviceTokenInCurrentSession(), let deviceToken = AppDelegate.getRegisteredDeviceToken() {
             deviceTokenStatusView.setValue("✓ Registered", color: .systemGreen)
             
             // Show token details with timestamp

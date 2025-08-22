@@ -89,8 +89,9 @@ extension AppDelegate {
         // This will clear email, userId, and authToken from keychain
         IterableAPI.logoutUser()
         
-        // Also clear device token from UserDefaults
+        // Also clear device token from UserDefaults and reset session flag
         clearDeviceToken()
+        hasReceivedTokenInCurrentSession = false
         
         print("✅ User logged out - keychain and device token cleared")
     }
@@ -119,11 +120,17 @@ extension AppDelegate {
     
     // MARK: - Device Token Management
     
+    // Session-based flag to track if we received a token in current app session
+    private static var hasReceivedTokenInCurrentSession = false
+    
     static func registerDeviceToken(_ deviceToken: Data) {
         // Save device token to UserDefaults for later retrieval
         let tokenString = deviceToken.map { String(format: "%02.2hhx", $0) }.joined()
         UserDefaults.standard.set(tokenString, forKey: "IterableDeviceToken")
         UserDefaults.standard.set(Date(), forKey: "IterableDeviceTokenTimestamp")
+        
+        // Mark that we received a token in this session
+        hasReceivedTokenInCurrentSession = true
         
         // Register with Iterable SDK
         IterableAPI.register(token: deviceToken)
@@ -142,7 +149,19 @@ extension AppDelegate {
     static func clearDeviceToken() {
         UserDefaults.standard.removeObject(forKey: "IterableDeviceToken")
         UserDefaults.standard.removeObject(forKey: "IterableDeviceTokenTimestamp")
+        hasReceivedTokenInCurrentSession = false
         print("🗑️ Device token cleared from UserDefaults")
+    }
+    
+    /// Returns true only if we received a device token in the current app session
+    static func hasValidDeviceTokenInCurrentSession() -> Bool {
+        return hasReceivedTokenInCurrentSession && getRegisteredDeviceToken() != nil
+    }
+    
+    /// Reset the session state on app launch to ensure clean testing
+    static func resetDeviceTokenSessionState() {
+        hasReceivedTokenInCurrentSession = false
+        print("🔄 Device token session state reset on app launch")
     }
     
 }

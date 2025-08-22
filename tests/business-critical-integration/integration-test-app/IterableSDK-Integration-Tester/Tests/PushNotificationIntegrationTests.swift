@@ -8,13 +8,6 @@ class PushNotificationIntegrationTests: IntegrationTestBase {
     func testPushNotificationFullWorkflow() {
         // Test complete push notification workflow: status check → registration → token copy → backend validation
         
-        // Step 0: Clear any existing device token to ensure clean test state
-        let logoutButton = app.buttons["logout-button"]
-        if logoutButton.exists {
-            logoutButton.tap()
-            sleep(1) // Give time for logout to complete
-        }
-        
         // Step 1: Navigate to Push Notification tab
         let pushNotificationRow = app.otherElements["push-notification-test-row"]
         XCTAssertTrue(pushNotificationRow.waitForExistence(timeout: standardTimeout), "Push notification row should exist")

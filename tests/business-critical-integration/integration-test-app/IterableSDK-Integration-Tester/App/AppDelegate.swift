@@ -111,6 +111,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         
         // Start network monitoring
         NetworkMonitor.shared.startMonitoring()
+        
+        // Reset device token session state on app launch for clean testing
+        AppDelegate.resetDeviceTokenSessionState()
 
         return true
     }
