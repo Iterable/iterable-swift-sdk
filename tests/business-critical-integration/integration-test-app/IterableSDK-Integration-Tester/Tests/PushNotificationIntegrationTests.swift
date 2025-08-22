@@ -179,6 +179,9 @@ class PushNotificationIntegrationTests: IntegrationTestBase {
         
         // Navigate to Network tab to verify trackPushOpen was called
         if fastTest == false {
+            // Wait a moment for UI to settle after closing backend
+            sleep(1)
+            
             navigateToNetworkMonitor()
             screenshotCapture.captureScreenshot(named: "18-network-tab-opened")
             
