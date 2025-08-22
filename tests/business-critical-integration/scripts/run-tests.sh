@@ -395,6 +395,27 @@ clean_test_environment_before_tests() {
     echo_success "Test environment cleaned and ready"
 }
 
+clear_screenshots_directory() {
+    echo_header "Clearing Screenshots Directory"
+    
+    if [[ "$DRY_RUN" == true ]]; then
+        echo_info "[DRY RUN] Would clear screenshots directory"
+        return 0
+    fi
+    
+    if [[ -d "$SCREENSHOTS_DIR" ]]; then
+        echo_info "Removing existing screenshots from: $SCREENSHOTS_DIR"
+        rm -rf "$SCREENSHOTS_DIR"/*
+        echo_success "Screenshots directory cleared"
+    else
+        echo_info "Screenshots directory doesn't exist yet: $SCREENSHOTS_DIR"
+    fi
+    
+    # Ensure the directory exists for new screenshots
+    mkdir -p "$SCREENSHOTS_DIR"
+    echo_info "Screenshots will be saved to: $SCREENSHOTS_DIR"
+}
+
 run_xcode_tests() {
     local TEST_CLASS="$1"
     local TEST_METHOD="$2"
@@ -712,6 +733,9 @@ main() {
     setup_simulator
     prepare_test_environment
     build_test_project
+    
+    # Clear screenshots from previous test runs
+    clear_screenshots_directory
     
     # Clean test environment before running tests
     clean_test_environment_before_tests
