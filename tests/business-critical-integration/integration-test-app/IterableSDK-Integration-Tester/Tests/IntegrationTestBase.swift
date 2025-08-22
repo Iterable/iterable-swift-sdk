@@ -241,6 +241,25 @@ class IntegrationTestBase: XCTestCase {
         XCTAssertEqual(XCTWaiter.wait(for: [checkmarkExpectation], timeout: 5.0), .completed, "SDK initialization should show checkmark")
         
         screenshotCapture.captureScreenshot(named: "sdk-initialized")
+        
+        // Set user email
+        let emailField = app.textFields["user-email-textfield"]
+        XCTAssertTrue(emailField.waitForExistence(timeout: standardTimeout))
+        if emailField.value as? String != testUserEmail {
+            emailField.tap()
+            emailField.clearAndTypeText(testUserEmail)
+        }
+        
+        // Register the email
+        let registerEmailButton = app.buttons["register-email-button"]
+        XCTAssertTrue(registerEmailButton.waitForExistence(timeout: standardTimeout))
+        registerEmailButton.tap()
+        
+        // Wait a moment for the API calls to be made
+        sleep(2)
+        
+        // Verify critical API endpoints were called
+        verifySDKInitializationNetworkCalls()
     }
     
     // MARK: - Test Helpers
@@ -379,6 +398,50 @@ class IntegrationTestBase: XCTestCase {
         }
     }
     
+    func navigateToNetworkMonitor() {
+        // Navigate to network monitor to view API calls
+        let networkMonitorButton = app.buttons["network-monitor-button"]
+        if networkMonitorButton.exists {
+            networkMonitorButton.tap()
+        } else {
+            // Alternative: use navigation bar button if available
+            let navBarButton = app.navigationBars.buttons["Network"]
+            if navBarButton.exists {
+                navBarButton.tap()
+            } else {
+                XCTFail("Network monitor navigation not found")
+            }
+        }
+    }
+    
+    private func verifySDKInitializationNetworkCalls() {
+        // Open network monitor
+        navigateToNetworkMonitor()
+        
+        // Wait for network monitor to load
+        let networkMonitorTitle = app.navigationBars["Network Monitor"]
+        XCTAssertTrue(networkMonitorTitle.waitForExistence(timeout: standardTimeout), "Network Monitor should be displayed")
+        
+        // Check for getRemoteConfiguration endpoint
+        let remoteConfigPredicate = NSPredicate(format: "label CONTAINS[c] 'getRemoteConfiguration'")
+        let remoteConfigCell = app.cells.containing(remoteConfigPredicate).firstMatch
+        XCTAssertTrue(remoteConfigCell.waitForExistence(timeout: 5.0), "getRemoteConfiguration API call should be made when SDK initializes")
+        
+        // Check for getMessages endpoint
+        let messagesPredicate = NSPredicate(format: "label CONTAINS[c] 'getMessages'")
+        let messagesCell = app.cells.containing(messagesPredicate).firstMatch
+        XCTAssertTrue(messagesCell.waitForExistence(timeout: 5.0), "getMessages API call should be made when user email is set")
+        
+        // Take screenshot of network calls
+        screenshotCapture.captureScreenshot(named: "sdk-initialization-network-calls")
+        
+        // Close network monitor
+        let closeButton = app.buttons["Close"]
+        if closeButton.exists {
+            closeButton.tap()
+        }
+    }
+    
     // MARK: - Push Notification Validation Helpers
     
     func validateDeviceRegistrationInBackend() {
@@ -451,5 +514,19 @@ extension XCUIApplication {
         let expectation = XCTNSPredicateExpectation(predicate: predicate, object: self)
         let result = XCTWaiter.wait(for: [expectation], timeout: timeout)
         return result == .completed
+    }
+}
+
+extension XCUIElement {
+    func clearAndTypeText(_ text: String) {
+        guard let stringValue = self.value as? String else {
+            self.typeText(text)
+            return
+        }
+        
+        // Select all text
+        let deleteString = String(repeating: XCUIKeyboardKey.delete.rawValue, count: stringValue.count)
+        self.typeText(deleteString)
+        self.typeText(text)
     }
 }

@@ -37,6 +37,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
                 networkButton.setTitleColor(.white, for: .normal)
                 networkButton.layer.cornerRadius = 6
                 networkButton.translatesAutoresizingMaskIntoConstraints = false
+                networkButton.accessibilityIdentifier = "network-monitor-button"
                 networkButton.addTarget(self, action: #selector(self.showNetworkMonitor), for: .touchUpInside)
 
                 let backendButton = UIButton(type: .system)
