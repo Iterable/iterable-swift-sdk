@@ -47,14 +47,37 @@ class PushNotificationIntegrationTests: IntegrationTestBase {
         // Step 5: Check network monitor for registerDeviceToken call BEFORE verifying token status
         if fastTest == false {
             navigateToNetworkMonitor()
+            
+            // Check if network monitor actually opened by looking for the navigation title
+            let networkMonitorTitle = app.navigationBars["Network Monitor"]
+            if !networkMonitorTitle.waitForExistence(timeout: 3.0) {
+                print("⚠️ Network monitor didn't open, trying to tap network button again")
+                let networkButton = app.buttons["network-monitor-button"]
+                if networkButton.exists {
+                    networkButton.tap()
+                    // Wait for network monitor to appear
+                    XCTAssertTrue(networkMonitorTitle.waitForExistence(timeout: 5.0), "Network Monitor should open after second attempt")
+                }
+            }
+            
             screenshotCapture.captureScreenshot(named: "05-network-tab-opened")
             
             // Wait up to 10 seconds for the registerDeviceToken call to appear in network monitor
             print("⏳ Waiting for registerDeviceToken network call to appear...")
-            sleep(5) // Give it 5 seconds for the call to be made and appear in monitor
             
-            // Verify register device token call was made with 200 status
-            verifyNetworkCallWithSuccess(endpoint: "registerDeviceToken", description: "Register device token API call should be made with 200 status")
+            // Poll for the registerDeviceToken call for up to 10 seconds
+            let endpointPredicate = NSPredicate(format: "label CONTAINS[c] %@", "registerDeviceToken")
+            let endpointCell = app.cells.containing(endpointPredicate).firstMatch
+            let callFoundExpectation = XCTNSPredicateExpectation(predicate: NSPredicate(format: "exists == true"), object: endpointCell)
+            let waitResult = XCTWaiter.wait(for: [callFoundExpectation], timeout: 10.0)
+            
+            if waitResult == .completed {
+                print("✅ Found registerDeviceToken network call")
+                // Now verify it has 200 status
+                verifyNetworkCallWithSuccess(endpoint: "registerDeviceToken", description: "Register device token API call should be made with 200 status")
+            } else {
+                XCTFail("❌ registerDeviceToken network call did not appear within 10 seconds")
+            }
             screenshotCapture.captureScreenshot(named: "06-register-token-call-verified")
             
             // Navigate back to push notification screen
