@@ -57,6 +57,7 @@ final class BackendStatusViewController: UIViewController {
         button.setTitleColor(.white, for: .normal)
         button.layer.cornerRadius = 8
         button.translatesAutoresizingMaskIntoConstraints = false
+        button.accessibilityIdentifier = "refresh-backend-status-button"
         return button
     }()
     
@@ -106,6 +107,7 @@ final class BackendStatusViewController: UIViewController {
         button.setTitleColor(.white, for: .normal)
         button.layer.cornerRadius = 8
         button.translatesAutoresizingMaskIntoConstraints = false
+        button.accessibilityIdentifier = "test-push-notification-button"
         button.isEnabled = false
         button.alpha = 0.5
         return button

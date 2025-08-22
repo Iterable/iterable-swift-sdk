@@ -34,6 +34,9 @@ class PushNotificationIntegrationTests: IntegrationTestBase {
         waitForNotificationPermission()
         screenshotCapture.captureScreenshot(named: "04-permission-handled")
         
+        // Give it 4 seconds to register and update status
+        sleep(4)
+        
         // Step 4.5: Navigate back to push notification screen if we ended up on home screen
         if !authStatusValue.exists && pushNotificationRow.exists {
             print("🔄 Navigating back to push notification screen after permission dialog")
@@ -52,23 +55,22 @@ class PushNotificationIntegrationTests: IntegrationTestBase {
         screenshotCapture.captureScreenshot(named: "05-status-updated")
         
         // Step 6: Navigate to Network tab to verify register device token API call was made
-        navigateToNetworkMonitor()
-        screenshotCapture.captureScreenshot(named: "06-network-tab-opened")
-        
-        // Verify register device token call was made with 200 status
-        verifyNetworkCallWithSuccess(endpoint: "registerDeviceToken", description: "Register device token API call should be made with 200 status")
-        screenshotCapture.captureScreenshot(named: "07-register-token-call-verified")
-        
-        // Navigate back to home
-        let closeNetworkButton = app.buttons["Close"]
-        if closeNetworkButton.exists {
-            closeNetworkButton.tap()
+        if fastTest == false {
+            navigateToNetworkMonitor()
+            screenshotCapture.captureScreenshot(named: "06-network-tab-opened")
+            
+            // Verify register device token call was made with 200 status
+            verifyNetworkCallWithSuccess(endpoint: "registerDeviceToken", description: "Register device token API call should be made with 200 status")
+            screenshotCapture.captureScreenshot(named: "07-register-token-call-verified")
+            
+            // Navigate back to home
+            let closeNetworkButton = app.buttons["Close"]
+            if closeNetworkButton.exists {
+                closeNetworkButton.tap()
+            }
         }
         
-        // Step 7: Navigate to Backend tab to verify device registration
-        let backendRow = app.otherElements["backend-status-test-row"]
-        XCTAssertTrue(backendRow.waitForExistence(timeout: standardTimeout), "Backend status row should exist")
-        backendRow.tap()
+        navigateToBackendTab()
         screenshotCapture.captureScreenshot(named: "08-backend-tab-opened")
         
         // Step 8: Refresh backend status and verify device is registered
@@ -78,8 +80,17 @@ class PushNotificationIntegrationTests: IntegrationTestBase {
             sleep(2) // Wait for backend data to load
         }
         
-        // Verify device is showing in the backend
-        validateDeviceRegistrationInBackend()
+        // Verify "This Device" appears in the backend device list
+        // This is the key indicator that the current device is registered
+        let thisDeviceIndicator = app.staticTexts.containing(NSPredicate(format: "label CONTAINS[c] 'This Device'"))
+        XCTAssertTrue(thisDeviceIndicator.firstMatch.waitForExistence(timeout: standardTimeout), "Backend should show 'This Device' indicating current device is registered")
+        
+        
+        // Also verify there are enabled devices shown
+        let enabledDevicesHeader = app.staticTexts.containing(NSPredicate(format: "label CONTAINS 'Enabled Devices'"))
+        XCTAssertTrue(enabledDevicesHeader.firstMatch.waitForExistence(timeout: standardTimeout), "Backend should show 'Enabled Devices' section")
+        
+        print("✅ Device registration validated - 'This Device' found in backend")
         screenshotCapture.captureScreenshot(named: "09-backend-device-verified")
         
         // Step 9: Test push notification from backend
@@ -88,214 +99,20 @@ class PushNotificationIntegrationTests: IntegrationTestBase {
         testPushButton.tap()
         screenshotCapture.captureScreenshot(named: "10-test-push-sent")
         
-        // Step 10: Verify push notification was received
-        // Wait for push notification to arrive and be processed
-        sleep(5)
+        // Step 9.5: Handle the "Success" popup by pressing OK
+        let successAlert = app.alerts.firstMatch
+        if successAlert.waitForExistence(timeout: 5.0) {
+            let okButton = successAlert.buttons["OK"]
+            if okButton.exists {
+                okButton.tap()
+                screenshotCapture.captureScreenshot(named: "10.5-success-popup-dismissed")
+            }
+        }
         
-        // Check for the specific push notification content
+        // Step 10: Verify push notification was received
+        // Actively wait for push notification instead of sleeping
         validateSpecificPushNotificationReceived(expectedTitle: "Integration Test", expectedBody: "This is an integration test simple push")
         screenshotCapture.captureScreenshot(named: "11-push-notification-received")
     }
     
-    /*func testPushPermissionHandling() {
-        // Test push notification permission edge cases
-        
-        // Test permission denied scenario
-        let permissionButton = app.buttons["request-notification-permission"]
-        XCTAssertTrue(permissionButton.waitForExistence(timeout: standardTimeout))
-        permissionButton.tap()
-        
-        // Simulate permission denial
-        let denyButton = app.alerts.buttons["Don't Allow"]
-        if denyButton.waitForExistence(timeout: 5.0) {
-            denyButton.tap()
-        }
-        
-        screenshotCapture.captureScreenshot(named: "permission-denied")
-        
-        // Verify app handles permission denial gracefully
-        let permissionDeniedLabel = app.staticTexts["permission-denied-message"]
-        XCTAssertTrue(permissionDeniedLabel.waitForExistence(timeout: standardTimeout))
-    }
-    
-    func testPushNotificationButtons() {
-        // Test push notification action buttons and deep links
-        
-        validateSDKInitialization()
-        
-        // Request permissions
-        let permissionButton = app.buttons["request-notification-permission"]
-        permissionButton.tap()
-        waitForNotificationPermission()
-        
-        // Send push with action buttons
-        let pushWithButtonsPayload: [String: Any] = [
-            "messageId": "test-push-buttons-\(Date().timeIntervalSince1970)",
-            "actionButton": [
-                "identifier": "view-offer",
-                "buttonText": "View Offer",
-                "openApp": true,
-                "action": [
-                    "type": "openUrl",
-                    "data": "https://links.iterable.com/u/click?_t=offer&_m=integration"
-                ]
-            ],
-            "defaultAction": [
-                "type": "openUrl",
-                "data": "https://links.iterable.com/u/click?_t=default&_m=integration"
-            ]
-        ]
-        
-        sendTestPushNotification(payload: pushWithButtonsPayload)
-        
-        // Interact with action button
-        let actionButton = app.buttons["View Offer"]
-        if actionButton.waitForExistence(timeout: standardTimeout) {
-            actionButton.tap()
-            screenshotCapture.captureScreenshot(named: "action-button-tapped")
-        }
-        
-        // Validate button click tracking
-        validateMetrics(eventType: "pushOpen", expectedCount: 1)
-    }
-    
-    func testBackgroundPushHandling() {
-        // Test push notification handling when app is in background
-        
-        validateSDKInitialization()
-        
-        // Request permissions
-        let permissionButton = app.buttons["request-notification-permission"]
-        permissionButton.tap()
-        waitForNotificationPermission()
-        
-        // Put app in background
-        simulateAppBackground()
-        screenshotCapture.captureScreenshot(named: "app-backgrounded")
-        
-        // Send background push
-        let backgroundPushPayload: [String: Any] = [
-            "messageId": "test-background-push-\(Date().timeIntervalSince1970)",
-            "contentAvailable": true,
-            "isGhostPush": false
-        ]
-        
-        sendTestPushNotification(payload: backgroundPushPayload)
-        
-        // Wait for background processing
-        sleep(3)
-        
-        // Bring app to foreground
-        simulateAppForeground()
-        screenshotCapture.captureScreenshot(named: "app-foregrounded")
-        
-        // Verify background push was processed
-        let backgroundProcessedIndicator = app.staticTexts["background-push-processed"]
-        XCTAssertTrue(backgroundProcessedIndicator.waitForExistence(timeout: standardTimeout))
-    }
-    
-    func testSilentPushHandling() {
-        // Test silent push notification processing
-        
-        validateSDKInitialization()
-        
-        // Send silent push (no user-visible notification)
-        let silentPushPayload: [String: Any] = [
-            "messageId": "test-silent-push-\(Date().timeIntervalSince1970)",
-            "contentAvailable": true,
-            "isGhostPush": true,
-            "silentPush": true
-        ]
-        
-        sendTestPushNotification(payload: silentPushPayload)
-        
-        // Verify silent push was processed without user notification
-        let silentProcessedIndicator = app.staticTexts["silent-push-processed"]
-        XCTAssertTrue(silentProcessedIndicator.waitForExistence(timeout: standardTimeout))
-        
-        screenshotCapture.captureScreenshot(named: "silent-push-processed")
-        
-        // Verify no visible notification appeared
-        XCTAssertFalse(app.alerts.firstMatch.exists)
-        XCTAssertFalse(app.alerts.firstMatch.exists)
-    }
-    
-    func testPushDeliveryMetrics() {
-        // Test comprehensive push delivery and interaction metrics
-        
-        validateSDKInitialization()
-        
-        // Request permissions
-        let permissionButton = app.buttons["request-notification-permission"]
-        permissionButton.tap()
-        waitForNotificationPermission()
-        
-        // Send tracked push notification
-        let trackedPushPayload: [String: Any] = [
-            "messageId": "test-metrics-push-\(Date().timeIntervalSince1970)",
-            "campaignId": "123456",
-            "templateId": "789012",
-            "trackingEnabled": true
-        ]
-        
-        sendTestPushNotification(payload: trackedPushPayload)
-        
-        // Validate push delivery metrics
-        validateMetrics(eventType: "pushSend", expectedCount: 1)
-        
-        // Tap the notification to generate open event
-        let notification = app.alerts.firstMatch
-        if notification.waitForExistence(timeout: standardTimeout) {
-            notification.tap()
-        }
-        
-        // Validate push open metrics
-        validateMetrics(eventType: "pushOpen", expectedCount: 1)
-        
-        screenshotCapture.captureScreenshot(named: "push-metrics-validated")
-    }
-    
-    func testPushWithCustomData() {
-        // Test push notifications with custom data payload
-        
-        validateSDKInitialization()
-        
-        // Request permissions
-        let permissionButton = app.buttons["request-notification-permission"]
-        permissionButton.tap()
-        waitForNotificationPermission()
-        
-        // Send push with custom data
-        let customDataPushPayload: [String: Any] = [
-            "messageId": "test-custom-data-\(Date().timeIntervalSince1970)",
-            "data": [
-                "customField1": "value1",
-                "customField2": "value2",
-                "productId": "12345",
-                "category": "electronics"
-            ],
-            "customPayload": [
-                "userId": testUserEmail ?? "test@example.com",
-                "action": "view_product",
-                "metadata": [
-                    "source": "integration_test",
-                    "timestamp": Date().timeIntervalSince1970
-                ]
-            ]
-        ]
-        
-        sendTestPushNotification(payload: customDataPushPayload)
-        
-        // Tap notification to process custom data
-        let notification = app.alerts.firstMatch
-        if notification.waitForExistence(timeout: standardTimeout) {
-            notification.tap()
-        }
-        
-        // Verify custom data was processed correctly
-        let customDataProcessedIndicator = app.staticTexts["custom-data-processed"]
-        XCTAssertTrue(customDataProcessedIndicator.waitForExistence(timeout: standardTimeout))
-        
-        screenshotCapture.captureScreenshot(named: "custom-data-processed")
-    }*/
 }

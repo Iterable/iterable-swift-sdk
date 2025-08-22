@@ -123,6 +123,8 @@ final class HomeViewController: UIViewController, UITextFieldDelegate {
         return container
     }()
 
+
+
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .systemBackground
@@ -187,8 +189,8 @@ final class HomeViewController: UIViewController, UITextFieldDelegate {
         registerUserIdButton.addTarget(self, action: #selector(registerUserId), for: .touchUpInside)
         logoutButton.addTarget(self, action: #selector(logout), for: .touchUpInside)
         clearLocalDataButton.addTarget(self, action: #selector(clearLocalData), for: .touchUpInside)
-        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(showPushNotificationTest))
-        pushNotificationTestRow.addGestureRecognizer(tapGesture)
+        let pushTapGesture = UITapGestureRecognizer(target: self, action: #selector(showPushNotificationTest))
+        pushNotificationTestRow.addGestureRecognizer(pushTapGesture)
     }
 
     @objc private func registerEmail() {
@@ -210,21 +212,6 @@ final class HomeViewController: UIViewController, UITextFieldDelegate {
     }
     
     @objc private func clearLocalData() {
-        let alert = UIAlertController(
-            title: "Clear Local Data", 
-            message: "This will clear all NSUserDefaults data. Are you sure?", 
-            preferredStyle: .alert
-        )
-        
-        alert.addAction(UIAlertAction(title: "Cancel", style: .cancel))
-        alert.addAction(UIAlertAction(title: "Clear", style: .destructive) { _ in
-            self.performClearLocalData()
-        })
-        
-        present(alert, animated: true)
-    }
-    
-    private func performClearLocalData() {
         let defaults = UserDefaults.standard
         let dictionary = defaults.dictionaryRepresentation()
         
@@ -235,15 +222,6 @@ final class HomeViewController: UIViewController, UITextFieldDelegate {
         
         // Synchronize to ensure changes are written immediately
         defaults.synchronize()
-        
-        // Show confirmation
-        let alert = UIAlertController(
-            title: "Data Cleared", 
-            message: "All NSUserDefaults data has been cleared successfully.", 
-            preferredStyle: .alert
-        )
-        alert.addAction(UIAlertAction(title: "OK", style: .default))
-        present(alert, animated: true)
         
         print("✅ All NSUserDefaults data cleared")
     }

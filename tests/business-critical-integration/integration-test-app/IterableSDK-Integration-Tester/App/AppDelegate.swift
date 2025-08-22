@@ -47,6 +47,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
                 backendButton.setTitleColor(.white, for: .normal)
                 backendButton.layer.cornerRadius = 6
                 backendButton.translatesAutoresizingMaskIntoConstraints = false
+                backendButton.accessibilityIdentifier = "backend-tab"
                 backendButton.addTarget(self, action: #selector(self.showBackendStatus), for: .touchUpInside)
 
                 testBanner.addSubview(testLabel)

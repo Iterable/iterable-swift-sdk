@@ -66,6 +66,7 @@ extension AppDelegate {
         config.customActionDelegate = appDelegate
         config.urlDelegate = appDelegate
         config.inAppDisplayInterval = 1
+        config.autoPushRegistration = false  // Disable automatic push registration for testing control
         
         let apiKey = loadApiKeyFromConfig()
         IterableAPI.initialize(apiKey: apiKey,
@@ -78,6 +79,7 @@ extension AppDelegate {
     static func registerEmailToIterableSDK(email: String) {
         IterableAPI.email = email
         print("✅ Test user email configured: \(email)")
+        
     }
     
     static func registerUserIDToIterableSDK(userId: String) {
@@ -133,8 +135,8 @@ extension AppDelegate {
         hasReceivedTokenInCurrentSession = true
         
         // Register with Iterable SDK
-        IterableAPI.register(token: deviceToken)
-        
+            IterableAPI.register(token: deviceToken)
+
         print("✅ Device token registered and saved: \(tokenString)")
     }
     

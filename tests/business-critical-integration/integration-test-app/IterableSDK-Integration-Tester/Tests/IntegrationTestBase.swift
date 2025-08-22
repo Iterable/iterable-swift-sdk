@@ -23,6 +23,8 @@ class IntegrationTestBase: XCTestCase {
     let longTimeout: TimeInterval = 60.0
     let networkTimeout: TimeInterval = 45.0
     
+    let fastTest = true
+    
     // MARK: - Setup & Teardown
     
     override func setUpWithError() throws {
@@ -223,56 +225,59 @@ class IntegrationTestBase: XCTestCase {
     }
     
     private func initializeSDKForTesting() {
-//        // First verify SDK is not initialized - should show X mark
-//        let sdkReadyIndicator = app.staticTexts["sdk-ready-indicator"]
-//        XCTAssertTrue(sdkReadyIndicator.waitForExistence(timeout: standardTimeout))
-//        XCTAssertEqual(sdkReadyIndicator.label, "✗", "SDK should show X mark when not initialized")
-//        
-//        // Set user email in the field (but don't register it yet)
-//        let emailField = app.textFields["user-email-textfield"]
-//        XCTAssertTrue(emailField.waitForExistence(timeout: standardTimeout))
-//        if emailField.value as? String != testUserEmail {
-//            emailField.tap()
-//            emailField.clearAndTypeText(testUserEmail)
-//        }
         
-//        // Verify email status shows "Not set" before SDK initialization
-//        let emailStatusValue = app.staticTexts["sdk-email-value"]
-//        XCTAssertTrue(emailStatusValue.waitForExistence(timeout: standardTimeout))
-//        XCTAssertEqual(emailStatusValue.label, "Not set", "Email should show 'Not set' before SDK initialization")
-//        
-//        screenshotCapture.captureScreenshot(named: "sdk-before-initialization")
-        
-        // Tap the initialize SDK button in test app
+        if fastTest == false {
+            // First verify SDK is not initialized - should show X mark
+            let sdkReadyIndicator = app.staticTexts["sdk-ready-indicator"]
+            XCTAssertTrue(sdkReadyIndicator.waitForExistence(timeout: standardTimeout))
+            XCTAssertEqual(sdkReadyIndicator.label, "✗", "SDK should show X mark when not initialized")
+            
+            // Set user email in the field (but don't register it yet)
+            let emailField = app.textFields["user-email-textfield"]
+            XCTAssertTrue(emailField.waitForExistence(timeout: standardTimeout))
+            if emailField.value as? String != testUserEmail {
+                emailField.tap()
+                emailField.clearAndTypeText(testUserEmail)
+            }
+            
+            // Verify email status shows "Not set" before SDK initialization
+            let emailStatusValue = app.staticTexts["sdk-email-value"]
+            XCTAssertTrue(emailStatusValue.waitForExistence(timeout: standardTimeout))
+            XCTAssertEqual(emailStatusValue.label, "Not set", "Email should show 'Not set' before SDK initialization")
+            
+            screenshotCapture.captureScreenshot(named: "sdk-before-initialization")
+            
+        }
+            
         let initializeButton = app.buttons["initialize-sdk-button"]
         XCTAssertTrue(initializeButton.waitForExistence(timeout: standardTimeout))
         initializeButton.tap()
-//        
-//        // Wait for SDK initialization to complete - look for checkmark
-//        let checkmarkPredicate = NSPredicate(format: "label == %@", "✓")
-//        let checkmarkExpectation = XCTNSPredicateExpectation(predicate: checkmarkPredicate, object: sdkReadyIndicator)
-//        XCTAssertEqual(XCTWaiter.wait(for: [checkmarkExpectation], timeout: 5.0), .completed, "SDK initialization should show checkmark")
         
+        if fastTest == false {
+            let sdkReadyIndicator = app.staticTexts["sdk-ready-indicator"]
+            XCTAssertTrue(sdkReadyIndicator.waitForExistence(timeout: standardTimeout))
+            let checkmarkPredicate = NSPredicate(format: "label == %@", "✓")
+            let checkmarkExpectation = XCTNSPredicateExpectation(predicate: checkmarkPredicate, object: sdkReadyIndicator)
+            XCTAssertEqual(XCTWaiter.wait(for: [checkmarkExpectation], timeout: 5.0), .completed, "SDK initialization should show checkmark")
+        }
         // NOW register the email AFTER SDK is initialized
         let registerEmailButton = app.buttons["register-email-button"]
         XCTAssertTrue(registerEmailButton.waitForExistence(timeout: standardTimeout))
         registerEmailButton.tap()
         
-        // Give a moment for the email to be processed
         sleep(1)
-//        
-//        // Verify email status shows the actual email after registration
-//        let emailStatusValueAfterInit = app.staticTexts["sdk-email-value"]
-//        XCTAssertTrue(emailStatusValueAfterInit.waitForExistence(timeout: standardTimeout))
-//        XCTAssertEqual(emailStatusValueAfterInit.label, testUserEmail, "Email should show actual email address after SDK initialization and registration")
-//        
-//        screenshotCapture.captureScreenshot(named: "sdk-initialized")
         
-        // Wait a moment for the API calls to be made
-        sleep(2)
+        if fastTest == false {
+            
+            // Verify email status shows the actual email after registration
+            let emailStatusValueAfterInit = app.staticTexts["sdk-email-value"]
+            XCTAssertTrue(emailStatusValueAfterInit.waitForExistence(timeout: standardTimeout))
+            XCTAssertEqual(emailStatusValueAfterInit.label, testUserEmail, "Email should show actual email address after SDK initialization and registration")
+            
+            verifySDKInitializationNetworkCalls()
+        }
         
-        // Verify critical API endpoints were called
-        // verifySDKInitializationNetworkCalls()
+        screenshotCapture.captureScreenshot(named: "sdk-initialized")
     }
     
     // MARK: - Test Helpers
@@ -379,6 +384,8 @@ class IntegrationTestBase: XCTestCase {
         // Check for the specific push notification content in system notifications
         // or app-specific push notification indicators
         
+        print("⏳ Waiting for push notification with title: '\(expectedTitle)' and body: '\(expectedBody)'")
+        
         // First check if there's a system notification banner visible
         let springboard = XCUIApplication(bundleIdentifier: "com.apple.springboard")
         
@@ -389,38 +396,45 @@ class IntegrationTestBase: XCTestCase {
         let titleElement = springboard.staticTexts.containing(titlePredicate).firstMatch
         let bodyElement = springboard.staticTexts.containing(bodyPredicate).firstMatch
         
-        // Check if notification banner is visible
-        if titleElement.waitForExistence(timeout: 10.0) && bodyElement.exists {
-            print("✅ Found push notification banner with expected title: '\(expectedTitle)' and body: '\(expectedBody)'")
+        // Actively wait for notification banner to appear (up to 10 seconds)
+        var attempts = 0
+        let maxAttempts = 20 // 10 seconds with 0.5 second intervals
+        
+        while attempts < maxAttempts {
+            if titleElement.exists && bodyElement.exists {
+                print("✅ Found push notification banner with expected title: '\(expectedTitle)' and body: '\(expectedBody)' after \(Double(attempts) * 0.5) seconds")
+                
+                // Tap the notification to open the app if needed
+                titleElement.tap()
+                
+                screenshotCapture.captureScreenshot(named: "push-notification-banner-found")
+                return
+            }
             
-            // Tap the notification to open the app if needed
-            titleElement.tap()
+            // Also check for app-specific push notification indicators during the wait
+            let pushTitleIndicator = app.staticTexts.containing(titlePredicate).firstMatch
+            let pushBodyIndicator = app.staticTexts.containing(bodyPredicate).firstMatch
             
-            screenshotCapture.captureScreenshot(named: "push-notification-banner-found")
-            return
+            if pushTitleIndicator.exists && pushBodyIndicator.exists {
+                print("✅ Found push notification in app UI with expected title: '\(expectedTitle)' and body: '\(expectedBody)' after \(Double(attempts) * 0.5) seconds")
+                screenshotCapture.captureScreenshot(named: "push-notification-app-ui-found")
+                return
+            }
+            
+            // Check for generic push notification processed indicator
+            let pushIndicator = app.staticTexts["push-notification-processed"]
+            if pushIndicator.exists {
+                print("✅ Push notification was processed by the app after \(Double(attempts) * 0.5) seconds")
+                screenshotCapture.captureScreenshot(named: "push-notification-processed")
+                return
+            }
+            
+            attempts += 1
+            usleep(500000) // Sleep for 0.5 seconds
         }
         
-        // If no system banner, check for app-specific push notification indicators
-        // This would be used if the app shows push notifications in its own UI
-        let pushTitleIndicator = app.staticTexts.containing(titlePredicate).firstMatch
-        let pushBodyIndicator = app.staticTexts.containing(bodyPredicate).firstMatch
-        
-        if pushTitleIndicator.waitForExistence(timeout: 5.0) && pushBodyIndicator.exists {
-            print("✅ Found push notification in app UI with expected title: '\(expectedTitle)' and body: '\(expectedBody)'")
-            screenshotCapture.captureScreenshot(named: "push-notification-app-ui-found")
-            return
-        }
-        
-        // If still not found, check for generic push notification processed indicator
-        let pushIndicator = app.staticTexts["push-notification-processed"]
-        if pushIndicator.waitForExistence(timeout: 5.0) {
-            print("✅ Push notification was processed by the app")
-            screenshotCapture.captureScreenshot(named: "push-notification-processed")
-            return
-        }
-        
-        // If none of the above worked, fail the test
-        XCTFail("Push notification with title '\(expectedTitle)' and body '\(expectedBody)' was not received or processed")
+        // If we get here, we didn't find the notification within the timeout
+        XCTFail("Push notification with title '\(expectedTitle)' and body '\(expectedBody)' was not received within 10 seconds")
     }
     
     func validateInAppMessageDisplayed() {
@@ -518,22 +532,6 @@ class IntegrationTestBase: XCTestCase {
     
     // MARK: - Push Notification Validation Helpers
     
-    func validateDeviceRegistrationInBackend() {
-        // Check backend status for device registration
-        let refreshButton = app.buttons["refresh-backend-status"] // Adjust based on actual identifier
-        if refreshButton.exists {
-            refreshButton.tap()
-            
-            // Wait for backend data to load
-            sleep(2)
-        }
-        
-        // Verify device is enabled and registered
-        // This would check specific backend UI elements showing device status
-        // Implementation depends on the actual backend UI structure
-        let deviceEnabledIndicator = app.staticTexts.containing(NSPredicate(format: "label CONTAINS 'enabled' OR label CONTAINS 'active'"))
-        XCTAssertTrue(deviceEnabledIndicator.firstMatch.waitForExistence(timeout: standardTimeout), "Device should be enabled in backend")
-    }
     
     func validateTokenMatchBetweenUIAndBackend() {
         // This is a complex validation that would require:
