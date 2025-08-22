@@ -60,7 +60,9 @@ class ScreenshotCapture {
         // Create the directory if it doesn't exist
         try? FileManager.default.createDirectory(at: screenshotDirectory, withIntermediateDirectories: true)
         
-        print("📸 Screenshot capture initialized. Saving to: \(screenshotDirectory.path)")
+        print("📸 Screenshot capture initialized")
+        print("📸 Screenshots will be saved to: \(screenshotDirectory.path)")
+        print("📸 Directory exists: \(FileManager.default.fileExists(atPath: screenshotDirectory.path))")
     }
     
     // MARK: - Screenshot Capture
