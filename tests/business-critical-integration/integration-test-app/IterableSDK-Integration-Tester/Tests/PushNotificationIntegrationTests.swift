@@ -46,40 +46,55 @@ class PushNotificationIntegrationTests: IntegrationTestBase {
         let authExpectation = XCTNSPredicateExpectation(predicate: authorizedPredicate, object: authStatusValue)
         XCTAssertEqual(XCTWaiter.wait(for: [authExpectation], timeout: 10.0), .completed, "Authorization should become 'Authorized'")
         
-        // TODO: Re-enable when device token registration works reliably on CI
-        // let tokenRegisteredPredicate = NSPredicate(format: "label == %@", "✓ Registered")
-        // let tokenExpectation = XCTNSPredicateExpectation(predicate: tokenRegisteredPredicate, object: deviceTokenValue)
-        // XCTAssertEqual(XCTWaiter.wait(for: [tokenExpectation], timeout: 10.0), .completed, "Device token should become 'Registered'")
+         let tokenRegisteredPredicate = NSPredicate(format: "label == %@", "✓ Registered")
+         let tokenExpectation = XCTNSPredicateExpectation(predicate: tokenRegisteredPredicate, object: deviceTokenValue)
+         XCTAssertEqual(XCTWaiter.wait(for: [tokenExpectation], timeout: 10.0), .completed, "Device token should become 'Registered'")
         screenshotCapture.captureScreenshot(named: "05-status-updated")
         
-//        // Step 6: Copy device token to clipboard
-//        let deviceTokenDetail = app.staticTexts["push-device-token-detail-value"]
-//        XCTAssertTrue(deviceTokenDetail.waitForExistence(timeout: standardTimeout), "Device token detail should exist")
-//        deviceTokenDetail.tap()
-//        screenshotCapture.captureScreenshot(named: "06-token-copy-initiated")
-//        
-//        // Dismiss the copy confirmation alert
-//        let copyAlert = app.alerts["Token Copied"]
-//        if copyAlert.waitForExistence(timeout: 5.0) {
-//            copyAlert.buttons["OK"].tap()
-//        }
-//        
-//        // Step 7: Navigate to Backend tab to verify device registration
-//        let backToHomeButton = app.buttons["back-to-home-button"]
-//        XCTAssertTrue(backToHomeButton.waitForExistence(timeout: standardTimeout), "Back to home button should exist")
-//        backToHomeButton.tap()
-//        
-//        // Navigate to backend (assuming we need to add navigation to backend tab)
-//        navigateToBackendTab()
-//        screenshotCapture.captureScreenshot(named: "07-backend-tab-opened")
-//        
-//        // Step 8: Verify device is registered and enabled in backend
-//        validateDeviceRegistrationInBackend()
-//        screenshotCapture.captureScreenshot(named: "08-backend-validation-complete")
-//        
-//        // Step 9: Validate device token matches between UI and backend
-//        validateTokenMatchBetweenUIAndBackend()
-//        screenshotCapture.captureScreenshot(named: "09-token-match-validated")
+        // Step 6: Navigate to Network tab to verify register device token API call was made
+        navigateToNetworkMonitor()
+        screenshotCapture.captureScreenshot(named: "06-network-tab-opened")
+        
+        // Verify register device token call was made with 200 status
+        verifyNetworkCallWithSuccess(endpoint: "registerDeviceToken", description: "Register device token API call should be made with 200 status")
+        screenshotCapture.captureScreenshot(named: "07-register-token-call-verified")
+        
+        // Navigate back to home
+        let closeNetworkButton = app.buttons["Close"]
+        if closeNetworkButton.exists {
+            closeNetworkButton.tap()
+        }
+        
+        // Step 7: Navigate to Backend tab to verify device registration
+        let backendRow = app.otherElements["backend-status-test-row"]
+        XCTAssertTrue(backendRow.waitForExistence(timeout: standardTimeout), "Backend status row should exist")
+        backendRow.tap()
+        screenshotCapture.captureScreenshot(named: "08-backend-tab-opened")
+        
+        // Step 8: Refresh backend status and verify device is registered
+        let refreshButton = app.buttons["refresh-backend-status-button"]
+        if refreshButton.waitForExistence(timeout: standardTimeout) {
+            refreshButton.tap()
+            sleep(2) // Wait for backend data to load
+        }
+        
+        // Verify device is showing in the backend
+        validateDeviceRegistrationInBackend()
+        screenshotCapture.captureScreenshot(named: "09-backend-device-verified")
+        
+        // Step 9: Test push notification from backend
+        let testPushButton = app.buttons["test-push-notification-button"]
+        XCTAssertTrue(testPushButton.waitForExistence(timeout: standardTimeout), "Test push notification button should exist")
+        testPushButton.tap()
+        screenshotCapture.captureScreenshot(named: "10-test-push-sent")
+        
+        // Step 10: Verify push notification was received
+        // Wait for push notification to arrive and be processed
+        sleep(5)
+        
+        // Check for the specific push notification content
+        validateSpecificPushNotificationReceived(expectedTitle: "Integration Test", expectedBody: "This is an integration test simple push")
+        screenshotCapture.captureScreenshot(named: "11-push-notification-received")
     }
     
     /*func testPushPermissionHandling() {

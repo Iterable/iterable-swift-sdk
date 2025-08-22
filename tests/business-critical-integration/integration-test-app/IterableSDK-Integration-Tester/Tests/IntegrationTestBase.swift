@@ -375,6 +375,54 @@ class IntegrationTestBase: XCTestCase {
         screenshotCapture.captureScreenshot(named: "push-notification-received")
     }
     
+    func validateSpecificPushNotificationReceived(expectedTitle: String, expectedBody: String) {
+        // Check for the specific push notification content in system notifications
+        // or app-specific push notification indicators
+        
+        // First check if there's a system notification banner visible
+        let springboard = XCUIApplication(bundleIdentifier: "com.apple.springboard")
+        
+        // Look for notification banner with expected title and body
+        let titlePredicate = NSPredicate(format: "label CONTAINS[c] %@", expectedTitle)
+        let bodyPredicate = NSPredicate(format: "label CONTAINS[c] %@", expectedBody)
+        
+        let titleElement = springboard.staticTexts.containing(titlePredicate).firstMatch
+        let bodyElement = springboard.staticTexts.containing(bodyPredicate).firstMatch
+        
+        // Check if notification banner is visible
+        if titleElement.waitForExistence(timeout: 10.0) && bodyElement.exists {
+            print("✅ Found push notification banner with expected title: '\(expectedTitle)' and body: '\(expectedBody)'")
+            
+            // Tap the notification to open the app if needed
+            titleElement.tap()
+            
+            screenshotCapture.captureScreenshot(named: "push-notification-banner-found")
+            return
+        }
+        
+        // If no system banner, check for app-specific push notification indicators
+        // This would be used if the app shows push notifications in its own UI
+        let pushTitleIndicator = app.staticTexts.containing(titlePredicate).firstMatch
+        let pushBodyIndicator = app.staticTexts.containing(bodyPredicate).firstMatch
+        
+        if pushTitleIndicator.waitForExistence(timeout: 5.0) && pushBodyIndicator.exists {
+            print("✅ Found push notification in app UI with expected title: '\(expectedTitle)' and body: '\(expectedBody)'")
+            screenshotCapture.captureScreenshot(named: "push-notification-app-ui-found")
+            return
+        }
+        
+        // If still not found, check for generic push notification processed indicator
+        let pushIndicator = app.staticTexts["push-notification-processed"]
+        if pushIndicator.waitForExistence(timeout: 5.0) {
+            print("✅ Push notification was processed by the app")
+            screenshotCapture.captureScreenshot(named: "push-notification-processed")
+            return
+        }
+        
+        // If none of the above worked, fail the test
+        XCTFail("Push notification with title '\(expectedTitle)' and body '\(expectedBody)' was not received or processed")
+    }
+    
     func validateInAppMessageDisplayed() {
         let inAppMessage = app.otherElements["iterable-in-app-message"]
         XCTAssertTrue(inAppMessage.waitForExistence(timeout: standardTimeout), "In-app message not displayed")
@@ -450,7 +498,7 @@ class IntegrationTestBase: XCTestCase {
     }
     
     /// Reusable wrapper function to verify network calls exist and have 200 status codes
-    private func verifyNetworkCallWithSuccess(endpoint: String, description: String) {
+    public func verifyNetworkCallWithSuccess(endpoint: String, description: String) {
         // Find the cell containing the endpoint
         let endpointPredicate = NSPredicate(format: "label CONTAINS[c] %@", endpoint)
         let endpointCell = app.cells.containing(endpointPredicate).firstMatch

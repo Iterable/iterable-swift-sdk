@@ -77,6 +77,17 @@ final class HomeViewController: UIViewController, UITextFieldDelegate {
         return button
     }()
 
+    private let clearLocalDataButton: UIButton = {
+        let button = UIButton(type: .system)
+        button.setTitle("Clear Local Data", for: .normal)
+        button.backgroundColor = .systemOrange
+        button.setTitleColor(.white, for: .normal)
+        button.layer.cornerRadius = 8
+        button.heightAnchor.constraint(equalToConstant: 40).isActive = true
+        button.accessibilityIdentifier = "clear-local-data-button"
+        return button
+    }()
+
     private let pushNotificationTestRow: UIView = {
         let container = UIView()
         container.backgroundColor = .systemGray6
@@ -137,6 +148,7 @@ final class HomeViewController: UIViewController, UITextFieldDelegate {
                                                    emailField,
                                                    registerEmailButton,
                                                    logoutButton,
+                                                   clearLocalDataButton,
                                                    statusView,
                                                    pushNotificationTestRow])
         stack.axis = .vertical
@@ -174,6 +186,7 @@ final class HomeViewController: UIViewController, UITextFieldDelegate {
         registerEmailButton.addTarget(self, action: #selector(registerEmail), for: .touchUpInside)
         registerUserIdButton.addTarget(self, action: #selector(registerUserId), for: .touchUpInside)
         logoutButton.addTarget(self, action: #selector(logout), for: .touchUpInside)
+        clearLocalDataButton.addTarget(self, action: #selector(clearLocalData), for: .touchUpInside)
         let tapGesture = UITapGestureRecognizer(target: self, action: #selector(showPushNotificationTest))
         pushNotificationTestRow.addGestureRecognizer(tapGesture)
     }
@@ -194,6 +207,45 @@ final class HomeViewController: UIViewController, UITextFieldDelegate {
 
     @objc private func logout() {
         AppDelegate.logoutFromIterableSDK()
+    }
+    
+    @objc private func clearLocalData() {
+        let alert = UIAlertController(
+            title: "Clear Local Data", 
+            message: "This will clear all NSUserDefaults data. Are you sure?", 
+            preferredStyle: .alert
+        )
+        
+        alert.addAction(UIAlertAction(title: "Cancel", style: .cancel))
+        alert.addAction(UIAlertAction(title: "Clear", style: .destructive) { _ in
+            self.performClearLocalData()
+        })
+        
+        present(alert, animated: true)
+    }
+    
+    private func performClearLocalData() {
+        let defaults = UserDefaults.standard
+        let dictionary = defaults.dictionaryRepresentation()
+        
+        // Clear all keys
+        dictionary.keys.forEach { key in
+            defaults.removeObject(forKey: key)
+        }
+        
+        // Synchronize to ensure changes are written immediately
+        defaults.synchronize()
+        
+        // Show confirmation
+        let alert = UIAlertController(
+            title: "Data Cleared", 
+            message: "All NSUserDefaults data has been cleared successfully.", 
+            preferredStyle: .alert
+        )
+        alert.addAction(UIAlertAction(title: "OK", style: .default))
+        present(alert, animated: true)
+        
+        print("✅ All NSUserDefaults data cleared")
     }
     
     // MARK: - Navigation Setup
