@@ -22,26 +22,17 @@ class ScreenshotCapture {
             screenshotsPath = envPath
             print("📸 Using SCREENSHOTS_DIR environment variable: \(screenshotsPath)")
         } else {
-            // Use project screenshots directory - try to find it dynamically first
-            let possiblePaths = [
-                "../screenshots",
-                "../../screenshots", 
-                "../../../screenshots",
-                "../../../../screenshots"
-            ]
+            print("📸 SCREENSHOTS_DIR not set, trying to find project screenshots directory")
             
-            var foundPath: String?
-            for path in possiblePaths {
-                let expandedPath = NSString(string: path).expandingTildeInPath
-                if FileManager.default.fileExists(atPath: expandedPath) || 
-                   (try? FileManager.default.createDirectory(atPath: expandedPath, withIntermediateDirectories: true)) != nil {
-                    foundPath = expandedPath
-                    break
-                }
-            }
+            // Try to find the project root by looking for known project files
+            let currentPath = FileManager.default.currentDirectoryPath
+            print("📸 Current working directory: \(currentPath)")
             
-            screenshotsPath = foundPath ?? possiblePaths[0]
-            print("📸 Using fallback screenshots path: \(screenshotsPath)")
+            // Last resort fallback - use Documents directory (iOS compatible)
+            let documentsPath = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!
+            screenshotsPath = documentsPath.appendingPathComponent("IterableSDK-Screenshots").path
+            print("📸 Using Documents fallback: \(screenshotsPath)")
+            print("📸 ⚠️  For CI/proper usage, set SCREENSHOTS_DIR environment variable")
         }
         
         let projectURL = URL(fileURLWithPath: screenshotsPath)

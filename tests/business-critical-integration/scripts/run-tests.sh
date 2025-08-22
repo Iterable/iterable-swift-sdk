@@ -439,6 +439,13 @@ run_xcode_tests() {
         -destination "id=$SIMULATOR_UUID"
         -parallel-testing-enabled NO
         test-without-building
+        SCREENSHOTS_DIR="$SCREENSHOTS_DIR"
+        ITERABLE_MOBILE_API_KEY="$MOBILE_API_KEY"
+        ITERABLE_SERVER_API_KEY="$SERVER_API_KEY"
+        TEST_USER_EMAIL="$TEST_USER_EMAIL"
+        TEST_PROJECT_ID="$PROJECT_ID"
+        TEST_TIMEOUT="$TIMEOUT"
+        FAST_TEST="$FAST_TEST"
     )
     
     # Add specific test if provided
