@@ -228,6 +228,19 @@ class IntegrationTestBase: XCTestCase {
         XCTAssertTrue(sdkReadyIndicator.waitForExistence(timeout: standardTimeout))
         XCTAssertEqual(sdkReadyIndicator.label, "✗", "SDK should show X mark when not initialized")
         
+        // Set user email in the field (but don't register it yet)
+        let emailField = app.textFields["user-email-textfield"]
+        XCTAssertTrue(emailField.waitForExistence(timeout: standardTimeout))
+        if emailField.value as? String != testUserEmail {
+            emailField.tap()
+            emailField.clearAndTypeText(testUserEmail)
+        }
+        
+        // Verify email status shows "Not set" before SDK initialization
+        let emailStatusValue = app.staticTexts["sdk-email-value"]
+        XCTAssertTrue(emailStatusValue.waitForExistence(timeout: standardTimeout))
+        XCTAssertEqual(emailStatusValue.label, "Not set", "Email should show 'Not set' before SDK initialization")
+        
         screenshotCapture.captureScreenshot(named: "sdk-before-initialization")
         
         // Tap the initialize SDK button in test app
@@ -240,20 +253,20 @@ class IntegrationTestBase: XCTestCase {
         let checkmarkExpectation = XCTNSPredicateExpectation(predicate: checkmarkPredicate, object: sdkReadyIndicator)
         XCTAssertEqual(XCTWaiter.wait(for: [checkmarkExpectation], timeout: 5.0), .completed, "SDK initialization should show checkmark")
         
-        screenshotCapture.captureScreenshot(named: "sdk-initialized")
-        
-        // Set user email
-        let emailField = app.textFields["user-email-textfield"]
-        XCTAssertTrue(emailField.waitForExistence(timeout: standardTimeout))
-        if emailField.value as? String != testUserEmail {
-            emailField.tap()
-            emailField.clearAndTypeText(testUserEmail)
-        }
-        
-        // Register the email
+        // NOW register the email AFTER SDK is initialized
         let registerEmailButton = app.buttons["register-email-button"]
         XCTAssertTrue(registerEmailButton.waitForExistence(timeout: standardTimeout))
         registerEmailButton.tap()
+        
+        // Give a moment for the email to be processed
+        sleep(1)
+        
+        // Verify email status shows the actual email after registration
+        let emailStatusValueAfterInit = app.staticTexts["sdk-email-value"]
+        XCTAssertTrue(emailStatusValueAfterInit.waitForExistence(timeout: standardTimeout))
+        XCTAssertEqual(emailStatusValueAfterInit.label, testUserEmail, "Email should show actual email address after SDK initialization and registration")
+        
+        screenshotCapture.captureScreenshot(named: "sdk-initialized")
         
         // Wait a moment for the API calls to be made
         sleep(2)
@@ -422,15 +435,9 @@ class IntegrationTestBase: XCTestCase {
         let networkMonitorTitle = app.navigationBars["Network Monitor"]
         XCTAssertTrue(networkMonitorTitle.waitForExistence(timeout: standardTimeout), "Network Monitor should be displayed")
         
-        // Check for getRemoteConfiguration endpoint
-        let remoteConfigPredicate = NSPredicate(format: "label CONTAINS[c] 'getRemoteConfiguration'")
-        let remoteConfigCell = app.cells.containing(remoteConfigPredicate).firstMatch
-        XCTAssertTrue(remoteConfigCell.waitForExistence(timeout: 5.0), "getRemoteConfiguration API call should be made when SDK initializes")
-        
-        // Check for getMessages endpoint
-        let messagesPredicate = NSPredicate(format: "label CONTAINS[c] 'getMessages'")
-        let messagesCell = app.cells.containing(messagesPredicate).firstMatch
-        XCTAssertTrue(messagesCell.waitForExistence(timeout: 5.0), "getMessages API call should be made when user email is set")
+        // Verify both critical API calls with 200 status codes
+        verifyNetworkCallWithSuccess(endpoint: "getRemoteConfiguration", description: "SDK initialization should call getRemoteConfiguration with 200 status")
+        verifyNetworkCallWithSuccess(endpoint: "getMessages", description: "SDK initialization should call getMessages with 200 status")
         
         // Take screenshot of network calls
         screenshotCapture.captureScreenshot(named: "sdk-initialization-network-calls")
@@ -440,6 +447,25 @@ class IntegrationTestBase: XCTestCase {
         if closeButton.exists {
             closeButton.tap()
         }
+    }
+    
+    /// Reusable wrapper function to verify network calls exist and have 200 status codes
+    private func verifyNetworkCallWithSuccess(endpoint: String, description: String) {
+        // Find the cell containing the endpoint
+        let endpointPredicate = NSPredicate(format: "label CONTAINS[c] %@", endpoint)
+        let endpointCell = app.cells.containing(endpointPredicate).firstMatch
+        XCTAssertTrue(endpointCell.waitForExistence(timeout: 5.0), "\(endpoint) API call should be made")
+        
+        // Look for the status code label within the cell - should show "200" in green
+        let statusPredicate = NSPredicate(format: "label == '200'")
+        let statusLabel = endpointCell.staticTexts.containing(statusPredicate).firstMatch
+        XCTAssertTrue(statusLabel.waitForExistence(timeout: 2.0), "\(description) - Expected 200 status code for \(endpoint)")
+        
+        // Additional validation: check that it's not an error status by looking for green color
+        // Note: We can't directly test color in UI tests, but we can verify it's not showing error indicators
+        let errorStatusPredicate = NSPredicate(format: "label BEGINSWITH '4' OR label BEGINSWITH '5'")
+        let errorStatusLabel = endpointCell.staticTexts.containing(errorStatusPredicate).firstMatch
+        XCTAssertFalse(errorStatusLabel.exists, "\(endpoint) should not have error status code (4xx/5xx)")
     }
     
     // MARK: - Push Notification Validation Helpers

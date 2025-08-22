@@ -65,7 +65,9 @@ final class IterableSDKStatusView: UIView {
         initializationStatusView.accessibilityIdentifier = "sdk-initialization-status"
         initializationStatusView.setValueAccessibilityIdentifier("sdk-ready-indicator")
         emailStatusView.accessibilityIdentifier = "sdk-email-status"
+        emailStatusView.setValueAccessibilityIdentifier("sdk-email-value")
         userIdStatusView.accessibilityIdentifier = "sdk-user-id-status"
+        userIdStatusView.setValueAccessibilityIdentifier("sdk-user-id-value")
         
         NSLayoutConstraint.activate([
             containerStackView.topAnchor.constraint(equalTo: topAnchor, constant: 16),
