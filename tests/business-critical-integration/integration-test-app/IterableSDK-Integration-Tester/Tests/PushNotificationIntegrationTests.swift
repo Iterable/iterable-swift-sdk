@@ -177,6 +177,23 @@ class PushNotificationIntegrationTests: IntegrationTestBase {
             screenshotCapture.captureScreenshot(named: "17-backend-tab-closed")
         }
         
+        // Navigate to Network tab to verify trackPushOpen was called
+        if fastTest == false {
+            navigateToNetworkMonitor()
+            screenshotCapture.captureScreenshot(named: "18-network-tab-opened")
+            
+            // Verify trackPushOpen call was made with 200 status for the deep link push
+            verifyNetworkCallWithSuccess(endpoint: "trackPushOpen", description: "Track push open API call should be made for deep link push")
+            screenshotCapture.captureScreenshot(named: "19-track-push-open-verified")
+            
+            // Close network monitor
+            let closeNetworkButton = app.buttons["Close"]
+            if closeNetworkButton.exists {
+                closeNetworkButton.tap()
+                screenshotCapture.captureScreenshot(named: "20-network-tab-closed")
+            }
+        }
+        
         print("✅ Complete push notification workflow with deep link test completed successfully")
     }
     

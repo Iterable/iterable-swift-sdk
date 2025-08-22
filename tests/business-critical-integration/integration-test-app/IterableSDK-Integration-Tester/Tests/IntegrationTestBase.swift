@@ -25,7 +25,6 @@ class IntegrationTestBase: XCTestCase {
     
     // Check for fast test mode from environment variable or launch arguments
     let fastTest: Bool = {
-        return true
         // First check launch arguments
         if let fastTestArg = ProcessInfo.processInfo.environment["FAST_TEST"] {
             let isFast = fastTestArg.lowercased() == "true" || fastTestArg == "1"
