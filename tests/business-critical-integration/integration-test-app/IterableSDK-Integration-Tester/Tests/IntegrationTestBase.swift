@@ -27,16 +27,20 @@ class IntegrationTestBase: XCTestCase {
     let fastTest: Bool = {
         // First check launch arguments
         if let fastTestArg = ProcessInfo.processInfo.environment["FAST_TEST"] {
-            return fastTestArg.lowercased() == "true" || fastTestArg == "1"
+            let isFast = fastTestArg.lowercased() == "true" || fastTestArg == "1"
+            print("🚀 Fast Test Mode: \(isFast ? "ENABLED" : "DISABLED") (from FAST_TEST=\(fastTestArg))")
+            return isFast
         }
         
         // Check if running from Xcode build (default to fast mode)
         if ProcessInfo.processInfo.environment["XCODE_RUNNING_FOR_PREVIEWS"] != nil ||
            ProcessInfo.processInfo.environment["__XCODE_BUILT_PRODUCTS_DIR_PATHS"] != nil {
+            print("🚀 Fast Test Mode: ENABLED (detected Xcode build environment)")
             return true
         }
         
         // Default to false for comprehensive testing
+        print("🚀 Fast Test Mode: DISABLED (comprehensive testing mode)")
         return false
     }()
     
