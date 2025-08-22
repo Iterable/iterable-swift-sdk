@@ -89,16 +89,19 @@ class PushNotificationIntegrationTests: IntegrationTestBase {
             // Give UI a moment to settle after closing network monitor
             sleep(1)
             
-            // Navigate back to push notification tab to continue verification
-            // Re-find the element in case the UI hierarchy changed
-            let pushNotificationRowRefresh = app.otherElements["push-notification-test-row"]
-            if pushNotificationRowRefresh.waitForExistence(timeout: standardTimeout) {
+            // Check which screen we're on and navigate intelligently
+            let authStatusElement = app.staticTexts["push-authorization-value"]
+            if authStatusElement.exists {
+                // We're already on the push notification screen
+                print("✅ Already on push notification screen")
+                screenshotCapture.captureScreenshot(named: "07-already-on-push-screen")
+            } else {
+                // We're on the home screen, need to navigate to push notification tab
+                print("🔄 On home screen, navigating to push notification tab")
+                let pushNotificationRowRefresh = app.otherElements["push-notification-test-row"]
+                XCTAssertTrue(pushNotificationRowRefresh.waitForExistence(timeout: 5.0), "Push notification row should exist on home screen")
                 pushNotificationRowRefresh.tap()
                 screenshotCapture.captureScreenshot(named: "07-back-to-push-screen")
-            } else {
-                // If we can't find the row, we might already be on the push screen
-                print("⚠️ Push notification row not found - might already be on push screen")
-                screenshotCapture.captureScreenshot(named: "07-already-on-push-screen")
             }
         }
         
