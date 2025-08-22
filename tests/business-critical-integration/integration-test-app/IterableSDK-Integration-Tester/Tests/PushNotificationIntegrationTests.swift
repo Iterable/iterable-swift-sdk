@@ -119,6 +119,19 @@ class PushNotificationIntegrationTests: IntegrationTestBase {
         sleep(2) // Wait a bit before navigating to backend
         
         navigateToBackendTab()
+        
+        // Check if backend tab actually opened by looking for the navigation title
+        let backendTitle = app.navigationBars["Backend Status"]
+        if !backendTitle.waitForExistence(timeout: 3.0) {
+            print("⚠️ Backend tab didn't open, trying to tap backend button again")
+            let backendButton = app.buttons["backend-tab"]
+            if backendButton.exists {
+                backendButton.tap()
+                // Wait for backend tab to appear
+                XCTAssertTrue(backendTitle.waitForExistence(timeout: 5.0), "Backend Status should open after second attempt")
+            }
+        }
+        
         screenshotCapture.captureScreenshot(named: "09-backend-tab-opened")
 
         if fastTest == false {
@@ -168,7 +181,22 @@ class PushNotificationIntegrationTests: IntegrationTestBase {
         // Step 11: Test deep link push notification flow
         print("🔗 Starting deep link push notification test...")
         
-        // Navigate back to backend tab (should already be there)
+        // Navigate back to backend tab (should already be there, but verify)
+        let backendTitleCheck = app.navigationBars["Backend Status"]
+        if !backendTitleCheck.exists {
+            print("🔄 Navigating back to backend tab for deep link test")
+            navigateToBackendTab()
+            
+            // Check if backend tab opened
+            if !backendTitleCheck.waitForExistence(timeout: 3.0) {
+                print("⚠️ Backend tab didn't open, trying again")
+                let backendButton = app.buttons["backend-tab"]
+                if backendButton.exists {
+                    backendButton.tap()
+                    XCTAssertTrue(backendTitleCheck.waitForExistence(timeout: 5.0), "Backend Status should open for deep link test")
+                }
+            }
+        }
         screenshotCapture.captureScreenshot(named: "13-backend-tab-for-deep-link")
         
         // Send deep link push notification using campaign 14695444
