@@ -171,11 +171,9 @@ class PushNotificationIntegrationTests: IntegrationTestBase {
         screenshotCapture.captureScreenshot(named: "16-deep-link-alert-dismissed")
         
         // Close the backend tab
-        let closeBackendButton = app.buttons["Close"]
-        if closeBackendButton.exists {
-            closeBackendButton.tap()
-            screenshotCapture.captureScreenshot(named: "17-backend-tab-closed")
-        }
+        let closeButton = app.buttons["backend-close-button"]
+        closeButton.tap()
+        screenshotCapture.captureScreenshot(named: "17-backend-tab-closed")
         
         // Navigate to Network tab to verify trackPushOpen was called
         if fastTest == false {

@@ -190,11 +190,13 @@ final class BackendStatusViewController: UIViewController {
         title = "Backend Status"
         
         // Add close button
-        navigationItem.leftBarButtonItem = UIBarButtonItem(
+        let closeBarButton = UIBarButtonItem(
             barButtonSystemItem: .close,
             target: self,
             action: #selector(closeButtonTapped)
         )
+        closeBarButton.accessibilityIdentifier = "backend-close-button"
+        navigationItem.leftBarButtonItem = closeBarButton
         
         view.addSubview(scrollView)
         scrollView.addSubview(contentView)
