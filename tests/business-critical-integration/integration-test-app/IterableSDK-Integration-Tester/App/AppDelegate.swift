@@ -134,6 +134,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     }
     
     func applicationDidBecomeActive(_ application: UIApplication) {
+        print("🚀 BREAKPOINT HERE: App became active")
+        // Set a breakpoint here to confirm app is opening
+        
         // App is always in test mode - no validation needed
     }
     
@@ -152,6 +155,37 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         return false // No deep link handling in this test app
     }
     
+    func application(_ app: UIApplication, open url: URL, options: [UIApplication.OpenURLOptionsKey : Any] = [:]) -> Bool {
+        print("🔗 App opened via direct deep link: \(url.absoluteString)")
+        
+        if url.scheme == "tester" {
+            print("✅ Direct deep link opened - tester:// (will be handled by Iterable SDK)")
+            return true
+        }
+        
+        return false
+    }
+    
+    private func showDeepLinkAlert(url: URL) {
+        guard let rootViewController = window?.rootViewController else { return }
+        
+        let alert = UIAlertController(
+            title: "Iterable Deep Link Opened", 
+            message: "🔗 App was opened via Iterable SDK deep link:\n\(url.absoluteString)", 
+            preferredStyle: .alert
+        )
+        
+        alert.addAction(UIAlertAction(title: "OK", style: .default))
+        
+        // Find the topmost presented view controller
+        var topViewController = rootViewController
+        while let presentedViewController = topViewController.presentedViewController {
+            topViewController = presentedViewController
+        }
+        
+        topViewController.present(alert, animated: true)
+    }
+    
     // MARK: Notification
     
     // ITBL:
@@ -167,7 +201,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     // Setup self as delegate to listen to push notifications.
     // Note: This only sets up the delegate, doesn't request permissions automatically
     private func setupNotifications() {
+        print("🔔 Setting up notification delegate")
         UNUserNotificationCenter.current().delegate = self
+        print("🔔 Notification delegate set to: \(String(describing: UNUserNotificationCenter.current().delegate))")
     }
 }
 
@@ -180,8 +216,18 @@ extension AppDelegate: UNUserNotificationCenterDelegate {
     
     // The method will be called on the delegate when the user responded to the notification by opening the application, dismissing the notification or choosing a UNNotificationAction. The delegate must be set before the application returns from applicationDidFinishLaunching:.
     public func userNotificationCenter(_ center: UNUserNotificationCenter, didReceive response: UNNotificationResponse, withCompletionHandler completionHandler: @escaping () -> Void) {
-        // ITBL:
+        print("🔔 BREAKPOINT HERE: Push notification tapped - processing with Iterable SDK")
+        print("🔔 Notification payload: \(response.notification.request.content.userInfo)")
+        
+        // Set a breakpoint on the next line to see when push notifications are tapped
+        let actionIdentifier = response.actionIdentifier
+        print("🔔 Action identifier: \(actionIdentifier)")
+        
+        // ITBL: This should process the notification and trigger deep link handling
+        print("🔔 About to call IterableAppIntegration.userNotificationCenter")
+        print("🔔 IterableAPI.email: \(IterableAPI.email ?? "nil")")
         IterableAppIntegration.userNotificationCenter(center, didReceive: response, withCompletionHandler: completionHandler)
+        print("🔔 IterableAppIntegration.userNotificationCenter completed")
     }
 }
 
@@ -189,9 +235,31 @@ extension AppDelegate: UNUserNotificationCenterDelegate {
 
 extension AppDelegate: IterableURLDelegate {
     // return true if we handled the url
-    func handle(iterableURL url: URL, inContext _: IterableActionContext) -> Bool {
-        //DeepLinkHandler.handle(url: url)
-        return false
+    func handle(iterableURL url: URL, inContext context: IterableActionContext) -> Bool {
+        print("🔗 BREAKPOINT HERE: IterableURLDelegate.handle called!")
+        print("🔗 URL: \(url.absoluteString)")
+        print("🔗 Context: \(context)")
+        
+        // Set a breakpoint on the next line to see if this method gets called
+        let urlScheme = url.scheme ?? "no-scheme"
+        print("🔗 URL scheme: \(urlScheme)")
+        
+        if url.scheme == "tester" {
+            print("✅ App is opened via Iterable deep link - tester://")
+            
+            // Show alert that app was opened via deep link
+            DispatchQueue.main.async {
+                self.showDeepLinkAlert(url: url)
+            }
+            
+            // Post notification that the app was opened via deep link
+            NotificationCenter.default.post(name: NSNotification.Name("AppOpenedViaDeepLink"), object: url)
+            
+            return true // We handled this URL
+        }
+        
+        print("🔗 URL scheme '\(url.scheme ?? "nil")' not handled by our app")
+        return false // We didn't handle this URL
     }
 }
 

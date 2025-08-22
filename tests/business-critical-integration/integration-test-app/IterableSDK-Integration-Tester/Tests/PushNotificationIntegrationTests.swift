@@ -74,47 +74,112 @@ class PushNotificationIntegrationTests: IntegrationTestBase {
         
         navigateToBackendTab()
         screenshotCapture.captureScreenshot(named: "08-backend-tab-opened")
-        
-        // Step 8: Refresh backend status and verify device is registered
-        let refreshButton = app.buttons["refresh-backend-status-button"]
-        if refreshButton.waitForExistence(timeout: standardTimeout) {
-            refreshButton.tap()
-            sleep(2) // Wait for backend data to load
-        }
-        
-        // Verify "This Device" appears in the backend device list
-        // This is the key indicator that the current device is registered
-        let thisDeviceIndicator = app.staticTexts.containing(NSPredicate(format: "label CONTAINS[c] 'This Device'"))
-        XCTAssertTrue(thisDeviceIndicator.firstMatch.waitForExistence(timeout: standardTimeout), "Backend should show 'This Device' indicating current device is registered")
-        
-        
-        // Also verify there are enabled devices shown
-        let enabledDevicesHeader = app.staticTexts.containing(NSPredicate(format: "label CONTAINS 'Enabled Devices'"))
-        XCTAssertTrue(enabledDevicesHeader.firstMatch.waitForExistence(timeout: standardTimeout), "Backend should show 'Enabled Devices' section")
-        
-        print("✅ Device registration validated - 'This Device' found in backend")
-        screenshotCapture.captureScreenshot(named: "09-backend-device-verified")
-        
-        // Step 9: Test push notification from backend
-        let testPushButton = app.buttons["test-push-notification-button"]
-        XCTAssertTrue(testPushButton.waitForExistence(timeout: standardTimeout), "Test push notification button should exist")
-        testPushButton.tap()
-        screenshotCapture.captureScreenshot(named: "10-test-push-sent")
-        
-        // Step 9.5: Handle the "Success" popup by pressing OK
-        let successAlert = app.alerts.firstMatch
-        if successAlert.waitForExistence(timeout: 5.0) {
-            let okButton = successAlert.buttons["OK"]
-            if okButton.exists {
-                okButton.tap()
-                screenshotCapture.captureScreenshot(named: "10.5-success-popup-dismissed")
+
+        if fastTest == false {
+            
+            // Step 8: Refresh backend status and verify device is registered
+            let refreshButton = app.buttons["refresh-backend-status-button"]
+            if refreshButton.waitForExistence(timeout: standardTimeout) {
+                refreshButton.tap()
+                sleep(2) // Wait for backend data to load
             }
+            
+            // Verify "This Device" appears in the backend device list
+            // This is the key indicator that the current device is registered
+            let thisDeviceIndicator = app.staticTexts.containing(NSPredicate(format: "label CONTAINS[c] 'This Device'"))
+            XCTAssertTrue(thisDeviceIndicator.firstMatch.waitForExistence(timeout: standardTimeout), "Backend should show 'This Device' indicating current device is registered")
+            
+            
+            // Also verify there are enabled devices shown
+            let enabledDevicesHeader = app.staticTexts.containing(NSPredicate(format: "label CONTAINS 'Enabled Devices'"))
+            XCTAssertTrue(enabledDevicesHeader.firstMatch.waitForExistence(timeout: standardTimeout), "Backend should show 'Enabled Devices' section")
+            
+            print("✅ Device registration validated - 'This Device' found in backend")
+            screenshotCapture.captureScreenshot(named: "09-backend-device-verified")
+            
+            // Step 9: Test push notification from backend
+            let testPushButton = app.buttons["test-push-notification-button"]
+            XCTAssertTrue(testPushButton.waitForExistence(timeout: standardTimeout), "Test push notification button should exist")
+            testPushButton.tap()
+            screenshotCapture.captureScreenshot(named: "10-test-push-sent")
+            
+            // Step 9.5: Handle the "Success" popup by pressing OK
+            let successAlert = app.alerts.firstMatch
+            if successAlert.waitForExistence(timeout: 5.0) {
+                let okButton = successAlert.buttons["OK"]
+                if okButton.exists {
+                    okButton.tap()
+                    screenshotCapture.captureScreenshot(named: "10.5-success-popup-dismissed")
+                }
+            }
+            
+            // Step 10: Verify push notification was received
+            // Actively wait for push notification instead of sleeping
+            validateSpecificPushNotificationReceived(expectedTitle: "Integration Test", expectedBody: "This is an integration test simple push")
+            screenshotCapture.captureScreenshot(named: "11-push-notification-received")
         }
         
-        // Step 10: Verify push notification was received
-        // Actively wait for push notification instead of sleeping
-        validateSpecificPushNotificationReceived(expectedTitle: "Integration Test", expectedBody: "This is an integration test simple push")
-        screenshotCapture.captureScreenshot(named: "11-push-notification-received")
+        // Step 11: Test deep link push notification flow
+        print("🔗 Starting deep link push notification test...")
+        
+        // Navigate back to backend tab (should already be there)
+        screenshotCapture.captureScreenshot(named: "12-backend-tab-for-deep-link")
+        
+        // Send deep link push notification using campaign 14695444
+        let deepLinkPushButton = app.buttons["test-deep-link-push-button"]
+        XCTAssertTrue(deepLinkPushButton.waitForExistence(timeout: standardTimeout), "Deep link push button should exist")
+        XCTAssertTrue(deepLinkPushButton.isEnabled, "Deep link push button should be enabled")
+        deepLinkPushButton.tap()
+        screenshotCapture.captureScreenshot(named: "13-deep-link-push-sent")
+        
+        // Handle success alert: "Success - Deep link push notification sent successfully! Campaign ID: 14695444"
+        let deepLinkSuccessAlert = app.alerts["Success"]
+        XCTAssertTrue(deepLinkSuccessAlert.waitForExistence(timeout: 5.0), "Success alert should appear")
+        
+        // Verify the alert message contains the campaign ID
+        let deepLinkSuccessMessage = deepLinkSuccessAlert.staticTexts.element(boundBy: 1)
+        XCTAssertTrue(deepLinkSuccessMessage.label.contains("14695444"), "Success message should contain campaign ID 14695444")
+        
+        let deepLinkSuccessOKButton = deepLinkSuccessAlert.buttons["OK"]
+        XCTAssertTrue(deepLinkSuccessOKButton.exists, "Success alert OK button should exist")
+        deepLinkSuccessOKButton.tap()
+        screenshotCapture.captureScreenshot(named: "14-success-alert-dismissed")
+        
+        // Wait for deep link push notification to arrive and validate its content
+        print("🔔 Waiting for deep link push notification to arrive...")
+        
+        // Validate the deep link push notification content and tap it
+        validateSpecificPushNotificationReceived(expectedTitle: "Integration Test", expectedBody: "This is an enhanced push campaign")
+        screenshotCapture.captureScreenshot(named: "14.5-deep-link-push-received")
+        
+        // The validateSpecificPushNotificationReceived method will automatically tap the push notification
+        // This will trigger the deep link and open the app
+        
+        // Verify deep link alert appears: "Iterable Deep Link Opened"
+        let deepLinkAlert = app.alerts["Iterable Deep Link Opened"]
+        XCTAssertTrue(deepLinkAlert.waitForExistence(timeout: 10.0), "Iterable deep link alert should appear")
+        
+        let deepLinkMessage = deepLinkAlert.staticTexts.element(boundBy: 1)
+        XCTAssertTrue(deepLinkMessage.label.contains("tester://"), "Deep link alert should contain tester:// URL")
+        
+        screenshotCapture.captureScreenshot(named: "15-deep-link-alert-shown")
+        
+        // Dismiss the deep link alert
+        let deepLinkOKButton = deepLinkAlert.buttons["OK"]
+        XCTAssertTrue(deepLinkOKButton.exists, "Deep link alert OK button should exist")
+        deepLinkOKButton.tap()
+        screenshotCapture.captureScreenshot(named: "16-deep-link-alert-dismissed")
+        
+        // Close the backend tab
+        let closeBackendButton = app.buttons["Close"]
+        if closeBackendButton.exists {
+            closeBackendButton.tap()
+            screenshotCapture.captureScreenshot(named: "17-backend-tab-closed")
+        }
+        
+        print("✅ Complete push notification workflow with deep link test completed successfully")
     }
+    
+
     
 }

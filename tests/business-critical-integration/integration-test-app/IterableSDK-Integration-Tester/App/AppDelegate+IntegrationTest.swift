@@ -67,6 +67,7 @@ extension AppDelegate {
         config.urlDelegate = appDelegate
         config.inAppDisplayInterval = 1
         config.autoPushRegistration = false  // Disable automatic push registration for testing control
+        config.allowedProtocols = ["tester"]  // Allow our custom tester:// deep link scheme
         
         let apiKey = loadApiKeyFromConfig()
         IterableAPI.initialize(apiKey: apiKey,
@@ -74,6 +75,10 @@ extension AppDelegate {
                                config: config)
         
         print("✅ SDK initialized for testing")
+        print("✅ URL delegate set to: \(String(describing: config.urlDelegate))")
+        
+        // Verify the delegate is actually set
+        print("🔍 AppDelegate conforms to IterableURLDelegate: \(appDelegate is IterableURLDelegate)")
     }
     
     static func registerEmailToIterableSDK(email: String) {

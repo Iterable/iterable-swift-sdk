@@ -113,6 +113,19 @@ final class BackendStatusViewController: UIViewController {
         return button
     }()
     
+    private let sendDeepLinkPushButton: UIButton = {
+        let button = UIButton(type: .system)
+        button.setTitle("Send Deep Link Push (Campaign 14695444)", for: .normal)
+        button.backgroundColor = .systemPurple
+        button.setTitleColor(.white, for: .normal)
+        button.layer.cornerRadius = 8
+        button.translatesAutoresizingMaskIntoConstraints = false
+        button.accessibilityIdentifier = "test-deep-link-push-button"
+        button.isEnabled = false
+        button.alpha = 0.5
+        return button
+    }()
+    
     private let resetDevicesButton: UIButton = {
         let button = UIButton(type: .system)
         button.setTitle("Disable User Devices", for: .normal)
@@ -198,6 +211,7 @@ final class BackendStatusViewController: UIViewController {
         contentView.addSubview(showDisabledDevicesSwitch)
         contentView.addSubview(userDetailsTableView)
         contentView.addSubview(sendPushButton)
+        contentView.addSubview(sendDeepLinkPushButton)
         contentView.addSubview(resetDevicesButton)
         contentView.addSubview(reenableDevicesButton)
         contentView.addSubview(activityIndicator)
@@ -270,8 +284,14 @@ final class BackendStatusViewController: UIViewController {
             sendPushButton.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -20),
             sendPushButton.heightAnchor.constraint(equalToConstant: 44),
             
+            // Send deep link push button
+            sendDeepLinkPushButton.topAnchor.constraint(equalTo: sendPushButton.bottomAnchor, constant: 12),
+            sendDeepLinkPushButton.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 20),
+            sendDeepLinkPushButton.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -20),
+            sendDeepLinkPushButton.heightAnchor.constraint(equalToConstant: 44),
+            
             // Reset devices button
-            resetDevicesButton.topAnchor.constraint(equalTo: sendPushButton.bottomAnchor, constant: 12),
+            resetDevicesButton.topAnchor.constraint(equalTo: sendDeepLinkPushButton.bottomAnchor, constant: 12),
             resetDevicesButton.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 20),
             resetDevicesButton.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -20),
             resetDevicesButton.heightAnchor.constraint(equalToConstant: 44),
@@ -298,6 +318,7 @@ final class BackendStatusViewController: UIViewController {
     private func setupActions() {
         refreshButton.addTarget(self, action: #selector(refreshBackendStatus), for: .touchUpInside)
         sendPushButton.addTarget(self, action: #selector(sendPushNotification), for: .touchUpInside)
+        sendDeepLinkPushButton.addTarget(self, action: #selector(sendDeepLinkPushNotification), for: .touchUpInside)
         resetDevicesButton.addTarget(self, action: #selector(resetUserDevices), for: .touchUpInside)
         reenableDevicesButton.addTarget(self, action: #selector(reenableUserDevices), for: .touchUpInside)
         showDisabledDevicesSwitch.addTarget(self, action: #selector(toggleShowDisabledDevices), for: .valueChanged)
@@ -454,6 +475,33 @@ final class BackendStatusViewController: UIViewController {
         }
     }
     
+    @objc private func sendDeepLinkPushNotification() {
+        guard let pushSender = pushSender,
+              let testUserEmail = AppDelegate.loadTestUserEmailFromConfig() else {
+            showAlert(title: "Error", message: "Push sender not initialized or test user email not found")
+            return
+        }
+        
+        sendDeepLinkPushButton.isEnabled = false
+        
+        pushSender.sendDeepLinkPush(to: testUserEmail, campaignId: 14695444) { [weak self] success, messageId, error in
+            DispatchQueue.main.async {
+                self?.sendDeepLinkPushButton.isEnabled = true
+                
+                if success {
+                    let message = "Deep link push notification sent successfully!\nCampaign ID: 14695444"
+                    if let messageId = messageId {
+                        print("✅ Deep link push sent with message ID: \(messageId)")
+                    }
+                    self?.showAlert(title: "Success", message: message)
+                } else {
+                    let errorMessage = error?.localizedDescription ?? "Unknown error"
+                    self?.showAlert(title: "Error", message: "Failed to send deep link push notification: \(errorMessage)")
+                }
+            }
+        }
+    }
+    
     @objc private func resetUserDevices() {
         guard let apiClient = apiClient,
               let testUserEmail = AppDelegate.loadTestUserEmailFromConfig() else {
@@ -569,6 +617,8 @@ final class BackendStatusViewController: UIViewController {
         let hasUserData = testUserData != nil
         sendPushButton.isEnabled = hasUserData
         sendPushButton.alpha = hasUserData ? 1.0 : 0.5
+        sendDeepLinkPushButton.isEnabled = hasUserData
+        sendDeepLinkPushButton.alpha = hasUserData ? 1.0 : 0.5
     }
     
     private func loadAPIKey() -> String? {
