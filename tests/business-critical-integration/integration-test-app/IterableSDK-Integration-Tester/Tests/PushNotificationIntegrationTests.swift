@@ -63,18 +63,33 @@ class PushNotificationIntegrationTests: IntegrationTestBase {
                 closeNetworkButton.tap()
             }
             
+            // Give UI a moment to settle after closing network monitor
+            sleep(1)
+            
             // Navigate back to push notification tab to continue verification
-            pushNotificationRow.tap()
-            screenshotCapture.captureScreenshot(named: "07-back-to-push-screen")
+            // Re-find the element in case the UI hierarchy changed
+            let pushNotificationRowRefresh = app.otherElements["push-notification-test-row"]
+            if pushNotificationRowRefresh.waitForExistence(timeout: standardTimeout) {
+                pushNotificationRowRefresh.tap()
+                screenshotCapture.captureScreenshot(named: "07-back-to-push-screen")
+            } else {
+                // If we can't find the row, we might already be on the push screen
+                print("⚠️ Push notification row not found - might already be on push screen")
+                screenshotCapture.captureScreenshot(named: "07-already-on-push-screen")
+            }
         }
         
         // Step 6: Wait for status to update to authorized and token to be registered
+        // Re-find the status elements in case we navigated away and back
+        let authStatusValueRefresh = app.staticTexts["push-authorization-value"]
+        let deviceTokenValueRefresh = app.staticTexts["push-device-token-value"]
+        
         let authorizedPredicate = NSPredicate(format: "label == %@", "✓ Authorized")
-        let authExpectation = XCTNSPredicateExpectation(predicate: authorizedPredicate, object: authStatusValue)
+        let authExpectation = XCTNSPredicateExpectation(predicate: authorizedPredicate, object: authStatusValueRefresh)
         XCTAssertEqual(XCTWaiter.wait(for: [authExpectation], timeout: 10.0), .completed, "Authorization should become 'Authorized'")
         
          let tokenRegisteredPredicate = NSPredicate(format: "label == %@", "✓ Registered")
-         let tokenExpectation = XCTNSPredicateExpectation(predicate: tokenRegisteredPredicate, object: deviceTokenValue)
+         let tokenExpectation = XCTNSPredicateExpectation(predicate: tokenRegisteredPredicate, object: deviceTokenValueRefresh)
          XCTAssertEqual(XCTWaiter.wait(for: [tokenExpectation], timeout: 10.0), .completed, "Device token should become 'Registered'")
         screenshotCapture.captureScreenshot(named: "08-status-updated")
         
