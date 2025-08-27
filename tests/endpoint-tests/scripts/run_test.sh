@@ -23,8 +23,8 @@ sed -e "s/\(apiKey = \).*$/\1\"$api_key\"/" \
 echo "Available runtimes:"
 xcrun simctl list runtimes
 
-echo "Detecting latest stable iOS version..."
-LATEST_IOS=$(xcrun simctl list runtimes | grep "iOS 18" | grep -v "watchOS" | grep -v "beta" | grep -v "Beta" | tail -1 | sed 's/.*iOS \([0-9]*\.[0-9]*\).*/\1/')
+echo "Detecting latest available iOS version..."
+LATEST_IOS=$(xcrun simctl list runtimes | grep "iOS" | grep -v "watchOS" | grep -v "beta" | grep -v "Beta" | grep -v "unavailable" | tail -1 | sed 's/.*iOS \([0-9]*\.[0-9]*\).*/\1/')
 echo "Using iOS version: $LATEST_IOS"
 
 xcodebuild -project swift-sdk.xcodeproj \
