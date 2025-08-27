@@ -514,7 +514,7 @@ run_inapp_message_tests() {
     fi
     
     # Run the specific in-app message test method (silent push integration)
-    run_xcode_tests "InAppMessageIntegrationTests" "testSilentPushIntegrationWorkflow"
+    run_xcode_tests "InAppMessageIntegrationTests" "testInAppMessagingWorkflow"
 }
 
 run_embedded_message_tests() {
