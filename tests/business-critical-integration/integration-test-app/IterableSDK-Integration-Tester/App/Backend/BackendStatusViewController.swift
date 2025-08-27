@@ -139,6 +139,19 @@ final class BackendStatusViewController: UIViewController {
         return button
     }()
     
+    private let sendInAppButton: UIButton = {
+        let button = UIButton(type: .system)
+        button.setTitle("Send In App (Campaign 14751067)", for: .normal)
+        button.backgroundColor = .systemTeal
+        button.setTitleColor(.white, for: .normal)
+        button.layer.cornerRadius = 8
+        button.translatesAutoresizingMaskIntoConstraints = false
+        button.accessibilityIdentifier = "test-in-app-button"
+        button.isEnabled = false
+        button.alpha = 0.5
+        return button
+    }()
+    
     private let resetDevicesButton: UIButton = {
         let button = UIButton(type: .system)
         button.setTitle("Disable User Devices", for: .normal)
@@ -228,6 +241,7 @@ final class BackendStatusViewController: UIViewController {
         contentView.addSubview(sendPushButton)
         contentView.addSubview(sendDeepLinkPushButton)
         contentView.addSubview(sendSilentPushButton)
+        contentView.addSubview(sendInAppButton)
         contentView.addSubview(resetDevicesButton)
         contentView.addSubview(reenableDevicesButton)
         contentView.addSubview(activityIndicator)
@@ -312,8 +326,14 @@ final class BackendStatusViewController: UIViewController {
             sendSilentPushButton.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -20),
             sendSilentPushButton.heightAnchor.constraint(equalToConstant: 44),
             
+            // Send in app button
+            sendInAppButton.topAnchor.constraint(equalTo: sendSilentPushButton.bottomAnchor, constant: 12),
+            sendInAppButton.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 20),
+            sendInAppButton.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -20),
+            sendInAppButton.heightAnchor.constraint(equalToConstant: 44),
+            
             // Reset devices button
-            resetDevicesButton.topAnchor.constraint(equalTo: sendSilentPushButton.bottomAnchor, constant: 12),
+            resetDevicesButton.topAnchor.constraint(equalTo: sendInAppButton.bottomAnchor, constant: 12),
             resetDevicesButton.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 20),
             resetDevicesButton.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -20),
             resetDevicesButton.heightAnchor.constraint(equalToConstant: 44),
@@ -342,6 +362,7 @@ final class BackendStatusViewController: UIViewController {
         sendPushButton.addTarget(self, action: #selector(sendPushNotification), for: .touchUpInside)
         sendDeepLinkPushButton.addTarget(self, action: #selector(sendDeepLinkPushNotification), for: .touchUpInside)
         sendSilentPushButton.addTarget(self, action: #selector(sendSilentPushNotification), for: .touchUpInside)
+        sendInAppButton.addTarget(self, action: #selector(sendInAppMessage), for: .touchUpInside)
         resetDevicesButton.addTarget(self, action: #selector(resetUserDevices), for: .touchUpInside)
         reenableDevicesButton.addTarget(self, action: #selector(reenableUserDevices), for: .touchUpInside)
         showDisabledDevicesSwitch.addTarget(self, action: #selector(toggleShowDisabledDevices), for: .valueChanged)
@@ -551,6 +572,31 @@ final class BackendStatusViewController: UIViewController {
         }
     }
     
+    @objc private func sendInAppMessage() {
+        guard let apiClient = apiClient,
+              let testUserEmail = AppDelegate.loadTestUserEmailFromConfig() else {
+            showAlert(title: "Error", message: "API client not initialized or test user email not found")
+            return
+        }
+        
+        sendInAppButton.isEnabled = false
+        
+        apiClient.sendInAppMessage(to: testUserEmail, campaignId: 14751067) { [weak self] success, error in
+            DispatchQueue.main.async {
+                self?.sendInAppButton.isEnabled = true
+                
+                if success {
+                    let message = "In-app message sent successfully!\nCampaign ID: 14751067"
+                    print("✅ In-app message sent for campaign 14751067")
+                    self?.showAlert(title: "Success", message: message)
+                } else {
+                    let errorMessage = error?.localizedDescription ?? "Unknown error"
+                    self?.showAlert(title: "Error", message: "Failed to send in-app message: \(errorMessage)")
+                }
+            }
+        }
+    }
+    
     @objc private func resetUserDevices() {
         guard let apiClient = apiClient,
               let testUserEmail = AppDelegate.loadTestUserEmailFromConfig() else {
@@ -670,6 +716,8 @@ final class BackendStatusViewController: UIViewController {
         sendDeepLinkPushButton.alpha = hasUserData ? 1.0 : 0.5
         sendSilentPushButton.isEnabled = hasUserData
         sendSilentPushButton.alpha = hasUserData ? 1.0 : 0.5
+        sendInAppButton.isEnabled = hasUserData
+        sendInAppButton.alpha = hasUserData ? 1.0 : 0.5
     }
     
     private func loadAPIKey() -> String? {
