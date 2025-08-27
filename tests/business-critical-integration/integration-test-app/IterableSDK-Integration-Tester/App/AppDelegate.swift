@@ -147,6 +147,14 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     // MARK: Silent Push for in-app
     
     func application(_ application: UIApplication, didReceiveRemoteNotification userInfo: [AnyHashable: Any], fetchCompletionHandler completionHandler: @escaping (UIBackgroundFetchResult) -> Void) {
+        print("🔕 push notification received: \(userInfo)")
+        
+        // This method is called when app is in background
+        // For integration testing, we handle the alert in willPresent (foreground scenario)
+        // In production, you might trigger in-app message sync here
+        
+        // Complete the background fetch
+        completionHandler(.newData)
     }
     
     // MARK: Deep link
@@ -186,6 +194,26 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         topViewController.present(alert, animated: true)
     }
     
+    private func showSilentPushAlert(badgeCount: Int, contentAvailable: Int = 0) {
+        guard let rootViewController = window?.rootViewController else { return }
+        
+        let alert = UIAlertController(
+            title: "Silent Push Received", 
+            message: "🔕 Silent push has been received with a badge count of \(badgeCount) and content-available: \(contentAvailable)", 
+            preferredStyle: .alert
+        )
+        
+        alert.addAction(UIAlertAction(title: "OK", style: .default))
+        
+        // Find the topmost presented view controller
+        var topViewController = rootViewController
+        while let presentedViewController = topViewController.presentedViewController {
+            topViewController = presentedViewController
+        }
+        
+        topViewController.present(alert, animated: true)
+    }
+    
     // MARK: Notification
     
     // ITBL:
@@ -210,7 +238,30 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 // MARK: UNUserNotificationCenterDelegate
 
 extension AppDelegate: UNUserNotificationCenterDelegate {
-    public func userNotificationCenter(_: UNUserNotificationCenter, willPresent _: UNNotification, withCompletionHandler completionHandler: @escaping (UNNotificationPresentationOptions) -> Void) {
+    public func userNotificationCenter(_: UNUserNotificationCenter, willPresent notification: UNNotification, withCompletionHandler completionHandler: @escaping (UNNotificationPresentationOptions) -> Void) {
+        print("🔔 Foreground notification received: \(notification.request.content.userInfo)")
+        
+        // Check if this is from our silent push campaign (14750476)
+        let itbl = notification.request.content.userInfo["itbl"] as? [String: Any]
+        if let campaignId = itbl?["campaignId"] as? Int,
+           campaignId == 14750476 {
+            print("🔕 Silent push campaign detected in foreground - treating as silent")
+            
+            // Extract badge count and content-available flag, then show our custom alert
+            let aps = notification.request.content.userInfo["aps"] as? [String: Any]
+            let badgeCount = aps?["badge"] as? Int ?? 0
+            let contentAvailable = aps?["content-available"] as? Int ?? 0
+            
+            DispatchQueue.main.async {
+                self.showSilentPushAlert(badgeCount: badgeCount, contentAvailable: contentAvailable)
+            }
+            
+            // Don't show the system notification UI for silent push
+            completionHandler([])
+            return
+        }
+        
+        // For all other notifications, show normally
         completionHandler([.alert, .badge, .sound])
     }
     

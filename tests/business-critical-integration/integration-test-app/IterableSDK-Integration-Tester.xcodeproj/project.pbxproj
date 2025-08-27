@@ -49,9 +49,9 @@
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
 				SupportingFiles/Info.plist,
+				Tests/InAppMessageIntegrationTests.swift,
 				Tests/Incomplete/DeepLinkingIntegrationTests.swift,
 				Tests/Incomplete/EmbeddedMessageIntegrationTests.swift,
-				Tests/Incomplete/InAppMessageIntegrationTests.swift,
 				Tests/IntegrationTestBase.swift,
 				Tests/PushNotificationIntegrationTests.swift,
 				Tests/Utilities/CampaignManager.swift,
