@@ -509,31 +509,12 @@ run_inapp_message_tests() {
     echo_header "Running In-App Message Integration Tests"
     
     if [[ "$DRY_RUN" == true ]]; then
-        echo_info "[DRY RUN] Would run in-app message tests"
-        echo_info "[DRY RUN] - Silent push trigger"
-        echo_info "[DRY RUN] - Message display validation"
-        echo_info "[DRY RUN] - User interactions"
-        echo_info "[DRY RUN] - Deep link handling"
-        echo_info "[DRY RUN] - Queue management"
-        echo_info "[DRY RUN] - Metrics validation"
-        return
+        echo_info "[DRY RUN] Would run in-app message tests using xcodebuild test-without-building"
+        return 0
     fi
     
-    TEST_REPORT="$REPORTS_DIR/inapp-message-test-$(date +%Y%m%d-%H%M%S).json"
-    
-    echo_info "Starting in-app message test sequence..."
-    
-    # Test sequence for in-app messages
-    run_test_with_timeout "inapp_silent_push" "$TIMEOUT"
-    run_test_with_timeout "inapp_display" "$TIMEOUT"
-    run_test_with_timeout "inapp_interaction" "$TIMEOUT"
-    run_test_with_timeout "inapp_deeplink" "$TIMEOUT"
-    run_test_with_timeout "inapp_metrics" "$TIMEOUT"
-    
-    generate_test_report "inapp_message" "$TEST_REPORT"
-    
-    echo_success "In-app message tests completed"
-    echo_info "Report: $TEST_REPORT"
+    # Run the specific in-app message test method (silent push integration)
+    run_xcode_tests "InAppMessageIntegrationTests" "testSilentPushIntegrationWorkflow"
 }
 
 run_embedded_message_tests() {
