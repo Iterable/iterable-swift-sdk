@@ -5,6 +5,9 @@ xcuserdata
 
 .swiftpm/
 
+# Claude AI agent settings
+.claude/
+
 *~
 Podfile.lock
 Pods/

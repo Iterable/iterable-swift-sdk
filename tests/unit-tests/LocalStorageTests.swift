@@ -157,4 +157,26 @@ class LocalStorageTests: XCTestCase {
         let retrieved = retriever(retrievedLocalStorage)
         XCTAssertEqual(value, retrieved)
     }
+    
+    func testVisitorConsentTimestamp() {
+        let saver = { (storage: LocalStorageProtocol, value: Int64) -> Void in
+            var localStorage = storage
+            localStorage.visitorConsentTimestamp = value
+        }
+        let retriever = { (storage: LocalStorageProtocol) -> Int64? in
+            storage.visitorConsentTimestamp
+        }
+        
+        // Test storing a timestamp
+        let testTimestamp: Int64 = 1639490139
+        testLocalStorage(saver: saver, retriever: retriever, value: testTimestamp)
+        
+        // Test storing nil (clearing the timestamp)
+        let localStorage = LocalStorage(userDefaults: LocalStorageTests.getTestUserDefaults())
+        var mutableLocalStorage = localStorage
+        mutableLocalStorage.visitorConsentTimestamp = nil
+        
+        let retrievedLocalStorage = LocalStorage(userDefaults: LocalStorageTests.getTestUserDefaults())
+        XCTAssertNil(retrievedLocalStorage.visitorConsentTimestamp)
+    }
 }
