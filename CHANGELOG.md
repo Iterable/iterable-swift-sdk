@@ -5,6 +5,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 ## [Unreleased]
 
 ## [6.5.14]
+- Fixed issues with the timing of In-App message display
 
 ## [6.5.13]
 - Fixed in-app messages displaying in wrong window when using Stage Manager or multi-window scenarios on iPad.
