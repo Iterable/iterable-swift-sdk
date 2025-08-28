@@ -4,6 +4,8 @@ All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 ## [Unreleased]
 
+## [6.5.14]
+
 ## [6.5.13]
 - Fixed in-app messages displaying in wrong window when using Stage Manager or multi-window scenarios on iPad.
 - Fixed redirect handling issue with deep links that was preventing proper URL following.
