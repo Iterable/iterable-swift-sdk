@@ -466,6 +466,11 @@ run_xcode_tests() {
     
     # Run the test with verbose output
     echo_info "Executing: ${XCODEBUILD_CMD[*]}"
+    echo_info "CI environment variable: CI=$CI"
+    
+    # Export CI to the test process environment
+    export CI="$CI"
+    
     "${XCODEBUILD_CMD[@]}" 2>&1 | tee "$TEST_REPORT.log"
     local EXIT_CODE=${PIPESTATUS[0]}
     
