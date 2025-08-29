@@ -48,6 +48,13 @@ class IntegrationTestBase: XCTestCase {
     
     // CI Environment Detection
     let isRunningInCI: Bool = {
+        // Check for force simulation mode (for testing simulated pushes locally)
+        let forceSimulation = ProcessInfo.processInfo.environment["FORCE_SIMULATED_PUSH"] == "1"
+        if forceSimulation {
+            print("🎭 [TEST] FORCE_SIMULATED_PUSH=1 detected - enabling simulated push mode locally")
+            return true
+        }
+        
         // First check environment variable
         let ciEnv = ProcessInfo.processInfo.environment["CI"]
         let envCI = ciEnv == "1" || ciEnv == "true"
@@ -707,6 +714,8 @@ class IntegrationTestBase: XCTestCase {
         
         print("🤖 [TEST] CI MODE: Sending simulated push notification via xcrun simctl")
         print("📦 [TEST] Bundle ID: \(bundleId)")
+        print("🎯 [TEST] Target Platform: iOS Simulator")
+        print("⚙️ [TEST] Execution Method: Test Runner Delegation")
         
         do {
             // Create temporary APNS payload file
@@ -717,11 +726,32 @@ class IntegrationTestBase: XCTestCase {
             try payloadData.write(to: payloadFile)
             
             print("📄 [TEST] Created temporary payload file: \(payloadFile.path)")
+            print("📁 [TEST] Temporary directory: \(tempDir.path)")
+            print("🔢 [TEST] Payload file size: \(payloadData.count) bytes")
             print("📝 [TEST] Push payload content:")
             print(String(data: payloadData, encoding: .utf8) ?? "Invalid JSON")
             
             // Send push using xcrun simctl
-            print("🚀 [TEST] Would execute: xcrun simctl push booted \(bundleId) \(payloadFile.path)")
+            let simctlCommand = "xcrun simctl push booted \(bundleId) \(payloadFile.path)"
+            print("🚀 [TEST] Would execute: \(simctlCommand)")
+            
+            // Create a persistent payload file that the test runner can find
+            // Use the same directory that the test runner monitors
+            let persistentPayloadDir = URL(fileURLWithPath: "/tmp/push_queue")
+            try? FileManager.default.createDirectory(at: persistentPayloadDir, withIntermediateDirectories: true)
+            
+            let persistentPayloadFile = persistentPayloadDir.appendingPathComponent("push_\(Date().timeIntervalSince1970)_\(UUID().uuidString).apns")
+            try payloadData.write(to: persistentPayloadFile)
+            
+            // Create command file for test runner (use persistent payload file path)
+            let commandFile = persistentPayloadDir.appendingPathComponent("command_\(Date().timeIntervalSince1970).txt")
+            let persistentSimctlCommand = "xcrun simctl push booted \(bundleId) \(persistentPayloadFile.path)"
+            let commandData = persistentSimctlCommand.data(using: .utf8)!
+            try commandData.write(to: commandFile)
+            
+            print("💾 [TEST] Created persistent payload file: \(persistentPayloadFile.path)")
+            print("📋 [TEST] Created command file: \(commandFile.path)")
+            print("🔍 [TEST] Test runner should monitor: \(persistentPayloadDir.path)")
             
             #if os(macOS)
             // Process is only available on macOS, not iOS
@@ -748,14 +778,32 @@ class IntegrationTestBase: XCTestCase {
             // On iOS, we can't execute shell commands from within the test
             // This would need to be handled by the test runner script instead
             print("📱 [TEST] iOS target detected - xcrun simctl execution would be handled by test runner")
+            print("🔄 [TEST] Test runner needs to monitor push queue and execute commands")
             print("✅ [TEST] Simulated push notification payload prepared (execution delegated to test runner)")
+            
+            // Verify files were created successfully
+            if FileManager.default.fileExists(atPath: persistentPayloadFile.path) {
+                print("✅ [TEST] Persistent payload file exists and is ready for test runner")
+            } else {
+                print("❌ [TEST] Failed to create persistent payload file")
+                XCTFail("Failed to create persistent payload file for test runner")
+            }
+            
+            if FileManager.default.fileExists(atPath: commandFile.path) {
+                print("✅ [TEST] Command file exists and is ready for test runner")
+            } else {
+                print("❌ [TEST] Failed to create command file")
+                XCTFail("Failed to create command file for test runner")
+            }
             #endif
             
-            // Clean up temp file
+            // Clean up temp file (keep persistent files for test runner)
             try? FileManager.default.removeItem(at: payloadFile)
             print("🗑️ [TEST] Cleaned up temporary payload file")
+            print("⏳ [TEST] Keeping persistent files for test runner to process")
             
             // Give some time for the push to be processed
+            print("⏱️ [TEST] Waiting 2 seconds for push processing...")
             sleep(2)
             
         } catch {

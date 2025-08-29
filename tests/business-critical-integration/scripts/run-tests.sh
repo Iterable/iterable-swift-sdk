@@ -466,6 +466,86 @@ clear_screenshots_directory() {
     echo_info "Screenshots will be saved to: $SCREENSHOTS_DIR"
 }
 
+# MARK: - Push Notification Support
+
+setup_push_monitoring() {
+    if [[ "$CI" == "1" ]]; then
+        echo_info "🤖 Setting up push notification monitoring for CI environment"
+        
+        # Create push queue directory
+        local PUSH_QUEUE_DIR="/tmp/push_queue"
+        mkdir -p "$PUSH_QUEUE_DIR"
+        
+        echo_info "📁 Push queue directory: $PUSH_QUEUE_DIR"
+        echo_info "🔍 Starting background push monitor..."
+        
+        # Start background push monitor
+        start_push_monitor "$PUSH_QUEUE_DIR" &
+        local MONITOR_PID=$!
+        echo "$MONITOR_PID" > "/tmp/push_monitor.pid"
+        
+        echo_info "⚡ Push monitor started with PID: $MONITOR_PID"
+    else
+        echo_info "📱 Local environment - push monitoring not needed"
+    fi
+}
+
+start_push_monitor() {
+    local PUSH_QUEUE_DIR="$1"
+    
+    echo_info "🔄 Push monitor started - watching: $PUSH_QUEUE_DIR"
+    
+    while true; do
+        # Look for new command files
+        for COMMAND_FILE in "$PUSH_QUEUE_DIR"/command_*.txt; do
+            [[ -f "$COMMAND_FILE" ]] || continue
+            
+            echo_info "📋 Found command file: $COMMAND_FILE"
+            
+            # Read and execute the command
+            local COMMAND=$(cat "$COMMAND_FILE" 2>/dev/null)
+            if [[ -n "$COMMAND" ]]; then
+                echo_info "🚀 Executing push command: $COMMAND"
+                
+                # Execute the xcrun simctl command
+                eval "$COMMAND"
+                local EXIT_CODE=$?
+                
+                if [[ $EXIT_CODE -eq 0 ]]; then
+                    echo_info "✅ Push notification sent successfully"
+                else
+                    echo_error "❌ Push notification failed with exit code: $EXIT_CODE"
+                fi
+                
+                # Remove the command file after processing
+                rm -f "$COMMAND_FILE"
+                echo_info "🗑️ Cleaned up command file: $COMMAND_FILE"
+            else
+                echo_warning "⚠️ Empty command file: $COMMAND_FILE"
+                rm -f "$COMMAND_FILE"
+            fi
+        done
+        
+        # Sleep for a short interval before checking again
+        sleep 0.5
+    done
+}
+
+cleanup_push_monitoring() {
+    if [[ -f "/tmp/push_monitor.pid" ]]; then
+        local MONITOR_PID=$(cat /tmp/push_monitor.pid)
+        echo_info "🛑 Stopping push monitor (PID: $MONITOR_PID)"
+        
+        kill "$MONITOR_PID" 2>/dev/null || true
+        rm -f "/tmp/push_monitor.pid"
+        
+        # Clean up push queue directory
+        rm -rf "/tmp/push_queue" 2>/dev/null || true
+        
+        echo_info "✅ Push monitoring cleanup completed"
+    fi
+}
+
 run_xcode_tests() {
     local TEST_CLASS="$1"
     local TEST_METHOD="$2"
@@ -560,8 +640,23 @@ run_push_notification_tests() {
         return 0
     fi
     
+    # Set up push monitoring for CI environment
+    setup_push_monitoring
+    
+    # Set up cleanup trap to ensure monitor is stopped
+    trap cleanup_push_monitoring EXIT
+    
     # Run the specific push notification test method
-    run_xcode_tests "PushNotificationIntegrationTests" "testPushNotificationFullWorkflow"
+    local EXIT_CODE=0
+    run_xcode_tests "PushNotificationIntegrationTests" "testPushNotificationFullWorkflow" || EXIT_CODE=$?
+    
+    # Clean up push monitoring
+    cleanup_push_monitoring
+    
+    # Reset trap
+    trap - EXIT
+    
+    return $EXIT_CODE
 }
 
 run_inapp_message_tests() {

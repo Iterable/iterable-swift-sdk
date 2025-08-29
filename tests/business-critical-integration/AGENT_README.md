@@ -37,6 +37,9 @@ This project implements push notification integration tests that work seamlessly
 - Uses `xcrun simctl push` command with temporary `.apns` payload files
 - Supports both standard and deep link push notifications
 - Validates same notification handling logic as real pushes
+- **NEW**: Background push monitor in test runner automatically executes queued push commands
+- Test creates persistent payload and command files in `/tmp/push_queue`
+- Test runner monitors queue directory and executes `xcrun simctl` commands automatically
 
 ## Usage
 
@@ -148,3 +151,6 @@ CI=1 ./scripts/run-tests.sh
 - ✅ Complete test artifacts organized in dedicated directories
 - ✅ XCTest results saved for detailed analysis and CI integration
 - ✅ Smart network validation that adapts to CI vs local environments
+- ✅ **NEW**: Automated push execution via background monitor eliminates manual intervention
+- ✅ **NEW**: Enhanced logging provides comprehensive visibility into push simulation process
+- ✅ **NEW**: Robust file-based communication between iOS test and macOS test runner
