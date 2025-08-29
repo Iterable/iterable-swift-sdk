@@ -54,13 +54,31 @@ class IntegrationTestBase: XCTestCase {
         
         // Then check config file (updated by script)
         var configCI = false
-        if let path = Bundle.main.path(forResource: "test-config", ofType: "json"),
-           let data = try? Data(contentsOf: URL(fileURLWithPath: path)),
-           let json = try? JSONSerialization.jsonObject(with: data) as? [String: Any],
-           let testing = json["testing"] as? [String: Any],
-           let ciMode = testing["ciMode"] as? Bool {
-            configCI = ciMode
+        var configPath = "NOT_FOUND"
+        var configContents = "UNABLE_TO_READ"
+        
+        if let path = Bundle.main.path(forResource: "test-config", ofType: "json") {
+            configPath = path
+            
+            if let data = try? Data(contentsOf: URL(fileURLWithPath: path)) {
+                // Print the entire config contents for debugging
+                if let configString = String(data: data, encoding: .utf8) {
+                    configContents = configString
+                    print("📋 [TEST] Full config.json contents:")
+                    print(configString)
+                }
+                
+                if let json = try? JSONSerialization.jsonObject(with: data) as? [String: Any],
+                   let testing = json["testing"] as? [String: Any],
+                   let ciMode = testing["ciMode"] as? Bool {
+                    configCI = ciMode
+                }
+            }
         }
+        
+        print("🔍 [TEST] Config file path: \(configPath)")
+        print("🔍 [TEST] Environment CI: \(envCI)")
+        print("🔍 [TEST] Config CI: \(configCI)")
         
         // Use either detection method
         let isCI = envCI || configCI
