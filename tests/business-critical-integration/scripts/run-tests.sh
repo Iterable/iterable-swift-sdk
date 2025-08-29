@@ -32,6 +32,9 @@ emergency_cleanup() {
     echo_warning "Script interrupted by $signal_name signal!"
     echo_info "Performing emergency cleanup..."
     
+    # Reset config file first
+    reset_config_after_tests
+    
     # Skip device clearing as it's not needed
     
     # Stop and clean simulator if possible
@@ -871,8 +874,8 @@ main() {
     echo
     
     validate_environment
+    prepare_test_environment  # Move this before build so config gets baked in
     setup_simulator
-    prepare_test_environment
     build_test_project
     
     # Clear screenshots from previous test runs
@@ -922,6 +925,9 @@ main() {
     echo_info "Reports available in: $REPORTS_DIR"
     echo_info "Screenshots saved in: $SCREENSHOTS_DIR"
     echo_info "Logs available in: $LOGS_DIR"
+    
+    # Reset config file after tests complete
+    reset_config_after_tests
     
     # Disable EXIT trap for normal exit since we're cleaning up properly
     trap - EXIT

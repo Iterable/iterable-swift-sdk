@@ -48,11 +48,26 @@ class IntegrationTestBase: XCTestCase {
     
     // CI Environment Detection
     let isRunningInCI: Bool = {
+        // First check environment variable
         let ciEnv = ProcessInfo.processInfo.environment["CI"]
-        let isCI = ciEnv == "1" || ciEnv == "true"
+        let envCI = ciEnv == "1" || ciEnv == "true"
+        
+        // Then check config file (updated by script)
+        var configCI = false
+        if let path = Bundle.main.path(forResource: "test-config", ofType: "json"),
+           let data = try? Data(contentsOf: URL(fileURLWithPath: path)),
+           let json = try? JSONSerialization.jsonObject(with: data) as? [String: Any],
+           let testing = json["testing"] as? [String: Any],
+           let ciMode = testing["ciMode"] as? Bool {
+            configCI = ciMode
+        }
+        
+        // Use either detection method
+        let isCI = envCI || configCI
         
         if isCI {
             print("🤖 [TEST] CI ENVIRONMENT DETECTED")
+            print("🔍 [TEST] CI detected via: env=\(envCI), config=\(configCI)")
             print("🎭 [TEST] Push notification testing will use simulated pushes via xcrun simctl")
             print("🔧 [TEST] Mock device tokens will be generated instead of real APNS registration")
         } else {
