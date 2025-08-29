@@ -56,7 +56,7 @@ fi
 if [[ -d "$PROJECT_FILE" ]]; then
     echo "✅ Xcode project exists"
     echo "📁 Project path: $FULL_PROJECT_PATH"
-    
+    '''
     # Try to load the project and list targets
     echo "🔍 Validating Xcode project can be loaded..."
     cd "$PROJECT_DIR"
@@ -96,6 +96,7 @@ else
         echo "🔍 Contents of script directory parent:"
         ls -la "$SCRIPT_DIR/../" 2>/dev/null || echo "Parent directory not accessible"
     fi
+    '''
 fi
 
 echo "🎯 Local environment validation complete"
