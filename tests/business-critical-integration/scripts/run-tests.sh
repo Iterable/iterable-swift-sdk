@@ -349,13 +349,13 @@ prepare_test_environment() {
     if [[ -n "$CI" ]] || [[ -n "$GITHUB_ACTIONS" ]] || [[ -n "$JENKINS_URL" ]] || [[ -n "$BUILDKITE" ]]; then
         export CI="1"
         echo_info "🤖 CI Environment detected - enabling mock push notifications"
+        # Update config.json with CI mode only when CI is detected
+        update_config_for_ci
     else
         export CI="0"
         echo_info "📱 Local Environment - using real APNS push notifications"
+        # Don't override existing config for local runs
     fi
-    
-    # Update config.json with CI mode
-    update_config_for_ci
     
     if [[ "$VERBOSE" == true ]]; then
         export ENABLE_DEBUG_LOGGING="1"

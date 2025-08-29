@@ -18,6 +18,13 @@ fi
 
 echo "Building Iterable SDK Integration Tester app and tests..."
 
+# Check if clean build is requested
+CLEAN_BUILD=false
+if [[ "$1" == "--clean" || "$CI" == "1" ]]; then
+    CLEAN_BUILD=true
+    echo "🧹 Clean build requested - will clean before building"
+fi
+
 # Navigate to the project directory
 PROJECT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 echo "🔍 Project directory: $PROJECT_DIR"
@@ -44,6 +51,17 @@ fi
 # Create temporary files for build outputs
 MAIN_OUTPUT=$(mktemp)
 TEST_OUTPUT=$(mktemp)
+
+if [[ "$CLEAN_BUILD" == true ]]; then
+    echo "🧹 Cleaning build directory..."
+    xcodebuild \
+        -project IterableSDK-Integration-Tester.xcodeproj \
+        -scheme "IterableSDK-Integration-Tester" \
+        -configuration Debug \
+        -sdk iphonesimulator \
+        clean > /dev/null 2>&1
+    echo "✅ Clean completed"
+fi
 
 echo "📱 Building main app target..."
 
