@@ -141,6 +141,20 @@ CI=1 ./scripts/run-tests.sh
 - **Local Environment**: Full validation including 200 status codes continues as normal
 - **Detection**: Uses existing `isRunningInCI` environment detection
 
+## Daily Test User Creation
+
+### Enhancement
+- **Date-Prefixed Email Generation**: Test user emails now include current date prefix for daily unique users
+- **Format**: `YYYY-MM-DD-integration-test-user@test.com` (e.g., `2025-01-07-integration-test-user@test.com`)
+- **Automatic**: Both interactive and non-interactive modes generate date-prefixed emails
+- **Benefits**: Enables fresh test users daily, avoiding conflicts with previous test data
+
+### Implementation
+- Modified `setup-local-environment.sh` to add `$(date +"%Y-%m-%d")` prefix to test emails
+- Works in both interactive and non-interactive setup modes
+- Updates JSON configuration automatically with date-prefixed email
+- Maintains backward compatibility with existing test infrastructure
+
 ## Benefits
 - ✅ Push notification tests run successfully in CI
 - ✅ No changes to existing local testing workflow  
@@ -154,3 +168,4 @@ CI=1 ./scripts/run-tests.sh
 - ✅ **NEW**: Automated push execution via background monitor eliminates manual intervention
 - ✅ **NEW**: Enhanced logging provides comprehensive visibility into push simulation process
 - ✅ **NEW**: Robust file-based communication between iOS test and macOS test runner
+- ✅ **NEW**: Daily test user creation with date-prefixed emails for fresh testing environment
