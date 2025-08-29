@@ -403,12 +403,18 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
                                                 } else {
                                                     ITBDebug("Event replay is disabled; skipping pending consent")
                                                 }
+                                                self.pendingConsentData = nil
                                                 self._successCallback?(data)
                                                 onSuccess?(data)
                                 },
                                 onFailure: { (_ reason: String?, _ data: Data?) in
-                                                // Clear any pending consent on failure
-                                                ITBDebug("Device registration failed; clearing any pending consent")
+                                                // Send any pending consent even when user registration fails
+                                                ITBDebug("Device registration failed; attempting to send pending consent if any")
+                                                if self.config.identityResolution.replayOnVisitorToKnown ?? true {
+                                                    self.sendPendingConsent()
+                                                } else {
+                                                    ITBDebug("Event replay is disabled; skipping pending consent")
+                                                }
                                                 self.pendingConsentData = nil
                                                 self._failureCallback?(reason, data)
                                                 onFailure?(reason, data)
