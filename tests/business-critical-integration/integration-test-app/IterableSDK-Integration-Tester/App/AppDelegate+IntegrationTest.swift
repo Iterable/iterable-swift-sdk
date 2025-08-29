@@ -54,6 +54,19 @@ extension AppDelegate {
         print("✅ Loaded project ID from test-config.json: \(projectId)")
         return projectId
     }
+    
+    static func loadCIModeFromConfig() -> Bool {
+        guard let path = Bundle.main.path(forResource: "test-config", ofType: "json"),
+              let data = try? Data(contentsOf: URL(fileURLWithPath: path)),
+              let json = try? JSONSerialization.jsonObject(with: data) as? [String: Any],
+              let testing = json["testing"] as? [String: Any],
+              let ciMode = testing["ciMode"] as? Bool else {
+            print("⚠️ Could not load ciMode from test-config.json, defaulting to false")
+            return false
+        }
+        print("✅ Loaded CI mode from test-config.json: \(ciMode)")
+        return ciMode
+    }
         
     static func initializeIterableSDK() {
         guard let appDelegate = UIApplication.shared.delegate as? AppDelegate else {
@@ -105,8 +118,8 @@ extension AppDelegate {
     
     // CI Environment Detection
     static var isRunningInCI: Bool {
-        let ciEnv = ProcessInfo.processInfo.environment["CI"]
-        let isCI = ciEnv == "1" || ciEnv == "true"
+        // Check config file (updated by script)
+        let isCI = loadCIModeFromConfig()
         
         if isCI {
             print("🤖 [APP] CI ENVIRONMENT DETECTED - Mock push notifications enabled")

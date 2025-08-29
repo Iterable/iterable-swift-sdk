@@ -283,6 +283,41 @@ setup_simulator() {
     echo_success "Simulator ready: $SIMULATOR_UUID"
 }
 
+update_config_for_ci() {
+    local CONFIG_FILE="$LOCAL_CONFIG_FILE"
+    local TEMP_CONFIG="$CONFIG_FILE.tmp"
+    
+    # Update the ciMode field in config.json based on CI detection
+    if [[ "$CI" == "1" ]]; then
+        jq '.testing.ciMode = true' "$CONFIG_FILE" > "$TEMP_CONFIG"
+        echo_info "🤖 Updated config.json with ciMode: true"
+    else
+        jq '.testing.ciMode = false' "$CONFIG_FILE" > "$TEMP_CONFIG"
+        echo_info "📱 Updated config.json with ciMode: false"
+    fi
+    
+    # Replace the original config file
+    mv "$TEMP_CONFIG" "$CONFIG_FILE"
+}
+
+reset_config_after_tests() {
+    if [[ -f "$LOCAL_CONFIG_FILE" ]]; then
+        local TEMP_CONFIG="$LOCAL_CONFIG_FILE.tmp"
+        
+        # Reset ciMode to false
+        if command -v jq &> /dev/null; then
+            jq '.testing.ciMode = false' "$LOCAL_CONFIG_FILE" > "$TEMP_CONFIG" 2>/dev/null
+            if [[ $? -eq 0 ]]; then
+                mv "$TEMP_CONFIG" "$LOCAL_CONFIG_FILE"
+                echo_info "🔄 Reset config.json ciMode to false"
+            else
+                rm -f "$TEMP_CONFIG" 2>/dev/null
+                echo_warning "⚠️ Failed to reset config.json ciMode"
+            fi
+        fi
+    fi
+}
+
 prepare_test_environment() {
     echo_header "Preparing Test Environment"
     
@@ -315,6 +350,9 @@ prepare_test_environment() {
         export CI="0"
         echo_info "📱 Local Environment - using real APNS push notifications"
     fi
+    
+    # Update config.json with CI mode
+    update_config_for_ci
     
     if [[ "$VERBOSE" == true ]]; then
         export ENABLE_DEBUG_LOGGING="1"
