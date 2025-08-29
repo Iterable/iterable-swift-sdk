@@ -8,16 +8,17 @@ class InAppPresenter {
     static var isPresenting = false
     
     private let maxDelay: TimeInterval
-    
-    private let topViewController: UIViewController
     private let htmlMessageViewController: IterableHtmlMessageViewController
+    private let message: IterableInAppMessage
     private var delayTimer: Timer?
     
-    init(topViewController: UIViewController, htmlMessageViewController: IterableHtmlMessageViewController, maxDelay: TimeInterval = 0.75) {
+    init(htmlMessageViewController: IterableHtmlMessageViewController, 
+         message: IterableInAppMessage,
+         maxDelay: TimeInterval = 0.75) {
         ITBInfo()
         
-        self.topViewController = topViewController
         self.htmlMessageViewController = htmlMessageViewController
+        self.message = message
         self.maxDelay = maxDelay
         
         // shouldn't be necessary, but in case there's some kind of race condition
@@ -41,7 +42,7 @@ class InAppPresenter {
                 ITBInfo("delayTimer called")
                 
                 self.delayTimer = nil
-                self.present()
+                self.presentAfterDelayValidation()
             }
         }
     }
@@ -55,14 +56,26 @@ class InAppPresenter {
             delayTimer?.invalidate()
             delayTimer = nil
             
-            present()
+            presentAfterDelayValidation()
         }
     }
     
-    private func present() {
+    private func presentAfterDelayValidation() {
         ITBInfo()
         
         InAppPresenter.isPresenting = false
+        
+        guard let topViewController = InAppDisplayer.getTopViewController() else {
+            ITBInfo("No top view controller available after delay")
+            return
+        }
+        
+        if topViewController is IterableHtmlMessageViewController {
+            ITBInfo("Another Iterable message is already being displayed")
+            return
+        }
+        
+        topViewController.definesPresentationContext = true
         
         topViewController.present(htmlMessageViewController, animated: false)
         
