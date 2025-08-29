@@ -109,9 +109,11 @@ CI=1 ./scripts/run-tests.sh
 - Cleans up simulator screenshots after successful copy
 
 ### Implementation
-- Uses `xcrun simctl get_app_container` to locate simulator app container
-- Falls back to searching simulator directories if container lookup fails
+- Parses screenshot directory path directly from test log files in reports directory
+- Uses `find` to locate most recent `.log` file for parsing
+- Falls back to searching simulator directories if log parsing fails
 - Integrates into test completion flow before cleanup
+- Fixed xcresulttool deprecation warning by adding `--legacy` flag
 
 ## Benefits
 - ✅ Push notification tests run successfully in CI

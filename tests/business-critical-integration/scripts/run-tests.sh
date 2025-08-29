@@ -494,7 +494,7 @@ run_xcode_tests() {
         local XCRESULT_PATH=$(find /Users/$(whoami)/Library/Developer/Xcode/DerivedData -name "*.xcresult" -type d | grep "IterableSDK-Integration-Tester" | head -1)
         if [[ -n "$XCRESULT_PATH" ]] && command -v xcrun >/dev/null 2>&1; then
             echo_info "Extracting failure details from xcresult..."
-            xcrun xcresulttool get --format json --path "$XCRESULT_PATH" | jq -r '.issues.testFailureSummaries[]?.message // empty' 2>/dev/null | head -5 || echo "Could not extract xcresult details"
+            xcrun xcresulttool get --legacy --format json --path "$XCRESULT_PATH" | jq -r '.issues.testFailureSummaries[]?.message // empty' 2>/dev/null | head -5 || echo "Could not extract xcresult details"
         fi
     fi
     
@@ -723,10 +723,13 @@ copy_screenshots_from_simulator() {
     
     # Parse the simulator screenshots directory from the test logs
     # Look for the line that says "Screenshots will be saved to: ..."
-    local log_file="$LOGS_DIR/xcodebuild-test.log"
+    # Find the most recent .log file in the reports directory
+    local log_file=$(find "$REPORTS_DIR" -name "*.log" -type f -exec ls -t {} + 2>/dev/null | head -1)
     local simulator_screenshots_dir=""
     
     if [[ -f "$log_file" ]]; then
+        echo_info "Using test log file: $log_file"
+        
         # Extract the screenshot directory path from logs
         simulator_screenshots_dir=$(grep "Screenshots will be saved to:" "$log_file" | tail -1 | sed 's/.*Screenshots will be saved to: //' | tr -d '\r')
         
@@ -746,8 +749,18 @@ copy_screenshots_from_simulator() {
             fi
         fi
     else
-        echo_info "Test log file not found at: $log_file"
-        return
+        echo_info "No test log files found in: $REPORTS_DIR"
+        echo_info "Trying fallback search for screenshots..."
+        
+        # Fallback: search for IterableSDK-Screenshots in simulator directories
+        if [[ -n "$SIMULATOR_UUID" ]]; then
+            local simulator_root="/Users/$(whoami)/Library/Developer/CoreSimulator/Devices/$SIMULATOR_UUID"
+            simulator_screenshots_dir=$(find "$simulator_root/data/Containers/Data/Application" -name "IterableSDK-Screenshots" -type d 2>/dev/null | head -1)
+            
+            if [[ -n "$simulator_screenshots_dir" ]]; then
+                echo_info "Found screenshots directory via search: $simulator_screenshots_dir"
+            fi
+        fi
     fi
     
     if [[ -n "$simulator_screenshots_dir" && -d "$simulator_screenshots_dir" ]]; then

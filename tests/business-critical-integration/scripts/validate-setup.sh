@@ -56,34 +56,34 @@ fi
 if [[ -d "$PROJECT_FILE" ]]; then
     echo "✅ Xcode project exists"
     echo "📁 Project path: $FULL_PROJECT_PATH"
-    '''
-    # Try to load the project and list targets
-    echo "🔍 Validating Xcode project can be loaded..."
-    cd "$PROJECT_DIR"
     
-    # Try to load the project and capture any errors
-    XCODE_OUTPUT=$(mktemp)
-    if xcodebuild -list -project IterableSDK-Integration-Tester.xcodeproj > "$XCODE_OUTPUT" 2>&1; then
-        echo "✅ Xcode project loads successfully"
+    # # Try to load the project and list targets
+    # echo "🔍 Validating Xcode project can be loaded..."
+    # cd "$PROJECT_DIR"
+    
+    # # Try to load the project and capture any errors
+    # XCODE_OUTPUT=$(mktemp)
+    # if xcodebuild -list -project IterableSDK-Integration-Tester.xcodeproj > "$XCODE_OUTPUT" 2>&1; then
+    #     echo "✅ Xcode project loads successfully"
         
-        # Show available targets and schemes
-        echo "📋 Available targets and schemes:"
-        cat "$XCODE_OUTPUT"
-    else
-        echo "❌ Xcode project failed to load"
-        echo "🔍 Project location: $FULL_PROJECT_PATH"
-        echo "🔍 Xcode error output:"
-        cat "$XCODE_OUTPUT"
-        echo "🔍 Project file contents:"
-        ls -la "IterableSDK-Integration-Tester.xcodeproj/"
-        echo "🔍 Directory contents:"
-        if [[ -d "$PROJECT_DIR" ]]; then
-            ls -la "$PROJECT_DIR/"
-        else
-            echo "Directory $PROJECT_DIR does not exist"
-        fi
-    fi
-    rm -f "$XCODE_OUTPUT"
+    #     # Show available targets and schemes
+    #     echo "📋 Available targets and schemes:"
+    #     cat "$XCODE_OUTPUT"
+    # else
+    #     echo "❌ Xcode project failed to load"
+    #     echo "🔍 Project location: $FULL_PROJECT_PATH"
+    #     echo "🔍 Xcode error output:"
+    #     cat "$XCODE_OUTPUT"
+    #     echo "🔍 Project file contents:"
+    #     ls -la "IterableSDK-Integration-Tester.xcodeproj/"
+    #     echo "🔍 Directory contents:"
+    #     if [[ -d "$PROJECT_DIR" ]]; then
+    #         ls -la "$PROJECT_DIR/"
+    #     else
+    #         echo "Directory $PROJECT_DIR does not exist"
+    #     fi
+    # fi
+    # rm -f "$XCODE_OUTPUT"
 else
     echo "❌ Xcode project not found"
     echo "🔍 Expected location: $FULL_PROJECT_PATH"
