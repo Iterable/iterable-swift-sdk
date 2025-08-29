@@ -97,7 +97,7 @@ jobs:
       working-directory: tests/business-critical-integration
       run: |
         echo "🧪 Running push notification integration tests..."
-        ./scripts/run-tests.sh push
+        CI=true ./scripts/run-tests.sh push
 
     - name: Upload Test Results
       if: always()

@@ -307,6 +307,15 @@ prepare_test_environment() {
     export TEST_TIMEOUT="$TIMEOUT"
     export SCREENSHOTS_DIR="$SCREENSHOTS_DIR"
     
+    # Detect CI environment and set appropriate variables
+    if [[ -n "$CI" ]] || [[ -n "$GITHUB_ACTIONS" ]] || [[ -n "$JENKINS_URL" ]] || [[ -n "$BUILDKITE" ]]; then
+        export CI="1"
+        echo_info "🤖 CI Environment detected - enabling mock push notifications"
+    else
+        export CI="0"
+        echo_info "📱 Local Environment - using real APNS push notifications"
+    fi
+    
     if [[ "$VERBOSE" == true ]]; then
         export ENABLE_DEBUG_LOGGING="1"
     fi

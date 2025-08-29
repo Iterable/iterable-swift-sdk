@@ -147,6 +147,20 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     // MARK: Silent Push for in-app
     
     func application(_ application: UIApplication, didReceiveRemoteNotification userInfo: [AnyHashable: Any], fetchCompletionHandler completionHandler: @escaping (UIBackgroundFetchResult) -> Void) {
+        print("🔕 [APP] Silent push notification received")
+        print("🔕 [APP] Silent push payload: \(userInfo)")
+        
+        // Log Iterable-specific data if present
+        if let iterableData = userInfo["itbl"] as? [String: Any] {
+            print("🔕 [APP] Iterable-specific data in silent push: \(iterableData)")
+            
+            if let isGhostPush = iterableData["isGhostPush"] as? Bool {
+                print("👻 [APP] Ghost push flag: \(isGhostPush)")
+            }
+        }
+        
+        // Call completion handler
+        completionHandler(.newData)
     }
     
     // MARK: Deep link
@@ -210,18 +224,47 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 // MARK: UNUserNotificationCenterDelegate
 
 extension AppDelegate: UNUserNotificationCenterDelegate {
-    public func userNotificationCenter(_: UNUserNotificationCenter, willPresent _: UNNotification, withCompletionHandler completionHandler: @escaping (UNNotificationPresentationOptions) -> Void) {
+    public func userNotificationCenter(_ center: UNUserNotificationCenter, willPresent notification: UNNotification, withCompletionHandler completionHandler: @escaping (UNNotificationPresentationOptions) -> Void) {
+        print("🔔 [APP] Push notification received while app is in foreground")
+        print("🔔 [APP] Notification payload: \(notification.request.content.userInfo)")
+        print("🔔 [APP] Notification title: \(notification.request.content.title)")
+        print("🔔 [APP] Notification body: \(notification.request.content.body)")
+        
+        if let iterableData = notification.request.content.userInfo["itbl"] as? [String: Any] {
+            print("🔔 [APP] Iterable-specific data: \(iterableData)")
+        }
+        
         completionHandler([.alert, .badge, .sound])
     }
     
     // The method will be called on the delegate when the user responded to the notification by opening the application, dismissing the notification or choosing a UNNotificationAction. The delegate must be set before the application returns from applicationDidFinishLaunching:.
     public func userNotificationCenter(_ center: UNUserNotificationCenter, didReceive response: UNNotificationResponse, withCompletionHandler completionHandler: @escaping () -> Void) {
-        print("🔔 BREAKPOINT HERE: Push notification tapped - processing with Iterable SDK")
-        print("🔔 Notification payload: \(response.notification.request.content.userInfo)")
+        print("🔔 [APP] Push notification tapped - processing with Iterable SDK")
+        print("🔔 [APP] Full notification payload: \(response.notification.request.content.userInfo)")
+        print("🔔 [APP] Notification title: \(response.notification.request.content.title)")
+        print("🔔 [APP] Notification body: \(response.notification.request.content.body)")
         
         // Set a breakpoint on the next line to see when push notifications are tapped
         let actionIdentifier = response.actionIdentifier
-        print("🔔 Action identifier: \(actionIdentifier)")
+        print("🔔 [APP] Action identifier: \(actionIdentifier)")
+        
+        // Log Iterable-specific data if present
+        if let iterableData = response.notification.request.content.userInfo["itbl"] as? [String: Any] {
+            print("🔔 [APP] Iterable-specific data: \(iterableData)")
+            
+            if let deepLinkURL = iterableData["deepLinkURL"] as? String {
+                print("🔗 [APP] Deep link URL found in payload: \(deepLinkURL)")
+            }
+            
+            if let campaignId = iterableData["campaignId"] {
+                print("📊 [APP] Campaign ID: \(campaignId)")
+            }
+        }
+        
+        // Log APS data
+        if let apsData = response.notification.request.content.userInfo["aps"] as? [String: Any] {
+            print("🍎 [APP] APS data: \(apsData)")
+        }
         
         // ITBL: This should process the notification and trigger deep link handling
         print("🔔 About to call IterableAppIntegration.userNotificationCenter")
