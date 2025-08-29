@@ -436,7 +436,10 @@ run_xcode_tests() {
     
     # Build test report file
     local TEST_CLASS_LOWER=$(echo "$TEST_CLASS" | tr '[:upper:]' '[:lower:]')
-    local TEST_REPORT="$REPORTS_DIR/${TEST_CLASS_LOWER}-$(date +%Y%m%d-%H%M%S).json"
+    local TIMESTAMP=$(date +%Y%m%d-%H%M%S)
+    local TEST_REPORT="$REPORTS_DIR/${TEST_CLASS_LOWER}-${TIMESTAMP}.json"
+    local XCRESULT_PATH="$REPORTS_DIR/${TEST_CLASS_LOWER}-${TIMESTAMP}.xcresult"
+    local LOG_FILE="$LOGS_DIR/${TEST_CLASS_LOWER}-${TIMESTAMP}.log"
     
     # Run the specific test using xcodebuild test-without-building
     local XCODEBUILD_CMD=(
@@ -447,6 +450,7 @@ run_xcode_tests() {
         -sdk iphonesimulator
         -destination "id=$SIMULATOR_UUID"
         -parallel-testing-enabled NO
+        -resultBundlePath "$XCRESULT_PATH"
         test-without-building
         SCREENSHOTS_DIR="$SCREENSHOTS_DIR"
         ITERABLE_MOBILE_API_KEY="$MOBILE_API_KEY"
@@ -471,7 +475,8 @@ run_xcode_tests() {
     # Export CI to the test process environment
     export CI="$CI"
     
-    "${XCODEBUILD_CMD[@]}" 2>&1 | tee "$TEST_REPORT.log"
+    # Save full log to logs directory and a copy to reports for screenshot parsing
+    "${XCODEBUILD_CMD[@]}" 2>&1 | tee "$LOG_FILE" "$TEST_REPORT.log"
     local EXIT_CODE=${PIPESTATUS[0]}
     
     # If test failed, try to extract and show the failure reason
@@ -491,8 +496,7 @@ run_xcode_tests() {
         fi
         
         # Try to extract from xcresult if available
-        local XCRESULT_PATH=$(find /Users/$(whoami)/Library/Developer/Xcode/DerivedData -name "*.xcresult" -type d | grep "IterableSDK-Integration-Tester" | head -1)
-        if [[ -n "$XCRESULT_PATH" ]] && command -v xcrun >/dev/null 2>&1; then
+        if [[ -d "$XCRESULT_PATH" ]] && command -v xcrun >/dev/null 2>&1; then
             echo_info "Extracting failure details from xcresult..."
             xcrun xcresulttool get --legacy --format json --path "$XCRESULT_PATH" | jq -r '.issues.testFailureSummaries[]?.message // empty' 2>/dev/null | head -5 || echo "Could not extract xcresult details"
         fi

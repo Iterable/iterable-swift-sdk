@@ -115,6 +115,21 @@ CI=1 ./scripts/run-tests.sh
 - Integrates into test completion flow before cleanup
 - Fixed xcresulttool deprecation warning by adding `--legacy` flag
 
+## Test Artifacts Organization
+
+### Directory Structure
+- **📁 reports/**: XCTest result bundles (.xcresult) and test reports (.log files for screenshot parsing)
+- **📁 logs/**: Complete test execution logs with full output 
+- **📁 screenshots/**: Test screenshots automatically copied from simulator
+- **📁 scripts/**: Test execution and utility scripts
+
+### File Naming Convention
+- Timestamp format: `YYYYMMDD-HHMMSS`
+- Test class name converted to lowercase
+- Examples:
+  - `pushnotificationintegrationtests-20250829-131349.xcresult`
+  - `pushnotificationintegrationtests-20250829-131349.log`
+
 ## Benefits
 - ✅ Push notification tests run successfully in CI
 - ✅ No changes to existing local testing workflow  
@@ -122,3 +137,5 @@ CI=1 ./scripts/run-tests.sh
 - ✅ Supports both standard and deep link push notifications
 - ✅ Maintains payload format compatibility for future changes
 - ✅ Screenshots automatically copied to project directory for review and CI artifacts
+- ✅ Complete test artifacts organized in dedicated directories
+- ✅ XCTest results saved for detailed analysis and CI integration
