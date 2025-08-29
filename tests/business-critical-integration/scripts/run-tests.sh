@@ -713,6 +713,71 @@ EOF
     echo_info "HTML report generated: $html_report"
 }
 
+copy_screenshots_from_simulator() {
+    echo_header "Copying Screenshots from Simulator"
+    
+    # Parse the simulator screenshots directory from the test logs
+    # Look for the line that says "Screenshots will be saved to: ..."
+    local log_file="$LOGS_DIR/xcodebuild-test.log"
+    local simulator_screenshots_dir=""
+    
+    if [[ -f "$log_file" ]]; then
+        # Extract the screenshot directory path from logs
+        simulator_screenshots_dir=$(grep "Screenshots will be saved to:" "$log_file" | tail -1 | sed 's/.*Screenshots will be saved to: //' | tr -d '\r')
+        
+        if [[ -n "$simulator_screenshots_dir" ]]; then
+            echo_info "Found simulator screenshots directory from logs: $simulator_screenshots_dir"
+        else
+            echo_info "Could not parse screenshot directory from logs, trying fallback search..."
+            
+            # Fallback: search for IterableSDK-Screenshots in simulator directories
+            if [[ -n "$SIMULATOR_UUID" ]]; then
+                local simulator_root="/Users/$(whoami)/Library/Developer/CoreSimulator/Devices/$SIMULATOR_UUID"
+                simulator_screenshots_dir=$(find "$simulator_root/data/Containers/Data/Application" -name "IterableSDK-Screenshots" -type d 2>/dev/null | head -1)
+                
+                if [[ -n "$simulator_screenshots_dir" ]]; then
+                    echo_info "Found screenshots directory via search: $simulator_screenshots_dir"
+                fi
+            fi
+        fi
+    else
+        echo_info "Test log file not found at: $log_file"
+        return
+    fi
+    
+    if [[ -n "$simulator_screenshots_dir" && -d "$simulator_screenshots_dir" ]]; then
+        echo_info "Found simulator screenshots at: $simulator_screenshots_dir"
+        
+        # Count screenshots to copy
+        local screenshot_count=$(find "$simulator_screenshots_dir" -name "*.png" 2>/dev/null | wc -l | tr -d ' ')
+        
+        if [[ $screenshot_count -gt 0 ]]; then
+            echo_info "Copying $screenshot_count screenshots to project directory..."
+            
+            # Clear existing screenshots in project directory first
+            rm -rf "$SCREENSHOTS_DIR"/*
+            
+            # Copy all screenshots from simulator to project
+            cp "$simulator_screenshots_dir"/*.png "$SCREENSHOTS_DIR"/ 2>/dev/null || true
+            
+            # Verify copy
+            local copied_count=$(find "$SCREENSHOTS_DIR" -name "*.png" 2>/dev/null | wc -l | tr -d ' ')
+            echo_success "Successfully copied $copied_count screenshots to: $SCREENSHOTS_DIR"
+            
+            # Clean up simulator screenshots after successful copy
+            rm -rf "$simulator_screenshots_dir"/*.png 2>/dev/null || true
+            echo_info "Cleared simulator screenshots after copying"
+        else
+            echo_info "No screenshots found in simulator directory"
+        fi
+    else
+        echo_info "Could not locate simulator screenshots directory"
+        if [[ -n "$simulator_screenshots_dir" ]]; then
+            echo_info "Directory does not exist: $simulator_screenshots_dir"
+        fi
+    fi
+}
+
 cleanup_test_environment() {
     if [[ "$CLEANUP" == false ]]; then
         echo_info "Skipping cleanup (--no-cleanup specified)"
@@ -782,6 +847,9 @@ main() {
     esac
     
     # Tests completed
+    
+    # Copy screenshots from simulator to project directory
+    copy_screenshots_from_simulator
     
     cleanup_test_environment
     

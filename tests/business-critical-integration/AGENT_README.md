@@ -96,9 +96,27 @@ CI=1 ./scripts/run-tests.sh
 }
 ```
 
+## Screenshot Management
+
+### Problem
+- Screenshots were being saved to iOS simulator's Documents directory instead of project's screenshots folder
+- Screenshots from test runs were not accessible for review or CI artifacts
+
+### Solution
+- Added `copy_screenshots_from_simulator()` function to run-tests.sh
+- Automatically copies screenshots from simulator Documents to project screenshots folder after tests complete
+- Clears previous screenshots from project directory before copying new ones
+- Cleans up simulator screenshots after successful copy
+
+### Implementation
+- Uses `xcrun simctl get_app_container` to locate simulator app container
+- Falls back to searching simulator directories if container lookup fails
+- Integrates into test completion flow before cleanup
+
 ## Benefits
 - ✅ Push notification tests run successfully in CI
 - ✅ No changes to existing local testing workflow  
 - ✅ Tests complete push flow including device registration
 - ✅ Supports both standard and deep link push notifications
 - ✅ Maintains payload format compatibility for future changes
+- ✅ Screenshots automatically copied to project directory for review and CI artifacts
