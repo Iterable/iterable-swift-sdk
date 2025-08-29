@@ -290,6 +290,10 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
         return self.localStorage.visitorUsageTracked
     }
 
+    func getConsentLogged() -> Bool {
+        return self.localStorage.isConsentLogged
+    }
+
     /// Prepares consent data to be sent when user registration is confirmed during "replay scenario".
     ///
     /// A "replay scenario" occurs when a user signs up or logs in but does not meet the criteria
@@ -326,6 +330,13 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
             return
         }
         
+        // Check if consent has already been logged to prevent duplicates
+        if localStorage.isConsentLogged {
+            ITBDebug("Consent already logged, skipping duplicate consent tracking")
+            pendingConsentData = nil
+            return
+        }
+        
         ITBDebug("Sending pending consent after user registration: email set=\(consentData.email != nil), userId set=\(consentData.userId != nil), timestamp=\(consentData.consentTimestamp)")
         
         // Track consent with retry logic if enabled
@@ -342,7 +353,10 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
             email: consentData.email,
             userId: consentData.userId,
             isUserKnown: consentData.isUserKnown
-        ).onSuccess { _ in
+        ).onSuccess { [weak self] _ in
+            // Mark consent as logged to prevent future duplicates
+            self?.localStorage.isConsentLogged = true
+            
             if isRetryAttempt {
                 ITBInfo("Pending consent tracked successfully on retry attempt after user registration")
             } else {

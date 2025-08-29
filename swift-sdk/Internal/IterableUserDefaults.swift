@@ -170,6 +170,14 @@ class IterableUserDefaults {
         }
     }
     
+    var isConsentLogged: Bool {
+        get {
+            bool(withKey: .isConsentLogged)
+        } set {
+            save(bool: newValue, withKey: .isConsentLogged)
+        }
+    }
+    
     func getAttributionInfo(currentDate: Date) -> IterableAttributionInfo? {
         (try? codable(withKey: .attributionInfo, currentDate: currentDate)) ?? nil
     }
@@ -346,6 +354,7 @@ class IterableUserDefaults {
 
         static let isNotificationsEnabled = UserDefaultsKey(value: Const.UserDefault.isNotificationsEnabled)
         static let hasStoredNotificationSetting = UserDefaultsKey(value: Const.UserDefault.hasStoredNotificationSetting)
+        static let isConsentLogged = UserDefaultsKey(value: Const.UserDefault.isConsentLogged)
     }
     private struct Envelope: Codable {
         let payload: Data
