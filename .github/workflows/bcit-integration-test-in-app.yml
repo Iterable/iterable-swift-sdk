@@ -27,7 +27,8 @@ jobs:
           contains(github.event.pull_request.labels.*.name, 'bcit-inapp') ||
           contains(github.event.pull_request.labels.*.name, 'BCIT-INAPP') ||
           contains(github.event.pull_request.labels.*.name, 'Bcit') ||
-          contains(github.event.pull_request.labels.*.name, 'Bcit-Inapp')
+          contains(github.event.pull_request.labels.*.name, 'Bcit-Inapp') ||
+          startsWith(github.event.pull_request.head.ref, 'release/')
         )
       )
 
