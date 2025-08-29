@@ -753,6 +753,14 @@ class IntegrationTestBase: XCTestCase {
             print("📋 [TEST] Created command file: \(commandFile.path)")
             print("🔍 [TEST] Test runner should monitor: \(persistentPayloadDir.path)")
             
+            // Copy payload to logs directory for manual testing
+            let logsDir = URL(fileURLWithPath: FileManager.default.currentDirectoryPath).appendingPathComponent("logs")
+            try? FileManager.default.createDirectory(at: logsDir, withIntermediateDirectories: true)
+            let timestamp = DateFormatter().apply { $0.dateFormat = "yyyyMMdd-HHmmss" }.string(from: Date())
+            let logsPayload = logsDir.appendingPathComponent("push_\(timestamp).apns")
+            try? payloadData.write(to: logsPayload)
+            print("📁 [TEST] Copied to logs: \(logsPayload.path)")
+            
             #if os(macOS)
             // Process is only available on macOS, not iOS
             let task = Process()
