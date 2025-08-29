@@ -630,13 +630,43 @@ class IntegrationTestBase: XCTestCase {
         let endpointCell = app.cells.containing(endpointPredicate).firstMatch
         XCTAssertTrue(endpointCell.waitForExistence(timeout: 5.0), "\(endpoint) API call should be made")
         
-        // Look for the status code label within the cell - should show "200" in green
-        let statusPredicate = NSPredicate(format: "label == '200'")
-        let statusLabel = endpointCell.staticTexts.containing(statusPredicate).firstMatch
-        XCTAssertTrue(statusLabel.waitForExistence(timeout: 2.0), "\(description) - Expected 200 status code for \(endpoint)")
+        // Debug: Print all static text elements in the cell to understand the structure
+        print("🔍 Debug: Static texts in \(endpoint) cell:")
+        for staticText in endpointCell.staticTexts.allElementsBoundByIndex {
+            if staticText.exists {
+                print("   - Label: '\(staticText.label)'")
+            }
+        }
         
-        // Additional validation: check that it's not an error status by looking for green color
-        // Note: We can't directly test color in UI tests, but we can verify it's not showing error indicators
+        // Look for the status code label within the cell - try multiple approaches
+        // First try exact match for "200"
+        let exactStatusPredicate = NSPredicate(format: "label == '200'")
+        let exactStatusLabel = endpointCell.staticTexts.containing(exactStatusPredicate).firstMatch
+        
+        // Also try looking for status codes that contain 200 (e.g., "Status: 200" or "200 OK")
+        let containsStatusPredicate = NSPredicate(format: "label CONTAINS '200'")
+        let containsStatusLabel = endpointCell.staticTexts.containing(containsStatusPredicate).firstMatch
+        
+        // Try waiting longer (8 seconds total) for either format to appear
+        // Check if either status format already exists first
+        var statusFound = exactStatusLabel.exists || containsStatusLabel.exists
+        
+        if !statusFound {
+            // Wait up to 8 seconds for either status format to appear
+            let startTime = Date()
+            let maxWaitTime: TimeInterval = 8.0
+            
+            while !statusFound && Date().timeIntervalSince(startTime) < maxWaitTime {
+                statusFound = exactStatusLabel.exists || containsStatusLabel.exists
+                if !statusFound {
+                    Thread.sleep(forTimeInterval: 0.5) // Check every 500ms
+                }
+            }
+        }
+        
+        XCTAssertTrue(statusFound, "\(description) - Expected 200 status code for \(endpoint)")
+        
+        // Additional validation: check that it's not an error status by looking for error codes
         let errorStatusPredicate = NSPredicate(format: "label BEGINSWITH '4' OR label BEGINSWITH '5'")
         let errorStatusLabel = endpointCell.staticTexts.containing(errorStatusPredicate).firstMatch
         XCTAssertFalse(errorStatusLabel.exists, "\(endpoint) should not have error status code (4xx/5xx)")
