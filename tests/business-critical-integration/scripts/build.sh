@@ -80,6 +80,17 @@ if [ $MAIN_BUILD_STATUS -eq 0 ]; then
     
     echo "🧪 Building test target..."
     
+    # Clean test target if needed
+    if [[ "$CLEAN_BUILD" == true ]]; then
+        echo "🧹 Cleaning test target..."
+        xcodebuild \
+            -project IterableSDK-Integration-Tester.xcodeproj \
+            -scheme "IterableSDK-Integration-Tester" \
+            -configuration Debug \
+            -sdk iphonesimulator \
+            clean > /dev/null 2>&1
+    fi
+    
     # Build the test target
     xcodebuild \
         -project IterableSDK-Integration-Tester.xcodeproj \
