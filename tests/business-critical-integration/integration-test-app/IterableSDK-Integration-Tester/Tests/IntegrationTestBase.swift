@@ -57,10 +57,19 @@ class IntegrationTestBase: XCTestCase {
         var configPath = "NOT_FOUND"
         var configContents = "UNABLE_TO_READ"
         
-        if let path = Bundle.main.path(forResource: "test-config", ofType: "json") {
-            configPath = path
+        // Look in app bundle first, then test bundle
+        var path: String?
+        if let appBundle = Bundle(identifier: "com.sumeru.IterableSDK-Integration-Tester") {
+            path = appBundle.path(forResource: "test-config", ofType: "json")
+        }
+        if path == nil {
+            path = Bundle.main.path(forResource: "test-config", ofType: "json")
+        }
+        
+        if let foundPath = path {
+            configPath = foundPath
             
-            if let data = try? Data(contentsOf: URL(fileURLWithPath: path)) {
+            if let data = try? Data(contentsOf: URL(fileURLWithPath: foundPath)) {
                 // Print the entire config contents for debugging
                 if let configString = String(data: data, encoding: .utf8) {
                     configContents = configString
