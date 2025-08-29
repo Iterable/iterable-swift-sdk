@@ -140,6 +140,14 @@ struct LocalStorage: LocalStorageProtocol {
         }
     }
     
+    var isConsentLogged: Bool {
+        get {
+            iterableUserDefaults.isConsentLogged
+        } set {
+            iterableUserDefaults.isConsentLogged = newValue
+        }
+    }
+    
     func getAttributionInfo(currentDate: Date) -> IterableAttributionInfo? {
         iterableUserDefaults.getAttributionInfo(currentDate: currentDate)
     }
