@@ -4,6 +4,25 @@
 
 import Foundation
 
+/// Protocol to provide dynamic control over in-app message display timing.
+/// This delegate allows the application to determine at the exact moment 
+/// whether an in-app message should be displayed, providing more granular
+/// control than the static `isAutoDisplayPaused` property.
+@objc public protocol IterableInAppDisplayDelegate {
+    
+    /// Called to determine if in-app messages should be automatically displayed at this moment.
+    /// This method is called just before an in-app message would be shown, allowing the app
+    /// to make a real-time decision based on current app state.
+    ///
+    /// - Parameter message: The in-app message that is about to be displayed
+    /// - Returns: `true` if automatic display should be paused (message will not show), `false` if display should proceed
+    ///
+    /// - Note: This method is called in addition to other display checks. If this returns `true`,
+    ///         the message will not be shown regardless of other conditions.
+    /// - Note: If this delegate is not set, the default behavior uses the `isAutoDisplayPaused` property.
+    @objc optional func isAutoDisplayPaused(for message: IterableInAppMessage) -> Bool
+}
+
 public enum IterableAPIMobileFrameworkType: String, Codable {
     case flutter = "flutter"
     case reactNative = "reactnative"
@@ -134,6 +153,12 @@ public class IterableConfig: NSObject {
     /// By default, every single in-app will be shown as soon as it is available.
     /// If more than 1 in-app is available, we show the first.
     public var inAppDelegate: IterableInAppDelegate = DefaultInAppDelegate()
+    
+    /// Implement this protocol to provide dynamic control over when in-app messages can be displayed.
+    /// This delegate allows real-time decision making about display timing, providing more granular
+    /// control than the static `isAutoDisplayPaused` property. If not set, the SDK will fall back
+    /// to using the `isAutoDisplayPaused` property.
+    public var inAppDisplayDelegate: IterableInAppDisplayDelegate?
     
     /// How many seconds to wait before showing the next in-app, if there are more than one present
     public var inAppDisplayInterval: Double = 30.0

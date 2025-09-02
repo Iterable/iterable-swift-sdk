@@ -103,7 +103,7 @@ jobs:
             - [ ] All tests passing
             - [ ] Documentation updated (if needed)
             
-          branch: "MOB-${{ github.event.inputs.jira_ticket }}-prepare-for-release-${{ steps.update_changelog.outputs.new_version }}"
+          branch: "release/MOB-${{ github.event.inputs.jira_ticket }}-prepare-for-release-${{ steps.update_changelog.outputs.new_version }}"
           commit-message: "[MOB-${{ github.event.inputs.jira_ticket }}]: Prepare for release ${{ steps.update_changelog.outputs.new_version }}"
           labels: release
           delete-branch: true
