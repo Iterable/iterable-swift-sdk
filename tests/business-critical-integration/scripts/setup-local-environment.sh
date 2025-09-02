@@ -179,7 +179,9 @@ configure_api_keys() {
         PROJECT_ID="$PARAM_PROJECT_ID"
         SERVER_KEY="$PARAM_SERVER_KEY"
         MOBILE_KEY="$PARAM_MOBILE_KEY"
-        TEST_USER_EMAIL="integration-test-user@test.com"
+        # Generate date-prefixed email for daily unique users
+        DATE_PREFIX=$(date +"%Y-%m-%d")
+        TEST_USER_EMAIL="${DATE_PREFIX}-integration-test-user@test.com"
         echo_info "Running in non-interactive mode with provided parameters"
         echo_info "Using provided parameters:"
         echo_info "Project ID: $PROJECT_ID"
@@ -247,8 +249,9 @@ configure_api_keys() {
             exit 1
         fi
         
-        # Set test user email  
-        TEST_USER_EMAIL="integration-test-user@test.com"
+        # Set test user email with date prefix for daily unique users
+        DATE_PREFIX=$(date +"%Y-%m-%d")
+        TEST_USER_EMAIL="${DATE_PREFIX}-integration-test-user@test.com"
     fi
     
     # Create local config file

@@ -27,7 +27,8 @@ jobs:
           contains(github.event.pull_request.labels.*.name, 'bcit-push') ||
           contains(github.event.pull_request.labels.*.name, 'BCIT-PUSH') ||
           contains(github.event.pull_request.labels.*.name, 'Bcit') ||
-          contains(github.event.pull_request.labels.*.name, 'Bcit-Push')
+          contains(github.event.pull_request.labels.*.name, 'Bcit-Push') ||
+          startsWith(github.event.pull_request.head.ref, 'release/')
         )
       )
 
@@ -97,7 +98,7 @@ jobs:
       working-directory: tests/business-critical-integration
       run: |
         echo "🧪 Running push notification integration tests..."
-        ./scripts/run-tests.sh push
+        CI=true ./scripts/run-tests.sh push
 
     - name: Upload Test Results
       if: always()

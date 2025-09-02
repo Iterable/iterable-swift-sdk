@@ -43,6 +43,7 @@ class InAppManager: NSObject, IterableInternalInAppManagerProtocol {
          displayer: InAppDisplayerProtocol,
          persister: InAppPersistenceProtocol,
          inAppDelegate: IterableInAppDelegate,
+         inAppDisplayDelegate: IterableInAppDisplayDelegate?,
          urlDelegate: IterableURLDelegate?,
          customActionDelegate: IterableCustomActionDelegate?,
          urlOpener: UrlOpenerProtocol,
@@ -59,6 +60,7 @@ class InAppManager: NSObject, IterableInternalInAppManagerProtocol {
         self.displayer = displayer
         self.persister = persister
         self.inAppDelegate = inAppDelegate
+        self.inAppDisplayDelegate = inAppDisplayDelegate
         self.urlDelegate = urlDelegate
         self.customActionDelegate = customActionDelegate
         self.urlOpener = urlOpener
@@ -555,6 +557,7 @@ class InAppManager: NSObject, IterableInternalInAppManagerProtocol {
     private let fetcher: InAppFetcherProtocol
     private let displayer: InAppDisplayerProtocol
     private let inAppDelegate: IterableInAppDelegate
+    private let inAppDisplayDelegate: IterableInAppDisplayDelegate?
     private let urlDelegate: IterableURLDelegate?
     private let customActionDelegate: IterableCustomActionDelegate?
     private let urlOpener: UrlOpenerProtocol
@@ -654,7 +657,10 @@ extension InAppManager: InAppNotifiable {
 
 extension InAppManager: InAppDisplayChecker {
     func isOkToShowNow(message: IterableInAppMessage) -> Bool {
-        guard !isAutoDisplayPaused else {
+        // Check delegate first if available, otherwise fall back to isAutoDisplayPaused property
+        let autoDisplayPaused = inAppDisplayDelegate?.isAutoDisplayPaused?(for: message) ?? isAutoDisplayPaused
+        
+        guard !autoDisplayPaused else {
             ITBInfo("automatic in-app display has been paused")
             return false
         }

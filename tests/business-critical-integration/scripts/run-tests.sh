@@ -32,6 +32,9 @@ emergency_cleanup() {
     echo_warning "Script interrupted by $signal_name signal!"
     echo_info "Performing emergency cleanup..."
     
+    # Reset config file first
+    reset_config_after_tests
+    
     # Skip device clearing as it's not needed
     
     # Stop and clean simulator if possible
@@ -283,6 +286,41 @@ setup_simulator() {
     echo_success "Simulator ready: $SIMULATOR_UUID"
 }
 
+update_config_for_ci() {
+    local CONFIG_FILE="$LOCAL_CONFIG_FILE"
+    local TEMP_CONFIG="$CONFIG_FILE.tmp"
+    
+    # Update the ciMode field in config.json based on CI detection
+    if [[ "$CI" == "1" ]]; then
+        jq '.testing.ciMode = true' "$CONFIG_FILE" > "$TEMP_CONFIG"
+        echo_info "🤖 Updated config.json with ciMode: true"
+    else
+        jq '.testing.ciMode = false' "$CONFIG_FILE" > "$TEMP_CONFIG"
+        echo_info "📱 Updated config.json with ciMode: false"
+    fi
+    
+    # Replace the original config file
+    mv "$TEMP_CONFIG" "$CONFIG_FILE"
+}
+
+reset_config_after_tests() {
+    if [[ -f "$LOCAL_CONFIG_FILE" ]]; then
+        local TEMP_CONFIG="$LOCAL_CONFIG_FILE.tmp"
+        
+        # Reset ciMode to false
+        if command -v jq &> /dev/null; then
+            jq '.testing.ciMode = false' "$LOCAL_CONFIG_FILE" > "$TEMP_CONFIG" 2>/dev/null
+            if [[ $? -eq 0 ]]; then
+                mv "$TEMP_CONFIG" "$LOCAL_CONFIG_FILE"
+                echo_info "🔄 Reset config.json ciMode to false"
+            else
+                rm -f "$TEMP_CONFIG" 2>/dev/null
+                echo_warning "⚠️ Failed to reset config.json ciMode"
+            fi
+        fi
+    fi
+}
+
 prepare_test_environment() {
     echo_header "Preparing Test Environment"
     
@@ -306,6 +344,18 @@ prepare_test_environment() {
     export SIMULATOR_UUID="$SIMULATOR_UUID"
     export TEST_TIMEOUT="$TIMEOUT"
     export SCREENSHOTS_DIR="$SCREENSHOTS_DIR"
+    
+    # Detect CI environment and set appropriate variables
+    if [[ -n "$CI" ]] || [[ -n "$GITHUB_ACTIONS" ]] || [[ -n "$JENKINS_URL" ]] || [[ -n "$BUILDKITE" ]]; then
+        export CI="1"
+        echo_info "🤖 CI Environment detected - enabling mock push notifications"
+        # Update config.json with CI mode only when CI is detected
+        update_config_for_ci
+    else
+        export CI="0"
+        echo_info "📱 Local Environment - using real APNS push notifications"
+        # Don't override existing config for local runs
+    fi
     
     if [[ "$VERBOSE" == true ]]; then
         export ENABLE_DEBUG_LOGGING="1"
@@ -416,6 +466,86 @@ clear_screenshots_directory() {
     echo_info "Screenshots will be saved to: $SCREENSHOTS_DIR"
 }
 
+# MARK: - Push Notification Support
+
+setup_push_monitoring() {
+    if [[ "$CI" == "1" ]]; then
+        echo_info "🤖 Setting up push notification monitoring for CI environment"
+        
+        # Create push queue directory
+        local PUSH_QUEUE_DIR="/tmp/push_queue"
+        mkdir -p "$PUSH_QUEUE_DIR"
+        
+        echo_info "📁 Push queue directory: $PUSH_QUEUE_DIR"
+        echo_info "🔍 Starting background push monitor..."
+        
+        # Start background push monitor
+        start_push_monitor "$PUSH_QUEUE_DIR" &
+        local MONITOR_PID=$!
+        echo "$MONITOR_PID" > "/tmp/push_monitor.pid"
+        
+        echo_info "⚡ Push monitor started with PID: $MONITOR_PID"
+    else
+        echo_info "📱 Local environment - push monitoring not needed"
+    fi
+}
+
+start_push_monitor() {
+    local PUSH_QUEUE_DIR="$1"
+    
+    echo_info "🔄 Push monitor started - watching: $PUSH_QUEUE_DIR"
+    
+    while true; do
+        # Look for new command files
+        for COMMAND_FILE in "$PUSH_QUEUE_DIR"/command_*.txt; do
+            [[ -f "$COMMAND_FILE" ]] || continue
+            
+            echo_info "📋 Found command file: $COMMAND_FILE"
+            
+            # Read and execute the command
+            local COMMAND=$(cat "$COMMAND_FILE" 2>/dev/null)
+            if [[ -n "$COMMAND" ]]; then
+                echo_info "🚀 Executing push command: $COMMAND"
+                
+                # Execute the xcrun simctl command
+                eval "$COMMAND"
+                local EXIT_CODE=$?
+                
+                if [[ $EXIT_CODE -eq 0 ]]; then
+                    echo_info "✅ Push notification sent successfully"
+                else
+                    echo_error "❌ Push notification failed with exit code: $EXIT_CODE"
+                fi
+                
+                # Remove the command file after processing
+                rm -f "$COMMAND_FILE"
+                echo_info "🗑️ Cleaned up command file: $COMMAND_FILE"
+            else
+                echo_warning "⚠️ Empty command file: $COMMAND_FILE"
+                rm -f "$COMMAND_FILE"
+            fi
+        done
+        
+        # Sleep for a short interval before checking again
+        sleep 0.5
+    done
+}
+
+cleanup_push_monitoring() {
+    if [[ -f "/tmp/push_monitor.pid" ]]; then
+        local MONITOR_PID=$(cat /tmp/push_monitor.pid)
+        echo_info "🛑 Stopping push monitor (PID: $MONITOR_PID)"
+        
+        kill "$MONITOR_PID" 2>/dev/null || true
+        rm -f "/tmp/push_monitor.pid"
+        
+        # Clean up push queue directory
+        rm -rf "/tmp/push_queue" 2>/dev/null || true
+        
+        echo_info "✅ Push monitoring cleanup completed"
+    fi
+}
+
 run_xcode_tests() {
     local TEST_CLASS="$1"
     local TEST_METHOD="$2"
@@ -427,7 +557,10 @@ run_xcode_tests() {
     
     # Build test report file
     local TEST_CLASS_LOWER=$(echo "$TEST_CLASS" | tr '[:upper:]' '[:lower:]')
-    local TEST_REPORT="$REPORTS_DIR/${TEST_CLASS_LOWER}-$(date +%Y%m%d-%H%M%S).json"
+    local TIMESTAMP=$(date +%Y%m%d-%H%M%S)
+    local TEST_REPORT="$REPORTS_DIR/${TEST_CLASS_LOWER}-${TIMESTAMP}.json"
+    local XCRESULT_PATH="$REPORTS_DIR/${TEST_CLASS_LOWER}-${TIMESTAMP}.xcresult"
+    local LOG_FILE="$LOGS_DIR/${TEST_CLASS_LOWER}-${TIMESTAMP}.log"
     
     # Run the specific test using xcodebuild test-without-building
     local XCODEBUILD_CMD=(
@@ -438,6 +571,7 @@ run_xcode_tests() {
         -sdk iphonesimulator
         -destination "id=$SIMULATOR_UUID"
         -parallel-testing-enabled NO
+        -resultBundlePath "$XCRESULT_PATH"
         test-without-building
         SCREENSHOTS_DIR="$SCREENSHOTS_DIR"
         ITERABLE_MOBILE_API_KEY="$MOBILE_API_KEY"
@@ -457,7 +591,13 @@ run_xcode_tests() {
     
     # Run the test with verbose output
     echo_info "Executing: ${XCODEBUILD_CMD[*]}"
-    "${XCODEBUILD_CMD[@]}" 2>&1 | tee "$TEST_REPORT.log"
+    echo_info "CI environment variable: CI=$CI"
+    
+    # Export CI to the test process environment
+    export CI="$CI"
+    
+    # Save full log to logs directory and a copy to reports for screenshot parsing
+    "${XCODEBUILD_CMD[@]}" 2>&1 | tee "$LOG_FILE" "$TEST_REPORT.log"
     local EXIT_CODE=${PIPESTATUS[0]}
     
     # If test failed, try to extract and show the failure reason
@@ -477,10 +617,9 @@ run_xcode_tests() {
         fi
         
         # Try to extract from xcresult if available
-        local XCRESULT_PATH=$(find /Users/$(whoami)/Library/Developer/Xcode/DerivedData -name "*.xcresult" -type d | grep "IterableSDK-Integration-Tester" | head -1)
-        if [[ -n "$XCRESULT_PATH" ]] && command -v xcrun >/dev/null 2>&1; then
+        if [[ -d "$XCRESULT_PATH" ]] && command -v xcrun >/dev/null 2>&1; then
             echo_info "Extracting failure details from xcresult..."
-            xcrun xcresulttool get --format json --path "$XCRESULT_PATH" | jq -r '.issues.testFailureSummaries[]?.message // empty' 2>/dev/null | head -5 || echo "Could not extract xcresult details"
+            xcrun xcresulttool get --legacy --format json --path "$XCRESULT_PATH" | jq -r '.issues.testFailureSummaries[]?.message // empty' 2>/dev/null | head -5 || echo "Could not extract xcresult details"
         fi
     fi
     
@@ -501,20 +640,54 @@ run_push_notification_tests() {
         return 0
     fi
     
+    # Set up push monitoring for CI environment
+    setup_push_monitoring
+    
+    # Set up cleanup trap to ensure monitor is stopped
+    trap cleanup_push_monitoring EXIT
+    
     # Run the specific push notification test method
-    run_xcode_tests "PushNotificationIntegrationTests" "testPushNotificationFullWorkflow"
+    local EXIT_CODE=0
+    run_xcode_tests "PushNotificationIntegrationTests" "testPushNotificationFullWorkflow" || EXIT_CODE=$?
+    
+    # Clean up push monitoring
+    cleanup_push_monitoring
+    
+    # Reset trap
+    trap - EXIT
+    
+    return $EXIT_CODE
 }
 
 run_inapp_message_tests() {
     echo_header "Running In-App Message Integration Tests"
     
     if [[ "$DRY_RUN" == true ]]; then
-        echo_info "[DRY RUN] Would run in-app message tests using xcodebuild test-without-building"
-        return 0
+        echo_info "[DRY RUN] Would run in-app message tests"
+        echo_info "[DRY RUN] - Silent push trigger"
+        echo_info "[DRY RUN] - Message display validation"
+        echo_info "[DRY RUN] - User interactions"
+        echo_info "[DRY RUN] - Deep link handling"
+        echo_info "[DRY RUN] - Queue management"
+        echo_info "[DRY RUN] - Metrics validation"
+        return
     fi
     
-    # Run the specific in-app message test method (silent push integration)
-    run_xcode_tests "InAppMessageIntegrationTests" "testInAppMessagingWorkflow"
+    TEST_REPORT="$REPORTS_DIR/inapp-message-test-$(date +%Y%m%d-%H%M%S).json"
+    
+    echo_info "Starting in-app message test sequence..."
+    
+    # Test sequence for in-app messages
+    run_test_with_timeout "inapp_silent_push" "$TIMEOUT"
+    run_test_with_timeout "inapp_display" "$TIMEOUT"
+    run_test_with_timeout "inapp_interaction" "$TIMEOUT"
+    run_test_with_timeout "inapp_deeplink" "$TIMEOUT"
+    run_test_with_timeout "inapp_metrics" "$TIMEOUT"
+    
+    generate_test_report "inapp_message" "$TEST_REPORT"
+    
+    echo_success "In-app message tests completed"
+    echo_info "Report: $TEST_REPORT"
 }
 
 run_embedded_message_tests() {
@@ -685,6 +858,84 @@ EOF
     echo_info "HTML report generated: $html_report"
 }
 
+copy_screenshots_from_simulator() {
+    echo_header "Copying Screenshots from Simulator"
+    
+    # Parse the simulator screenshots directory from the test logs
+    # Look for the line that says "Screenshots will be saved to: ..."
+    # Find the most recent .log file in the reports directory
+    local log_file=$(find "$REPORTS_DIR" -name "*.log" -type f -exec ls -t {} + 2>/dev/null | head -1)
+    local simulator_screenshots_dir=""
+    
+    if [[ -f "$log_file" ]]; then
+        echo_info "Using test log file: $log_file"
+        
+        # Extract the screenshot directory path from logs
+        simulator_screenshots_dir=$(grep "Screenshots will be saved to:" "$log_file" | tail -1 | sed 's/.*Screenshots will be saved to: //' | tr -d '\r')
+        
+        if [[ -n "$simulator_screenshots_dir" ]]; then
+            echo_info "Found simulator screenshots directory from logs: $simulator_screenshots_dir"
+        else
+            echo_info "Could not parse screenshot directory from logs, trying fallback search..."
+            
+            # Fallback: search for IterableSDK-Screenshots in simulator directories
+            if [[ -n "$SIMULATOR_UUID" ]]; then
+                local simulator_root="/Users/$(whoami)/Library/Developer/CoreSimulator/Devices/$SIMULATOR_UUID"
+                simulator_screenshots_dir=$(find "$simulator_root/data/Containers/Data/Application" -name "IterableSDK-Screenshots" -type d 2>/dev/null | head -1)
+                
+                if [[ -n "$simulator_screenshots_dir" ]]; then
+                    echo_info "Found screenshots directory via search: $simulator_screenshots_dir"
+                fi
+            fi
+        fi
+    else
+        echo_info "No test log files found in: $REPORTS_DIR"
+        echo_info "Trying fallback search for screenshots..."
+        
+        # Fallback: search for IterableSDK-Screenshots in simulator directories
+        if [[ -n "$SIMULATOR_UUID" ]]; then
+            local simulator_root="/Users/$(whoami)/Library/Developer/CoreSimulator/Devices/$SIMULATOR_UUID"
+            simulator_screenshots_dir=$(find "$simulator_root/data/Containers/Data/Application" -name "IterableSDK-Screenshots" -type d 2>/dev/null | head -1)
+            
+            if [[ -n "$simulator_screenshots_dir" ]]; then
+                echo_info "Found screenshots directory via search: $simulator_screenshots_dir"
+            fi
+        fi
+    fi
+    
+    if [[ -n "$simulator_screenshots_dir" && -d "$simulator_screenshots_dir" ]]; then
+        echo_info "Found simulator screenshots at: $simulator_screenshots_dir"
+        
+        # Count screenshots to copy
+        local screenshot_count=$(find "$simulator_screenshots_dir" -name "*.png" 2>/dev/null | wc -l | tr -d ' ')
+        
+        if [[ $screenshot_count -gt 0 ]]; then
+            echo_info "Copying $screenshot_count screenshots to project directory..."
+            
+            # Clear existing screenshots in project directory first
+            rm -rf "$SCREENSHOTS_DIR"/*
+            
+            # Copy all screenshots from simulator to project
+            cp "$simulator_screenshots_dir"/*.png "$SCREENSHOTS_DIR"/ 2>/dev/null || true
+            
+            # Verify copy
+            local copied_count=$(find "$SCREENSHOTS_DIR" -name "*.png" 2>/dev/null | wc -l | tr -d ' ')
+            echo_success "Successfully copied $copied_count screenshots to: $SCREENSHOTS_DIR"
+            
+            # Clean up simulator screenshots after successful copy
+            rm -rf "$simulator_screenshots_dir"/*.png 2>/dev/null || true
+            echo_info "Cleared simulator screenshots after copying"
+        else
+            echo_info "No screenshots found in simulator directory"
+        fi
+    else
+        echo_info "Could not locate simulator screenshots directory"
+        if [[ -n "$simulator_screenshots_dir" ]]; then
+            echo_info "Directory does not exist: $simulator_screenshots_dir"
+        fi
+    fi
+}
+
 cleanup_test_environment() {
     if [[ "$CLEANUP" == false ]]; then
         echo_info "Skipping cleanup (--no-cleanup specified)"
@@ -718,8 +969,8 @@ main() {
     echo
     
     validate_environment
+    prepare_test_environment  # Move this before build so config gets baked in
     setup_simulator
-    prepare_test_environment
     build_test_project
     
     # Clear screenshots from previous test runs
@@ -755,6 +1006,9 @@ main() {
     
     # Tests completed
     
+    # Copy screenshots from simulator to project directory
+    copy_screenshots_from_simulator
+    
     cleanup_test_environment
     
     echo_header "Test Execution Complete! 🎉"
@@ -766,6 +1020,9 @@ main() {
     echo_info "Reports available in: $REPORTS_DIR"
     echo_info "Screenshots saved in: $SCREENSHOTS_DIR"
     echo_info "Logs available in: $LOGS_DIR"
+    
+    # Reset config file after tests complete
+    reset_config_after_tests
     
     # Disable EXIT trap for normal exit since we're cleaning up properly
     trap - EXIT

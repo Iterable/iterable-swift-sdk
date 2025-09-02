@@ -111,7 +111,7 @@ The script will ask for three things **IN THIS ORDER**:
 3. **📱 Mobile API Key**: Paste your mobile key for SDK testing
 
 The script will then automatically:
-- ✅ Create a test user (`integration-test-user@test.com`) in your project
+- ✅ Create a daily test user (e.g., `2025-01-07-integration-test-user@test.com`) in your project
 - ✅ Set up your local testing environment
 - ✅ Configure everything needed for testing
 
