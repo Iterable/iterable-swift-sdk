@@ -14,6 +14,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
   - Display personalized messages for Unknown users (in-app, push, and embedded messages).
   - Merge unknown user profiles into existing, known user profiles (when needed).
 - `IterableConfig` is updated with an `enableUnknownUserActivation` flag that needs to be set to true to allow use of the unknown user activation functionality
+- Unknown user activation is currently in public beta. If you'd like to learn more about it or discuss using it, talk to your Iterable customer success manager (who can also provide detailed documentation).
 - To learn more, read [Unknown User Activation: Developer Docs](https://support.iterable.com/hc/sections/40078809116180).
 
 ## [6.5.14]
