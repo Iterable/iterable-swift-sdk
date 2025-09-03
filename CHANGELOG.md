@@ -13,12 +13,8 @@ This project adheres to [Semantic Versioning](http://semver.org/).
   - Save information about a user's previous interactions with your application to their unknown user profile, after it's created.
   - Display personalized messages for Unknown users (in-app, push, and embedded messages).
   - Merge unknown user profiles into existing, known user profiles (when needed).
-
-- To learn more, read [Unknown User Activation: Developer Docs](https://support.iterable.com/hc/sections/40078809116180).
-
-### Changed
-
 - `IterableConfig` is updated with an `enableUnknownUserActivation` flag that needs to be set to true to allow use of the unknown user activation functionality
+- To learn more, read [Unknown User Activation: Developer Docs](https://support.iterable.com/hc/sections/40078809116180).
 
 ## [6.5.14]
 - Added `IterableInAppDisplayDelegate` protocol for dynamic control over in-app message display timing```
