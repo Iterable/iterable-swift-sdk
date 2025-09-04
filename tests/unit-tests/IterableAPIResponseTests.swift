@@ -10,6 +10,7 @@ class IterableAPIResponseTests: XCTestCase {
     private let apiKey = "zee_api_key"
     private let email = "user@example.com"
     private let authToken = "asdf"
+    
     private let dateProvider = MockDateProvider()
     
     func testHeadersInGetRequest() {
@@ -280,16 +281,153 @@ class IterableAPIResponseTests: XCTestCase {
                   deviceMetadata: InternalIterableAPI.initializeForTesting().deviceMetadata,
                   dateProvider: dateProvider)
     }
+    
+    // MARK: - Consent API Tests
+    
+    func testTrackConsentSuccess() {
+        let expectation = XCTestExpectation(description: "Track consent success")
+        let consentTimestamp: Int64 = 1639490139
+        let email = "test@example.com"
+        let userId = "test-user-123"
+        
+        let mockNetworkSession = MockNetworkSession(statusCode: 200, json: ["success": true])
+        
+        let apiClient = createApiClient(networkSession: mockNetworkSession)
+        
+        apiClient.trackConsent(
+            consentTimestamp: consentTimestamp,
+            email: email,
+            userId: userId,
+            isUserKnown: true
+        ).onSuccess { response in
+            XCTAssertNotNil(response)
+            expectation.fulfill()
+        }.onError { error in
+            XCTFail("Expected success but got error: \(error)")
+        }
+        
+        wait(for: [expectation], timeout: testExpectationTimeout)
+        
+        // Verify the request was made to the correct endpoint
+        XCTAssertNotNil(mockNetworkSession.getRequest(withEndPoint: Const.Path.trackConsent))
+    }
+    
+    func testTrackConsentWithOnlyTimestamp() {
+        let expectation = XCTestExpectation(description: "Track consent with minimal data")
+        let consentTimestamp: Int64 = 1639490139
+        
+        let mockNetworkSession = MockNetworkSession(statusCode: 200)
+        
+        let apiClient = createApiClient(networkSession: mockNetworkSession)
+        
+        apiClient.trackConsent(
+            consentTimestamp: consentTimestamp,
+            email: nil,
+            userId: nil,
+            isUserKnown: false
+        ).onSuccess { response in
+            XCTAssertNotNil(response)
+            expectation.fulfill()
+        }.onError { error in
+            XCTFail("Expected success but got error: \(error)")
+        }
+        
+        wait(for: [expectation], timeout: testExpectationTimeout)
+    }
+    
+    func testTrackConsentError() {
+        let expectation = XCTestExpectation(description: "Track consent error handling")
+        let consentTimestamp: Int64 = 1639490139
+        
+        let mockNetworkSession = MockNetworkSession(statusCode: 400, json: ["error": "Bad request"])
+        
+        let apiClient = createApiClient(networkSession: mockNetworkSession)
+        
+        apiClient.trackConsent(
+            consentTimestamp: consentTimestamp,
+            email: "test@example.com",
+            userId: nil,
+            isUserKnown: true
+        ).onSuccess { response in
+            XCTFail("Expected error but got success")
+        }.onError { error in
+            XCTAssertNotNil(error)
+            expectation.fulfill()
+        }
+        
+        wait(for: [expectation], timeout: testExpectationTimeout)
+    }
+    
+    func testTrackConsentNetworkError() {
+        let expectation = XCTestExpectation(description: "Track consent network error")
+        let consentTimestamp: Int64 = 1639490139
+        
+        let mockNetworkSession = NoNetworkNetworkSession()
+        
+        let apiClient = createApiClient(networkSession: mockNetworkSession)
+        
+        apiClient.trackConsent(
+            consentTimestamp: consentTimestamp,
+            email: "test@example.com",
+            userId: nil,
+            isUserKnown: true
+        ).onSuccess { response in
+            XCTFail("Expected error but got success")
+        }.onError { error in
+            XCTAssertNotNil(error)
+            expectation.fulfill()
+        }
+        
+        wait(for: [expectation], timeout: testExpectationTimeout)
+    }
+    
+    func testTrackConsentRequestFormat() {
+        let consentTimestamp: Int64 = 1639490139
+        let email = "test@example.com"
+        let userId = "test-user-123"
+        
+        let mockNetworkSession = MockNetworkSession(statusCode: 200)
+        mockNetworkSession.requestCallback = { urlRequest in
+            // Verify request format
+            XCTAssertEqual(urlRequest.httpMethod, "POST")
+            XCTAssertTrue(urlRequest.url?.absoluteString.contains(Const.Path.trackConsent) == true)
+            
+            if let body = urlRequest.httpBody?.json() as? [String: Any] {
+                XCTAssertEqual(body[JsonKey.consentTimestamp] as? Int, Int(consentTimestamp))
+                XCTAssertEqual(body[JsonKey.email] as? String, email)
+                XCTAssertEqual(body[JsonKey.userId] as? String, userId)
+                XCTAssertEqual(body[JsonKey.isUserKnown] as? Bool, true)
+                
+                // Verify device info is included
+                let deviceInfo = body[JsonKey.deviceInfo] as? [String: Any]
+                XCTAssertNotNil(deviceInfo)
+                XCTAssertNotNil(deviceInfo?[JsonKey.deviceId])
+                XCTAssertEqual(deviceInfo?[JsonKey.platform] as? String, JsonValue.iOS)
+                XCTAssertNotNil(deviceInfo?[JsonKey.appPackageName])
+            } else {
+                XCTFail("Request body should be valid JSON")
+            }
+        }
+        
+        let apiClient = createApiClient(networkSession: mockNetworkSession)
+        
+        apiClient.trackConsent(
+            consentTimestamp: consentTimestamp,
+            email: email,
+            userId: userId,
+            isUserKnown: true
+        )
+    }
 }
 
 extension IterableAPIResponseTests: AuthProvider {
     var auth: Auth {
-        Auth(userId: nil, email: email, authToken: authToken)
+        Auth(userId: nil, email: email, authToken: authToken, userIdUnknownUser: nil)
     }
 }
 
 class AuthProviderNoToken: AuthProvider {
     var auth: Auth {
-        Auth(userId: nil, email: "user@example.com", authToken: nil)
+        Auth(userId: nil, email: "user@example.com", authToken: nil, userIdUnknownUser: nil)
     }
 }

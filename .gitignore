@@ -1,7 +1,17 @@
 .DS_Store
 xcuserdata
 
+.claude/
+
+tests/business-critical-integration/logs
+tests/business-critical-integration/integration-test-app/config
+tests/business-critical-integration/reports
+tests/business-critical-integration/screenshots
+
+
 .swiftpm/
+
+.claude
 
 *~
 Podfile.lock

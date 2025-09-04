@@ -5,6 +5,7 @@
 import Foundation
 
 struct LocalStorage: LocalStorageProtocol {
+
     init(userDefaults: UserDefaults = UserDefaults.standard,
          keychain: IterableKeychain = IterableKeychain()) {
         iterableUserDefaults = IterableUserDefaults(userDefaults: userDefaults)
@@ -16,6 +17,14 @@ struct LocalStorage: LocalStorageProtocol {
             keychain.userId
         } set {
             keychain.userId = newValue
+        }
+    }
+    
+    var userIdUnknownUser: String? {
+        get {
+            keychain.userIdUnknownUser
+        } set {
+            keychain.userIdUnknownUser = newValue
         }
     }
     
@@ -67,6 +76,54 @@ struct LocalStorage: LocalStorageProtocol {
         }
     }
     
+        var unknownUserEvents: [[AnyHashable: Any]]? {
+        get {
+            iterableUserDefaults.unknownUserEvents
+        } set {
+            iterableUserDefaults.unknownUserEvents = newValue
+        }
+    }
+
+    var unknownUserUpdate: [AnyHashable: Any]? {
+        get {
+            iterableUserDefaults.unknownUserUpdate
+        } set {
+            iterableUserDefaults.unknownUserUpdate = newValue
+        }
+    }
+
+    var unknownUserSessions: IterableUnknownUserSessionsWrapper? {
+        get {
+            iterableUserDefaults.unknownUserSessions
+        } set {
+            iterableUserDefaults.unknownUserSessions = newValue
+        }
+    }
+
+    var criteriaData: Data? {
+        get {
+            iterableUserDefaults.criteriaData
+        } set {
+            iterableUserDefaults.criteriaData = newValue
+        }
+    }
+
+    var visitorUsageTracked: Bool {
+        get {
+            iterableUserDefaults.visitorUsageTracked
+        } set {
+            iterableUserDefaults.visitorUsageTracked = newValue
+        }
+    }
+
+    var visitorConsentTimestamp: Int64? {
+        get {
+            iterableUserDefaults.visitorConsentTimestamp
+        } set {
+            iterableUserDefaults.visitorConsentTimestamp = newValue
+        }
+    }
+
     var isNotificationsEnabled: Bool {
         get {
             iterableUserDefaults.isNotificationsEnabled

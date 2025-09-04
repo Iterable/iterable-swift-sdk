@@ -4,6 +4,25 @@
 
 import Foundation
 
+/// Protocol to provide dynamic control over in-app message display timing.
+/// This delegate allows the application to determine at the exact moment 
+/// whether an in-app message should be displayed, providing more granular
+/// control than the static `isAutoDisplayPaused` property.
+@objc public protocol IterableInAppDisplayDelegate {
+    
+    /// Called to determine if in-app messages should be automatically displayed at this moment.
+    /// This method is called just before an in-app message would be shown, allowing the app
+    /// to make a real-time decision based on current app state.
+    ///
+    /// - Parameter message: The in-app message that is about to be displayed
+    /// - Returns: `true` if automatic display should be paused (message will not show), `false` if display should proceed
+    ///
+    /// - Note: This method is called in addition to other display checks. If this returns `true`,
+    ///         the message will not be shown regardless of other conditions.
+    /// - Note: If this delegate is not set, the default behavior uses the `isAutoDisplayPaused` property.
+    @objc optional func isAutoDisplayPaused(for message: IterableInAppMessage) -> Bool
+}
+
 public enum IterableAPIMobileFrameworkType: String, Codable {
     case flutter = "flutter"
     case reactNative = "reactnative"
@@ -74,6 +93,11 @@ public struct IterableAPIMobileFrameworkInfo: Codable {
     @objc func onAuthFailure(_ authFailure: AuthFailure)
 }
 
+/// The delegate for getting the UserId once unknown user session tracked
+@objc public protocol IterableUnknownUserHandler: AnyObject {
+    @objc func onUnknownUserCreated(userId: String)
+}
+
 /// Iterable Configuration Object. Use this when initializing the API.
 @objcMembers
 public class IterableConfig: NSObject {
@@ -100,7 +124,11 @@ public class IterableConfig: NSObject {
     
     /// Implement this protocol to enable token-based authentication with the Iterable SDK
     public weak var authDelegate: IterableAuthDelegate?
-    
+
+    /// Implement this protocol to get userId once the userId set for Unknown User
+    public weak var unknownUserHandler: IterableUnknownUserHandler?
+
+
     /// When set to `true`, IterableSDK will automatically register and deregister
     /// notification tokens.
     public var autoPushRegistration = true
@@ -126,6 +154,12 @@ public class IterableConfig: NSObject {
     /// If more than 1 in-app is available, we show the first.
     public var inAppDelegate: IterableInAppDelegate = DefaultInAppDelegate()
     
+    /// Implement this protocol to provide dynamic control over when in-app messages can be displayed.
+    /// This delegate allows real-time decision making about display timing, providing more granular
+    /// control than the static `isAutoDisplayPaused` property. If not set, the SDK will fall back
+    /// to using the `isAutoDisplayPaused` property.
+    public var inAppDisplayDelegate: IterableInAppDisplayDelegate?
+    
     /// How many seconds to wait before showing the next in-app, if there are more than one present
     public var inAppDisplayInterval: Double = 30.0
     
@@ -147,8 +181,20 @@ public class IterableConfig: NSObject {
     /// Sets data region which determines data center and endpoints used by the SDK
     public var dataRegion: String = IterableDataRegion.US
     
+    /// When set to `true`, IterableSDK will track all events when users are not logged into the application.
+    public var enableUnknownUserActivation = true
+    
+    /// Enables fetching of unknown user criteria on foreground when set to `true`
+    /// By default, the SDK will fetch unknown user criteria on foreground.
+    public var enableForegroundCriteriaFetch = true
+    
     /// Allows for fetching embedded messages.
     public var enableEmbeddedMessaging = false
+
+    // How many events can be stored in the local storage. By default limt is 100.
+    public var eventThresholdLimit: Int = 100
+    
+    public var identityResolution: IterableIdentityResolution = IterableIdentityResolution(replayOnVisitorToKnown: true, mergeOnUnknownUserToKnown: true)
     
     /// The type of mobile framework we are using.
     public var mobileFrameworkInfo: IterableAPIMobileFrameworkInfo?
