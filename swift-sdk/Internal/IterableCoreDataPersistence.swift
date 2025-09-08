@@ -186,7 +186,11 @@ struct CoreDataPersistenceContext: IterablePersistenceContext {
     }
     
     func performAndWait<T>(_ block: () throws -> T) throws -> T {
-        try managedObjectContext.performAndWait(block)
+        if #available(iOS 15.0, *) {
+            try managedObjectContext.performAndWait(block)
+        } else {
+            try managedObjectContext.performActionAndWait(block)
+        }
     }
     
     private let managedObjectContext: NSManagedObjectContext
