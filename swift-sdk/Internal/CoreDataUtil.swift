@@ -74,7 +74,7 @@ struct CoreDataUtil {
 }
 
 extension NSManagedObjectContext {
-    @available(iOS, obsoleted: 15.0, message: "This method is intended for older versions of iOS")
+    @available(iOS, deprecated: 15.0, message: "This method is intended for older versions of iOS")
     func performActionAndWait<T>(_ block: () throws -> T) throws -> T {
         var result: Result<T, Error>?
         performAndWait {
