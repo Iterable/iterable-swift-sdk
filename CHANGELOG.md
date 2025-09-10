@@ -6,6 +6,8 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [6.6.1]
 
+- Added support for iOS 26
+
 ## [6.6.0]
 
 ### Added
