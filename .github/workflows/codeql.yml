@@ -38,8 +38,6 @@ jobs:
                 include:
                     - language: actions
                       build-mode: none
-                    - language: c-cpp
-                      build-mode: autobuild
                     - language: python
                       build-mode: none
                     - language: ruby
