@@ -21,7 +21,7 @@ enum PersistenceConst {
     }
 }
 
-class PersistentContainer: NSPersistentContainer {
+class PersistentContainer: NSPersistentContainer, @unchecked Sendable {
     static var shared: PersistentContainer?
     
     static func initialize() -> PersistentContainer? {
