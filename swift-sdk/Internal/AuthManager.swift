@@ -41,8 +41,10 @@ class AuthManager: IterableAuthManagerProtocol {
                              onSuccess: AuthTokenRetrievalHandler? = nil,
                              shouldIgnoreRetryPolicy: Bool) {
         ITBInfo()
+        ITBDebug("🔐 [JWT] requestNewAuthToken called - hasFailedPriorAuth: \(hasFailedPriorAuth), shouldIgnoreRetryPolicy: \(shouldIgnoreRetryPolicy), retryCount: \(retryCount)")
         
         if shouldPauseRetry(shouldIgnoreRetryPolicy) || pendingAuth || hasFailedAuth(hasFailedPriorAuth) {
+            ITBDebug("🔐 [JWT] requestNewAuthToken early return - shouldPauseRetry: \(shouldPauseRetry(shouldIgnoreRetryPolicy)), pendingAuth: \(pendingAuth), hasFailedAuth: \(hasFailedAuth(hasFailedPriorAuth))")
             return
         }
         
@@ -67,12 +69,16 @@ class AuthManager: IterableAuthManagerProtocol {
     }
     
     private func shouldPauseRetry(_ shouldIgnoreRetryPolicy: Bool) -> Bool {
-        return (!shouldIgnoreRetryPolicy && pauseAuthRetry) ||
+        let result = (!shouldIgnoreRetryPolicy && pauseAuthRetry) ||
                (retryCount >= authRetryPolicy.maxRetry && !shouldIgnoreRetryPolicy)
+        ITBDebug("🔐 [JWT] shouldPauseRetry - pauseAuthRetry: \(pauseAuthRetry), retryCount: \(retryCount)/\(authRetryPolicy.maxRetry), shouldIgnoreRetryPolicy: \(shouldIgnoreRetryPolicy) -> \(result)")
+        return result
     }
     
     private func shouldUseLastValidToken(_ shouldIgnoreRetryPolicy: Bool) -> Bool {
-        return isLastAuthTokenValid && !shouldIgnoreRetryPolicy
+        let result = isLastAuthTokenValid && !shouldIgnoreRetryPolicy
+        ITBDebug("🔐 [JWT] shouldUseLastValidToken - isLastAuthTokenValid: \(isLastAuthTokenValid), shouldIgnoreRetryPolicy: \(shouldIgnoreRetryPolicy) -> \(result)")
+        return result
     }
     
     func setNewToken(_ newToken: String) {
@@ -181,6 +187,7 @@ class AuthManager: IterableAuthManagerProtocol {
     }
     
     func handleAuthFailure(failedAuthToken: String?, reason: AuthFailureReason) {
+        ITBDebug("🔐 [JWT] handleAuthFailure called - userKey: \(IterableUtil.getEmailOrUserId() ?? "nil"), reason: \(reason.rawValue), token: \(failedAuthToken?.prefix(20) ?? "nil")...")
         delegate?.onAuthFailure(AuthFailure(userKey: IterableUtil.getEmailOrUserId(), failedAuthToken: failedAuthToken, failedRequestTime: IterableUtil.secondsFromEpoch(for: dateProvider.currentDate), failureReason: reason))
     }
     
@@ -190,6 +197,7 @@ class AuthManager: IterableAuthManagerProtocol {
         clearRefreshTimer()
         
         guard let authToken = authToken, let expirationDate = AuthManager.decodeExpirationDateFromAuthToken(authToken) else {
+            ITBDebug("🔐 [JWT] queueAuthTokenExpirationRefresh - token: \(authToken?.prefix(20) ?? "nil")..., expiration: nil")
             handleAuthFailure(failedAuthToken: authToken, reason: .authTokenPayloadInvalid)
             
             /// schedule a default timer of 10 seconds if we fall into this case
@@ -199,6 +207,7 @@ class AuthManager: IterableAuthManagerProtocol {
         }
         
         let timeIntervalToRefresh = TimeInterval(expirationDate) - dateProvider.currentDate.timeIntervalSince1970 - expirationRefreshPeriod
+        ITBDebug("🔐 [JWT] queueAuthTokenExpirationRefresh - token: \(authToken.prefix(20))..., expiration: \(expirationDate), interval: \(timeIntervalToRefresh)")
         if timeIntervalToRefresh > 0 {
             scheduleAuthTokenRefreshTimer(interval: timeIntervalToRefresh, isScheduledRefresh: true, successCallback: onSuccess)
             return true  // Only return true when we successfully queue a refresh

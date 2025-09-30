@@ -29,10 +29,12 @@ class ApiClient {
     
     func convertToURLRequest(iterableRequest: IterableRequest) -> URLRequest? {
         guard let authProvider = authProvider else {
+            ITBDebug("🔐 [JWT] ApiClient.convertToURLRequest - authProvider is nil")
             return nil
         }
         
         let currentDate = dateProvider.currentDate
+        ITBDebug("🔐 [JWT] ApiClient.convertToURLRequest - authToken: \(authProvider.auth.authToken?.prefix(20) ?? "nil")...")
         let apiCallRequest = IterableAPICallRequest(apiKey: apiKey,
                                                     endpoint: endpoint,
                                                     authToken: authProvider.auth.authToken,
@@ -43,10 +45,12 @@ class ApiClient {
     
     func convertToURLRequestWithoutCreatedAt(iterableRequest: IterableRequest) -> URLRequest? {
         guard let authProvider = authProvider else {
+            ITBDebug("🔐 [JWT] ApiClient.convertToURLRequestWithoutCreatedAt - authProvider is nil")
             return nil
         }
         
         let currentDate = dateProvider.currentDate
+        ITBDebug("🔐 [JWT] ApiClient.convertToURLRequestWithoutCreatedAt - authToken: \(authProvider.auth.authToken?.prefix(20) ?? "nil")...")
         let apiCallRequest = IterableAPICallRequest(apiKey: apiKey,
                                                     endpoint: endpoint,
                                                     authToken: authProvider.auth.authToken,

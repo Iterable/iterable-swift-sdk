@@ -17,11 +17,14 @@ struct RequestProcessorUtil {
             reportSuccess(result: result, value: json, successHandler: onSuccess, identifier: identifier)
         }
         .onError { error in
+            ITBDebug("🔐 [JWT] sendRequest error - status: \(error.httpStatusCode ?? 0), code: \(error.iterableCode ?? "nil"), reason: \(error.reason ?? "nil")")
             if error.httpStatusCode == 401, matchesJWTErrorCode(error.iterableCode) {
                 ITBError("invalid JWT token, trying again: \(error.reason ?? "")")
+                ITBDebug("🔐 [JWT] JWT error detected, calling handleAuthFailure - token: \(authManager?.getAuthToken()?.prefix(20) ?? "nil")..., reason: \(getMappedErrorCodeForMessage(error.reason ?? "").rawValue)")
                 authManager?.handleAuthFailure(failedAuthToken: authManager?.getAuthToken(), reason: getMappedErrorCodeForMessage(error.reason ?? ""))
                 authManager?.setIsLastAuthTokenValid(false)
                 let retryInterval = authManager?.getNextRetryInterval() ?? 1
+                ITBDebug("🔐 [JWT] Scheduling retry with interval: \(retryInterval)")
                 DispatchQueue.main.async {
                     authManager?.scheduleAuthTokenRefreshTimer(interval: retryInterval, isScheduledRefresh: false, successCallback: { _ in
                         sendRequest(requestProvider: requestProvider, successHandler: onSuccess, failureHandler: onFailure, authManager: authManager, requestIdentifier: identifier)
@@ -80,27 +83,29 @@ struct RequestProcessorUtil {
     }
     
     public static func getMappedErrorCodeForMessage(_ reason: String) -> AuthFailureReason {
-        
+        let result: AuthFailureReason
         switch reason.lowercased() {
             case "exp must be less than 1 year from iat":
-                return .authTokenExpirationInvalid
+                result = .authTokenExpirationInvalid
             case "jwt format is invalid":
-                return .authTokenFormatInvalid
+                result = .authTokenFormatInvalid
             case "jwt token is expired":
-                return .authTokenExpired
+                result = .authTokenExpired
             case "jwt is invalid":
-                return .authTokenSignatureInvalid
+                result = .authTokenSignatureInvalid
             case "jwt payload requires a value for userid or email", "email could not be found":
-                return .authTokenUserKeyInvalid
+                result = .authTokenUserKeyInvalid
             case "jwt token has been invalidated":
-                return .authTokenInvalidated
+                result = .authTokenInvalidated
             case "invalid payload":
-                return .authTokenPayloadInvalid
+                result = .authTokenPayloadInvalid
             case "jwt authorization header is not set":
-                return .authTokenMissing
+                result = .authTokenMissing
             default:
-            return .authTokenGenericError
+            result = .authTokenGenericError
         }
+        ITBDebug("🔐 [JWT] Mapping error message: '\(reason)' -> \(result.rawValue)")
+        return result
     }
 
     private static func reportFailure(result: Fulfill<SendRequestValue, SendRequestError>,
@@ -148,6 +153,8 @@ struct RequestProcessorUtil {
     }
     
     public static func matchesJWTErrorCode(_ errorCode: String?) -> Bool {
-        return errorCode == JsonValue.Code.invalidJwtPayload || errorCode == JsonValue.Code.badAuthorizationHeader || errorCode == JsonValue.Code.jwtUserIdentifiersMismatched
+        let result = errorCode == JsonValue.Code.invalidJwtPayload || errorCode == JsonValue.Code.badAuthorizationHeader || errorCode == JsonValue.Code.jwtUserIdentifiersMismatched
+        ITBDebug("🔐 [JWT] Checking JWT error code: '\(errorCode ?? "nil")' -> \(result)")
+        return result
     }
 }

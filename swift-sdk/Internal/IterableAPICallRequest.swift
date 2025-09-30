@@ -69,6 +69,9 @@ struct IterableAPICallRequest {
         
         if let authToken = authToken {
             headers[JsonKey.Header.authorization] = "Bearer \(authToken)"
+            ITBDebug("🔐 [JWT] createIterableHeaders - authToken: \(authToken.prefix(20))..., path: \(getPath())")
+        } else {
+            ITBDebug("🔐 [JWT] createIterableHeaders - authToken: nil, path: \(getPath())")
         }
         
         return headers
