@@ -14,7 +14,7 @@ final class DataManager {
     var mockInAppFetcher: MockInAppFetcher
     
     static func initializeIterableApi(launchOptions: [UIApplication.LaunchOptionsKey: Any]?) {
-        IterableAPI.initializeForDemo(apiKey: "",
+        IterableAPI.initializeForDemo(apiKey: "f5196c6ca0fd49658664a9a1bb76a9f0",
                                       launchOptions: launchOptions,
                                       networkSession: DataManager.shared.mockNetworkSession,
                                       inAppFetcher: DataManager.shared.mockInAppFetcher)
