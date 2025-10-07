@@ -7,7 +7,7 @@ import UIKit
 
 @objcMembers public final class IterableAPI: NSObject {
     /// The current SDK version
-    public static let sdkVersion = "6.5.13"
+    public static let sdkVersion = "6.6.1"
     
     /// The email of the logged in user that this IterableAPI is using
     public static var email: String? {
@@ -125,16 +125,31 @@ import UIKit
         }.onError { _ in
             callback?(false)
         }
+        
+        if let implementation, config.enableUnknownUserActivation, !implementation.isSDKInitialized(), implementation.getVisitorUsageTracked() {
+            ITBInfo("UUA ENABLED AND CONSENT GIVEN - Criteria fetched")
+            implementation.unknownUserManager.getUnknownUserCriteria()
+            implementation.unknownUserManager.updateUnknownUserSession()
+        }
     }
 
+    public static func setVisitorUsageTracked(isVisitorUsageTracked: Bool) {
+        if let _implementation = implementation {
+            _implementation.setVisitorUsageTracked(isVisitorUsageTracked: isVisitorUsageTracked)
+        }
+    }
+
+    public static func getVisitorUsageTracked() -> Bool {
+        return implementation?.getVisitorUsageTracked() ?? false
+    }
     // MARK: - SDK
     
-    public static func setEmail(_ email: String?, _ authToken: String? = nil, _ successHandler: OnSuccessHandler? = nil, _ failureHandler: OnFailureHandler? = nil) {
-        implementation?.setEmail(email, authToken: authToken, successHandler: successHandler, failureHandler: failureHandler)
+    public static func setEmail(_ email: String?, _ authToken: String? = nil,  _ identityResolution: IterableIdentityResolution? = nil, _ successHandler: OnSuccessHandler? = nil, _ failureHandler: OnFailureHandler? = nil) {
+        implementation?.setEmail(email, authToken: authToken, successHandler: successHandler, failureHandler: failureHandler, identityResolution: identityResolution)
     }
     
-    public static func setUserId(_ userId: String?, _ authToken: String? = nil, _ successHandler: OnSuccessHandler? = nil, _ failureHandler: OnFailureHandler? = nil) {
-        implementation?.setUserId(userId, authToken: authToken, successHandler: successHandler, failureHandler: failureHandler)
+    public static func setUserId(_ userId: String?, _ authToken: String? = nil,  _ identityResolution: IterableIdentityResolution? = nil, _ successHandler: OnSuccessHandler? = nil, _ failureHandler: OnFailureHandler? = nil) {
+        implementation?.setUserId(userId, authToken: authToken, successHandler: successHandler, failureHandler: failureHandler, identityResolution: identityResolution)
     }
     
     /// Handle a Universal Link
@@ -235,7 +250,7 @@ import UIKit
     /// - SeeAlso: IterableConfig
     @objc(registerToken:)
     public static func register(token: Data) {
-        implementation?.register(token: token)
+        register(token: token, onSuccess: nil, onFailure: nil)
     }
     
     /// Register this device's token with Iterable
@@ -253,7 +268,8 @@ import UIKit
     /// - SeeAlso: IterableConfig, OnSuccessHandler, OnFailureHandler
     @objc(registerToken:onSuccess:OnFailure:)
     public static func register(token: Data, onSuccess: OnSuccessHandler? = nil, onFailure: OnFailureHandler? = nil) {
-        implementation?.register(token: token, onSuccess: onSuccess, onFailure: onFailure)
+        guard let implementation, implementation.isSDKInitialized() else { return }
+        implementation.register(token: token, onSuccess: onSuccess, onFailure: onFailure)
     }
     
     @objc(pauseAuthRetries:)
@@ -272,12 +288,12 @@ import UIKit
     ///
     /// - SeeAlso: IterableConfig
     public static func disableDeviceForCurrentUser() {
-        implementation?.disableDeviceForCurrentUser()
+        disableDeviceForCurrentUser(withOnSuccess: nil, onFailure: nil)
     }
     
     /// Disable this device's token in Iterable, for all users on this device.
     public static func disableDeviceForAllUsers() {
-        implementation?.disableDeviceForAllUsers()
+        disableDeviceForAllUsers(withOnSuccess: nil, onFailure: nil)
     }
     
     /// Disable this device's token in Iterable, for the current user, with custom completion blocks
@@ -288,7 +304,9 @@ import UIKit
     ///
     /// - SeeAlso: OnSuccessHandler, OnFailureHandler
     public static func disableDeviceForCurrentUser(withOnSuccess onSuccess: OnSuccessHandler?, onFailure: OnFailureHandler?) {
-        implementation?.disableDeviceForCurrentUser(withOnSuccess: onSuccess, onFailure: onFailure)
+        guard let implementation, implementation.isSDKInitialized() else { return }
+        
+        implementation.disableDeviceForCurrentUser(withOnSuccess: onSuccess, onFailure: onFailure)
     }
     
     /// Disable this device's token in Iterable, for all users of this device, with custom completion blocks.
@@ -299,7 +317,9 @@ import UIKit
     ///
     /// - SeeAlso: OnSuccessHandler, OnFailureHandler
     public static func disableDeviceForAllUsers(withOnSuccess onSuccess: OnSuccessHandler?, onFailure: OnFailureHandler?) {
-        implementation?.disableDeviceForAllUsers(withOnSuccess: onSuccess, onFailure: onFailure)
+        guard let implementation, implementation.isSDKInitialized() else { return }
+        
+        implementation.disableDeviceForAllUsers(withOnSuccess: onSuccess, onFailure: onFailure)
     }
     
     /// Updates the available user fields
@@ -316,10 +336,11 @@ import UIKit
                                   mergeNestedObjects: Bool,
                                   onSuccess: OnSuccessHandler? = nil,
                                   onFailure: OnFailureHandler? = nil) {
+        
         implementation?.updateUser(dataFields,
-                                           mergeNestedObjects: mergeNestedObjects,
-                                           onSuccess: onSuccess,
-                                           onFailure: onFailure)
+                                  mergeNestedObjects: mergeNestedObjects,
+                                  onSuccess: onSuccess,
+                                  onFailure: onFailure)
     }
     
     /// Updates the current user's email
@@ -333,8 +354,17 @@ import UIKit
     ///
     /// - SeeAlso: OnSuccessHandler, OnFailureHandler
     @objc(updateEmail:onSuccess:onFailure:)
-    public static func updateEmail(_ newEmail: String, onSuccess: OnSuccessHandler?, onFailure: OnFailureHandler?) {
-        implementation?.updateEmail(newEmail, onSuccess: onSuccess, onFailure: onFailure)
+    public static func updateEmail(
+        _ newEmail: String,
+        onSuccess: OnSuccessHandler?,
+        onFailure: OnFailureHandler?
+    ) {
+        updateEmail(
+            newEmail,
+            withToken: nil,
+            onSuccess: onSuccess,
+            onFailure: onFailure
+        )
     }
     
     /// Updates the current user's email, and set the new authentication token
@@ -350,10 +380,17 @@ import UIKit
     /// - SeeAlso: OnSuccessHandler, OnFailureHandler
     @objc(updateEmail:withToken:onSuccess:onFailure:)
     public static func updateEmail(_ newEmail: String,
-                                   withToken token: String,
+                                   withToken token: String? = nil,
                                    onSuccess: OnSuccessHandler?,
                                    onFailure: OnFailureHandler?) {
-        implementation?.updateEmail(newEmail, withToken: token, onSuccess: onSuccess, onFailure: onFailure)
+        guard let implementation, implementation.isSDKInitialized() else { return }
+        
+        implementation.updateEmail(
+            newEmail,
+            withToken: token,
+            onSuccess: onSuccess,
+            onFailure: onFailure
+        )
     }
     
     /// Tracks what's in the shopping cart (or equivalent) at this point in time
@@ -364,7 +401,7 @@ import UIKit
     /// - SeeAlso: CommerceItem
     @objc(updateCart:)
     public static func updateCart(items: [CommerceItem]) {
-        implementation?.updateCart(items: items)
+        updateCart(items: items, onSuccess: nil, onFailure: nil)
     }
     
     /// Tracks what's in the shopping cart (or equivalent) at this point in time
@@ -379,6 +416,7 @@ import UIKit
     public static func updateCart(items: [CommerceItem],
                                   onSuccess: OnSuccessHandler?,
                                   onFailure: OnFailureHandler?) {
+                
         implementation?.updateCart(items: items, onSuccess: onSuccess, onFailure: onFailure)
     }
     
@@ -391,7 +429,15 @@ import UIKit
     /// - SeeAlso: CommerceItem
     @objc(trackPurchase:items:)
     public static func track(purchase withTotal: NSNumber, items: [CommerceItem]) {
-        implementation?.trackPurchase(withTotal, items: items)
+        track(
+            purchase: withTotal,
+            items: items,
+            dataFields: nil,
+            campaignId: nil,
+            templateId: nil,
+            onSuccess: nil,
+            onFailure: nil
+        )
     }
     
     /// Tracks a purchase with additional data
@@ -404,7 +450,15 @@ import UIKit
     /// - SeeAlso: CommerceItem
     @objc(trackPurchase:items:dataFields:)
     public static func track(purchase withTotal: NSNumber, items: [CommerceItem], dataFields: [AnyHashable: Any]?) {
-        implementation?.trackPurchase(withTotal, items: items, dataFields: dataFields)
+        track(
+            purchase: withTotal,
+            items: items,
+            dataFields: dataFields,
+            campaignId: nil,
+            templateId: nil,
+            onSuccess: nil,
+            onFailure: nil
+        )
     }
     
     /// Tracks a purchase with additional data and custom completion blocks.
@@ -423,11 +477,15 @@ import UIKit
                              dataFields: [AnyHashable: Any]?,
                              onSuccess: OnSuccessHandler?,
                              onFailure: OnFailureHandler?) {
-        implementation?.trackPurchase(withTotal,
-                                              items: items,
-                                              dataFields: dataFields,
-                                              onSuccess: onSuccess,
-                                              onFailure: onFailure)
+        track(
+            purchase: withTotal,
+            items: items,
+            dataFields: dataFields,
+            campaignId: nil,
+            templateId: nil,
+            onSuccess: onSuccess,
+            onFailure: onFailure
+        )
     }
 
     /// Tracks a purchase with additional data and custom completion blocks.
@@ -450,13 +508,14 @@ import UIKit
                              templateId: NSNumber?,
                              onSuccess: OnSuccessHandler?,
                              onFailure: OnFailureHandler?) {
+
         implementation?.trackPurchase(withTotal,
-                                              items: items,
-                                              dataFields: dataFields,
-                                              campaignId: campaignId,
-                                              templateId: templateId,
-                                              onSuccess: onSuccess,
-                                              onFailure: onFailure)
+                                     items: items,
+                                     dataFields: dataFields,
+                                     campaignId: campaignId,
+                                     templateId: templateId,
+                                     onSuccess: onSuccess,
+                                     onFailure: onFailure)
     }
 
     
@@ -466,7 +525,12 @@ import UIKit
     ///    - userInfo: the `userInfo` parameter from the push notification payload
     @objc(trackPushOpen:)
     public static func track(pushOpen userInfo: [AnyHashable: Any]) {
-        implementation?.trackPushOpen(userInfo)
+        track(
+            pushOpen: userInfo,
+            dataFields: nil,
+            onSuccess: nil,
+            onFailure: nil
+        )
     }
     
     /// Tracks a `pushOpen` event with a push notification and optional additional data
@@ -476,7 +540,12 @@ import UIKit
     ///     - dataFields: A `Dictionary` containing any additional information to save along with the event
     @objc(trackPushOpen:dataFields:)
     public static func track(pushOpen userInfo: [AnyHashable: Any], dataFields: [AnyHashable: Any]?) {
-        implementation?.trackPushOpen(userInfo, dataFields: dataFields)
+        track(
+            pushOpen: userInfo,
+            dataFields: dataFields,
+            onSuccess: nil,
+            onFailure: nil
+        )
     }
     
     /// Tracks a `pushOpen` event with a push notification, optional additional data, and custom completion blocks
@@ -493,7 +562,9 @@ import UIKit
                              dataFields: [AnyHashable: Any]?,
                              onSuccess: OnSuccessHandler?,
                              onFailure: OnFailureHandler?) {
-        implementation?.trackPushOpen(userInfo,
+        guard let implementation, implementation.isSDKInitialized() else { return }
+        
+        implementation.trackPushOpen(userInfo,
                                               dataFields: dataFields,
                                               onSuccess: onSuccess,
                                               onFailure: onFailure)
@@ -517,11 +588,15 @@ import UIKit
                              messageId: String,
                              appAlreadyRunning: Bool,
                              dataFields: [AnyHashable: Any]?) {
-        implementation?.trackPushOpen(campaignId,
-                                              templateId: templateId,
-                                              messageId: messageId,
-                                              appAlreadyRunning: appAlreadyRunning,
-                                              dataFields: dataFields)
+        track(
+            pushOpen: campaignId,
+            templateId: templateId,
+            messageId: messageId,
+            appAlreadyRunning: appAlreadyRunning,
+            dataFields: dataFields,
+            onSuccess: nil,
+            onFailure: nil
+        )
     }
     
     /// Tracks a `pushOpen` event for the specified campaign and template IDs, whether the app was already
@@ -546,7 +621,9 @@ import UIKit
                              dataFields: [AnyHashable: Any]?,
                              onSuccess: OnSuccessHandler?,
                              onFailure: OnFailureHandler?) {
-        implementation?.trackPushOpen(campaignId,
+        guard let implementation, implementation.isSDKInitialized() else { return }
+        
+        implementation.trackPushOpen(campaignId,
                                               templateId: templateId,
                                               messageId: messageId,
                                               appAlreadyRunning: appAlreadyRunning,
@@ -563,7 +640,12 @@ import UIKit
     /// - Remark: Pass in the custom event data.
     @objc(track:)
     public static func track(event eventName: String) {
-        implementation?.track(eventName)
+        track(
+            event: eventName,
+            dataFields: nil,
+            onSuccess: nil,
+            onFailure: nil
+        )
     }
     
     /// Tracks a custom event
@@ -575,7 +657,12 @@ import UIKit
     /// - Remark: Pass in the custom event data.
     @objc(track:dataFields:)
     public static func track(event eventName: String, dataFields: [AnyHashable: Any]?) {
-        implementation?.track(eventName, dataFields: dataFields)
+        track(
+            event: eventName,
+            dataFields: dataFields,
+            onSuccess: nil,
+            onFailure: nil
+        )
     }
     
     /// Tracks a custom event
@@ -613,7 +700,9 @@ import UIKit
                                            subscribedMessageTypeIds: [NSNumber]?,
                                            campaignId: NSNumber?,
                                            templateId: NSNumber?) {
-        implementation?.updateSubscriptions(emailListIds,
+        guard let implementation, implementation.isSDKInitialized() else { return }
+        
+        implementation.updateSubscriptions(emailListIds,
                                             unsubscribedChannelIds: unsubscribedChannelIds,
                                             unsubscribedMessageTypeIds: unsubscribedMessageTypeIds,
                                             subscribedMessageTypeIds: subscribedMessageTypeIds,
@@ -630,17 +719,23 @@ import UIKit
     ///     - embeddedSession: the embedded session data type to track
     @objc(embeddedSession:)
     public static func track(embeddedSession: IterableEmbeddedSession) {
-        implementation?.track(embeddedSession: embeddedSession)
+        guard let implementation, implementation.isSDKInitialized() else { return }
+        
+        implementation.track(embeddedSession: embeddedSession)
     }
     
     @objc(embeddedMessageClick:buttonIdentifier:clickedUrl:)
     public static func track(embeddedMessageClick: IterableEmbeddedMessage, buttonIdentifier: String?, clickedUrl: String) {
-        implementation?.track(embeddedMessageClick: embeddedMessageClick, buttonIdentifier: buttonIdentifier, clickedUrl: clickedUrl)
+        guard let implementation, implementation.isSDKInitialized() else { return }
+        
+        implementation.track(embeddedMessageClick: embeddedMessageClick, buttonIdentifier: buttonIdentifier, clickedUrl: clickedUrl)
     }
     
     @objc(embeddedMessageReceived:)
     public static func track(embeddedMessageReceived: IterableEmbeddedMessage) {
-        implementation?.track(embeddedMessageReceived: embeddedMessageReceived)
+        guard let implementation, implementation.isSDKInitialized() else { return }
+        
+        implementation.track(embeddedMessageReceived: embeddedMessageReceived)
     }
     
     // MARK: In-App Notifications
@@ -657,7 +752,9 @@ import UIKit
     /// - SeeAlso: IterableInAppDelegate
     @objc(trackInAppOpen:location:)
     public static func track(inAppOpen message: IterableInAppMessage, location: InAppLocation = .inApp) {
-        implementation?.trackInAppOpen(message, location: location)
+        guard let implementation, implementation.isSDKInitialized() else { return }
+        
+        implementation.trackInAppOpen(message, location: location)
     }
     
     /// Tracks an `InAppClick` event
@@ -671,7 +768,9 @@ import UIKit
     ///     - clickedUrl: The URL of the button or link that was clicked
     @objc(trackInAppClick:location:clickedUrl:)
     public static func track(inAppClick message: IterableInAppMessage, location: InAppLocation = .inApp, clickedUrl: String) {
-        implementation?.trackInAppClick(message, location: location, clickedUrl: clickedUrl)
+        guard let implementation, implementation.isSDKInitialized() else { return }
+        
+        implementation.trackInAppClick(message, location: location, clickedUrl: clickedUrl)
     }
     
     /// Tracks an `InAppClose` event
@@ -681,7 +780,9 @@ import UIKit
     ///     - clickedUrl: The url that was clicked to close the in-app. It will be `nil` when the message is closed by clicking `back`.
     @objc(trackInAppClose:clickedUrl:)
     public static func track(inAppClose message: IterableInAppMessage, clickedUrl: String?) {
-        implementation?.trackInAppClose(message, clickedUrl: clickedUrl)
+        guard let implementation, implementation.isSDKInitialized() else { return }
+        
+        implementation.trackInAppClose(message, clickedUrl: clickedUrl)
     }
     
     /// Tracks an `InAppClose` event
@@ -692,7 +793,9 @@ import UIKit
     ///     - clickedUrl: The URL that was clicked to close the in-app. It will be `nil` when the message is closed by clicking `back`.
     @objc(trackInAppClose:location:clickedUrl:)
     public static func track(inAppClose message: IterableInAppMessage, location: InAppLocation, clickedUrl: String?) {
-        implementation?.trackInAppClose(message, location: location, clickedUrl: clickedUrl)
+        guard let implementation, implementation.isSDKInitialized() else { return }
+        
+        implementation.trackInAppClose(message, location: location, clickedUrl: clickedUrl)
     }
     
     /// Tracks an `InAppClose` event
@@ -704,7 +807,9 @@ import UIKit
     ///     - clickedUrl: The url that was clicked to close the in-app. It will be `nil` when the message is closed by clicking `back`.
     @objc(trackInAppClose:location:source:clickedUrl:)
     public static func track(inAppClose message: IterableInAppMessage, location: InAppLocation, source: InAppCloseSource, clickedUrl: String?) {
-        implementation?.trackInAppClose(message, location: location, source: source, clickedUrl: clickedUrl)
+        guard let implementation, implementation.isSDKInitialized() else { return }
+        
+        implementation.trackInAppClose(message, location: location, source: source, clickedUrl: clickedUrl)
     }
     
     /// Consumes the notification and removes it from the list of in-app messages
@@ -714,7 +819,9 @@ import UIKit
     ///    - location: The location from where this message was shown. `inbox` or `inApp`.
     @objc(inAppConsume:location:)
     public static func inAppConsume(message: IterableInAppMessage, location: InAppLocation = .inApp) {
-        implementation?.inAppConsume(message: message, location: location)
+        guard let implementation, implementation.isSDKInitialized() else { return }
+        
+        implementation.inAppConsume(message: message, location: location)
     }
     
     /// Consumes the notification and removes it from the list of in-app messages
@@ -725,7 +832,9 @@ import UIKit
     ///     - source: The source of deletion `inboxSwipe` or `deleteButton`.
     @objc(inAppConsume:location:source:)
     public static func inAppConsume(message: IterableInAppMessage, location: InAppLocation = .inApp, source: InAppDeleteSource) {
-        implementation?.inAppConsume(message: message, location: location, source: source)
+        guard let implementation, implementation.isSDKInitialized() else { return }
+        
+        implementation.inAppConsume(message: message, location: location, source: source)
     }
     
     /// Tracks analytics data from a session of using an inbox UI
@@ -735,7 +844,9 @@ import UIKit
     ///     - inboxSession: the inbox session data type to track
     @objc(trackInboxSession:)
     public static func track(inboxSession: IterableInboxSession) {
-        implementation?.track(inboxSession: inboxSession)
+        guard let implementation, implementation.isSDKInitialized() else { return }
+        
+        implementation.track(inboxSession: inboxSession)
     }
     
     // MARK: - Private/Internal

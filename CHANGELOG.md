@@ -4,6 +4,26 @@ All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 ## [Unreleased]
 
+## [6.6.1]
+
+- Added support for iOS 26
+
+## [6.6.0]
+
+### Added
+
+- Introduces support for Unknown user activation, a feature that allows marketers to convert valuable visitors into customers. With this feature, the SDK can:
+  - Fetch unknown user profile creation criteria from your Iterable project, and then automatically create Iterable user profiles for Unknown users who meet these criteria.
+  - Save information about a user's previous interactions with your application to their unknown user profile, after it's created.
+  - Display personalized messages for Unknown users (in-app, push, and embedded messages).
+  - Merge unknown user profiles into existing, known user profiles (when needed).
+- `IterableConfig` is updated with an `enableUnknownUserActivation` flag that needs to be set to true to allow use of the unknown user activation functionality
+- Unknown user activation is currently in public beta. If you'd like to learn more about it or discuss using it, talk to your Iterable customer success manager (who can also provide detailed documentation).
+- To learn more, read [Unknown User Activation: Developer Docs](https://support.iterable.com/hc/sections/40078809116180).
+
+## [6.5.14]
+- Added `IterableInAppDisplayDelegate` protocol for dynamic control over in-app message display timing```
+
 ## [6.5.13]
 - Fixed in-app messages displaying in wrong window when using Stage Manager or multi-window scenarios on iPad.
 - Fixed redirect handling issue with deep links that was preventing proper URL following.
@@ -15,6 +35,13 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 - Enhanced thread safety for embedded message data handling, leading to increased stability.
 - Improved `IterableEmbeddedView` by making `imgView` and `cardImageView` optional, leading to more robust view handling, particularly for `.card` and `.banner` types when images might not be present.
 - Minor refinements to authentication and token refresh logic for increased stability.
+
+## [6.6.0-beta3]
+
+- This release includes fixes for the Unknown user activation private beta:
+    - Criteria is now fetched on foregrounding the app by default. This feature can be turned off setting enableForegroundCriteriaFetch flag to false. 
+    - Unknown user ids are only generated once when multiple track calls are made.
+- Unknown user activation is currently in private beta. If you'd like to learn more about it or discuss using it, talk to your Iterable customer success manager (who can also provide detailed documentation).
 
 ## [6.5.11]
 ### Fixed
@@ -43,6 +70,19 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 - Updated repository name on Fastline script and podspec files.
 - Comments out outdated tests that need to be revisited.
 - Updated sample app to use generic URLs.
+
+## [6.6.0-beta2]
+
+- This release fixes beta1 release which was released from the wrong branch.
+
+## [6.6.0-beta1]
+
+- This release includes initial support for Unknown user activation, a feature that allows marketers to convert valuable visitors into customers. With this feature, the SDK can:
+  - Fetch unknown user profile creation criteria from your Iterable project, and then automatically create Iterable user profiles for Unknown users who meet these criteria.
+  - Save information about a user's previous interactions with your application to their unknown user profile, after it's created.
+  - Display personalized messages for Unknown users (in-app, push, and embedded messages).
+  - Merge unknown user profiles into an existing, known user profiles (when needed).
+- Unknown user activation is currently in private beta. If you'd like to learn more about it or discuss using it, talk to your Iterable customer success manager (who can also provide detailed documentation).
 
 ## [6.5.7]
 ### Fixed

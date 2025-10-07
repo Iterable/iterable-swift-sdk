@@ -1315,5 +1315,106 @@ class IterableAPITests: XCTestCase {
         XCTAssertEqual(localStorage.authToken, authToken)
         userDefaults.removePersistentDomain(forName: "upgrade.test")
     }
+    
+    // MARK: - Consent Timestamp Tests
+    
+    func testSetVisitorUsageTrackedStoresConsentTimestamp() {
+        let mockDateProvider = MockDateProvider()
+        let testDate = Date(timeIntervalSince1970: 1639490139)
+        mockDateProvider.currentDate = testDate
+        
+        let mockLocalStorage = MockLocalStorage()
+        let internalAPI = InternalIterableAPI.initializeForTesting(
+            apiKey: IterableAPITests.apiKey,
+            dateProvider: mockDateProvider,
+            localStorage: mockLocalStorage
+        )
+        
+        // Test consent given (true) stores timestamp
+        internalAPI.setVisitorUsageTracked(isVisitorUsageTracked: true)
+        
+        XCTAssertEqual(mockLocalStorage.visitorConsentTimestamp, Int64(testDate.timeIntervalSince1970 * 1000))
+        XCTAssertTrue(mockLocalStorage.visitorUsageTracked)
+    }
+    
+    func testSetVisitorUsageTrackedClearsConsentTimestamp() {
+        let mockDateProvider = MockDateProvider()
+        let testDate = Date(timeIntervalSince1970: 1639490139)
+        mockDateProvider.currentDate = testDate
+        
+        let mockLocalStorage = MockLocalStorage()
+        mockLocalStorage.visitorConsentTimestamp = Int64(testDate.timeIntervalSince1970 * 1000)
+        
+        let internalAPI = InternalIterableAPI.initializeForTesting(
+            apiKey: IterableAPITests.apiKey,
+            dateProvider: mockDateProvider,
+            localStorage: mockLocalStorage
+        )
+        
+        // Test consent revoked (false) clears timestamp
+        internalAPI.setVisitorUsageTracked(isVisitorUsageTracked: false)
+        
+        XCTAssertNil(mockLocalStorage.visitorConsentTimestamp)
+        XCTAssertFalse(mockLocalStorage.visitorUsageTracked)
+    }
+    
+    func testSetVisitorUsageTrackedMultipleCalls() {
+        let mockDateProvider = MockDateProvider()
+        let firstDate = Date(timeIntervalSince1970: 1639490139)
+        let secondDate = Date(timeIntervalSince1970: 1639490200)
+        
+        let mockLocalStorage = MockLocalStorage()
+        let internalAPI = InternalIterableAPI.initializeForTesting(
+            apiKey: IterableAPITests.apiKey,
+            dateProvider: mockDateProvider,
+            localStorage: mockLocalStorage
+        )
+        
+        // First consent given
+        mockDateProvider.currentDate = firstDate
+        internalAPI.setVisitorUsageTracked(isVisitorUsageTracked: true)
+        XCTAssertEqual(mockLocalStorage.visitorConsentTimestamp, Int64(firstDate.timeIntervalSince1970 * 1000))
+        
+        // Consent revoked
+        internalAPI.setVisitorUsageTracked(isVisitorUsageTracked: false)
+        XCTAssertNil(mockLocalStorage.visitorConsentTimestamp)
+        
+        // Consent given again with new timestamp
+        mockDateProvider.currentDate = secondDate
+        internalAPI.setVisitorUsageTracked(isVisitorUsageTracked: true)
+        XCTAssertEqual(mockLocalStorage.visitorConsentTimestamp, Int64(secondDate.timeIntervalSince1970 * 1000))
+    }
+    
+    func testSetVisitorUsageTrackedStoresTimestampInMilliseconds() {
+        let mockDateProvider = MockDateProvider()
+        let testDate = Date(timeIntervalSince1970: 1639490139) // December 14, 2021
+        mockDateProvider.currentDate = testDate
+        
+        let mockLocalStorage = MockLocalStorage()
+        let internalAPI = InternalIterableAPI.initializeForTesting(
+            apiKey: IterableAPITests.apiKey,
+            dateProvider: mockDateProvider,
+            localStorage: mockLocalStorage
+        )
+        
+        // Test consent given stores timestamp in milliseconds
+        internalAPI.setVisitorUsageTracked(isVisitorUsageTracked: true)
+        
+        let expectedTimestampInSeconds = Int64(testDate.timeIntervalSince1970)
+        let expectedTimestampInMilliseconds = expectedTimestampInSeconds * 1000
+        let actualTimestamp = mockLocalStorage.visitorConsentTimestamp!
+        
+        // Verify timestamp is in milliseconds (much larger than seconds)
+        XCTAssertEqual(actualTimestamp, expectedTimestampInMilliseconds)
+        XCTAssertTrue(actualTimestamp > expectedTimestampInSeconds, "Timestamp should be in milliseconds, not seconds")
+        
+        // Verify the timestamp makes sense when converted back to seconds
+        let convertedBackToSeconds = actualTimestamp / 1000
+        XCTAssertEqual(convertedBackToSeconds, expectedTimestampInSeconds)
+        
+        // Verify it's actually a December 2021 date when converted properly
+        let dateFromMilliseconds = Date(timeIntervalSince1970: TimeInterval(actualTimestamp) / 1000.0)
+        XCTAssertEqual(dateFromMilliseconds, testDate)
+    }
 
 }

@@ -147,13 +147,19 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     // MARK: Silent Push for in-app
     
     func application(_ application: UIApplication, didReceiveRemoteNotification userInfo: [AnyHashable: Any], fetchCompletionHandler completionHandler: @escaping (UIBackgroundFetchResult) -> Void) {
-        print("🔕 push notification received: \(userInfo)")
+        print("🔕 [APP] Silent push notification received")
+        print("🔕 [APP] Silent push payload: \(userInfo)")
         
-        // This method is called when app is in background
-        // For integration testing, we handle the alert in willPresent (foreground scenario)
-        // In production, you might trigger in-app message sync here
+        // Log Iterable-specific data if present
+        if let iterableData = userInfo["itbl"] as? [String: Any] {
+            print("🔕 [APP] Iterable-specific data in silent push: \(iterableData)")
+            
+            if let isGhostPush = iterableData["isGhostPush"] as? Bool {
+                print("👻 [APP] Ghost push flag: \(isGhostPush)")
+            }
+        }
         
-        // Complete the background fetch
+        // Call completion handler
         completionHandler(.newData)
     }
     
@@ -238,7 +244,16 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 // MARK: UNUserNotificationCenterDelegate
 
 extension AppDelegate: UNUserNotificationCenterDelegate {
-    public func userNotificationCenter(_: UNUserNotificationCenter, willPresent notification: UNNotification, withCompletionHandler completionHandler: @escaping (UNNotificationPresentationOptions) -> Void) {
+    public func userNotificationCenter(_ center: UNUserNotificationCenter, willPresent notification: UNNotification, withCompletionHandler completionHandler: @escaping (UNNotificationPresentationOptions) -> Void) {
+        print("🔔 [APP] Push notification received while app is in foreground")
+        print("🔔 [APP] Notification payload: \(notification.request.content.userInfo)")
+        print("🔔 [APP] Notification title: \(notification.request.content.title)")
+        print("🔔 [APP] Notification body: \(notification.request.content.body)")
+        
+        if let iterableData = notification.request.content.userInfo["itbl"] as? [String: Any] {
+            print("🔔 [APP] Iterable-specific data: \(iterableData)")
+        }
+        
         print("🔔 Foreground notification received: \(notification.request.content.userInfo)")
         
         // Check if this is from our silent push campaign (14750476)
@@ -248,6 +263,7 @@ extension AppDelegate: UNUserNotificationCenterDelegate {
             print("🔕 Silent push campaign detected in foreground - treating as silent")
             
             // Extract badge count and content-available flag, then show our custom alert
+        // For all other notifications, show normally
             let aps = notification.request.content.userInfo["aps"] as? [String: Any]
             let badgeCount = aps?["badge"] as? Int ?? 0
             let contentAvailable = aps?["content-available"] as? Int ?? 0
@@ -255,24 +271,43 @@ extension AppDelegate: UNUserNotificationCenterDelegate {
             DispatchQueue.main.async {
                 self.showSilentPushAlert(badgeCount: badgeCount, contentAvailable: contentAvailable)
             }
-            
             // Don't show the system notification UI for silent push
-            completionHandler([])
+            
             return
+            completionHandler([])
         }
         
-        // For all other notifications, show normally
         completionHandler([.alert, .badge, .sound])
     }
     
     // The method will be called on the delegate when the user responded to the notification by opening the application, dismissing the notification or choosing a UNNotificationAction. The delegate must be set before the application returns from applicationDidFinishLaunching:.
     public func userNotificationCenter(_ center: UNUserNotificationCenter, didReceive response: UNNotificationResponse, withCompletionHandler completionHandler: @escaping () -> Void) {
-        print("🔔 BREAKPOINT HERE: Push notification tapped - processing with Iterable SDK")
-        print("🔔 Notification payload: \(response.notification.request.content.userInfo)")
+        print("🔔 [APP] Push notification tapped - processing with Iterable SDK")
+        print("🔔 [APP] Full notification payload: \(response.notification.request.content.userInfo)")
+        print("🔔 [APP] Notification title: \(response.notification.request.content.title)")
+        print("🔔 [APP] Notification body: \(response.notification.request.content.body)")
         
         // Set a breakpoint on the next line to see when push notifications are tapped
         let actionIdentifier = response.actionIdentifier
-        print("🔔 Action identifier: \(actionIdentifier)")
+        print("🔔 [APP] Action identifier: \(actionIdentifier)")
+        
+        // Log Iterable-specific data if present
+        if let iterableData = response.notification.request.content.userInfo["itbl"] as? [String: Any] {
+            print("🔔 [APP] Iterable-specific data: \(iterableData)")
+            
+            if let deepLinkURL = iterableData["deepLinkURL"] as? String {
+                print("🔗 [APP] Deep link URL found in payload: \(deepLinkURL)")
+            }
+            
+            if let campaignId = iterableData["campaignId"] {
+                print("📊 [APP] Campaign ID: \(campaignId)")
+            }
+        }
+        
+        // Log APS data
+        if let apsData = response.notification.request.content.userInfo["aps"] as? [String: Any] {
+            print("🍎 [APP] APS data: \(apsData)")
+        }
         
         // ITBL: This should process the notification and trigger deep link handling
         print("🔔 About to call IterableAppIntegration.userNotificationCenter")

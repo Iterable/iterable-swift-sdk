@@ -89,6 +89,13 @@ class AuthManager: IterableAuthManagerProtocol {
         storeAuthToken()
         
         clearRefreshTimer()
+  
+        if localStorage.email != nil || localStorage.userId != nil || localStorage.userIdUnknownUser != nil {
+            localStorage.unknownUserEvents = nil
+            localStorage.unknownUserSessions = nil
+            localStorage.unknownUserUpdate = nil
+        }
+
         isLastAuthTokenValid = false
     }
     
@@ -157,11 +164,19 @@ class AuthManager: IterableAuthManagerProtocol {
         if retrievedAuthToken != nil {
             let isRefreshQueued = queueAuthTokenExpirationRefresh(retrievedAuthToken, onSuccess: onSuccess)
             if !isRefreshQueued {
-                onSuccess?(retrievedAuthToken)  // Use retrievedAuthToken instead of authToken
+                onSuccess?(authToken)
+                authToken = retrievedAuthToken
+                storeAuthToken()
+            } else {
+                authToken = retrievedAuthToken
+                storeAuthToken()
+                onSuccess?(authToken)
             }
         } else {
             handleAuthFailure(failedAuthToken: nil, reason: .authTokenNull)
             scheduleAuthTokenRefreshTimer(interval: getNextRetryInterval(), successCallback: onSuccess)
+            authToken = retrievedAuthToken
+            storeAuthToken()
         }
     }
     

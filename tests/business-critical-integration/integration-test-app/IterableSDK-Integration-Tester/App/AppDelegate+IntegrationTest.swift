@@ -54,6 +54,19 @@ extension AppDelegate {
         print("✅ Loaded project ID from test-config.json: \(projectId)")
         return projectId
     }
+    
+    static func loadCIModeFromConfig() -> Bool {
+        guard let path = Bundle.main.path(forResource: "test-config", ofType: "json"),
+              let data = try? Data(contentsOf: URL(fileURLWithPath: path)),
+              let json = try? JSONSerialization.jsonObject(with: data) as? [String: Any],
+              let testing = json["testing"] as? [String: Any],
+              let ciMode = testing["ciMode"] as? Bool else {
+            print("⚠️ Could not load ciMode from test-config.json, defaulting to false")
+            return false
+        }
+        print("✅ Loaded CI mode from test-config.json: \(ciMode)")
+        return ciMode
+    }
         
     static func initializeIterableSDK() {
         guard let appDelegate = UIApplication.shared.delegate as? AppDelegate else {
@@ -103,6 +116,20 @@ extension AppDelegate {
         print("✅ User logged out - keychain and device token cleared")
     }
     
+    // CI Environment Detection
+    static var isRunningInCI: Bool {
+        // Check config file (updated by script)
+        let isCI = loadCIModeFromConfig()
+        
+        if isCI {
+            print("🤖 [APP] CI ENVIRONMENT DETECTED - Mock push notifications enabled")
+        } else {
+            print("📱 [APP] LOCAL ENVIRONMENT DETECTED - Real APNS push notifications enabled")
+        }
+        
+        return isCI
+    }
+    
     static func registerForPushNotifications() {
         print("🔔 Requesting push notification authorization...")
         
@@ -117,12 +144,41 @@ extension AppDelegate {
                 
                 if granted {
                     print("✅ Push notification authorization granted")
-                    UIApplication.shared.registerForRemoteNotifications()
+                    
+                    // Check if running in CI environment
+                    if isRunningInCI {
+                        print("🤖 [APP] CI MODE: Generating mock device token instead of real APNS registration")
+                        // Generate a fake device token for CI
+                        let mockTokenString = generateMockDeviceToken()
+                        let mockTokenData = mockTokenString.hexStringToData()
+                        
+                        print("🎭 [APP] Mock device token created: \(mockTokenString)")
+                        print("🔄 [APP] Simulating device token registration callback in 3 seconds...")
+                        
+                        // Simulate the device token registration callback
+                        DispatchQueue.main.asyncAfter(deadline: .now() + 3.0) {
+                            print("📞 [APP] Triggering mock didRegisterForRemoteNotificationsWithDeviceToken callback")
+                            if let appDelegate = UIApplication.shared.delegate as? AppDelegate {
+                                appDelegate.application(UIApplication.shared, didRegisterForRemoteNotificationsWithDeviceToken: mockTokenData)
+                            }
+                        }
+                    } else {
+                        print("📱 [APP] LOCAL MODE: Registering for real APNS push notifications")
+                        UIApplication.shared.registerForRemoteNotifications()
+                    }
                 } else {
                     print("❌ Push notification authorization denied")
                 }
             }
         }
+    }
+    
+    // Generate a realistic fake device token for CI
+    private static func generateMockDeviceToken() -> String {
+        // Generate a 64-byte (128 character) hex token similar to real device tokens
+        let mockToken = (0..<64).map { _ in String(format: "%02x", Int.random(in: 0...255)) }.joined()
+        print("🎭 [APP] Generated 64-byte mock device token for CI testing: \(mockToken)")
+        return mockToken
     }
     
     // MARK: - Device Token Management
@@ -171,4 +227,24 @@ extension AppDelegate {
         print("🔄 Device token session state reset on app launch")
     }
     
+}
+
+// MARK: - String Extensions for Mock Token Conversion
+
+extension String {
+    func hexStringToData() -> Data {
+        let hex = self.replacingOccurrences(of: " ", with: "")
+        var data = Data()
+        var index = hex.startIndex
+        
+        while index < hex.endIndex {
+            let nextIndex = hex.index(index, offsetBy: 2)
+            let byteString = String(hex[index..<nextIndex])
+            if let byte = UInt8(byteString, radix: 16) {
+                data.append(byte)
+            }
+            index = nextIndex
+        }
+        return data
+    }
 }

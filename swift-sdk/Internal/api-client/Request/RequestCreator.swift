@@ -62,7 +62,7 @@ struct RequestCreator {
         
         setCurrentUser(inDict: &body)
         
-        if auth.email == nil, auth.userId != nil {
+        if auth.email == nil, (auth.userId != nil || auth.userIdUnknownUser != nil) {
             body[JsonKey.preferUserId] = true
         }
         
@@ -79,7 +79,7 @@ struct RequestCreator {
         
         setCurrentUser(inDict: &body)
         
-        if auth.email == nil, auth.userId != nil {
+        if auth.email == nil, (auth.userId != nil || auth.userIdUnknownUser != nil) {
             body[JsonKey.preferUserId] = true
         }
         
@@ -102,9 +102,33 @@ struct RequestCreator {
         
         let itemsToSerialize = items.map { $0.toDictionary() }
         
-        let body: [String: Any] = [JsonKey.Commerce.user: apiUserDict,
+        var body: [String: Any] = [JsonKey.Commerce.user: apiUserDict,
                                    JsonKey.Commerce.items: itemsToSerialize]
         
+        if auth.email == nil, (auth.userId != nil || auth.userIdUnknownUser != nil) {
+            body[JsonKey.preferUserId] = true
+        }
+        return .success(.post(createPostRequest(path: Const.Path.updateCart, body: body)))
+    }
+    
+    func createUpdateCartRequest(items: [CommerceItem], createdAt: Int) -> Result<IterableRequest, IterableError> {
+        if case .none = auth.emailOrUserId {
+            ITBError(Self.authMissingMessage)
+            return .failure(IterableError.general(description: Self.authMissingMessage))
+        }
+        var apiUserDict = [AnyHashable: Any]()
+        
+        setCurrentUser(inDict: &apiUserDict)
+        let itemsToSerialize = items.map { $0.toDictionary() }
+
+        var body: [String: Any] = [JsonKey.Commerce.user: apiUserDict,
+                                   JsonKey.Body.createdAt: createdAt,
+                                   JsonKey.Commerce.items: itemsToSerialize]
+        
+        if auth.email == nil, (auth.userId != nil || auth.userIdUnknownUser != nil) {
+            body[JsonKey.preferUserId] = true
+        }
+
         return .success(.post(createPostRequest(path: Const.Path.updateCart, body: body)))
     }
     
@@ -128,6 +152,10 @@ struct RequestCreator {
                                    JsonKey.Commerce.items: itemsToSerialize,
                                    JsonKey.Commerce.total: total]
         
+        if auth.email == nil, (auth.userId != nil || auth.userIdUnknownUser != nil) {
+            body[JsonKey.preferUserId] = true
+        }
+        
         if let dataFields = dataFields {
             body[JsonKey.dataFields] = dataFields
         }
@@ -137,6 +165,37 @@ struct RequestCreator {
         }
         if let templateId = templateId {
             body[JsonKey.templateId] = templateId
+        }
+
+        return .success(.post(createPostRequest(path: Const.Path.trackPurchase, body: body)))
+    }
+    
+    func createTrackPurchaseRequest(_ total: NSNumber,
+                                    items: [CommerceItem],
+                                    dataFields: [AnyHashable: Any]?,
+                                    createdAt: Int) -> Result<IterableRequest, IterableError> {
+        if case .none = auth.emailOrUserId {
+            ITBError(Self.authMissingMessage)
+            return .failure(IterableError.general(description: Self.authMissingMessage))
+        }
+
+        var apiUserDict = [AnyHashable: Any]()
+        
+        setCurrentUser(inDict: &apiUserDict)
+        
+        let itemsToSerialize = items.map { $0.toDictionary() }
+
+        var body: [String: Any] = [JsonKey.Commerce.user: apiUserDict,
+                                   JsonKey.Body.createdAt: createdAt,
+                                   JsonKey.Commerce.items: itemsToSerialize,
+                                   JsonKey.Commerce.total: total]
+
+        if auth.email == nil, (auth.userId != nil || auth.userIdUnknownUser != nil) {
+            body[JsonKey.preferUserId] = true
+        }
+        
+        if let dataFields = dataFields {
+            body[JsonKey.dataFields] = dataFields
         }
 
         return .success(.post(createPostRequest(path: Const.Path.trackPurchase, body: body)))
@@ -190,6 +249,24 @@ struct RequestCreator {
         }
         
         return .success(.post(createPostRequest(path: Const.Path.trackEvent, body: body)))
+    }
+    
+    func createTrackEventRequest(_ eventName: String, withBody body: [AnyHashable: Any]?) -> Result<IterableRequest, IterableError> {
+        if case .none = auth.emailOrUserId {
+            ITBError(Self.authMissingMessage)
+            return .failure(IterableError.general(description: Self.authMissingMessage))
+        }
+
+        var postBody = [AnyHashable: Any]()
+        if let _body = body {
+            postBody = _body
+        }
+
+        setCurrentUser(inDict: &postBody)
+
+        postBody.setValue(for: JsonKey.eventName, value: eventName)
+
+        return .success(.post(createPostRequest(path: Const.Path.trackEvent, body: postBody)))
     }
     
     func createUpdateSubscriptionsRequest(_ emailListIds: [NSNumber]? = nil,
@@ -580,6 +657,70 @@ struct RequestCreator {
         return .success(.get(createGetRequest(forPath: Const.Path.getRemoteConfiguration, withArgs: args as! [String: String])))
     }
     
+    func createMergeUserRequest(_ sourceEmail: String?, _ sourceUserId: String?, _ destinationEmail: String?, _ destinationUserId: String?) -> Result<IterableRequest, IterableError> {
+        var body = [AnyHashable: Any]()
+        
+        if IterableUtil.isNotNullOrEmpty(string: sourceEmail) {
+            body.setValue(for: JsonKey.sourceEmail, value: sourceEmail)
+        }
+        
+        if IterableUtil.isNotNullOrEmpty(string: sourceUserId) {
+            body.setValue(for: JsonKey.sourceUserId, value: sourceUserId)
+        }
+        
+        if IterableUtil.isNotNullOrEmpty(string: destinationEmail) {
+            body.setValue(for: JsonKey.destinationEmail, value: destinationEmail)
+        }
+        
+        if IterableUtil.isNotNullOrEmpty(string: destinationUserId) {
+            body.setValue(for: JsonKey.destinationUserId, value: destinationUserId)
+        }
+        return .success(.post(createPostRequest(path: Const.Path.mergeUser, body: body)))
+    }
+    
+    func createGetCriteriaRequest() -> Result<IterableRequest, IterableError> {
+        let body: [AnyHashable: Any] = [:]
+        return .success(.get(createGetRequest(forPath: Const.Path.getCriteria, withArgs: body as! [String: String])))
+    }
+
+    func createTrackUnknownUserSessionRequest(createdAt: Int, withUserId userId: String, dataFields: [AnyHashable: Any]?, requestJson: [AnyHashable: Any]) -> Result<IterableRequest, IterableError> {
+        var body = [AnyHashable: Any]()
+        
+        var userDict = [AnyHashable: Any]()
+        userDict[JsonKey.userId] = userId
+        userDict[JsonKey.preferUserId] = true
+        userDict[JsonKey.mergeNestedObjects] = true
+        userDict[JsonKey.createNewFields] = true
+        if let dataFields = dataFields {
+            userDict[JsonKey.dataFields] = dataFields
+        }
+
+        body.setValue(for: JsonKey.Commerce.user, value: userDict)
+        body.setValue(for: JsonKey.Body.createdAt, value: createdAt)
+        body.setValue(for: JsonKey.deviceInfo, value: deviceMetadata.asDictionary())
+        body.setValue(for: JsonKey.unknownSessionContext, value: requestJson)
+        return .success(.post(createPostRequest(path: Const.Path.trackUnknownUserSession, body: body)))
+    }
+    
+    func createTrackConsentRequest(consentTimestamp: Int64, email: String?, userId: String?, isUserKnown: Bool) -> Result<IterableRequest, IterableError> {
+        var body = [AnyHashable: Any]()
+        
+        body.setValue(for: JsonKey.consentTimestamp, value: consentTimestamp)
+        
+        if let email = email {
+            body.setValue(for: JsonKey.email, value: email)
+        }
+        
+        if let userId = userId {
+            body.setValue(for: JsonKey.userId, value: userId)
+        }
+        
+        body.setValue(for: JsonKey.isUserKnown, value: isUserKnown)
+        body.setValue(for: JsonKey.deviceInfo, value: deviceMetadata.asDictionary())
+        
+        return .success(.post(createPostRequest(path: Const.Path.trackConsent, body: body)))
+    }
+    
     // MARK: - PRIVATE
     
     private static let authMissingMessage = "Both email and userId are nil"
@@ -612,6 +753,8 @@ struct RequestCreator {
             dict.setValue(for: JsonKey.email, value: email)
         case let .userId(userId):
             dict.setValue(for: JsonKey.userId, value: userId)
+        case let .userIdUnknownUser(userId):
+            dict.setValue(for: JsonKey.userId, value: userId)
         case .none:
             ITBInfo("Current user is unavailable")
         }
@@ -622,6 +765,8 @@ struct RequestCreator {
         case let .email(email):
             dict.setValue(for: JsonKey.userKey, value: email)
         case let .userId(userId):
+            dict.setValue(for: JsonKey.userKey, value: userId)
+        case let .userIdUnknownUser(userId):
             dict.setValue(for: JsonKey.userKey, value: userId)
         case .none:
             ITBInfo("Current user is unavailable")

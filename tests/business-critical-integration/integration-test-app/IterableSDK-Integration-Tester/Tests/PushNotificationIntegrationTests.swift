@@ -162,16 +162,44 @@ class PushNotificationIntegrationTests: IntegrationTestBase {
             // Step 9: Test push notification from backend
             let testPushButton = app.buttons["test-push-notification-button"]
             XCTAssertTrue(testPushButton.waitForExistence(timeout: standardTimeout), "Test push notification button should exist")
-            testPushButton.tap()
-            screenshotCapture.captureScreenshot(named: "11-test-push-sent")
             
-            // Step 9.5: Handle the "Success" popup by pressing OK
-            let successAlert = app.alerts.firstMatch
-            if successAlert.waitForExistence(timeout: 5.0) {
-                let okButton = successAlert.buttons["OK"]
-                if okButton.exists {
-                    okButton.tap()
-                    screenshotCapture.captureScreenshot(named: "11.5-success-popup-dismissed")
+            if isRunningInCI {
+                print("🤖 [TEST] CI MODE ACTIVATED: Sending simulated standard push notification")
+                print("🎭 [TEST] This will use xcrun simctl instead of real backend API call")
+                // Create standard push payload for CI testing (matching real Iterable format)
+                let pushPayload: [String: Any] = [
+                    "aps": [
+                        "alert": [
+                            "title": "Integration Test",
+                            "body": "This is an integration test simple push"
+                        ],
+                        "badge": 10,
+                        "interruption-level": "active",
+                        "relevance-score": 1
+                    ],
+                    "itbl": [
+                        "campaignId": 14679102,
+                        "templateId": 19136236,
+                        "messageId": "e9c8a7d8882a4df0b487a8e7f697bef8",
+                        "isGhostPush": 0
+                    ]
+                ]
+                sendSimulatedPushNotification(payload: pushPayload)
+                screenshotCapture.captureScreenshot(named: "11-simulated-push-sent")
+            } else {
+                print("📱 [TEST] LOCAL MODE ACTIVATED: Using real push notification via backend API")
+                print("🌐 [TEST] This will send actual APNS push through Iterable backend")
+                testPushButton.tap()
+                screenshotCapture.captureScreenshot(named: "11-test-push-sent")
+                
+                // Step 9.5: Handle the "Success" popup by pressing OK
+                let successAlert = app.alerts.firstMatch
+                if successAlert.waitForExistence(timeout: 5.0) {
+                    let okButton = successAlert.buttons["OK"]
+                    if okButton.exists {
+                        okButton.tap()
+                        screenshotCapture.captureScreenshot(named: "11.5-success-popup-dismissed")
+                    }
                 }
             }
             
@@ -202,25 +230,37 @@ class PushNotificationIntegrationTests: IntegrationTestBase {
         }
         screenshotCapture.captureScreenshot(named: "13-backend-tab-for-deep-link")
         
-        // Send deep link push notification using campaign 14695444
+        // Send deep link push notification
         let deepLinkPushButton = app.buttons["test-deep-link-push-button"]
         XCTAssertTrue(deepLinkPushButton.waitForExistence(timeout: standardTimeout), "Deep link push button should exist")
         XCTAssertTrue(deepLinkPushButton.isEnabled, "Deep link push button should be enabled")
-        deepLinkPushButton.tap()
-        screenshotCapture.captureScreenshot(named: "14-deep-link-push-sent")
         
-        // Handle success alert: "Success - Deep link push notification sent successfully! Campaign ID: 14695444"
-        let deepLinkSuccessAlert = app.alerts["Success"]
-        XCTAssertTrue(deepLinkSuccessAlert.waitForExistence(timeout: 5.0), "Success alert should appear")
-        
-        // Verify the alert message contains the campaign ID
-        let deepLinkSuccessMessage = deepLinkSuccessAlert.staticTexts.element(boundBy: 1)
-        XCTAssertTrue(deepLinkSuccessMessage.label.contains("14695444"), "Success message should contain campaign ID 14695444")
-        
-        let deepLinkSuccessOKButton = deepLinkSuccessAlert.buttons["OK"]
-        XCTAssertTrue(deepLinkSuccessOKButton.exists, "Success alert OK button should exist")
-        deepLinkSuccessOKButton.tap()
-        screenshotCapture.captureScreenshot(named: "15-success-alert-dismissed")
+        if isRunningInCI {
+            print("🤖 [TEST] CI MODE ACTIVATED: Sending simulated deep link push notification")
+            print("🔗 [TEST] This will use xcrun simctl with deep link payload instead of real backend API")
+            // Use the deep link test URL
+            let deepLinkUrl = "tester://product?itemId=12345&category=shoes"
+            sendSimulatedDeepLinkPush(deepLinkUrl: deepLinkUrl)
+            screenshotCapture.captureScreenshot(named: "14-simulated-deep-link-push-sent")
+        } else {
+            print("📱 [TEST] LOCAL MODE ACTIVATED: Using real deep link push notification via backend API")
+            print("🌐 [TEST] This will send actual APNS deep link push through Iterable backend")
+            deepLinkPushButton.tap()
+            screenshotCapture.captureScreenshot(named: "14-deep-link-push-sent")
+            
+            // Handle success alert: "Success - Deep link push notification sent successfully! Campaign ID: 14695444"
+            let deepLinkSuccessAlert = app.alerts["Success"]
+            XCTAssertTrue(deepLinkSuccessAlert.waitForExistence(timeout: 5.0), "Success alert should appear")
+            
+            // Verify the alert message contains the campaign ID
+            let deepLinkSuccessMessage = deepLinkSuccessAlert.staticTexts.element(boundBy: 1)
+            XCTAssertTrue(deepLinkSuccessMessage.label.contains("14695444"), "Success message should contain campaign ID 14695444")
+            
+            let deepLinkSuccessOKButton = deepLinkSuccessAlert.buttons["OK"]
+            XCTAssertTrue(deepLinkSuccessOKButton.exists, "Success alert OK button should exist")
+            deepLinkSuccessOKButton.tap()
+            screenshotCapture.captureScreenshot(named: "15-success-alert-dismissed")
+        }
         
         // Wait for deep link push notification to arrive and validate its content
         print("🔔 Waiting for deep link push notification to arrive...")
