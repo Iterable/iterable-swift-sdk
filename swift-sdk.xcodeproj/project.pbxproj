@@ -1041,7 +1041,7 @@
 			path = "swift-sdk/misc";
 			sourceTree = "<group>";
 		};
-		8AAA8B262D07310600DF8220 /* models */ = {
+		8AAA8B262D07310600DF8220 /* Models */ = {
 			isa = PBXGroup;
 			children = (
 				8AAA8B1E2D07310600DF8220 /* CommerceItem.swift */,
@@ -1053,10 +1053,10 @@
 				8AAA8B242D07310600DF8220 /* IterablePushNotificationMetadata.swift */,
 				8AAA8B252D07310600DF8220 /* RetryPolicy.swift */,
 			);
-			path = models;
+			path = Models;
 			sourceTree = "<group>";
 		};
-		8AAA8B2C2D07310600DF8220 /* protocols */ = {
+		8AAA8B2C2D07310600DF8220 /* Protocols */ = {
 			isa = PBXGroup;
 			children = (
 				8AAA8B272D07310600DF8220 /* IterableAuthManagerProtocol.swift */,
@@ -1065,30 +1065,30 @@
 				8AAA8B2A2D07310600DF8220 /* IterableInAppManagerProtocol.swift */,
 				8AAA8B2B2D07310600DF8220 /* IterableInboxViewControllerViewDelegate.swift */,
 			);
-			path = protocols;
+			path = Protocols;
 			sourceTree = "<group>";
 		};
-		8AAA8B2F2D07310600DF8220 /* utilities */ = {
+		8AAA8B2F2D07310600DF8220 /* Utilities */ = {
 			isa = PBXGroup;
 			children = (
 				8AAA8B2D2D07310600DF8220 /* AuthFailure.swift */,
 				8AAA8B2E2D07310600DF8220 /* AuthFailureReason.swift */,
 			);
-			path = utilities;
+			path = Utilities;
 			sourceTree = "<group>";
 		};
-		8AAA8B312D07310600DF8220 /* core */ = {
+		8AAA8B312D07310600DF8220 /* Core */ = {
 			isa = PBXGroup;
 			children = (
-				8AAA8B262D07310600DF8220 /* models */,
-				8AAA8B2C2D07310600DF8220 /* protocols */,
-				8AAA8B2F2D07310600DF8220 /* utilities */,
+				8AAA8B262D07310600DF8220 /* Models */,
+				8AAA8B2C2D07310600DF8220 /* Protocols */,
+				8AAA8B2F2D07310600DF8220 /* Utilities */,
 				8AAA8B302D07310600DF8220 /* Constants.swift */,
 			);
-			path = core;
+			path = Core;
 			sourceTree = "<group>";
 		};
-		8AAA8B9D2D07310600DF8220 /* sdk */ = {
+		8AAA8B9D2D07310600DF8220 /* SDK */ = {
 			isa = PBXGroup;
 			children = (
 				8AAA8B982D07310600DF8220 /* IterableAPI.swift */,
@@ -1097,7 +1097,7 @@
 				8AAA8B9B2D07310600DF8220 /* IterableLogging.swift */,
 				8AAA8B9C2D07310600DF8220 /* IterableMessaging.swift */,
 			);
-			path = sdk;
+			path = SDK;
 			sourceTree = "<group>";
 		};
 		8AAA8BA02D07310600DF8220 /* swiftui */ = {
@@ -1181,7 +1181,7 @@
 			path = "in-app";
 			sourceTree = "<group>";
 		};
-		8AAA8C412D074C2000DF8220 /* network */ = {
+		8AAA8C412D074C2000DF8220 /* Network */ = {
 			isa = PBXGroup;
 			children = (
 				8AAA8C3C2D074C2000DF8220 /* NetworkConnectivityChecker.swift */,
@@ -1190,7 +1190,7 @@
 				8AAA8C3F2D074C2000DF8220 /* NetworkMonitor.swift */,
 				8AAA8C402D074C2000DF8220 /* NetworkSession.swift */,
 			);
-			path = network;
+			path = Network;
 			sourceTree = "<group>";
 		};
 		8AAA8C442D074C2000DF8220 /* Keychain */ = {
@@ -1202,7 +1202,7 @@
 			path = Keychain;
 			sourceTree = "<group>";
 		};
-		8AAA8C512D074C2000DF8220 /* utilities */ = {
+		8AAA8C512D074C2000DF8220 /* Utilities */ = {
 			isa = PBXGroup;
 			children = (
 				8AAA8C442D074C2000DF8220 /* Keychain */,
@@ -1219,17 +1219,17 @@
 				8AAA8C4F2D074C2000DF8220 /* UIColor+Extension.swift */,
 				8AAA8C502D074C2000DF8220 /* WebViewProtocol.swift */,
 			);
-			path = utilities;
+			path = Utilities;
 			sourceTree = "<group>";
 		};
-		8AAA8C852D074C2000DF8220 /* internal */ = {
+		8AAA8C852D074C2000DF8220 /* Internal */ = {
 			isa = PBXGroup;
 			children = (
 				8AAA8C2B2D074C2000DF8220 /* api-client */,
 				8AAA8C302D074C2000DF8220 /* Dwifft */,
 				8AAA8C3B2D074C2000DF8220 /* in-app */,
-				8AAA8C412D074C2000DF8220 /* network */,
-				8AAA8C512D074C2000DF8220 /* utilities */,
+				8AAA8C412D074C2000DF8220 /* Network */,
+				8AAA8C512D074C2000DF8220 /* Utilities */,
 				8AAA8C522D074C2000DF8220 /* ActionRunner.swift */,
 				8AAA8C532D074C2000DF8220 /* APNSTypeChecker.swift */,
 				8AAA8C542D074C2000DF8220 /* AppExtensionHelper.swift */,
@@ -1283,7 +1283,7 @@
 				8AAA8C832D074C2000DF8220 /* RequestProcessorUtil.swift */,
 				8AAA8C842D074C2000DF8220 /* RequestSender.swift */,
 			);
-			path = internal;
+			path = Internal;
 			sourceTree = "<group>";
 		};
 		AC0674E720D87D5B00C2806D /* Helper Files */ = {
@@ -1330,11 +1330,11 @@
 				AC72A0BB20CF4C8C004D7997 /* Internal */,
 				18E5B5D02CC77BCE00A558EC /* IterableTokenGenerator.swift */,
 				8AAA8B6C2D07310600DF8220 /* IterableSDK.h */,
-				8AAA8B312D07310600DF8220 /* core */,
-				8AAA8C852D074C2000DF8220 /* internal */,
-				8AAA8B9D2D07310600DF8220 /* sdk */,
+				8AAA8B312D07310600DF8220 /* Core */,
+				8AAA8C852D074C2000DF8220 /* Internal */,
+				8AAA8B9D2D07310600DF8220 /* SDK */,
 				8AAA8BA82D07310600DF8220 /* ui-components */,
-				AC44C0EB22615F8100E0641D /* resources */,
+				AC44C0EB22615F8100E0641D /* Resources */,
 			);
 			path = "swift-sdk";
 			sourceTree = "<group>";
@@ -1418,14 +1418,14 @@
 			name = "request-tests";
 			sourceTree = "<group>";
 		};
-		AC44C0EB22615F8100E0641D /* resources */ = {
+		AC44C0EB22615F8100E0641D /* Resources */ = {
 			isa = PBXGroup;
 			children = (
 				BA2BB8182BADD5A500EA0229 /* PrivacyInfo.xcprivacy */,
 				AC219C522260006600B98631 /* Assets.xcassets */,
 				AC50865224C60172001DC132 /* IterableDataModel.xcdatamodeld */,
 			);
-			path = resources;
+			path = Resources;
 			sourceTree = "<group>";
 		};
 		AC52C5BB272AA27A000DCDCF /* local-storage-tests */ = {
