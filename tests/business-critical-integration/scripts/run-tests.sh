@@ -677,12 +677,21 @@ run_inapp_message_tests() {
     
     echo_info "Starting in-app message test sequence..."
     
+    # Run the specific in-app message test method
+    local EXIT_CODE=0
+    run_xcode_tests "InAppMessageIntegrationTests" "testBasicInAppMessageWorkflow" || EXIT_CODE=$?
+    run_xcode_tests "InAppMessageIntegrationTests" "testInAppMessageWithActionButtons" || EXIT_CODE=$?
+    run_xcode_tests "InAppMessageIntegrationTests" "testInAppMessageDisplayRules" || EXIT_CODE=$?
+    run_xcode_tests "InAppMessageIntegrationTests" "testInAppMessageWithDeepLink" || EXIT_CODE=$?
+    run_xcode_tests "InAppMessageIntegrationTests" "testInAppMessageMetricsAndStatistics" || EXIT_CODE=$?
+
+
     # Test sequence for in-app messages
-    run_test_with_timeout "inapp_silent_push" "$TIMEOUT"
-    run_test_with_timeout "inapp_display" "$TIMEOUT"
-    run_test_with_timeout "inapp_interaction" "$TIMEOUT"
-    run_test_with_timeout "inapp_deeplink" "$TIMEOUT"
-    run_test_with_timeout "inapp_metrics" "$TIMEOUT"
+    # run_test_with_timeout "inapp_silent_push" "$TIMEOUT"
+    # run_test_with_timeout "inapp_display" "$TIMEOUT"
+    # run_test_with_timeout "inapp_interaction" "$TIMEOUT"
+    # run_test_with_timeout "inapp_deeplink" "$TIMEOUT"
+    # run_test_with_timeout "inapp_metrics" "$TIMEOUT"
     
     generate_test_report "inapp_message" "$TEST_REPORT"
     
