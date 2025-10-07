@@ -134,7 +134,7 @@ setup_ios_simulator() {
     # Create a specific simulator for testing if needed
     SIMULATOR_NAME="Integration-Test-iPhone"
     DEVICE_TYPE="iPhone 16 Pro"
-    RUNTIME="iOS-18-2"
+    RUNTIME="iOS 18.5"
     
     # Check if our test simulator already exists
     if xcrun simctl list devices | grep -q "$SIMULATOR_NAME"; then
@@ -143,7 +143,7 @@ setup_ios_simulator() {
     else
         echo_info "Creating test simulator: $SIMULATOR_NAME"
         # Try to create with latest iOS runtime
-        AVAILABLE_RUNTIME=$(xcrun simctl list runtimes | grep "iOS" | tail -1 | awk '{print $NF}' | tr -d '()')
+        AVAILABLE_RUNTIME=$(xcrun simctl list runtimes | grep "iOS 18.5" | tail -1 | awk '{print $NF}' | tr -d '()')
         if [[ -n "$AVAILABLE_RUNTIME" ]]; then
             SIMULATOR_UUID=$(xcrun simctl create "$SIMULATOR_NAME" "$DEVICE_TYPE" "$AVAILABLE_RUNTIME")
             echo_success "Created simulator: $SIMULATOR_UUID"

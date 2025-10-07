@@ -254,7 +254,7 @@ setup_simulator() {
         SIMULATOR_NAME="Integration-Test-iPhone-$(date +%s)"
         
         # Get latest iOS runtime
-        RUNTIME=$(xcrun simctl list runtimes | grep "iOS" | tail -1 | awk '{print $NF}' | tr -d '()')
+        RUNTIME=$(xcrun simctl list runtimes | grep "iOS 18.5" | tail -1 | awk '{print $NF}' | tr -d '()')
         
         if [[ -n "$RUNTIME" ]]; then
             echo_info "Creating simulator: $SIMULATOR_NAME with $RUNTIME"
