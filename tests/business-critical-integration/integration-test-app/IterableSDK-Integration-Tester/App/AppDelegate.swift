@@ -333,7 +333,16 @@ extension AppDelegate: IterableURLDelegate {
         if url.scheme == "tester" {
             print("✅ App is opened via Iterable deep link - tester://")
             
-            // Show alert that app was opened via deep link
+            // Check if this is the testview deep link
+            if url.host == "testview" {
+                print("🎯 Testview deep link detected - showing TestViewController")
+                DispatchQueue.main.async {
+                    self.showTestViewController()
+                }
+                return true
+            }
+            
+            // Show alert for other deep links
             DispatchQueue.main.async {
                 self.showDeepLinkAlert(url: url)
             }
@@ -346,6 +355,23 @@ extension AppDelegate: IterableURLDelegate {
         
         print("🔗 URL scheme '\(url.scheme ?? "nil")' not handled by our app")
         return false // We didn't handle this URL
+    }
+    
+    private func showTestViewController() {
+        guard let rootViewController = window?.rootViewController else { return }
+        
+        let testVC = TestViewController()
+        testVC.modalPresentationStyle = .fullScreen
+        
+        // Find the topmost presented view controller
+        var topViewController = rootViewController
+        while let presentedViewController = topViewController.presentedViewController {
+            topViewController = presentedViewController
+        }
+        
+        topViewController.present(testVC, animated: true) {
+            print("✅ TestViewController presented successfully")
+        }
     }
 }
 
