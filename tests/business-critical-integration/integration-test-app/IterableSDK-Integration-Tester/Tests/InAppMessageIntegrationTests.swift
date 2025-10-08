@@ -350,6 +350,61 @@ class InAppMessageIntegrationTests: IntegrationTestBase {
         print("✅ In-app message metrics and statistics test completed")
     }
     
+    func testInAppMessageDelieveryAndDismiss() {
+        // Test complete flow: trigger in-app → display → tap button → Dismiss
+        
+        // Navigate to In-App Message tab
+        let inAppMessageRow = app.otherElements["in-app-message-test-row"]
+        XCTAssertTrue(inAppMessageRow.waitForExistence(timeout: standardTimeout), "In-app message row should exist")
+        inAppMessageRow.tap()
+        screenshotCapture.captureScreenshot(named: "01-inapp-display-test-started")
+        
+        // Step 1: Trigger InApp display campaign (14751067)
+        let triggerTestViewButton = app.buttons["trigger-in-app-button"]
+        XCTAssertTrue(triggerTestViewButton.waitForExistence(timeout: standardTimeout), "Trigger InApp display button should exist")
+        triggerTestViewButton.tap()
+        screenshotCapture.captureScreenshot(named: "02-inapp-display-campaign-triggered")
+        
+        // Handle success alert
+        if app.alerts["Success"].waitForExistence(timeout: 5.0) {
+            app.alerts["Success"].buttons["OK"].tap()
+        }
+        
+        // Tap "Check for Messages" to fetch and show the in-app
+        let checkMessagesButton = app.buttons["check-messages-button"]
+        XCTAssertTrue(checkMessagesButton.waitForExistence(timeout: standardTimeout), "Check for Messages button should exist")
+        checkMessagesButton.tap()
+        screenshotCapture.captureScreenshot(named: "02b-check-messages-tapped")
+        
+        // Step 2: Wait for in-app message to display
+        print("⏳ Waiting for in-app message...")
+        let webView = app.descendants(matching: .webView).element(boundBy: 0)
+        
+        XCTAssertTrue(webView.waitForExistence(timeout: 15.0), "In-app message should appear")
+        screenshotCapture.captureScreenshot(named: "03-inapp-display-inapp-displayed")
+        
+        // Wait for message to fully load
+        sleep(2)
+        
+        // Step 3: Tap the "Dismiss" link in the in-app message
+        print("👆 Tapping 'Dismiss' link in in-app message")
+        let showTestViewLink = app.links["Dismiss"]
+        XCTAssertTrue(showTestViewLink.waitForExistence(timeout: 5.0), "Show Test View link should exist in the in-app message")
+        showTestViewLink.tap()
+        screenshotCapture.captureScreenshot(named: "04-inapp-display-dismiss-tapped")
+        
+        // Step 4: Verify in-app message is dismissed
+        XCTAssertFalse(webView.waitForExistence(timeout: 15.0), "In-app message should not appear anymore")
+        screenshotCapture.captureScreenshot(named: "03-inapp-display-inapp-dismissed")
+        
+        print("✅ In-app message display flow completed successfully")
+        print("✅ Flow verified:")
+        print("   1. Triggered campaign 14751067")
+        print("   2. In-app message displayed")
+        print("   3. User tapped 'Dismiss' button")
+        print("   4. In-app message dismissed")
+    }
+    
     func testInAppMessageDeepLinkToTestView() {
         // Test complete flow: trigger in-app → display → tap button → navigate to TestViewController
         

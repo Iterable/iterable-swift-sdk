@@ -83,7 +83,7 @@ struct InAppMessageTestView: View {
             .disabled(viewModel.isCheckingMessages)
             
             ActionButton(
-                title: "Trigger Test In-App (Campaign 14751067)",
+                title: "Trigger Test In-App Display (Campaign 14751067)",
                 backgroundColor: .green,
                 isLoading: viewModel.isTriggeringCampaign
             ) {
