@@ -349,4 +349,90 @@ class InAppMessageIntegrationTests: IntegrationTestBase {
         
         print("✅ In-app message metrics and statistics test completed")
     }
+    
+    func testInAppMessageDeepLinkToTestView() {
+        // Test complete flow: trigger in-app → display → tap button → navigate to TestViewController
+        
+        // Navigate to In-App Message tab
+        let inAppMessageRow = app.otherElements["in-app-message-test-row"]
+        XCTAssertTrue(inAppMessageRow.waitForExistence(timeout: standardTimeout), "In-app message row should exist")
+        inAppMessageRow.tap()
+        screenshotCapture.captureScreenshot(named: "01-inapp-testview-test-started")
+        
+        // Step 1: Trigger TestView campaign (15231325)
+        let triggerTestViewButton = app.buttons["trigger-testview-in-app-button"]
+        XCTAssertTrue(triggerTestViewButton.waitForExistence(timeout: standardTimeout), "Trigger TestView button should exist")
+        triggerTestViewButton.tap()
+        screenshotCapture.captureScreenshot(named: "02-testview-campaign-triggered")
+        
+        // Handle success alert
+        if app.alerts["Success"].waitForExistence(timeout: 5.0) {
+            app.alerts["Success"].buttons["OK"].tap()
+        }
+        
+        // Tap "Check for Messages" to fetch and show the in-app
+        let checkMessagesButton = app.buttons["check-messages-button"]
+        XCTAssertTrue(checkMessagesButton.waitForExistence(timeout: standardTimeout), "Check for Messages button should exist")
+        checkMessagesButton.tap()
+        screenshotCapture.captureScreenshot(named: "02b-check-messages-tapped")
+        
+        // Step 2: Wait for in-app message to display
+        print("⏳ Waiting for TestView in-app message...")
+        let webView = app.descendants(matching: .webView).element(boundBy: 0)
+        
+        XCTAssertTrue(webView.waitForExistence(timeout: 15.0), "In-app message should appear")
+        screenshotCapture.captureScreenshot(named: "03-testview-inapp-displayed")
+        
+        // Wait for message to fully load
+        sleep(2)
+        
+        // Step 3: Tap the "Show Test View" link in the in-app message
+        print("👆 Tapping 'Show Test View' link in in-app message")
+        let showTestViewLink = app.links["Show Test View"]
+        XCTAssertTrue(showTestViewLink.waitForExistence(timeout: 5.0), "Show Test View link should exist in the in-app message")
+        showTestViewLink.tap()
+        screenshotCapture.captureScreenshot(named: "04-show-test-view-tapped")
+        
+        // Step 4: Verify in-app message is dismissed and TestViewController appears
+        print("⏳ Waiting for TestViewController to appear...")
+        
+        // Look for TestViewController elements
+        let testViewHeader = app.staticTexts["test-view-header"]
+        XCTAssertTrue(testViewHeader.waitForExistence(timeout: 10.0), "TestViewController header should appear")
+        
+        // Verify header text
+        XCTAssertEqual(testViewHeader.label, "🎉 Test View", "Header should show correct text")
+        screenshotCapture.captureScreenshot(named: "05-testview-displayed")
+        
+        // Step 5: Verify success message is shown
+        let testViewMessage = app.staticTexts["test-view-message"]
+        XCTAssertTrue(testViewMessage.exists, "Success message should exist")
+        XCTAssertTrue(testViewMessage.label.contains("Successfully navigated"), "Should show success message")
+        
+        // Verify timestamp is shown
+        let testViewTimestamp = app.staticTexts["test-view-timestamp"]
+        XCTAssertTrue(testViewTimestamp.exists, "Timestamp should exist")
+        XCTAssertTrue(testViewTimestamp.label.contains("Opened at:"), "Should show timestamp")
+        
+        screenshotCapture.captureScreenshot(named: "06-testview-content-verified")
+        
+        // Step 6: Close TestViewController
+        let closeButton = app.buttons["test-view-close-button"]
+        XCTAssertTrue(closeButton.exists, "Close button should exist")
+        closeButton.tap()
+        screenshotCapture.captureScreenshot(named: "07-testview-closed")
+        
+        // Verify we're back to the in-app message test screen
+        sleep(1)
+        XCTAssertTrue(triggerTestViewButton.exists, "Should be back at in-app test screen")
+        
+        print("✅ In-app message deep link to TestView flow completed successfully")
+        print("✅ Flow verified:")
+        print("   1. Triggered campaign 15231325")
+        print("   2. In-app message displayed")
+        print("   3. User tapped 'Show Test View' button")
+        print("   4. In-app message dismissed automatically")
+        print("   5. TestViewController appeared with success message")
+        print("   6. User closed TestViewController")
+    }
 }

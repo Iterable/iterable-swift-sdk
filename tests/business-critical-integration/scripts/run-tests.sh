@@ -684,6 +684,7 @@ run_inapp_message_tests() {
     run_xcode_tests "InAppMessageIntegrationTests" "testInAppMessageDisplayRules" || EXIT_CODE=$?
     run_xcode_tests "InAppMessageIntegrationTests" "testInAppMessageWithDeepLink" || EXIT_CODE=$?
     run_xcode_tests "InAppMessageIntegrationTests" "testInAppMessageMetricsAndStatistics" || EXIT_CODE=$?
+    run_xcode_tests "InAppMessageIntegrationTests" "testInAppMessageDeepLinkToTestView" || EXIT_CODE=$?
 
 
     # Test sequence for in-app messages

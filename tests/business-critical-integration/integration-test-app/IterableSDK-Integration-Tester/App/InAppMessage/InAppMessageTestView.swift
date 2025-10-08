@@ -103,13 +103,13 @@ struct InAppMessageTestView: View {
             .disabled(viewModel.isTriggeringCampaign)
             
             ActionButton(
-                title: "Trigger Deep Link In-App (Campaign 15231325)",
-                backgroundColor: .purple,
+                title: "Trigger TestView In-App (Campaign 15231325)",
+                backgroundColor: Color(.systemIndigo),
                 isLoading: viewModel.isTriggeringCampaign
             ) {
                 viewModel.triggerCampaign(15231325)
             }
-            .accessibilityIdentifier("trigger-deeplink-in-app-button")
+            .accessibilityIdentifier("trigger-testview-in-app-button")
             .disabled(viewModel.isTriggeringCampaign)
             
             ActionButton(
