@@ -200,6 +200,26 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         topViewController.present(alert, animated: true)
     }
     
+    private func showSilentPushAlert(badgeCount: Int, contentAvailable: Int = 0) {
+        guard let rootViewController = window?.rootViewController else { return }
+        
+        let alert = UIAlertController(
+            title: "Silent Push Received", 
+            message: "🔕 Silent push has been received with a badge count of \(badgeCount) and content-available: \(contentAvailable)", 
+            preferredStyle: .alert
+        )
+        
+        alert.addAction(UIAlertAction(title: "OK", style: .default))
+        
+        // Find the topmost presented view controller
+        var topViewController = rootViewController
+        while let presentedViewController = topViewController.presentedViewController {
+            topViewController = presentedViewController
+        }
+        
+        topViewController.present(alert, animated: true)
+    }
+    
     // MARK: Notification
     
     // ITBL:
@@ -232,6 +252,29 @@ extension AppDelegate: UNUserNotificationCenterDelegate {
         
         if let iterableData = notification.request.content.userInfo["itbl"] as? [String: Any] {
             print("🔔 [APP] Iterable-specific data: \(iterableData)")
+        }
+        
+        print("🔔 Foreground notification received: \(notification.request.content.userInfo)")
+        
+        // Check if this is from our silent push campaign (14750476)
+        let itbl = notification.request.content.userInfo["itbl"] as? [String: Any]
+        if let campaignId = itbl?["campaignId"] as? Int,
+           campaignId == 14750476 {
+            print("🔕 Silent push campaign detected in foreground - treating as silent")
+            
+            // Extract badge count and content-available flag, then show our custom alert
+        // For all other notifications, show normally
+            let aps = notification.request.content.userInfo["aps"] as? [String: Any]
+            let badgeCount = aps?["badge"] as? Int ?? 0
+            let contentAvailable = aps?["content-available"] as? Int ?? 0
+            
+            DispatchQueue.main.async {
+                self.showSilentPushAlert(badgeCount: badgeCount, contentAvailable: contentAvailable)
+            }
+            // Don't show the system notification UI for silent push
+            
+            return
+            completionHandler([])
         }
         
         completionHandler([.alert, .badge, .sound])
@@ -290,7 +333,16 @@ extension AppDelegate: IterableURLDelegate {
         if url.scheme == "tester" {
             print("✅ App is opened via Iterable deep link - tester://")
             
-            // Show alert that app was opened via deep link
+            // Check if this is the testview deep link
+            if url.host == "testview" {
+                print("🎯 Testview deep link detected - showing TestViewController")
+                DispatchQueue.main.async {
+                    self.showTestViewController()
+                }
+                return true
+            }
+            
+            // Show alert for other deep links
             DispatchQueue.main.async {
                 self.showDeepLinkAlert(url: url)
             }
@@ -303,6 +355,34 @@ extension AppDelegate: IterableURLDelegate {
         
         print("🔗 URL scheme '\(url.scheme ?? "nil")' not handled by our app")
         return false // We didn't handle this URL
+    }
+    
+    private func showTestViewController() {
+        guard let rootViewController = window?.rootViewController else {
+            print("❌ showTestViewController: no root view controller")
+            return
+        }
+        
+        print("🎯 showTestViewController called - finding topmost view controller")
+        
+        let testVC = TestViewController()
+        testVC.modalPresentationStyle = .fullScreen
+        
+        // Find the topmost presented view controller
+        var topViewController = rootViewController
+        while let presentedViewController = topViewController.presentedViewController {
+            topViewController = presentedViewController
+        }
+        
+        print("🎯 Found topmost view controller: \(type(of: topViewController))")
+        
+        // Add a small delay to ensure in-app dismissal animation completes
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+            print("🎯 Presenting TestViewController...")
+            topViewController.present(testVC, animated: true) {
+                print("✅ TestViewController presented successfully")
+            }
+        }
     }
 }
 

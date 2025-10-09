@@ -221,6 +221,34 @@ class PushNotificationSender {
         
         sendPushNotificationRequest(payload: payload, messageId: messageId, completion: completion)
     }
+    
+    func sendSilentPush(
+        to userEmail: String,
+        campaignId: Int,
+        completion: @escaping (Bool, String?, Error?) -> Void
+    ) {
+        let messageId = generateMessageId()
+        
+        let payload: [String: Any] = [
+            "recipientEmail": userEmail,
+            "campaignId": campaignId,
+            "allowRepeatMarketingSends": true,
+            "dataFields": [:],
+            "metadata": [:]
+        ]
+        
+        let notificationInfo = PushNotificationInfo(
+            messageId: messageId,
+            campaignId: String(campaignId),
+            type: .silent,
+            timestamp: Date(),
+            recipient: userEmail
+        )
+        
+        sentNotifications[messageId] = notificationInfo
+        
+        sendPushNotificationRequest(payload: payload, messageId: messageId, completion: completion)
+    }
 }
 
 // MARK: - Error Types

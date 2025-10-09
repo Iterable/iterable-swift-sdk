@@ -254,7 +254,7 @@ setup_simulator() {
         SIMULATOR_NAME="Integration-Test-iPhone-$(date +%s)"
         
         # Get latest iOS runtime
-        RUNTIME=$(xcrun simctl list runtimes | grep "iOS" | tail -1 | awk '{print $NF}' | tr -d '()')
+        RUNTIME=$(xcrun simctl list runtimes | grep "iOS 18.5" | tail -1 | awk '{print $NF}' | tr -d '()')
         
         if [[ -n "$RUNTIME" ]]; then
             echo_info "Creating simulator: $SIMULATOR_NAME with $RUNTIME"
@@ -677,12 +677,9 @@ run_inapp_message_tests() {
     
     echo_info "Starting in-app message test sequence..."
     
-    # Test sequence for in-app messages
-    run_test_with_timeout "inapp_silent_push" "$TIMEOUT"
-    run_test_with_timeout "inapp_display" "$TIMEOUT"
-    run_test_with_timeout "inapp_interaction" "$TIMEOUT"
-    run_test_with_timeout "inapp_deeplink" "$TIMEOUT"
-    run_test_with_timeout "inapp_metrics" "$TIMEOUT"
+    # Run the specific in-app message test method
+    local EXIT_CODE=0
+    run_xcode_tests "InAppMessageIntegrationTests" "testInAppMessage" || EXIT_CODE=$?
     
     generate_test_report "inapp_message" "$TEST_REPORT"
     
