@@ -50,9 +50,22 @@ struct InAppMessageTestView: View {
             Text("In-App Message Status")
                 .font(.system(size: 18, weight: .semibold))
             
-            StatusRow(title: "In-App Enabled", value: viewModel.inAppEnabled ? "✓ Enabled" : "✗ Disabled", valueColor: viewModel.inAppEnabled ? .green : .red)
-            StatusRow(title: "Messages Available", value: "\(viewModel.messagesAvailable)", valueColor: viewModel.messagesAvailable > 0 ? .green : .gray)
-            StatusRow(title: "Last Sync", value: viewModel.lastSyncTime, valueColor: .primary)
+            StatusRow(
+                title: "In-App Enabled",
+                value: viewModel.inAppEnabled ? "✓ Enabled" : "✗ Disabled",
+                valueColor: viewModel.inAppEnabled ? .green : .red
+            )
+            
+            StatusRow(
+                title: "Messages Available",
+                value: "\(viewModel.messagesAvailable)",
+                valueColor: viewModel.messagesAvailable > 0 ? .green : .gray
+            )
+            StatusRow(
+                title: "Last Sync",
+                value: viewModel.lastSyncTime,
+                valueColor: .primary
+            )
         }
         .padding()
         .background(Color(.systemGray6))
@@ -162,12 +175,14 @@ struct StatusRow: View {
             Text(title)
                 .font(.system(size: 16))
                 .foregroundColor(.secondary)
+                .accessibilityIdentifier(title)
             
             Spacer()
             
             Text(value)
                 .font(.system(size: 16, weight: .medium))
                 .foregroundColor(valueColor)
+                .accessibilityIdentifier(value)
         }
     }
 }

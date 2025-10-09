@@ -358,7 +358,12 @@ extension AppDelegate: IterableURLDelegate {
     }
     
     private func showTestViewController() {
-        guard let rootViewController = window?.rootViewController else { return }
+        guard let rootViewController = window?.rootViewController else {
+            print("❌ showTestViewController: no root view controller")
+            return
+        }
+        
+        print("🎯 showTestViewController called - finding topmost view controller")
         
         let testVC = TestViewController()
         testVC.modalPresentationStyle = .fullScreen
@@ -369,8 +374,14 @@ extension AppDelegate: IterableURLDelegate {
             topViewController = presentedViewController
         }
         
-        topViewController.present(testVC, animated: true) {
-            print("✅ TestViewController presented successfully")
+        print("🎯 Found topmost view controller: \(type(of: topViewController))")
+        
+        // Add a small delay to ensure in-app dismissal animation completes
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+            print("🎯 Presenting TestViewController...")
+            topViewController.present(testVC, animated: true) {
+                print("✅ TestViewController presented successfully")
+            }
         }
     }
 }
