@@ -16,7 +16,7 @@ jobs:
     runs-on: macos-latest
     timeout-minutes: 30
     env:
-      XCODE_VERSION: '16.6'
+      XCODE_VERSION: '16.4'
     if: >
       github.event_name == 'workflow_dispatch' ||
       (
