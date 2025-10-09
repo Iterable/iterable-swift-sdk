@@ -10,14 +10,13 @@ on:
         required: false
         type: string
 
-env:
-  DEVELOPER_DIR: /Applications/Xcode_16.2.app/Contents/Developer
-
 jobs:
   push-notification-test:
     name: BCIT Push Notification Integration Test
     runs-on: macos-latest
     timeout-minutes: 30
+    env:
+      XCODE_VERSION: '16.4'
     if: >
       github.event_name == 'workflow_dispatch' ||
       (
@@ -41,39 +40,30 @@ jobs:
     - name: Setup Xcode
       uses: maxim-lobanov/setup-xcode@v1
       with:
-        xcode-version: '16.4'
+        xcode-version: ${{ env.XCODE_VERSION }}
 
     - name: Validate Xcode Version
       run: |
         echo "🔍 Validating Xcode version and environment..."
         echo "DEVELOPER_DIR: $DEVELOPER_DIR"
-        echo "Expected Xcode path: /Applications/Xcode_16.2.app/Contents/Developer"
-        
-        # Check if DEVELOPER_DIR points to the right Xcode
-        if [[ "$DEVELOPER_DIR" == "/Applications/Xcode_16.2.app/Contents/Developer" ]]; then
-          echo "✅ DEVELOPER_DIR is correctly set"
-        else
-          echo "❌ DEVELOPER_DIR mismatch!"
-          echo "Current: $DEVELOPER_DIR"
-          echo "Expected: /Applications/Xcode_16.2.app/Contents/Developer"
-        fi
         
         # Check xcodebuild version
         echo "🔍 Checking xcodebuild version..."
-        XCODE_VERSION=$(xcodebuild -version | head -n 1)
-        echo "Xcode version: $XCODE_VERSION"
+        ACTUAL_XCODE_VERSION=$(xcodebuild -version | head -n 1 | awk '{print $2}')
+        echo "Xcode version: $ACTUAL_XCODE_VERSION"
+        echo "Expected version: $XCODE_VERSION"
         
         # Check xcodebuild path
         XCODEBUILD_PATH=$(which xcodebuild)
         echo "xcodebuild path: $XCODEBUILD_PATH"
         
-        # Verify we're using Xcode 16.2
-        if echo "$XCODE_VERSION" | grep -q "16.2"; then
-          echo "✅ Using correct Xcode version: $XCODE_VERSION"
+        # Verify we're using the correct Xcode version
+        if echo "$ACTUAL_XCODE_VERSION" | grep -q "$XCODE_VERSION"; then
+          echo "✅ Using correct Xcode version: $ACTUAL_XCODE_VERSION"
         else
           echo "❌ Incorrect Xcode version!"
-          echo "Current: $XCODE_VERSION"
-          echo "Expected: Xcode 16.2"
+          echo "Current: $ACTUAL_XCODE_VERSION"
+          echo "Expected: $XCODE_VERSION"
           exit 1
         fi
 
