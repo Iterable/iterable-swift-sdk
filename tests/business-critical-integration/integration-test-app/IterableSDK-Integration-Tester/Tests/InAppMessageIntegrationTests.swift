@@ -63,18 +63,9 @@ class InAppMessageIntegrationTests: IntegrationTestBase {
         print("   2. In-app message displayed")
         print("   3. User tapped 'Dismiss' button")
         print("   4. In-app message dismissed")
-//    }
-    
-//    func testInAppMessageDeepLinkToTestView() {
+
         // Test complete flow: trigger in-app → display → tap button → navigate to TestViewController
-//        
-//        // Navigate to In-App Message tab
-//        let inAppMessageRow = app.otherElements["in-app-message-test-row"]
-//        XCTAssertTrue(inAppMessageRow.waitForExistence(timeout: standardTimeout), "In-app message row should exist")
-//        inAppMessageRow.tap()
-//        screenshotCapture.captureScreenshot(named: "01-inapp-testview-test-started")
-//        
-//        // Step 1: Trigger TestView campaign (15231325)
+        // Step 1: Trigger TestView campaign (15231325)
         triggerTestViewButton = app.buttons["trigger-testview-in-app-button"]
         XCTAssertTrue(triggerTestViewButton.waitForExistence(timeout: standardTimeout), "Trigger TestView button should exist")
         triggerTestViewButton.tap()
@@ -86,7 +77,6 @@ class InAppMessageIntegrationTests: IntegrationTestBase {
         }
         
         // Tap "Check for Messages" to fetch and show the in-app
-//        let checkMessagesButton = app.buttons["check-messages-button"]
         XCTAssertTrue(checkMessagesButton.waitForExistence(timeout: standardTimeout), "Check for Messages button should exist")
         checkMessagesButton.tap()
         screenshotCapture.captureScreenshot(named: "02b-check-messages-tapped")
@@ -161,16 +151,8 @@ class InAppMessageIntegrationTests: IntegrationTestBase {
         print("   4. In-app message dismissed automatically")
         print("   5. TestViewController appeared with success message")
         print("   6. User closed TestViewController")
-//    }
-    
-//    func testInAppMessageDisplayRules() {
-        // Test display rules: enable/disable, message priority, and persistence
         
-        // Navigate to In-App Message tab
-//        let inAppMessageRow = app.otherElements["in-app-message-test-row"]
-//        XCTAssertTrue(inAppMessageRow.waitForExistence(timeout: standardTimeout), "In-app message row should exist")
-//        inAppMessageRow.tap()
-
+        // Test display rules: enable/disable, message priority, and persistence
         // Step 1: Test disabling in-app messages
         let toggleButton = app.buttons["toggle-in-app-button"]
         XCTAssertTrue(toggleButton.waitForExistence(timeout: standardTimeout), "Toggle button should exist")
@@ -228,17 +210,9 @@ class InAppMessageIntegrationTests: IntegrationTestBase {
         triggerClearMessagesButton.tap()
         
         print("✅ In-app message display rules test completed")
-//    }
-//    
-//    func testInAppMessageNetworkCalls() {
+
         // Test complete flow: trigger in-app → display → tap button → Dismiss
         // Then validate API calls in expected order with 200 status codes
-        
-        // Navigate to In-App Message tab
-//        let inAppMessageRow = app.otherElements["in-app-message-test-row"]
-//        XCTAssertTrue(inAppMessageRow.waitForExistence(timeout: standardTimeout), "In-app message row should exist")
-//        inAppMessageRow.tap()
-//        screenshotCapture.captureScreenshot(named: "01-network-calls-test-started")
         
         // Step 1: Trigger InApp display campaign (14751067)
         triggerTestViewButton = app.buttons["trigger-in-app-button"]

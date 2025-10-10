@@ -323,10 +323,7 @@ final class HomeViewController: UIViewController, UITextFieldDelegate {
         navigationController?.pushViewController(pushTestVC, animated: true)
     }
     
-    @objc private func showInAppMessageTest() {
-//        let inAppTestVC = InAppMessageTestViewController()
-//        navigationController?.pushViewController(inAppTestVC, animated: true)
-        
+    @objc private func showInAppMessageTest() {        
         let inAppVC = InAppMessageTestHostingController()
         navigationController?.pushViewController(inAppVC, animated: true)
     }
