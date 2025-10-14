@@ -7,7 +7,41 @@ class InAppMessageIntegrationTests: IntegrationTestBase {
     // MARK: - Test Cases
     
     func testInAppMessage() {
-        // Test complete flow: trigger in-app → display → tap button → Dismiss
+        
+        // Step 1: Navigate to Push Notification tab
+        let pushNotificationRow = app.otherElements["push-notification-test-row"]
+        XCTAssertTrue(pushNotificationRow.waitForExistence(timeout: standardTimeout), "Push notification row should exist")
+        pushNotificationRow.tap()
+        screenshotCapture.captureScreenshot(named: "01-push-tab-opened")
+        
+        // Step 2: Verify initial push notification status (should be "Not Determined")
+        let authStatusValue = app.staticTexts["push-authorization-value"]
+        XCTAssertTrue(authStatusValue.waitForExistence(timeout: standardTimeout), "Authorization status should exist")
+        XCTAssertEqual(authStatusValue.label, "? Not Determined", "Initial authorization should be 'Not Determined'")
+        
+        let deviceTokenValue = app.staticTexts["push-device-token-value"]
+        XCTAssertTrue(deviceTokenValue.waitForExistence(timeout: standardTimeout), "Device token status should exist")
+        XCTAssertEqual(deviceTokenValue.label, "✗ Not Registered", "Initial device token should be 'Not Registered'")
+        screenshotCapture.captureScreenshot(named: "02-initial-status-verified")
+        
+        // Step 3: Register for push notifications
+        let registerButton = app.buttons["register-push-notifications-button"]
+        XCTAssertTrue(registerButton.waitForExistence(timeout: standardTimeout), "Register button should exist")
+        registerButton.tap()
+        
+        let backButton = app.buttons["back-to-home-button"]
+        XCTAssertTrue(backButton.waitForExistence(timeout: standardTimeout), "backButton button should exist")
+        backButton.tap()
+        
+        /*##########################################################################################
+         
+         Test complete flow:
+             1. trigger in-app
+             2. display
+             3. tap button
+             4. Dismiss
+        
+         #########################################################################################*/
         
         // Navigate to In-App Message tab
         let inAppMessageRow = app.otherElements["in-app-message-test-row"]
@@ -63,8 +97,17 @@ class InAppMessageIntegrationTests: IntegrationTestBase {
         print("   2. In-app message displayed")
         print("   3. User tapped 'Dismiss' button")
         print("   4. In-app message dismissed")
-
-        // Test complete flow: trigger in-app → display → tap button → navigate to TestViewController
+        
+        /*##########################################################################################
+        
+         Test complete flow:
+             1. trigger in-app
+             2. display
+             3. tap deeplink button
+             4. navigate to TestViewController
+         
+        ##########################################################################################*/
+        
         // Step 1: Trigger TestView campaign (15231325)
         triggerTestViewButton = app.buttons["trigger-testview-in-app-button"]
         XCTAssertTrue(triggerTestViewButton.waitForExistence(timeout: standardTimeout), "Trigger TestView button should exist")
@@ -100,40 +143,22 @@ class InAppMessageIntegrationTests: IntegrationTestBase {
         
         // Step 4: Wait for in-app message to dismiss completely
         print("⏳ Waiting for in-app message to dismiss...")
-        let webViewGone = NSPredicate(format: "exists == false")
-        let webViewExpectation = expectation(for: webViewGone, evaluatedWith: webView, handler: nil)
+        var webViewGone = NSPredicate(format: "exists == false")
+        var webViewExpectation = expectation(for: webViewGone, evaluatedWith: webView, handler: nil)
         wait(for: [webViewExpectation], timeout: 5.0)
         print("✅ In-app message dismissed")
         screenshotCapture.captureScreenshot(named: "04b-inapp-dismissed")
         
-        // Step 5: Verify TestViewController appears
-        print("⏳ Waiting for TestViewController to appear...")
+        // Step 5: Verify TestView alert appears
+        print("⏳ Waiting for TestView Alert to appear...")
         
-        // Look for TestViewController elements
-        let testViewHeader = app.staticTexts["test-view-header"]
-        XCTAssertTrue(testViewHeader.waitForExistence(timeout: 15.0), "TestViewController header should appear")
+        // Handle success alert: "Success - Deep link push notification sent successfully! Campaign ID: 14695444"
+        let testViewSuccessAlert = app.alerts["Deep link to Test View"]
+        XCTAssertTrue(testViewSuccessAlert.waitForExistence(timeout: 5.0), "Success alert should appear")
         
-        // Verify header text
-        XCTAssertEqual(testViewHeader.label, "🎉 Test View", "Header should show correct text")
-        screenshotCapture.captureScreenshot(named: "05-testview-displayed")
-        
-        // Step 5: Verify success message is shown
-        let testViewMessage = app.staticTexts["test-view-message"]
-        XCTAssertTrue(testViewMessage.exists, "Success message should exist")
-        XCTAssertTrue(testViewMessage.label.contains("Successfully navigated"), "Should show success message")
-        
-        // Verify timestamp is shown
-        let testViewTimestamp = app.staticTexts["test-view-timestamp"]
-        XCTAssertTrue(testViewTimestamp.exists, "Timestamp should exist")
-        XCTAssertTrue(testViewTimestamp.label.contains("Opened at:"), "Should show timestamp")
-        
-        screenshotCapture.captureScreenshot(named: "06-testview-content-verified")
-        
-        // Step 6: Close TestViewController
-        let closeButton = app.buttons["test-view-close-button"]
-        XCTAssertTrue(closeButton.exists, "Close button should exist")
-        closeButton.tap()
-        screenshotCapture.captureScreenshot(named: "07-testview-closed")
+        let testViewSuccessOKButton = testViewSuccessAlert.buttons["OK"]
+        XCTAssertTrue(testViewSuccessOKButton.exists, "Success alert OK button should exist")
+        testViewSuccessOKButton.tap()
         
         // Verify we're back to the in-app message test screen
         sleep(1)
@@ -152,7 +177,15 @@ class InAppMessageIntegrationTests: IntegrationTestBase {
         print("   5. TestViewController appeared with success message")
         print("   6. User closed TestViewController")
         
-        // Test display rules: enable/disable, message priority, and persistence
+        
+        /*##########################################################################################
+         
+         Test display rules:
+             1. enable/disable
+             2. message priority and persistence
+         
+        ##########################################################################################*/
+        
         // Step 1: Test disabling in-app messages
         let toggleButton = app.buttons["toggle-in-app-button"]
         XCTAssertTrue(toggleButton.waitForExistence(timeout: standardTimeout), "Toggle button should exist")
@@ -211,8 +244,15 @@ class InAppMessageIntegrationTests: IntegrationTestBase {
         
         print("✅ In-app message display rules test completed")
 
-        // Test complete flow: trigger in-app → display → tap button → Dismiss
-        // Then validate API calls in expected order with 200 status codes
+        /*##########################################################################################
+         
+         Test display rules:
+             1. trigger in-app
+             2. tap button
+             3. Dismiss
+             4. Validate API calls in expected order with 200 status codes
+         
+        ##########################################################################################*/
         
         // Step 1: Trigger InApp display campaign (14751067)
         triggerTestViewButton = app.buttons["trigger-in-app-button"]
@@ -308,5 +348,106 @@ class InAppMessageIntegrationTests: IntegrationTestBase {
         triggerClearMessagesButton.tap()
         
         print("✅ In-app message network calls test completed successfully")
+        
+        /*##########################################################################################
+         
+         Test display rules:
+             1. trigger Silent Push Campaign
+             2. wait for silent push popup
+             3. Dismiss
+         
+        ##########################################################################################*/
+        
+        triggerTestViewButton = app.buttons["trigger-test-silent-push-button"]
+        XCTAssertTrue(triggerTestViewButton.waitForExistence(timeout: standardTimeout), "Send Silent Push button should exist")
+        triggerTestViewButton.tap()
+        
+        // Handle success alert: "Success - Deep link push notification sent successfully! Campaign ID: 14695444"
+        let silentPushSuccessAlert = app.alerts["Silent Push Received"]
+        XCTAssertTrue(silentPushSuccessAlert.waitForExistence(timeout: 5.0), "Success alert should appear")
+        
+        let silentPushSuccessOKButton = silentPushSuccessAlert.buttons["OK"]
+        XCTAssertTrue(silentPushSuccessOKButton.exists, "Success alert OK button should exist")
+        silentPushSuccessOKButton.tap()
+        
+        triggerClearMessagesButton = app.buttons["clear-messages-button"]
+        XCTAssertTrue(triggerClearMessagesButton.waitForExistence(timeout: standardTimeout), "Clear messages button should exist")
+        triggerClearMessagesButton.tap()
+        
+        /*##########################################################################################
+         
+         Test Custom Action Deeplink rules:
+             1. trigger Deep Link Push Campaign
+             2. Dismiss confirmation
+             3. Wait for in app
+             4. Tap on Custom Action
+             5. Validate that Deep link custom Action popup shows
+         
+        ##########################################################################################*/
+        
+        // Step 1: Trigger TestView campaign (15231325)
+        triggerTestViewButton = app.buttons["trigger-testview-in-app-button"]
+        XCTAssertTrue(triggerTestViewButton.waitForExistence(timeout: standardTimeout), "Trigger TestView button should exist")
+        triggerTestViewButton.tap()
+        screenshotCapture.captureScreenshot(named: "02-testview-campaign-triggered")
+        
+        // Handle success alert
+        if app.alerts["Success"].waitForExistence(timeout: 5.0) {
+            app.alerts["Success"].buttons["OK"].tap()
+        }
+        
+        // Tap "Check for Messages" to fetch and show the in-app
+        XCTAssertTrue(checkMessagesButton.waitForExistence(timeout: standardTimeout), "Check for Messages button should exist")
+        checkMessagesButton.tap()
+        screenshotCapture.captureScreenshot(named: "02b-check-messages-tapped")
+        
+        // Step 2: Wait for in-app message to display
+        print("⏳ Waiting for TestView in-app message...")
+        webView = app.descendants(matching: .webView).element(boundBy: 0)
+        
+        XCTAssertTrue(webView.waitForExistence(timeout: 15.0), "In-app message should appear")
+        screenshotCapture.captureScreenshot(named: "03-testview-inapp-displayed")
+        
+        // Wait for message to fully load
+        sleep(2)
+        
+        // Step 3: Tap the "Show Test View" link in the in-app message
+        print("👆 Tapping 'Custom Action' link in in-app message")
+        showTestViewLink = app.links["Custom Action"]
+        XCTAssertTrue(showTestViewLink.waitForExistence(timeout: 5.0), "Custom Action link should exist in the in-app message")
+        sleep(3)
+        showTestViewLink.tap()
+        
+        // Step 4: Wait for in-app message to dismiss completely
+        print("⏳ Waiting for in-app message to dismiss...")
+        webViewGone = NSPredicate(format: "exists == false")
+        webViewExpectation = expectation(for: webViewGone, evaluatedWith: webView, handler: nil)
+        wait(for: [webViewExpectation], timeout: 5.0)
+        print("✅ In-app message dismissed")
+        screenshotCapture.captureScreenshot(named: "04b-inapp-dismissed")
+        
+        // Handle success alert: "Success - Deep link push notification sent successfully! Campaign ID: 14695444"
+        let customActionSuccessAlert = app.alerts["Custom Action"]
+        XCTAssertTrue(customActionSuccessAlert.waitForExistence(timeout: 5.0), "Success alert should appear")
+        
+        let customActionSuccessOKButton = customActionSuccessAlert.buttons["OK"]
+        XCTAssertTrue(customActionSuccessOKButton.exists, "Success alert OK button should exist")
+        silentPushSuccessOKButton.tap()
+        
+        // Verify we're back to the in-app message test screen
+        sleep(1)
+        XCTAssertTrue(triggerTestViewButton.exists, "Should be back at in-app test screen")
+        
+        triggerClearMessagesButton = app.buttons["clear-messages-button"]
+        XCTAssertTrue(triggerClearMessagesButton.waitForExistence(timeout: standardTimeout), "Clear messages button should exist")
+        triggerClearMessagesButton.tap()
+        
+        
+        //##########################################################################################
+        print("")
+        print("✅✅✅✅✅✅✅✅✅✅✅")
+        print("All InApp Message Tests Passed")
+        print("✅✅✅✅✅✅✅✅✅✅✅")
+        print("")
     }
 }

@@ -19,9 +19,6 @@ struct InAppMessageTestView: View {
                 // Control Buttons
                 controlButtonsSection
                 
-                // Statistics Section
-                statisticsSection
-                
                 Spacer(minLength: 20)
             }
             .padding(20)
@@ -86,7 +83,7 @@ struct InAppMessageTestView: View {
             .accessibilityIdentifier("toggle-in-app-button")
             
             ActionButton(
-                title: "Check for Messages",
+                title: "Get Messages",
                 backgroundColor: .blue,
                 isLoading: viewModel.isCheckingMessages
             ) {
@@ -96,7 +93,7 @@ struct InAppMessageTestView: View {
             .disabled(viewModel.isCheckingMessages)
             
             ActionButton(
-                title: "Trigger Test In-App Display (Campaign 14751067)",
+                title: "Send In-App Message (Campaign 14751067)",
                 backgroundColor: .green,
                 isLoading: viewModel.isTriggeringCampaign
             ) {
@@ -106,17 +103,7 @@ struct InAppMessageTestView: View {
             .disabled(viewModel.isTriggeringCampaign)
             
             ActionButton(
-                title: "Trigger Action In-App (Campaign 14751068)",
-                backgroundColor: Color(.systemTeal),
-                isLoading: viewModel.isTriggeringCampaign
-            ) {
-                viewModel.triggerCampaign(14751068)
-            }
-            .accessibilityIdentifier("trigger-action-in-app-button")
-            .disabled(viewModel.isTriggeringCampaign)
-            
-            ActionButton(
-                title: "Trigger TestView In-App (Campaign 15231325)",
+                title: "Send DeepLink In-App Message (Campaign 15231325)",
                 backgroundColor: Color(.systemIndigo),
                 isLoading: viewModel.isTriggeringCampaign
             ) {
@@ -124,6 +111,17 @@ struct InAppMessageTestView: View {
             }
             .accessibilityIdentifier("trigger-testview-in-app-button")
             .disabled(viewModel.isTriggeringCampaign)
+            
+            ActionButton(
+                title: "Send Silent Push (Campaign 14750476)",
+                backgroundColor: Color(.brown),
+                isLoading: viewModel.isTriggeringCampaign
+            ) {
+                viewModel.sendSilentPush(14750476)
+            }
+            .accessibilityIdentifier("trigger-test-silent-push-button")
+            .disabled(viewModel.isTriggeringCampaign)
+            
             
             ActionButton(
                 title: "Clear Message Queue",

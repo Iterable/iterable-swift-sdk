@@ -144,6 +144,35 @@ class InAppMessageTestViewModel: ObservableObject {
         }
     }
     
+    func sendSilentPush(_ campainId: Int) {
+        guard let pushSender = createPushSender(),
+              let testUserEmail = AppDelegate.loadTestUserEmailFromConfig() else {
+            showAlert(title: "Error", message: "Push sender not initialized or test user email not found")
+            return
+        }
+        
+        isTriggeringCampaign = true
+        pushSender
+            .sendSilentPush(to: testUserEmail, campaignId: campainId) {
+                [weak self] success,
+                messageId,
+                error in
+            DispatchQueue.main.async {
+                
+                if success {
+                    if let messageId = messageId {
+                        print("✅ Silent push sent with message ID: \(messageId)")
+                    }
+                    // No success alert for silent push - should be silent!
+                } else {
+                    let errorMessage = error?.localizedDescription ?? "Unknown error"
+                    self?.showAlert(title: "Error", message: "Failed to send silent push notification: \(errorMessage)")
+                }
+                self?.isTriggeringCampaign = false
+            }
+        }
+    }
+    
     func clearMessageQueue() {
         print("🗑️ Clearing message queue...")
         
@@ -260,7 +289,24 @@ class InAppMessageTestViewModel: ObservableObject {
         let serverKey = AppDelegate.loadServerKeyFromConfig()
         let projectId = AppDelegate.loadProjectIdFromConfig()
         
-        return IterableAPIClient(apiKey: apiKey, serverKey: serverKey, projectId: projectId)
+        return IterableAPIClient(
+            apiKey: apiKey,
+            serverKey: serverKey,
+            projectId: projectId
+        )
+    }
+    
+    private func createPushSender() -> PushNotificationSender? {
+        guard let apiClient = createAPIClient() else { return nil }
+        
+        let serverKey = AppDelegate.loadServerKeyFromConfig()
+        let projectId = AppDelegate.loadProjectIdFromConfig()
+        
+        return PushNotificationSender(
+            apiClient: apiClient,
+            serverKey: serverKey,
+            projectId: projectId
+        )
     }
 }
 
