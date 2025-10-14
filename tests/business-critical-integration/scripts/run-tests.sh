@@ -685,6 +685,8 @@ run_inapp_message_tests() {
     
     echo_success "In-app message tests completed"
     echo_info "Report: $TEST_REPORT"
+
+    return $EXIT_CODE
 }
 
 run_embedded_message_tests() {
@@ -702,6 +704,8 @@ run_embedded_message_tests() {
     
     TEST_REPORT="$REPORTS_DIR/embedded-message-test-$(date +%Y%m%d-%H%M%S).json"
     
+    local EXIT_CODE=0
+
     echo_info "Starting embedded message test sequence..."
     
     run_test_with_timeout "embedded_eligibility" "$TIMEOUT"
@@ -714,6 +718,8 @@ run_embedded_message_tests() {
     
     echo_success "Embedded message tests completed"
     echo_info "Report: $TEST_REPORT"
+
+    return $EXIT_CODE
 }
 
 run_deep_linking_tests() {
@@ -731,8 +737,10 @@ run_deep_linking_tests() {
     
     TEST_REPORT="$REPORTS_DIR/deep-linking-test-$(date +%Y%m%d-%H%M%S).json"
     
+    local EXIT_CODE=0
+
     echo_info "Starting deep linking test sequence..."
-    
+
     run_test_with_timeout "deeplink_universal" "$TIMEOUT"
     run_test_with_timeout "deeplink_sms_email" "$TIMEOUT"
     run_test_with_timeout "deeplink_parsing" "$TIMEOUT"
@@ -743,6 +751,8 @@ run_deep_linking_tests() {
     
     echo_success "Deep linking tests completed"
     echo_info "Report: $TEST_REPORT"
+
+    return $EXIT_CODE
 }
 
 run_test_with_timeout() {
@@ -966,7 +976,7 @@ main() {
     echo
     
     validate_environment
-    prepare_test_environment  # Move this before build so config gets baked in
+    prepare_test_environment
     setup_simulator
     build_test_project
     
