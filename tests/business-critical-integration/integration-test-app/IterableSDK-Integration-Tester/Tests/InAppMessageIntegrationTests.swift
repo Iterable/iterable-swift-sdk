@@ -356,9 +356,34 @@ class InAppMessageIntegrationTests: IntegrationTestBase {
         
         triggerTestViewButton = app.buttons["trigger-test-silent-push-button"]
         XCTAssertTrue(triggerTestViewButton.waitForExistence(timeout: standardTimeout), "Send Silent Push button should exist")
-        triggerTestViewButton.tap()
         
-        // Handle success alert: "Success - Deep link push notification sent successfully! Campaign ID: 14695444"
+        if isRunningInCI {
+            print("🤖 [TEST] CI MODE ACTIVATED: Sending simulated silent push notification")
+            print("🎭 [TEST] This will use xcrun simctl instead of real backend API call")
+            // Create silent push payload for CI testing (matching real Iterable format)
+            // Silent push has content-available: 1 and no alert
+            let silentPushPayload: [String: Any] = [
+                "aps": [
+                    "content-available": 1,
+                    "badge": 0
+                ],
+                "itbl": [
+                    "campaignId": 14679102,
+                    "templateId": 19136236,
+                    "messageId": "silent_push_test_" + UUID().uuidString,
+                    "isGhostPush": 0
+                ]
+            ]
+            sendSimulatedPushNotification(payload: silentPushPayload)
+            screenshotCapture.captureScreenshot(named: "silent-push-simulated")
+        } else {
+            print("📱 [TEST] LOCAL MODE ACTIVATED: Using real silent push notification via backend API")
+            print("🌐 [TEST] This will send actual APNS silent push through Iterable backend")
+            triggerTestViewButton.tap()
+            screenshotCapture.captureScreenshot(named: "silent-push-sent")
+        }
+        
+        // Handle success alert: "Silent Push Received"
         let silentPushSuccessAlert = app.alerts["Silent Push Received"]
         XCTAssertTrue(silentPushSuccessAlert.waitForExistence(timeout: 5.0), "Success alert should appear")
         
@@ -428,7 +453,7 @@ class InAppMessageIntegrationTests: IntegrationTestBase {
         
         let customActionSuccessOKButton = customActionSuccessAlert.buttons["OK"]
         XCTAssertTrue(customActionSuccessOKButton.exists, "Success alert OK button should exist")
-        silentPushSuccessOKButton.tap()
+        customActionSuccessOKButton.tap()
         
         // Verify we're back to the in-app message test screen
         sleep(1)
