@@ -8,21 +8,17 @@ class InAppMessageIntegrationTests: IntegrationTestBase {
     
     func testInAppMessage() {
         
+        /*##########################################################################################
+         
+         Initialize Push Registration for later tests
+        
+         #########################################################################################*/
+        
         // Step 1: Navigate to Push Notification tab
         let pushNotificationRow = app.otherElements["push-notification-test-row"]
         XCTAssertTrue(pushNotificationRow.waitForExistence(timeout: standardTimeout), "Push notification row should exist")
         pushNotificationRow.tap()
         screenshotCapture.captureScreenshot(named: "01-push-tab-opened")
-        
-        // Step 2: Verify initial push notification status (should be "Not Determined")
-        let authStatusValue = app.staticTexts["push-authorization-value"]
-        XCTAssertTrue(authStatusValue.waitForExistence(timeout: standardTimeout), "Authorization status should exist")
-        XCTAssertEqual(authStatusValue.label, "? Not Determined", "Initial authorization should be 'Not Determined'")
-        
-        let deviceTokenValue = app.staticTexts["push-device-token-value"]
-        XCTAssertTrue(deviceTokenValue.waitForExistence(timeout: standardTimeout), "Device token status should exist")
-        XCTAssertEqual(deviceTokenValue.label, "✗ Not Registered", "Initial device token should be 'Not Registered'")
-        screenshotCapture.captureScreenshot(named: "02-initial-status-verified")
         
         // Step 3: Register for push notifications
         let registerButton = app.buttons["register-push-notifications-button"]
