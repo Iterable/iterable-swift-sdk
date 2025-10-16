@@ -62,19 +62,31 @@ class InAppMessageIntegrationTests: IntegrationTestBase {
         checkMessagesButton.tap()
         //screenshotCapture.captureScreenshot(named: "02b-check-messages-tapped")
         
-        // Step 2: Wait for in-app message to display
+        // Step 2: Wait for in-app message to display with smart retry
         var webView = app.descendants(matching: .webView).element(boundBy: 0)
-        print("⏳ First Waiting for in-app message...")
-        var count = 0
-        while webView.exists == false {
-            print("⏳ Waiting for in-app message \(count)...")
-            count += 1
-            checkMessagesButton.tap()
+        print("⏳ Waiting for in-app message to display...")
+        
+        // Smart retry: wait for button to be ready, then tap with delay
+        var retryCount = 0
+        let maxRetries = 5
+        while !webView.exists && retryCount < maxRetries {
+            // Wait for button to be enabled before retapping
+            if checkMessagesButton.isEnabled {
+                print("🔄 Retry \(retryCount + 1)/\(maxRetries): Tapping check-messages-button...")
+                checkMessagesButton.tap()
+                retryCount += 1
+                
+                // Give time for network request to complete before checking again
+                sleep(2)
+            } else {
+                print("⏸️ Button not enabled, waiting...")
+                sleep(1)
+            }
         }
         
         XCTAssertTrue(
-            webView.waitForExistence(timeout: standardTimeout),
-            "In-app message should appear"
+            webView.waitForExistence(timeout: 5),
+            "In-app message should appear after retries"
         )
         //screenshotCapture.captureScreenshot(named: "03-inapp-display-inapp-displayed")
         
@@ -145,20 +157,30 @@ class InAppMessageIntegrationTests: IntegrationTestBase {
         checkMessagesButton.tap()
         //screenshotCapture.captureScreenshot(named: "02b-check-messages-tapped")
         
-        // Step 2: Wait for in-app message to display
+        // Step 2: Wait for in-app message to display with smart retry
         webView = app.descendants(matching: .webView).element(boundBy: 0)
+        print("⏳ Waiting for TestView in-app message to display...")
         
-        print("⏳ First Waiting for in-app message...")
-        count = 0
-        while webView.exists == false {
-            print("⏳ Waiting for in-app message \(count)...")
-            count += 1
-            checkMessagesButton.tap()
+        // Smart retry: wait for button to be ready, then tap with delay
+        retryCount = 0
+        while !webView.exists && retryCount < maxRetries {
+            // Wait for button to be enabled before retapping
+            if checkMessagesButton.isEnabled {
+                print("🔄 Retry \(retryCount + 1)/\(maxRetries): Tapping check-messages-button...")
+                checkMessagesButton.tap()
+                retryCount += 1
+                
+                // Give time for network request to complete before checking again
+                sleep(2)
+            } else {
+                print("⏸️ Button not enabled, waiting...")
+                sleep(1)
+            }
         }
         
         XCTAssertTrue(
-            webView.waitForExistence(timeout: standardTimeout),
-            "In-app message should appear"
+            webView.waitForExistence(timeout: 5),
+            "In-app message should appear after retries"
         )
         //screenshotCapture.captureScreenshot(named: "03-testview-inapp-displayed")
         
@@ -321,21 +343,30 @@ class InAppMessageIntegrationTests: IntegrationTestBase {
         checkMessagesButton.tap()
         //screenshotCapture.captureScreenshot(named: "03-check-messages-tapped")
         
-        // Step 2: Wait for in-app message to display
+        // Step 2: Wait for in-app message to display with smart retry
         print("⏳ Waiting for in-app message...")
         webView = app.descendants(matching: .webView).element(boundBy: 0)
         
-        print("⏳ First Waiting for in-app message...")
-        count = 0
-        while webView.exists == false {
-            print("⏳ Waiting for in-app message \(count)...")
-            count += 1
-            checkMessagesButton.tap()
+        // Smart retry: wait for button to be ready, then tap with delay
+        retryCount = 0
+        while !webView.exists && retryCount < maxRetries {
+            // Wait for button to be enabled before retapping
+            if checkMessagesButton.isEnabled {
+                print("🔄 Retry \(retryCount + 1)/\(maxRetries): Tapping check-messages-button...")
+                checkMessagesButton.tap()
+                retryCount += 1
+                
+                // Give time for network request to complete before checking again
+                sleep(2)
+            } else {
+                print("⏸️ Button not enabled, waiting...")
+                sleep(1)
+            }
         }
         
         XCTAssertTrue(
-            webView.waitForExistence(timeout: standardTimeout),
-            "In-app message should appear"
+            webView.waitForExistence(timeout: 5),
+            "In-app message should appear after retries"
         )
         //screenshotCapture.captureScreenshot(named: "04-inapp-displayed")
         
@@ -490,21 +521,30 @@ class InAppMessageIntegrationTests: IntegrationTestBase {
         checkMessagesButton.tap()
         //screenshotCapture.captureScreenshot(named: "02b-check-messages-tapped")
         
-        // Step 2: Wait for in-app message to display
-        print("⏳ Waiting for TestView in-app message...")
+        // Step 2: Wait for in-app message to display with smart retry
+        print("⏳ Waiting for Custom Action in-app message...")
         webView = app.descendants(matching: .webView).element(boundBy: 0)
         
-        print("⏳ First Waiting for in-app message...")
-        count = 0
-        while webView.exists == false {
-            print("⏳ Waiting for in-app message \(count)...")
-            count += 1
-            checkMessagesButton.tap()
+        // Smart retry: wait for button to be ready, then tap with delay
+        retryCount = 0
+        while !webView.exists && retryCount < maxRetries {
+            // Wait for button to be enabled before retapping
+            if checkMessagesButton.isEnabled {
+                print("🔄 Retry \(retryCount + 1)/\(maxRetries): Tapping check-messages-button...")
+                checkMessagesButton.tap()
+                retryCount += 1
+                
+                // Give time for network request to complete before checking again
+                sleep(2)
+            } else {
+                print("⏸️ Button not enabled, waiting...")
+                sleep(1)
+            }
         }
         
         XCTAssertTrue(
-            webView.waitForExistence(timeout: standardTimeout),
-            "In-app message should appear"
+            webView.waitForExistence(timeout: 5),
+            "In-app message should appear after retries"
         )
         //screenshotCapture.captureScreenshot(named: "03-testview-inapp-displayed")
         
