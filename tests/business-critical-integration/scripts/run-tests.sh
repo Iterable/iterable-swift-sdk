@@ -677,11 +677,23 @@ run_inapp_message_tests() {
     
     echo_info "Starting in-app message test sequence..."
     
+    # Set up push monitoring for CI environment (silent push tests require this)
+    setup_push_monitoring
+    
+    # Set up cleanup trap to ensure monitor is stopped
+    trap cleanup_push_monitoring EXIT
+    
     # Run the specific in-app message test method
     local EXIT_CODE=0
     run_xcode_tests "InAppMessageIntegrationTests" "testInAppMessage" || EXIT_CODE=$?
     
     generate_test_report "inapp_message" "$TEST_REPORT"
+    
+    # Clean up push monitoring
+    cleanup_push_monitoring
+    
+    # Reset trap
+    trap - EXIT
     
     echo_success "In-app message tests completed"
     echo_info "Report: $TEST_REPORT"
