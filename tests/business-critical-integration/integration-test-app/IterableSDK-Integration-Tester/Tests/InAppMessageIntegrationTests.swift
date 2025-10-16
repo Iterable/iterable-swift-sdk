@@ -69,13 +69,11 @@ class InAppMessageIntegrationTests: IntegrationTestBase {
         XCTAssertTrue(webView.waitForExistence(timeout: 15.0), "In-app message should appear")
         screenshotCapture.captureScreenshot(named: "03-inapp-display-inapp-displayed")
         
-        // Wait for message to fully load
-        sleep(2)
+        // Step 3: Wait for webView content to be accessible and tap "Dismiss" link
+        print("👆 Waiting for 'Dismiss' link to become accessible in webView...")
+        XCTAssertTrue(waitForWebViewLink(linkText: "Dismiss", timeout: 15.0), "Dismiss link should be accessible in the in-app message")
         
-        // Step 3: Tap the "Dismiss" link in the in-app message
-        print("👆 Tapping 'Dismiss' link in in-app message")
         var showTestViewLink = app.links["Dismiss"]
-        XCTAssertTrue(showTestViewLink.waitForExistence(timeout: 5.0), "Show Test View link should exist in the in-app message")
         showTestViewLink.tap()
         screenshotCapture.captureScreenshot(named: "04-inapp-display-dismiss-tapped")
         
@@ -127,14 +125,11 @@ class InAppMessageIntegrationTests: IntegrationTestBase {
         XCTAssertTrue(webView.waitForExistence(timeout: 15.0), "In-app message should appear")
         screenshotCapture.captureScreenshot(named: "03-testview-inapp-displayed")
         
-        // Wait for message to fully load
-        sleep(2)
+        // Step 3: Wait for webView content to be accessible and tap "Show Test View" link
+        print("👆 Waiting for 'Show Test View' link to become accessible in webView...")
+        XCTAssertTrue(waitForWebViewLink(linkText: "Show Test View", timeout: 15.0), "Show Test View link should be accessible in the in-app message")
         
-        // Step 3: Tap the "Show Test View" link in the in-app message
-        print("👆 Tapping 'Show Test View' link in in-app message")
         showTestViewLink = app.links["Show Test View"]
-        XCTAssertTrue(showTestViewLink.waitForExistence(timeout: 5.0), "Show Test View link should exist in the in-app message")
-        sleep(3)
         showTestViewLink.tap()
         
         // Step 4: Wait for in-app message to dismiss completely
@@ -229,9 +224,10 @@ class InAppMessageIntegrationTests: IntegrationTestBase {
         XCTAssertTrue(secondWebView.waitForExistence(timeout: 5.0), "In-app message should appear")
         screenshotCapture.captureScreenshot(named: "02-new-message-when-enabled")
         
-        print("👆 Tapping 'Dismiss' link in in-app message")
+        print("👆 Waiting for 'Dismiss' link to become accessible in webView...")
+        XCTAssertTrue(waitForWebViewLink(linkText: "Dismiss", timeout: 15.0), "Dismiss link should be accessible in the in-app message")
+        
         showTestViewLink = app.links["Dismiss"]
-        XCTAssertTrue(showTestViewLink.waitForExistence(timeout: 5.0), "Show Test View link should exist in the in-app message")
         showTestViewLink.tap()
         
         triggerClearMessagesButton = app.buttons["clear-messages-button"]
@@ -274,20 +270,19 @@ class InAppMessageIntegrationTests: IntegrationTestBase {
         XCTAssertTrue(webView.waitForExistence(timeout: 15.0), "In-app message should appear")
         screenshotCapture.captureScreenshot(named: "04-inapp-displayed")
         
-        // Wait for message to fully load
-        sleep(2)
+        // Step 3: Wait for webView content to be accessible and tap "Dismiss" link
+        print("👆 Waiting for 'Dismiss' link to become accessible in webView...")
+        XCTAssertTrue(waitForWebViewLink(linkText: "Dismiss", timeout: 15.0), "Dismiss link should be accessible in the in-app message")
         
-        // Step 3: Tap the "Dismiss" link in the in-app message
-        print("👆 Tapping 'Dismiss' link in in-app message")
         showTestViewLink = app.links["Dismiss"]
-        XCTAssertTrue(showTestViewLink.waitForExistence(timeout: 5.0), "Show Test View link should exist in the in-app message")
         showTestViewLink.tap()
         screenshotCapture.captureScreenshot(named: "05-dismiss-tapped")
         
         sleep(2)
         
+        print("👆 Tapping 'Dismiss' link again...")
+        XCTAssertTrue(waitForWebViewLink(linkText: "Dismiss", timeout: 15.0), "Dismiss link should still be accessible")
         showTestViewLink = app.links["Dismiss"]
-        XCTAssertTrue(showTestViewLink.waitForExistence(timeout: 5.0), "Show Test View link should exist in the in-app message")
         showTestViewLink.tap()
         
         // Step 4: Verify in-app message is dismissed
@@ -429,14 +424,11 @@ class InAppMessageIntegrationTests: IntegrationTestBase {
         XCTAssertTrue(webView.waitForExistence(timeout: 15.0), "In-app message should appear")
         screenshotCapture.captureScreenshot(named: "03-testview-inapp-displayed")
         
-        // Wait for message to fully load
-        sleep(2)
+        // Step 3: Wait for webView content to be accessible and tap "Custom Action" link
+        print("👆 Waiting for 'Custom Action' link to become accessible in webView...")
+        XCTAssertTrue(waitForWebViewLink(linkText: "Custom Action", timeout: 15.0), "Custom Action link should be accessible in the in-app message")
         
-        // Step 3: Tap the "Show Test View" link in the in-app message
-        print("👆 Tapping 'Custom Action' link in in-app message")
         showTestViewLink = app.links["Custom Action"]
-        XCTAssertTrue(showTestViewLink.waitForExistence(timeout: 5.0), "Custom Action link should exist in the in-app message")
-        sleep(3)
         showTestViewLink.tap()
         
         // Step 4: Wait for in-app message to dismiss completely
