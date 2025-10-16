@@ -266,6 +266,9 @@ class InAppMessageIntegrationTests: IntegrationTestBase {
             app.alerts["Success"].buttons["OK"].tap()
         }
         
+        // Trigger get messages
+        checkMessagesButton.tap()
+        
         // Verify no message appears when disabled
         webView = app.descendants(matching: .webView).element(boundBy: 0)
         XCTAssertFalse(
@@ -279,14 +282,6 @@ class InAppMessageIntegrationTests: IntegrationTestBase {
         inAppEnabledValue = app.staticTexts["✓ Enabled"]
         XCTAssertEqual(inAppEnabledValue.label, "✓ Enabled", "In-app messages should be enabled")
         //screenshotCapture.captureScreenshot(named: "03-inapp-reenabled")
-        
-        // Step 4: Trigger getMessages
-        checkMessagesButton.tap()
-        
-        // Handle success alert
-        if app.alerts["Success"].waitForExistence(timeout: standardTimeout) {
-            app.alerts["Success"].buttons["OK"].tap()
-        }
         
         // Verify message now appears
         let secondWebView = app.descendants(matching: .webView).element(boundBy: 0)
