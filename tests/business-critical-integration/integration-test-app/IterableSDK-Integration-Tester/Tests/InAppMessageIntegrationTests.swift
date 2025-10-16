@@ -66,6 +66,10 @@ class InAppMessageIntegrationTests: IntegrationTestBase {
         print("⏳ Waiting for in-app message...")
         var webView = app.descendants(matching: .webView).element(boundBy: 0)
         
+        while webView.exists == false {
+            checkMessagesButton.tap()
+        }
+        
         XCTAssertTrue(webView.waitForExistence(timeout: 15.0), "In-app message should appear")
         screenshotCapture.captureScreenshot(named: "03-inapp-display-inapp-displayed")
         
@@ -121,6 +125,10 @@ class InAppMessageIntegrationTests: IntegrationTestBase {
         // Step 2: Wait for in-app message to display
         print("⏳ Waiting for TestView in-app message...")
         webView = app.descendants(matching: .webView).element(boundBy: 0)
+        
+        while webView.exists == false {
+            checkMessagesButton.tap()
+        }
         
         XCTAssertTrue(webView.waitForExistence(timeout: 15.0), "In-app message should appear")
         screenshotCapture.captureScreenshot(named: "03-testview-inapp-displayed")
@@ -266,6 +274,10 @@ class InAppMessageIntegrationTests: IntegrationTestBase {
         // Step 2: Wait for in-app message to display
         print("⏳ Waiting for in-app message...")
         webView = app.descendants(matching: .webView).element(boundBy: 0)
+        
+        while webView.exists == false {
+            checkMessagesButton.tap()
+        }
         
         XCTAssertTrue(webView.waitForExistence(timeout: 15.0), "In-app message should appear")
         screenshotCapture.captureScreenshot(named: "04-inapp-displayed")
@@ -420,6 +432,10 @@ class InAppMessageIntegrationTests: IntegrationTestBase {
         // Step 2: Wait for in-app message to display
         print("⏳ Waiting for TestView in-app message...")
         webView = app.descendants(matching: .webView).element(boundBy: 0)
+        
+        while webView.exists == false {
+            checkMessagesButton.tap()
+        }
         
         XCTAssertTrue(webView.waitForExistence(timeout: 15.0), "In-app message should appear")
         screenshotCapture.captureScreenshot(named: "03-testview-inapp-displayed")
