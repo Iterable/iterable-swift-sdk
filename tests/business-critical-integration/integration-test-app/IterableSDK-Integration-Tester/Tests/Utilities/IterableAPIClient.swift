@@ -459,6 +459,137 @@ class IterableAPIClient {
         }
     }
     
+    // MARK: - Embedded Message Management
+    
+    func getEmbeddedMessages(for userEmail: String, placementId: Int? = nil, completion: @escaping (Bool, [[String: Any]]) -> Void) {
+        let endpoint = "/api/embedded-messaging/messages"
+        recordAPICall(endpoint: endpoint)
+        
+        var parameters: [String: Any] = ["email": userEmail]
+        if let placementId = placementId {
+            parameters["placementId"] = placementId
+        }
+        
+        performAPIRequest(
+            endpoint: endpoint,
+            method: "GET",
+            parameters: parameters,
+            useServerKey: false
+        ) { result in
+            switch result {
+            case .success(let data):
+                do {
+                    if let json = try JSONSerialization.jsonObject(with: data) as? [String: Any],
+                       let messages = json["messages"] as? [[String: Any]] {
+                        completion(true, messages)
+                    } else {
+                        completion(true, [])
+                    }
+                } catch {
+                    print("❌ Error parsing embedded messages response: \(error)")
+                    completion(false, [])
+                }
+            case .failure(let error):
+                print("❌ Error getting embedded messages: \(error)")
+                completion(false, [])
+            }
+        }
+    }
+    
+    func createEmbeddedCampaign(
+        name: String,
+        placementId: Int,
+        userListId: String? = nil,
+        userSegmentId: String? = nil,
+        dataFieldCriteria: [String: Any]? = nil,
+        messageContent: [String: Any],
+        completion: @escaping (Bool, String?) -> Void
+    ) {
+        let endpoint = "/api/embedded-messaging/campaigns/create"
+        recordAPICall(endpoint: endpoint)
+        
+        var payload: [String: Any] = [
+            "name": name,
+            "placementId": placementId,
+            "messageContent": messageContent,
+            "state": "Active"
+        ]
+        
+        // Add targeting criteria
+        var targeting: [String: Any] = [:]
+        if let userListId = userListId {
+            targeting["listIds"] = [userListId]
+        }
+        if let userSegmentId = userSegmentId {
+            targeting["segmentIds"] = [userSegmentId]
+        }
+        if let dataFieldCriteria = dataFieldCriteria {
+            targeting["dataFields"] = dataFieldCriteria
+        }
+        
+        if !targeting.isEmpty {
+            payload["targeting"] = targeting
+        }
+        
+        performAPIRequest(
+            endpoint: endpoint,
+            method: "POST",
+            body: payload,
+            useServerKey: true
+        ) { result in
+            switch result {
+            case .success(let data):
+                do {
+                    let json = try JSONSerialization.jsonObject(with: data) as? [String: Any]
+                    if let campaignId = json?["campaignId"] as? String {
+                        completion(true, campaignId)
+                    } else if let campaignId = json?["campaignId"] as? Int {
+                        completion(true, String(campaignId))
+                    } else {
+                        completion(false, nil)
+                    }
+                } catch {
+                    print("❌ Error parsing embedded campaign creation response: \(error)")
+                    completion(false, nil)
+                }
+            case .failure(let error):
+                print("❌ Error creating embedded campaign: \(error)")
+                completion(false, nil)
+            }
+        }
+    }
+    
+    func deleteEmbeddedCampaign(campaignId: String, completion: @escaping (Bool) -> Void) {
+        let endpoint = "/api/embedded-messaging/campaigns/\(campaignId)"
+        recordAPICall(endpoint: endpoint)
+        
+        performAPIRequest(
+            endpoint: endpoint,
+            method: "DELETE",
+            body: nil,
+            useServerKey: true
+        ) { result in
+            switch result {
+            case .success(_):
+                completion(true)
+            case .failure(let error):
+                print("⚠️ Warning: Error deleting embedded campaign: \(error)")
+                completion(true) // Don't fail tests due to cleanup issues
+            }
+        }
+    }
+    
+    func validateEmbeddedMessageMetrics(
+        userEmail: String,
+        metricType: String,
+        timeWindow: TimeInterval = 300,
+        completion: @escaping (Bool, Int) -> Void
+    ) {
+        // Metrics for embedded messages are tracked as events
+        // Valid metric types: embeddedMessageReceived, embeddedClick, embeddedImpression, embeddedSession
+        validateEventExists(userEmail: userEmail, eventType: metricType, timeWindow: timeWindow, completion: completion)
+    }
+    
     // MARK: - Network Request Helpers
     
     private enum APIResult {

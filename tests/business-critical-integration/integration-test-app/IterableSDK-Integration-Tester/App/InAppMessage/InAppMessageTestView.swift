@@ -166,7 +166,15 @@ struct InAppMessageTestView: View {
 struct StatusRow: View {
     let title: String
     let value: String
-    let valueColor: Color
+    var valueColor: Color = .accentColor
+    
+    init(title: String, value: String, valueColor: Color? = nil) {
+        self.title = title
+        if let valueColor = valueColor {
+            self.valueColor = valueColor
+        }
+        self.value = value
+    }
     
     var body: some View {
         HStack {
@@ -215,10 +223,10 @@ struct ActionButton: View {
 
 // MARK: - Alert Message
 
-struct AlertMessage: Identifiable {
-    let id = UUID()
-    let title: String
-    let message: String
+public struct AlertMessage: Identifiable {
+    public let id = UUID()
+    public let title: String
+    public let message: String
 }
 
 // MARK: - Preview

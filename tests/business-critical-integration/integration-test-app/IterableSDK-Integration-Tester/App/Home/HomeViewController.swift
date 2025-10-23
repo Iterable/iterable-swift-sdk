@@ -158,6 +158,41 @@ final class HomeViewController: UIViewController, UITextFieldDelegate {
         return container
     }()
 
+    private let embeddedMessageTestRow: UIView = {
+        let container = UIView()
+        container.backgroundColor = .systemGray6
+        container.layer.cornerRadius = 8
+        container.layer.borderWidth = 1
+        container.layer.borderColor = UIColor.systemGray4.cgColor
+        container.isUserInteractionEnabled = true
+        container.accessibilityIdentifier = "embedded-message-test-row"
+        
+        let titleLabel = UILabel()
+        titleLabel.text = "Embedded Message Integration Testing"
+        titleLabel.font = .systemFont(ofSize: 16, weight: .medium)
+        titleLabel.textColor = .label
+        titleLabel.translatesAutoresizingMaskIntoConstraints = false
+        
+        let chevronImageView = UIImageView(image: UIImage(systemName: "chevron.right"))
+        chevronImageView.tintColor = .systemGray3
+        chevronImageView.translatesAutoresizingMaskIntoConstraints = false
+        
+        container.addSubview(titleLabel)
+        container.addSubview(chevronImageView)
+        
+        NSLayoutConstraint.activate([
+            container.heightAnchor.constraint(equalToConstant: 50),
+            titleLabel.leadingAnchor.constraint(equalTo: container.leadingAnchor, constant: 16),
+            titleLabel.centerYAnchor.constraint(equalTo: container.centerYAnchor),
+            chevronImageView.trailingAnchor.constraint(equalTo: container.trailingAnchor, constant: -16),
+            chevronImageView.centerYAnchor.constraint(equalTo: container.centerYAnchor),
+            chevronImageView.widthAnchor.constraint(equalToConstant: 12),
+            chevronImageView.heightAnchor.constraint(equalToConstant: 20)
+        ])
+        
+        return container
+    }()
+
 
 
     override func viewDidLoad() {
@@ -188,7 +223,8 @@ final class HomeViewController: UIViewController, UITextFieldDelegate {
                                                    clearLocalDataButton,
                                                    statusView,
                                                    pushNotificationTestRow,
-                                                   inAppMessageTestRow])
+                                                   inAppMessageTestRow,
+                                                   embeddedMessageTestRow])
         stack.axis = .vertical
         stack.alignment = .fill
         stack.spacing = 12
@@ -230,6 +266,9 @@ final class HomeViewController: UIViewController, UITextFieldDelegate {
         
         let inAppTapGesture = UITapGestureRecognizer(target: self, action: #selector(showInAppMessageTest))
         inAppMessageTestRow.addGestureRecognizer(inAppTapGesture)
+        
+        let embeddedTapGesture = UITapGestureRecognizer(target: self, action: #selector(showEmbeddedMessageTest))
+        embeddedMessageTestRow.addGestureRecognizer(embeddedTapGesture)
     }
 
     @objc private func registerEmail() {
@@ -291,6 +330,7 @@ final class HomeViewController: UIViewController, UITextFieldDelegate {
         updateRegisterButtonStates()
         updatePushNotificationButtonState()
         updateInAppMessageButtonState()
+        updateEmbeddedMessageButtonState()
     }
     
     private func updateRegisterButtonStates() {
@@ -326,6 +366,17 @@ final class HomeViewController: UIViewController, UITextFieldDelegate {
     @objc private func showInAppMessageTest() {        
         let inAppVC = InAppMessageTestHostingController()
         navigationController?.pushViewController(inAppVC, animated: true)
+    }
+    
+    private func updateEmbeddedMessageButtonState() {
+        let isSDKInitialized = IterableSDKStatusView.isSDKInitialized()
+        embeddedMessageTestRow.isUserInteractionEnabled = isSDKInitialized
+        embeddedMessageTestRow.alpha = isSDKInitialized ? 1.0 : 0.5
+    }
+    
+    @objc private func showEmbeddedMessageTest() {
+        let embeddedVC = EmbeddedMessageTestHostingController()
+        navigationController?.pushViewController(embeddedVC, animated: true)
     }
 }
 
