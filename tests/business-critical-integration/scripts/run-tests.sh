@@ -48,8 +48,8 @@ emergency_cleanup() {
         xcrun simctl shutdown "$SIMULATOR_UUID_TO_CLEAN" 2>/dev/null || true
     fi
     
-    # Clean up push monitor specifically (don't kill all background jobs)
-    cleanup_push_monitoring
+    # Clean up any background processes
+    jobs -p | xargs -r kill 2>/dev/null || true
     
     echo_warning "Emergency cleanup completed. Exiting with code $exit_code"
     exit $exit_code
@@ -349,13 +349,13 @@ prepare_test_environment() {
     if [[ -n "$CI" ]] || [[ -n "$GITHUB_ACTIONS" ]] || [[ -n "$JENKINS_URL" ]] || [[ -n "$BUILDKITE" ]]; then
         export CI="1"
         echo_info "🤖 CI Environment detected - enabling mock push notifications"
+        # Update config.json with CI mode only when CI is detected
+        update_config_for_ci
     else
         export CI="0"
         echo_info "📱 Local Environment - using real APNS push notifications"
+        # Don't override existing config for local runs
     fi
-    
-    # Always update config.json to match detected environment
-    update_config_for_ci
     
     if [[ "$VERBOSE" == true ]]; then
         export ENABLE_DEBUG_LOGGING="1"
@@ -476,43 +476,15 @@ setup_push_monitoring() {
         local PUSH_QUEUE_DIR="/tmp/push_queue"
         mkdir -p "$PUSH_QUEUE_DIR"
         
-        # Create log file for push monitor
-        local PUSH_MONITOR_LOG="$LOGS_DIR/push_monitor.log"
-        
         echo_info "📁 Push queue directory: $PUSH_QUEUE_DIR"
-        echo_info "📝 Push monitor log: $PUSH_MONITOR_LOG"
         echo_info "🔍 Starting background push monitor..."
         
-        # Start background push monitor with logging
-        start_push_monitor "$PUSH_QUEUE_DIR" > "$PUSH_MONITOR_LOG" 2>&1 &
+        # Start background push monitor
+        start_push_monitor "$PUSH_QUEUE_DIR" &
         local MONITOR_PID=$!
         echo "$MONITOR_PID" > "/tmp/push_monitor.pid"
         
-        # Give it a moment to start
-        sleep 1
-        
-        # Verify it's running
-        if ps -p "$MONITOR_PID" > /dev/null 2>&1; then
-            echo_info "⚡ Push monitor started with PID: $MONITOR_PID"
-            
-            # Verify it's actually watching the directory
-            sleep 0.5
-            if [[ -f "$PUSH_MONITOR_LOG" ]]; then
-                if grep -q "Push monitor started" "$PUSH_MONITOR_LOG" 2>/dev/null; then
-                    echo_info "✓ Push monitor is actively watching for commands"
-                else
-                    echo_warning "⚠️ Push monitor log exists but may not be working correctly"
-                    cat "$PUSH_MONITOR_LOG"
-                fi
-            fi
-        else
-            echo_error "❌ Push monitor failed to start!"
-            if [[ -f "$PUSH_MONITOR_LOG" ]]; then
-                echo_error "Push monitor log:"
-                cat "$PUSH_MONITOR_LOG"
-            fi
-            echo_error "Push monitoring will not work!"
-        fi
+        echo_info "⚡ Push monitor started with PID: $MONITOR_PID"
     else
         echo_info "📱 Local environment - push monitoring not needed"
     fi
@@ -521,47 +493,35 @@ setup_push_monitoring() {
 start_push_monitor() {
     local PUSH_QUEUE_DIR="$1"
     
-    # Use plain echo since this runs in background process
-    echo "[$(date '+%Y-%m-%d %H:%M:%S')] 🔄 Push monitor started - watching: $PUSH_QUEUE_DIR" >&2
-    echo "[$(date '+%Y-%m-%d %H:%M:%S')] 🔄 Monitor PID: $$" >&2
-    
-    # Verify directory exists and is writable
-    if [[ ! -d "$PUSH_QUEUE_DIR" ]]; then
-        echo "[$(date '+%Y-%m-%d %H:%M:%S')] ❌ ERROR: Push queue directory does not exist: $PUSH_QUEUE_DIR" >&2
-        exit 1
-    fi
-    
-    echo "[$(date '+%Y-%m-%d %H:%M:%S')] ✓ Directory verified: $PUSH_QUEUE_DIR" >&2
+    echo_info "🔄 Push monitor started - watching: $PUSH_QUEUE_DIR"
     
     while true; do
         # Look for new command files
         for COMMAND_FILE in "$PUSH_QUEUE_DIR"/command_*.txt; do
-            # Skip if no files match the pattern
-            [[ -e "$COMMAND_FILE" ]] || continue
             [[ -f "$COMMAND_FILE" ]] || continue
             
-            echo "[$(date '+%Y-%m-%d %H:%M:%S')] 📋 Found command file: $COMMAND_FILE" >&2
+            echo_info "📋 Found command file: $COMMAND_FILE"
             
             # Read and execute the command
             local COMMAND=$(cat "$COMMAND_FILE" 2>/dev/null)
             if [[ -n "$COMMAND" ]]; then
-                echo "[$(date '+%Y-%m-%d %H:%M:%S')] 🚀 Executing push command: $COMMAND" >&2
+                echo_info "🚀 Executing push command: $COMMAND"
                 
                 # Execute the xcrun simctl command
-                eval "$COMMAND" 2>&1
+                eval "$COMMAND"
                 local EXIT_CODE=$?
                 
                 if [[ $EXIT_CODE -eq 0 ]]; then
-                    echo "[$(date '+%Y-%m-%d %H:%M:%S')] ✅ Push notification sent successfully" >&2
+                    echo_info "✅ Push notification sent successfully"
                 else
-                    echo "[$(date '+%Y-%m-%d %H:%M:%S')] ❌ Push notification failed with exit code: $EXIT_CODE" >&2
+                    echo_error "❌ Push notification failed with exit code: $EXIT_CODE"
                 fi
                 
                 # Remove the command file after processing
                 rm -f "$COMMAND_FILE"
-                echo "[$(date '+%Y-%m-%d %H:%M:%S')] 🗑️ Cleaned up command file: $COMMAND_FILE" >&2
+                echo_info "🗑️ Cleaned up command file: $COMMAND_FILE"
             else
-                echo "[$(date '+%Y-%m-%d %H:%M:%S')] ⚠️ Empty command file: $COMMAND_FILE" >&2
+                echo_warning "⚠️ Empty command file: $COMMAND_FILE"
                 rm -f "$COMMAND_FILE"
             fi
         done
@@ -575,31 +535,6 @@ cleanup_push_monitoring() {
     if [[ -f "/tmp/push_monitor.pid" ]]; then
         local MONITOR_PID=$(cat /tmp/push_monitor.pid)
         echo_info "🛑 Stopping push monitor (PID: $MONITOR_PID)"
-        
-        # Check if monitor is still running
-        if ps -p "$MONITOR_PID" > /dev/null 2>&1; then
-            echo_info "✓ Push monitor is still running"
-        else
-            echo_warning "⚠️ Push monitor process not found - may have crashed!"
-        fi
-        
-        # Show push monitor logs if they exist
-        local PUSH_MONITOR_LOG="$LOGS_DIR/push_monitor.log"
-        if [[ -f "$PUSH_MONITOR_LOG" ]]; then
-            echo_info "📋 Push monitor activity:"
-            cat "$PUSH_MONITOR_LOG"
-        else
-            echo_warning "⚠️ Push monitor log not found: $PUSH_MONITOR_LOG"
-        fi
-        
-        # Check for unprocessed files in the queue
-        if [[ -d "/tmp/push_queue" ]]; then
-            local UNPROCESSED_COUNT=$(find /tmp/push_queue -type f | wc -l | tr -d ' ')
-            if [[ $UNPROCESSED_COUNT -gt 0 ]]; then
-                echo_warning "⚠️ Found $UNPROCESSED_COUNT unprocessed files in push queue:"
-                ls -la /tmp/push_queue/
-            fi
-        fi
         
         kill "$MONITOR_PID" 2>/dev/null || true
         rm -f "/tmp/push_monitor.pid"
