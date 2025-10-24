@@ -894,6 +894,35 @@ class IntegrationTestBase: XCTestCase {
         sendSimulatedPushNotification(payload: deepLinkPayload)
     }
     
+    /// Send simulated silent push for embedded message sync in CI environment
+    func sendSimulatedEmbeddedSilentPush() {
+        guard isRunningInCI else {
+            print("📱 [TEST] LOCAL MODE: Using real silent push via backend API")
+            // For local testing, silent push is sent via backend
+            return
+        }
+        
+        print("🤖 [TEST] CI MODE: Sending simulated silent push for embedded message sync")
+        print("📩 [TEST] Notification Type: UpdateEmbedded")
+        
+        // Silent push payload for embedded message sync
+        let silentPushPayload: [String: Any] = [
+            "aps": [
+                "content-available": 1,
+                "badge": 0
+            ],
+            "itbl": [
+                "campaignId": 15418588,
+                "messageId": "embedded_silent_\(UUID().uuidString)",
+                "isGhostPush": 0,
+                "notificationType": "UpdateEmbedded"
+            ]
+        ]
+        
+        sendSimulatedPushNotification(payload: silentPushPayload)
+        print("✅ [TEST] Simulated embedded silent push sent with UpdateEmbedded notification type")
+    }
+    
     // MARK: - Cleanup
     
     private func cleanupTestData() {

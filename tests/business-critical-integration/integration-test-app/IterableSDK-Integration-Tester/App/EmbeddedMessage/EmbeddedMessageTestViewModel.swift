@@ -112,7 +112,7 @@ class EmbeddedMessageTestViewModel: NSObject, ObservableObject {
             return
         }
         
-        pushSender.sendSilentPush(to: testUserEmail, campaignId: 14750476) {
+        pushSender.sendSilentPush(to: testUserEmail, campaignId: 15418588) {
             [weak self] success,
             messageId,
             error in

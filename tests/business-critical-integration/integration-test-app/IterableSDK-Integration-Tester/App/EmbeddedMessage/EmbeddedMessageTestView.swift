@@ -21,7 +21,7 @@ struct EmbeddedMessageTestView: View {
                 userProfileSection
                 
                 // Campaign Triggers
-//                campaignTriggersSection
+                campaignTriggersSection
                 
                 // Embedded Message Display
                 embeddedMessagesSection
@@ -146,9 +146,6 @@ struct EmbeddedMessageTestView: View {
                 .cornerRadius(8)
             }
             .accessibilityIdentifier("send-silent-push-sync-button")
-            
-            StatusRow(title: "Campaign Status", value: viewModel.campaignStatus)
-                .accessibilityIdentifier("campaign-status-value")
         }
         .padding()
         .background(Color.secondary.opacity(0.1))
