@@ -121,29 +121,35 @@ class EmbeddedMessageIntegrationTests: IntegrationTestBase {
             }
         }
         
-        // TODO: Test and fix the Silent Push refresh flow
+        app.buttons["Disable Premium Member"].tap()
+        app.staticTexts["Sync Messages"].tap()
+        sleep(1)
         
-//        app.buttons["Disable Premium Member"].tap()
-//        app.staticTexts["Sync Messages"].tap()
-//        sleep(1)
-//        
-//        let noMessages = app.staticTexts["no-embedded-messages-label"].firstMatch
-//        
-//        XCTAssertTrue(noMessages.waitForExistence(timeout: standardTimeout), "no-embedded-messages-label should exist")
-//        
-//        app.buttons["Enable Premium Member"].tap()
-//        sleep(2)
-//
+        let noMessages = app.staticTexts["no-embedded-messages-label"].firstMatch
+        
+        XCTAssertTrue(noMessages.waitForExistence(timeout: standardTimeout), "no-embedded-messages-label should exist")
+        
+        app.buttons["Enable Premium Member"].tap()
+        sleep(2)
+
+        XCUIDevice.shared.press(.home)
+        XCUIDevice.shared.press(.home)
+
+        let springboardApp = XCUIApplication(bundleIdentifier: "com.apple.springboard")
+        springboardApp.otherElements.element(boundBy: 100).tap()
+
+        app.activate()
+        // TODO: Test and fix the Silent Push refresh flow
 //        if isRunningInCI {
 //            sendSimulatedEmbeddedSilentPush()
 //        } else {
 //            app.buttons["send-silent-push-sync-button"].tap()
 //        }
-//
-//        // Wait for auto-sync to complete
-//        sleep(5)
-//        
-//        XCTAssertTrue(app.staticTexts["View Messages (1)"].waitForExistence(timeout: standardTimeout), "View Messages (1) should exist")
+
+        // Wait for auto-sync to complete
+        sleep(5)
+        
+        XCTAssertTrue(app.staticTexts["View Messages (1)"].waitForExistence(timeout: standardTimeout), "View Messages (1) should exist")
         
         print("")
         print("✅✅✅✅✅✅✅✅✅✅✅")
