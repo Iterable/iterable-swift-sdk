@@ -1,4 +1,4 @@
-name: BCIT Push Notification Integration Test
+name: BCIT InApp Messaging Integration Test
 
 on:
   pull_request:
@@ -11,8 +11,8 @@ on:
         type: string
 
 jobs:
-  push-notification-test:
-    name: BCIT Push Notification Integration Test
+  inapp-messaging-test:
+    name: BCIT InApp Messaging Integration Test
     runs-on: macos-latest
     timeout-minutes: 30
     env:
@@ -23,10 +23,10 @@ jobs:
         github.event_name == 'pull_request' && (
           contains(github.event.pull_request.labels.*.name, 'bcit') ||
           contains(github.event.pull_request.labels.*.name, 'BCIT') ||
-          contains(github.event.pull_request.labels.*.name, 'bcit-push') ||
-          contains(github.event.pull_request.labels.*.name, 'BCIT-PUSH') ||
+          contains(github.event.pull_request.labels.*.name, 'bcit-inapp') ||
+          contains(github.event.pull_request.labels.*.name, 'BCIT-INAPP') ||
           contains(github.event.pull_request.labels.*.name, 'Bcit') ||
-          contains(github.event.pull_request.labels.*.name, 'Bcit-Push') ||
+          contains(github.event.pull_request.labels.*.name, 'Bcit-Inapp') ||
           startsWith(github.event.pull_request.head.ref, 'release/')
         )
       )
@@ -84,17 +84,17 @@ jobs:
         echo "🔍 Validating environment setup..."
         ./scripts/validate-setup.sh
 
-    - name: Run Push Notification Tests
+    - name: Run In App Messaging Tests
       working-directory: tests/business-critical-integration
       run: |
-        echo "🧪 Running push notification integration tests..."
-        CI=true ./scripts/run-tests.sh push
+        echo "🧪 Running in app integration tests..."
+        ./scripts/run-tests.sh inapp
 
     - name: Upload Test Results
       if: always()
       uses: actions/upload-artifact@v4
       with:
-        name: push-notification-test-results
+        name: inapp-messaging-test-results
         path: |
           tests/business-critical-integration/reports/
           tests/business-critical-integration/screenshots/

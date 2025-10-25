@@ -450,6 +450,56 @@ class IterableAPIClient {
         }
     }
     
+    // MARK: - In-App Messages
+    
+    func sendInAppMessage(to userEmail: String, campaignId: Int, completion: @escaping (Bool, Error?) -> Void) {
+        let endpoint = "/api/inApp/target"
+        recordAPICall(endpoint: endpoint)
+        
+        let payload: [String: Any] = [
+            "allowRepeatMarketingSends": true,
+            "campaignId": campaignId,
+            "dataFields": [:],
+            "recipientEmail": userEmail
+        ]
+        
+        performAPIRequest(
+            endpoint: endpoint,
+            method: "POST",
+            body: payload,
+            useServerKey: true
+        ) { result in
+            switch result {
+            case .success(_):
+                completion(true, nil)
+            case .failure(let error):
+                completion(false, error)
+            }
+        }
+    }
+    
+    func clearInAppMessageQueue(for userEmail: String, completion: @escaping (Bool) -> Void) {
+        let endpoint = "/api/inApp/target/clear"
+        recordAPICall(endpoint: endpoint)
+        
+        let payload = ["email": userEmail]
+        
+        performAPIRequest(
+            endpoint: endpoint,
+            method: "POST",
+            body: payload,
+            useServerKey: true
+        ) { result in
+            switch result {
+            case .success(_):
+                completion(true)
+            case .failure(let error):
+                print("⚠️ Warning: Error clearing in-app message queue: \(error)")
+                completion(true) // Don't fail tests due to cleanup issues
+            }
+        }
+    }
+    
     func sendSilentPush(to userEmail: String, triggerType: String, completion: @escaping (Bool, Error?) -> Void) {
         let payload: [String: Any] = [
             "recipientEmail": userEmail,

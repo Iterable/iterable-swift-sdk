@@ -35,6 +35,8 @@
 		8A24D3B12E4508F400B53850 /* PBXFileSystemSynchronizedBuildFileExceptionSet */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
+				Tests/EmbeddedMessageIntegrationTests.swift,
+				Tests/InAppMessageIntegrationTests.swift,
 				Tests/IntegrationTestBase.swift,
 				Tests/PushNotificationIntegrationTests.swift,
 				Tests/Utilities/CampaignManager.swift,
@@ -49,9 +51,9 @@
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
 				SupportingFiles/Info.plist,
+				Tests/EmbeddedMessageIntegrationTests.swift,
+				Tests/InAppMessageIntegrationTests.swift,
 				Tests/Incomplete/DeepLinkingIntegrationTests.swift,
-				Tests/Incomplete/EmbeddedMessageIntegrationTests.swift,
-				Tests/Incomplete/InAppMessageIntegrationTests.swift,
 				Tests/IntegrationTestBase.swift,
 				Tests/PushNotificationIntegrationTests.swift,
 				Tests/Utilities/CampaignManager.swift,

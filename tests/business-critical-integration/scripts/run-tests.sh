@@ -254,7 +254,7 @@ setup_simulator() {
         SIMULATOR_NAME="Integration-Test-iPhone-$(date +%s)"
         
         # Get latest iOS runtime
-        RUNTIME=$(xcrun simctl list runtimes | grep "iOS" | tail -1 | awk '{print $NF}' | tr -d '()')
+        RUNTIME=$(xcrun simctl list runtimes | grep "iOS 18.5" | tail -1 | awk '{print $NF}' | tr -d '()')
         
         if [[ -n "$RUNTIME" ]]; then
             echo_info "Creating simulator: $SIMULATOR_NAME with $RUNTIME"
@@ -677,17 +677,28 @@ run_inapp_message_tests() {
     
     echo_info "Starting in-app message test sequence..."
     
-    # Test sequence for in-app messages
-    run_test_with_timeout "inapp_silent_push" "$TIMEOUT"
-    run_test_with_timeout "inapp_display" "$TIMEOUT"
-    run_test_with_timeout "inapp_interaction" "$TIMEOUT"
-    run_test_with_timeout "inapp_deeplink" "$TIMEOUT"
-    run_test_with_timeout "inapp_metrics" "$TIMEOUT"
+    # Set up push monitoring for CI environment (silent push tests require this)
+    setup_push_monitoring
+    
+    # Set up cleanup trap to ensure monitor is stopped
+    trap cleanup_push_monitoring EXIT
+    
+    # Run the specific in-app message test method
+    local EXIT_CODE=0
+    run_xcode_tests "InAppMessageIntegrationTests" "testInAppMessage" || EXIT_CODE=$?
     
     generate_test_report "inapp_message" "$TEST_REPORT"
     
+    # Clean up push monitoring
+    cleanup_push_monitoring
+    
+    # Reset trap
+    trap - EXIT
+    
     echo_success "In-app message tests completed"
     echo_info "Report: $TEST_REPORT"
+
+    return $EXIT_CODE
 }
 
 run_embedded_message_tests() {
@@ -705,6 +716,8 @@ run_embedded_message_tests() {
     
     TEST_REPORT="$REPORTS_DIR/embedded-message-test-$(date +%Y%m%d-%H%M%S).json"
     
+    local EXIT_CODE=0
+
     echo_info "Starting embedded message test sequence..."
     
     run_test_with_timeout "embedded_eligibility" "$TIMEOUT"
@@ -717,6 +730,8 @@ run_embedded_message_tests() {
     
     echo_success "Embedded message tests completed"
     echo_info "Report: $TEST_REPORT"
+
+    return $EXIT_CODE
 }
 
 run_deep_linking_tests() {
@@ -734,8 +749,10 @@ run_deep_linking_tests() {
     
     TEST_REPORT="$REPORTS_DIR/deep-linking-test-$(date +%Y%m%d-%H%M%S).json"
     
+    local EXIT_CODE=0
+
     echo_info "Starting deep linking test sequence..."
-    
+
     run_test_with_timeout "deeplink_universal" "$TIMEOUT"
     run_test_with_timeout "deeplink_sms_email" "$TIMEOUT"
     run_test_with_timeout "deeplink_parsing" "$TIMEOUT"
@@ -746,6 +763,8 @@ run_deep_linking_tests() {
     
     echo_success "Deep linking tests completed"
     echo_info "Report: $TEST_REPORT"
+
+    return $EXIT_CODE
 }
 
 run_test_with_timeout() {
@@ -969,7 +988,7 @@ main() {
     echo
     
     validate_environment
-    prepare_test_environment  # Move this before build so config gets baked in
+    prepare_test_environment
     setup_simulator
     build_test_project
     

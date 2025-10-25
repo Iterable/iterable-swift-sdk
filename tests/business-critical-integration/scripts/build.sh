@@ -48,6 +48,28 @@ else
     exit 1
 fi
 
+# Get simulator UUID from config
+CONFIG_FILE="$PROJECT_DIR/integration-test-app/config/test-config.json"
+SIMULATOR_UUID=""
+
+if [[ -f "$CONFIG_FILE" ]] && command -v jq &> /dev/null; then
+    SIMULATOR_UUID=$(jq -r '.simulator.simulatorUuid' "$CONFIG_FILE" 2>/dev/null || echo "")
+    if [[ -n "$SIMULATOR_UUID" && "$SIMULATOR_UUID" != "null" ]]; then
+        echo "🎯 Using simulator from config: $SIMULATOR_UUID"
+    else
+        echo "⚠️  No simulator UUID found in config, will use generic destination"
+        SIMULATOR_UUID=""
+    fi
+fi
+
+# Build destination parameter
+if [[ -n "$SIMULATOR_UUID" ]]; then
+    DESTINATION=(-destination "id=$SIMULATOR_UUID")
+else
+    # Fallback to generic iPhone simulator destination
+    DESTINATION=(-destination "platform=iOS Simulator,name=iPhone 16 Pro")
+fi
+
 # Create temporary files for build outputs
 MAIN_OUTPUT=$(mktemp)
 TEST_OUTPUT=$(mktemp)
@@ -59,6 +81,7 @@ if [[ "$CLEAN_BUILD" == true ]]; then
         -scheme "IterableSDK-Integration-Tester" \
         -configuration Debug \
         -sdk iphonesimulator \
+        "${DESTINATION[@]}" \
         clean > /dev/null 2>&1
     echo "✅ Clean completed"
 fi
@@ -71,6 +94,7 @@ xcodebuild \
     -scheme "IterableSDK-Integration-Tester" \
     -configuration Debug \
     -sdk iphonesimulator \
+    "${DESTINATION[@]}" \
     build > $MAIN_OUTPUT 2>&1
 
 MAIN_BUILD_STATUS=$?
@@ -86,6 +110,7 @@ if [ $MAIN_BUILD_STATUS -eq 0 ]; then
         -scheme "IterableSDK-Integration-Tester" \
         -configuration Debug \
         -sdk iphonesimulator \
+        "${DESTINATION[@]}" \
         build-for-testing > $TEST_OUTPUT 2>&1
     
     TEST_BUILD_STATUS=$?

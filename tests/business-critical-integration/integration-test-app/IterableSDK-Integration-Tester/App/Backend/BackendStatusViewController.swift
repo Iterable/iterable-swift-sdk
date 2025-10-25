@@ -126,6 +126,19 @@ final class BackendStatusViewController: UIViewController {
         return button
     }()
     
+    private let sendSilentPushButton: UIButton = {
+        let button = UIButton(type: .system)
+        button.setTitle("Send Silent Push (Campaign 14750476)", for: .normal)
+        button.backgroundColor = .systemOrange
+        button.setTitleColor(.white, for: .normal)
+        button.layer.cornerRadius = 8
+        button.translatesAutoresizingMaskIntoConstraints = false
+        button.accessibilityIdentifier = "test-silent-push-button"
+        button.isEnabled = false
+        button.alpha = 0.5
+        return button
+    }()
+    
     private let resetDevicesButton: UIButton = {
         let button = UIButton(type: .system)
         button.setTitle("Disable User Devices", for: .normal)
@@ -214,6 +227,7 @@ final class BackendStatusViewController: UIViewController {
         contentView.addSubview(userDetailsTableView)
         contentView.addSubview(sendPushButton)
         contentView.addSubview(sendDeepLinkPushButton)
+        contentView.addSubview(sendSilentPushButton)
         contentView.addSubview(resetDevicesButton)
         contentView.addSubview(reenableDevicesButton)
         contentView.addSubview(activityIndicator)
@@ -292,8 +306,14 @@ final class BackendStatusViewController: UIViewController {
             sendDeepLinkPushButton.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -20),
             sendDeepLinkPushButton.heightAnchor.constraint(equalToConstant: 44),
             
+            // Send silent push button
+            sendSilentPushButton.topAnchor.constraint(equalTo: sendDeepLinkPushButton.bottomAnchor, constant: 12),
+            sendSilentPushButton.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 20),
+            sendSilentPushButton.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -20),
+            sendSilentPushButton.heightAnchor.constraint(equalToConstant: 44),
+            
             // Reset devices button
-            resetDevicesButton.topAnchor.constraint(equalTo: sendDeepLinkPushButton.bottomAnchor, constant: 12),
+            resetDevicesButton.topAnchor.constraint(equalTo: sendSilentPushButton.bottomAnchor, constant: 12),
             resetDevicesButton.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 20),
             resetDevicesButton.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -20),
             resetDevicesButton.heightAnchor.constraint(equalToConstant: 44),
@@ -321,6 +341,7 @@ final class BackendStatusViewController: UIViewController {
         refreshButton.addTarget(self, action: #selector(refreshBackendStatus), for: .touchUpInside)
         sendPushButton.addTarget(self, action: #selector(sendPushNotification), for: .touchUpInside)
         sendDeepLinkPushButton.addTarget(self, action: #selector(sendDeepLinkPushNotification), for: .touchUpInside)
+        sendSilentPushButton.addTarget(self, action: #selector(sendSilentPushNotification), for: .touchUpInside)
         resetDevicesButton.addTarget(self, action: #selector(resetUserDevices), for: .touchUpInside)
         reenableDevicesButton.addTarget(self, action: #selector(reenableUserDevices), for: .touchUpInside)
         showDisabledDevicesSwitch.addTarget(self, action: #selector(toggleShowDisabledDevices), for: .valueChanged)
@@ -504,6 +525,32 @@ final class BackendStatusViewController: UIViewController {
         }
     }
     
+    @objc private func sendSilentPushNotification() {
+        guard let pushSender = pushSender,
+              let testUserEmail = AppDelegate.loadTestUserEmailFromConfig() else {
+            showAlert(title: "Error", message: "Push sender not initialized or test user email not found")
+            return
+        }
+        
+        sendSilentPushButton.isEnabled = false
+        
+        pushSender.sendSilentPush(to: testUserEmail, campaignId: 14750476) { [weak self] success, messageId, error in
+            DispatchQueue.main.async {
+                self?.sendSilentPushButton.isEnabled = true
+                
+                if success {
+                    if let messageId = messageId {
+                        print("✅ Silent push sent with message ID: \(messageId)")
+                    }
+                    // No success alert for silent push - should be silent!
+                } else {
+                    let errorMessage = error?.localizedDescription ?? "Unknown error"
+                    self?.showAlert(title: "Error", message: "Failed to send silent push notification: \(errorMessage)")
+                }
+            }
+        }
+    }
+    
     @objc private func resetUserDevices() {
         guard let apiClient = apiClient,
               let testUserEmail = AppDelegate.loadTestUserEmailFromConfig() else {
@@ -621,6 +668,8 @@ final class BackendStatusViewController: UIViewController {
         sendPushButton.alpha = hasUserData ? 1.0 : 0.5
         sendDeepLinkPushButton.isEnabled = hasUserData
         sendDeepLinkPushButton.alpha = hasUserData ? 1.0 : 0.5
+        sendSilentPushButton.isEnabled = hasUserData
+        sendSilentPushButton.alpha = hasUserData ? 1.0 : 0.5
     }
     
     private func loadAPIKey() -> String? {
@@ -655,7 +704,7 @@ final class BackendStatusViewController: UIViewController {
 
 extension BackendStatusViewController: UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        guard let userData = testUserData else { return 0 }
+        guard testUserData != nil else { return 0 }
         
         // Only show device rows
         let filteredDevices = getFilteredDevices()
@@ -764,7 +813,7 @@ extension BackendStatusViewController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
         
-        guard let userData = testUserData else { return }
+        guard testUserData != nil else { return }
         
         // Check if it's a device row (using filtered devices)
         let filteredDevices = getFilteredDevices()

@@ -553,6 +553,43 @@ class IntegrationTestBase: XCTestCase {
         screenshotCapture.captureScreenshot(named: "deep-link-handled")
     }
     
+    // MARK: - WebView Helpers
+    
+    /// Waits for a link inside a WKWebView to become accessible via XCUITest
+    /// Uses intelligent polling to handle CI environment delays in accessibility tree population
+    func waitForWebViewLink(linkText: String, timeout: TimeInterval = 15.0) -> Bool {
+        let link = app.links[linkText]
+        let startTime = Date()
+        var lastCheckTime = startTime
+        
+        print("🔍 Polling for webView link '\(linkText)' (timeout: \(timeout)s)")
+        
+        while Date().timeIntervalSince(startTime) < timeout {
+            if link.exists {
+                // Extra validation: wait a bit and check again to ensure it's stable
+                print("✅ Link '\(linkText)' found after \(String(format: "%.1f", Date().timeIntervalSince(startTime)))s, validating stability...")
+                sleep(1)
+                if link.exists {
+                    print("✅ Link '\(linkText)' confirmed stable and accessible")
+                    return true
+                } else {
+                    print("⚠️ Link '\(linkText)' disappeared during validation, continuing poll...")
+                }
+            }
+            
+            // Log progress every 3 seconds
+            if Date().timeIntervalSince(lastCheckTime) >= 3.0 {
+                print("⏳ Still waiting for link '\(linkText)' (\(String(format: "%.1f", Date().timeIntervalSince(startTime)))s elapsed)")
+                lastCheckTime = Date()
+            }
+            
+            sleep(UInt32(0.5))
+        }
+        
+        print("❌ Link '\(linkText)' not found after \(timeout)s timeout")
+        return false
+    }
+    
     // MARK: - Navigation Helpers
     
     func navigateToBackendTab() {
