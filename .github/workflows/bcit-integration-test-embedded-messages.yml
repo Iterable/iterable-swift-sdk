@@ -1,4 +1,6 @@
 name: BCIT Embedded Messages Integration Test
+permissions:
+  contents: read
 
 on:
   pull_request:
