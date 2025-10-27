@@ -133,10 +133,6 @@ class EmbeddedMessageIntegrationTests: IntegrationTestBase {
         sleep(2)
 
         XCUIDevice.shared.press(.home)
-        XCUIDevice.shared.press(.home)
-
-        let springboardApp = XCUIApplication(bundleIdentifier: "com.apple.springboard")
-        springboardApp.otherElements.element(boundBy: 100).tap()
 
         app.activate()
         // TODO: Test and fix the Silent Push refresh flow
