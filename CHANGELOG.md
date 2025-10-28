@@ -6,6 +6,8 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [6.6.2]
 
+- Reverted a previous fix that introduced an unexpected behaviour.
+
 ## [6.6.1]
 
 - Added support for iOS 26
