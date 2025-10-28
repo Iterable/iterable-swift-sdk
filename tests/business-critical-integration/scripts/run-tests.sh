@@ -708,25 +708,34 @@ run_embedded_message_tests() {
         echo_info "[DRY RUN] Would run embedded message tests"
         echo_info "[DRY RUN] - User eligibility validation"
         echo_info "[DRY RUN] - Profile updates affecting display"
-        echo_info "[DRY RUN] - List subscription toggles"
-        echo_info "[DRY RUN] - Placement-specific testing"
+        echo_info "[DRY RUN] - Silent push sync flow"
+        echo_info "[DRY RUN] - Message display and interaction"
+        echo_info "[DRY RUN] - Deep link handling"
         echo_info "[DRY RUN] - Metrics validation"
         return
     fi
     
     TEST_REPORT="$REPORTS_DIR/embedded-message-test-$(date +%Y%m%d-%H%M%S).json"
     
-    local EXIT_CODE=0
-
     echo_info "Starting embedded message test sequence..."
     
-    run_test_with_timeout "embedded_eligibility" "$TIMEOUT"
-    run_test_with_timeout "embedded_profile_update" "$TIMEOUT"
-    run_test_with_timeout "embedded_list_toggle" "$TIMEOUT"
-    run_test_with_timeout "embedded_placement" "$TIMEOUT"
-    run_test_with_timeout "embedded_metrics" "$TIMEOUT"
+    # Set up push monitoring for CI environment (silent push tests require this)
+    setup_push_monitoring
+    
+    # Set up cleanup trap to ensure monitor is stopped
+    trap cleanup_push_monitoring EXIT
+    
+    # Run the specific embedded message test method
+    local EXIT_CODE=0
+    run_xcode_tests "EmbeddedMessageIntegrationTests" "testEmbeddedMessage" || EXIT_CODE=$?
     
     generate_test_report "embedded_message" "$TEST_REPORT"
+    
+    # Clean up push monitoring
+    cleanup_push_monitoring
+    
+    # Reset trap
+    trap - EXIT
     
     echo_success "Embedded message tests completed"
     echo_info "Report: $TEST_REPORT"

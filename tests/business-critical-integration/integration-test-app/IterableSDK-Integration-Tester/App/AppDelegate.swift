@@ -74,10 +74,16 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             if let isGhostPush = iterableData["isGhostPush"] as? Bool {
                 print("👻 [APP] Ghost push flag: \(isGhostPush)")
             }
+            
+            if let notificationType = iterableData["notificationType"] as? String {
+                print("📝 [APP] Notification type: \(notificationType)")
+            }
         }
         
-        // Call completion handler
-        completionHandler(.newData)
+        // Pass to Iterable SDK for processing
+        // This enables automatic embedded message sync when silent push with "UpdateEmbedded" type is received
+        print("📲 [APP] Passing silent push to Iterable SDK for processing...")
+        IterableAppIntegration.application(application, didReceiveRemoteNotification: userInfo, fetchCompletionHandler: completionHandler)
     }
     
     // MARK: - Deep link
@@ -242,6 +248,22 @@ extension AppDelegate: UNUserNotificationCenterDelegate {
         
         if let iterableData = notification.request.content.userInfo["itbl"] as? [String: Any] {
             print("🔔 [APP] Iterable-specific data: \(iterableData)")
+            
+            // Check if this is a silent push for embedded messages
+            if let notificationType = iterableData["notificationType"] as? String {
+                print("📝 [APP] Notification type: \(notificationType)")
+                if notificationType == "UpdateEmbedded" {
+                    print("🎯 [APP] Silent push for embedded messages detected in FOREGROUND")
+                    print("💡 [APP] Passing to SDK for embedded message sync...")
+                    
+                    // Pass to SDK even when in foreground
+                    IterableAppIntegration.application(
+                        UIApplication.shared,
+                        didReceiveRemoteNotification: notification.request.content.userInfo,
+                        fetchCompletionHandler: { _ in }
+                    )
+                }
+            }
         }
         
         print("🔔 Foreground notification received: \(notification.request.content.userInfo)")

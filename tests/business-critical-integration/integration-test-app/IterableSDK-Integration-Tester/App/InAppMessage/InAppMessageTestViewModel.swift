@@ -28,6 +28,8 @@ class InAppMessageTestViewModel: ObservableObject {
     
     private var timer: Timer?
     private var cancellables = Set<AnyCancellable>()
+    private var apiClient: IterableAPIClient?
+    private var pushSender: PushNotificationSender?
     
     // MARK: - Initialization
     
@@ -35,6 +37,8 @@ class InAppMessageTestViewModel: ObservableObject {
         setupNotificationObservers()
         loadStatistics()
         updateStatus()
+        apiClient = createAPIClient()
+        pushSender = createPushSender()
     }
     
     deinit {
@@ -94,7 +98,7 @@ class InAppMessageTestViewModel: ObservableObject {
     func triggerCampaign(_ campaignId: Int) {
         print("🎯 Triggering campaign: \(campaignId)")
         
-        guard let apiClient = createAPIClient(),
+        guard let apiClient,
               let testUserEmail = AppDelegate.loadTestUserEmailFromConfig() else {
             showAlert(title: "Error", message: "API client not initialized or test user email not found")
             return
@@ -144,21 +148,19 @@ class InAppMessageTestViewModel: ObservableObject {
         }
     }
     
-    func sendSilentPush(_ campainId: Int) {
-        guard let pushSender = createPushSender(),
+    func sendSilentPush(_ campaignId: Int) {
+        guard let pushSender,
               let testUserEmail = AppDelegate.loadTestUserEmailFromConfig() else {
             showAlert(title: "Error", message: "Push sender not initialized or test user email not found")
             return
         }
         
         isTriggeringCampaign = true
-        pushSender
-            .sendSilentPush(to: testUserEmail, campaignId: campainId) {
-                [weak self] success,
-                messageId,
-                error in
+        pushSender.sendSilentPush(to: testUserEmail, campaignId: campaignId) {
+            [weak self] success,
+            messageId,
+            error in
             DispatchQueue.main.async {
-                
                 if success {
                     if let messageId = messageId {
                         print("✅ Silent push sent with message ID: \(messageId)")
@@ -176,7 +178,7 @@ class InAppMessageTestViewModel: ObservableObject {
     func clearMessageQueue() {
         print("🗑️ Clearing message queue...")
         
-        guard let apiClient = createAPIClient(),
+        guard let apiClient,
               let testUserEmail = AppDelegate.loadTestUserEmailFromConfig() else {
             showAlert(title: "Error", message: "API client not initialized or test user email not found")
             return

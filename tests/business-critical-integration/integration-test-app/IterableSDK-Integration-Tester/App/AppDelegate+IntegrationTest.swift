@@ -81,6 +81,7 @@ extension AppDelegate {
         config.inAppDisplayInterval = 1
         config.autoPushRegistration = false  // Disable automatic push registration for testing control
         config.allowedProtocols = ["tester"]  // Allow our custom tester:// deep link scheme
+        config.enableEmbeddedMessaging = true
         
         let apiKey = loadApiKeyFromConfig()
         IterableAPI.initialize(apiKey: apiKey,
