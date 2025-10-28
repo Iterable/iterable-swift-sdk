@@ -459,6 +459,8 @@ class IterableAPIClient {
         }
     }
     
+    // MARK: - Embedded Message Management
+    
     // MARK: - Network Request Helpers
     
     private enum APIResult {
