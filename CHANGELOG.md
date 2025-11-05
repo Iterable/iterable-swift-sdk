@@ -4,6 +4,8 @@ All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 ## [Unreleased]
 
+## [6.5.15]
+
 ## [6.5.14]
 - Added `IterableInAppDisplayDelegate` protocol for dynamic control over in-app message display timing```
 
