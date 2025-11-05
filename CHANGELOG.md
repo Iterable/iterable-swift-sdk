@@ -9,9 +9,11 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 - Reverted a change to the deeplinking redirect flow introduced in 6.5.13 that caused link redirection issues for some users
 
 ## [6.5.14]
+_DEPRECATED_ Use version 6.5.15 instead.
 - Added `IterableInAppDisplayDelegate` protocol for dynamic control over in-app message display timing```
 
 ## [6.5.13]
+_DEPRECATED_ Use version 6.5.15 instead.
 - Fixed in-app messages displaying in wrong window when using Stage Manager or multi-window scenarios on iPad.
 - Fixed redirect handling issue with deep links that was preventing proper URL following.
 - Improved action runner logic to properly validate allowed protocols before processing URL actions, ensuring better security and reliability.
