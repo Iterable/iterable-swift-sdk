@@ -26,9 +26,10 @@ struct IterableInAppMessageMetadata {
 }
 
 class InAppFetcher: InAppFetcherProtocol {
-    init(apiClient: ApiClientProtocol) {
+    init(apiClient: ApiClientProtocol, authManager: IterableAuthManagerProtocol?) {
         ITBInfo()
         self.apiClient = apiClient
+        self.authManager = authManager
     }
     
     deinit {
@@ -43,12 +44,15 @@ class InAppFetcher: InAppFetcherProtocol {
             return Fulfill(error: IterableError.general(description: "Invalid state: expected InternalApi"))
         }
         
-        return InAppHelper.getInAppMessagesFromServer(apiClient: apiClient, number: numMessages).mapFailure { $0 }
+        return InAppHelper.getInAppMessagesFromServer(apiClient: apiClient,
+                                                      authManager: authManager,
+                                                      number: numMessages).mapFailure { $0 }
     }
     
     // MARK: - Private/Internal
     
     private weak var apiClient: ApiClientProtocol?
+    private let authManager: IterableAuthManagerProtocol?
     
     private let numMessages = 100
 }
