@@ -8,7 +8,7 @@ on:
         required: true
         type: string
       jira_ticket:
-        description: 'JIRA ticket MOB number (e.g., 1234)'
+        description: 'JIRA ticket SDK number (e.g., 1234)'
         required: true
         type: string
 
@@ -89,7 +89,7 @@ jobs:
         uses: peter-evans/create-pull-request@v5
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
-          title: "MOB-${{ github.event.inputs.jira_ticket }}: Prepare for Release ${{ steps.update_changelog.outputs.new_version }}"
+          title: "SDK-${{ github.event.inputs.jira_ticket }}: Prepare for Release ${{ steps.update_changelog.outputs.new_version }}"
           body: |
             # Prepare for Release ${{ steps.update_changelog.outputs.new_version }}
             
@@ -103,7 +103,7 @@ jobs:
             - [ ] All tests passing
             - [ ] Documentation updated (if needed)
             
-          branch: "release/MOB-${{ github.event.inputs.jira_ticket }}-prepare-for-release-${{ steps.update_changelog.outputs.new_version }}"
-          commit-message: "[MOB-${{ github.event.inputs.jira_ticket }}]: Prepare for release ${{ steps.update_changelog.outputs.new_version }}"
+          branch: "release/SDK-${{ github.event.inputs.jira_ticket }}-prepare-for-release-${{ steps.update_changelog.outputs.new_version }}"
+          commit-message: "[SDK-${{ github.event.inputs.jira_ticket }}]: Prepare for release ${{ steps.update_changelog.outputs.new_version }}"
           labels: release
           delete-branch: true

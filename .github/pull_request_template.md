@@ -1,6 +1,6 @@
 ## 🔹 Jira Ticket(s)
 
-* [MOB-XXXX](https://iterable.atlassian.net/browse/MOB-XXXX)
+* [SDK-XXXX](https://iterable.atlassian.net/browse/SDK-XXXX)
 
 ## ✏️ Description
 
