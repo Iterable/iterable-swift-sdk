@@ -6,6 +6,8 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [6.5.15]
 
+- Reverted a change to the deeplinking redirect flow introduced in 6.5.13 that caused link redirection issues for some users
+
 ## [6.5.14]
 - Added `IterableInAppDisplayDelegate` protocol for dynamic control over in-app message display timing```
 
