@@ -48,7 +48,7 @@ final class DataManager {
 }
 
 struct DemoDependencyContainer: DependencyContainerProtocol {
-    func createInAppFetcher(apiClient _: ApiClientProtocol) -> InAppFetcherProtocol {
+    func createInAppFetcher(apiClient _: ApiClientProtocol, authManager _: IterableAuthManagerProtocol?) -> InAppFetcherProtocol {
         inAppFetcher
     }
     

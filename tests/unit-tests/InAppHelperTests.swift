@@ -15,7 +15,7 @@ class InAppHelperTests: XCTestCase {
             }
         }
         
-        InAppHelper.getInAppMessagesFromServer(apiClient: MyApiClient(), number: 10).onSuccess { messages in
+        InAppHelper.getInAppMessagesFromServer(apiClient: MyApiClient(), authManager: nil, number: 10).onSuccess { messages in
             XCTAssertEqual(messages.count, 3)
             XCTAssertEqual(messages[0].messageId, "message1")
             XCTAssertEqual(messages[1].messageId, "message2")
@@ -69,7 +69,7 @@ class InAppHelperTests: XCTestCase {
             }
         }
         
-        InAppHelper.getInAppMessagesFromServer(apiClient: MyApiClient(expectation: expectation1), number: 10).onSuccess { messages in
+        InAppHelper.getInAppMessagesFromServer(apiClient: MyApiClient(expectation: expectation1), authManager: nil, number: 10).onSuccess { messages in
             XCTAssertEqual(messages.count, 1)
             XCTAssertEqual(messages[0].messageId, "message1")
         }
