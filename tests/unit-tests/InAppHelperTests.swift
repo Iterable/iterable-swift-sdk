@@ -6,6 +6,30 @@ import XCTest
 
 @testable import IterableSDK
 
+private final class RetryingApiClient: BlankApiClient {
+    var numOfMessages = 3
+    var callCount = -1
+    var lastCountRequested: NSNumber?
+    var failureReason = "jwt token is expired"
+    weak var authManager: MockAuthManager?
+    
+    override func getInAppMessages(_ count: NSNumber) -> Pending<SendRequestValue, SendRequestError> {
+        callCount += 1
+        lastCountRequested = count
+        
+        if callCount == 0 {
+            return Fulfill(value: TestInAppPayloadGenerator.createPayloadWithUrl(numMessages: numOfMessages))
+        }
+        
+        if authManager?.retryWasRequested == true {
+            return Fulfill(value: TestInAppPayloadGenerator.createPayloadWithUrl(numMessages: numOfMessages))
+        }
+        return Fulfill(error: SendRequestError(reason: failureReason,
+                                               httpStatusCode: 401,
+                                               iterableCode: JsonValue.Code.invalidJwtPayload))
+    }
+}
+
 class InAppHelperTests: XCTestCase {
     func testGetInAppMessagesWithNoError() {
         class MyApiClient: BlankApiClient {
@@ -76,7 +100,49 @@ class InAppHelperTests: XCTestCase {
         
         wait(for: [expectation1], timeout: testExpectationTimeout)
     }
-    
+
+    func testGetInAppMessagesRetriesAfterJWT401() {
+        let authManager = MockAuthManager()
+        authManager.shouldRetry = true
+        
+        let apiClient = RetryingApiClient()
+        apiClient.authManager = authManager
+        
+        
+        let initialFailedAuthCount = authManager.failedAuthCount
+        
+        InAppHelper.getInAppMessagesFromServer(apiClient: apiClient,
+                                               authManager: authManager,
+                                               number: apiClient.numOfMessages).onSuccess { messages in
+            print(messages)
+        }.onError { error in
+            XCTFail("expected success, got error: \(error)")
+        }
+        
+        InAppHelper.getInAppMessagesFromServer(apiClient: apiClient,
+                                               authManager: authManager,
+                                               number: apiClient.numOfMessages,
+                                               successHandler: { data in
+            XCTAssertTrue(authManager.handleAuthFailureCalled)
+            XCTAssertTrue(authManager.getNextRetryIntervalCalled)
+            
+            XCTAssertTrue(authManager.retryWasRequested)
+            XCTAssertEqual(authManager.getAuthToken(), "newAuthToken")
+        }).onSuccess { messages in
+            print(messages)
+        }.onError { error in
+            XCTFail("expected success, got error: \(error)")
+        }
+        
+        InAppHelper.getInAppMessagesFromServer(apiClient: apiClient,
+                                               authManager: authManager,
+                                               number: apiClient.numOfMessages).onSuccess { messages in
+            XCTAssertTrue(authManager.retryWasRequested)
+        }.onError { error in
+            XCTFail("expected success, got error: \(error)")
+        }
+    }
+
     func testParseURL() {
         let urlWithNoScheme = URL(string: "blah")!
         XCTAssertNil(InAppHelper.parse(inAppUrl: urlWithNoScheme))

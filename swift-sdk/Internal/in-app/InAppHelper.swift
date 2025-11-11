@@ -10,11 +10,13 @@ import UIKit
 struct InAppHelper {
     static func getInAppMessagesFromServer(apiClient: ApiClientProtocol,
                                            authManager: IterableAuthManagerProtocol?,
-                                           number: Int) -> Pending<[IterableInAppMessage], SendRequestError> {
+                                           number: Int,
+                                           successHandler onSuccess: OnSuccessHandler? = nil,
+                                           failureHandler onFailure: OnFailureHandler? = nil) -> Pending<[IterableInAppMessage], SendRequestError> {
         
         RequestProcessorUtil.sendRequest(requestProvider: { apiClient.getInAppMessages(NSNumber(value: number)) },
-                                         successHandler: nil,
-                                         failureHandler: nil,
+                                         successHandler: onSuccess,
+                                         failureHandler: onFailure,
                                          authManager: authManager,
                                          requestIdentifier: "getInAppMessages")
         .map {
