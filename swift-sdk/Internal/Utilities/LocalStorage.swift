@@ -3,6 +3,7 @@
 //
 
 import Foundation
+import UIKit.UIDevice
 
 struct LocalStorage: LocalStorageProtocol {
 
@@ -52,11 +53,22 @@ struct LocalStorage: LocalStorageProtocol {
         }
     }
     
-    var deviceId: String? {
+    var deviceId: String {
         get {
-            iterableUserDefaults.deviceId
-        } set {
-            iterableUserDefaults.deviceId = newValue
+            let foundDeviceId = [
+                iterableUserDefaults.deviceId,
+                keychain.deviceId,
+                UIDevice.current.identifierForVendor?.uuidString
+            ].compactMap { $0 }.first
+            let deviceId = foundDeviceId ?? IterableUtil.generateUUID()
+            
+            if iterableUserDefaults.deviceId == nil {
+                iterableUserDefaults.deviceId = deviceId
+            }
+            if keychain.deviceId == nil {
+                keychain.deviceId = deviceId
+            }
+            return deviceId
         }
     }
     

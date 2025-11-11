@@ -15,7 +15,7 @@ protocol LocalStorageProtocol {
     
     var ddlChecked: Bool { get set }
     
-    var deviceId: String? { get set }
+    var deviceId: String { get }
     
     var sdkVersion: String? { get set }
     

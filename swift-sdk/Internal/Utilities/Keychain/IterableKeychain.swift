@@ -81,6 +81,24 @@ class IterableKeychain {
         }
     }
     
+    var deviceId: String? {
+        get {
+            let data = wrapper.data(forKey: Const.Keychain.Key.deviceId)
+                
+            return data.flatMap { String(data: $0, encoding: .utf8) }
+        }
+          
+        set {
+            guard let deviceId = newValue,
+                  let data = deviceId.data(using: .utf8) else {
+                wrapper.removeValue(forKey: Const.Keychain.Key.deviceId)
+                return
+            }
+              
+            wrapper.set(data, forKey: Const.Keychain.Key.deviceId)
+        }
+    }
+
     // MARK: - PRIVATE/INTERNAL
     
     private let wrapper: KeychainWrapper
