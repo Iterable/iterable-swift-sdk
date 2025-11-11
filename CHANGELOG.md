@@ -4,6 +4,8 @@ All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 ## [Unreleased]
 
+## [6.6.3]
+
 ## [6.6.2]
 
 - Reverted a change to the deeplinking redirect flow introduced in 6.5.13 that caused link redirection issues for some users
