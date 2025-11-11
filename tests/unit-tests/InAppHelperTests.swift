@@ -108,9 +108,6 @@ class InAppHelperTests: XCTestCase {
         let apiClient = RetryingApiClient()
         apiClient.authManager = authManager
         
-        
-        let initialFailedAuthCount = authManager.failedAuthCount
-        
         InAppHelper.getInAppMessagesFromServer(apiClient: apiClient,
                                                authManager: authManager,
                                                number: apiClient.numOfMessages).onSuccess { messages in
