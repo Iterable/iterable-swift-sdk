@@ -5,8 +5,8 @@
 import Foundation
 
 struct DependencyContainer: DependencyContainerProtocol {
-    func createInAppFetcher(apiClient: ApiClientProtocol) -> InAppFetcherProtocol {
-        InAppFetcher(apiClient: apiClient)
+    func createInAppFetcher(apiClient: ApiClientProtocol, authManager: IterableAuthManagerProtocol?) -> InAppFetcherProtocol {
+        InAppFetcher(apiClient: apiClient, authManager: authManager)
     }
     
     let dateProvider: DateProviderProtocol = SystemDateProvider()

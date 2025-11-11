@@ -8,8 +8,18 @@ import UIKit
 /// All classes/structs are internal.
 
 struct InAppHelper {
-    static func getInAppMessagesFromServer(apiClient: ApiClientProtocol, number: Int) -> Pending<[IterableInAppMessage], SendRequestError> {
-        apiClient.getInAppMessages(NSNumber(value: number)).map {
+    static func getInAppMessagesFromServer(apiClient: ApiClientProtocol,
+                                           authManager: IterableAuthManagerProtocol?,
+                                           number: Int,
+                                           successHandler onSuccess: OnSuccessHandler? = nil,
+                                           failureHandler onFailure: OnFailureHandler? = nil) -> Pending<[IterableInAppMessage], SendRequestError> {
+        
+        RequestProcessorUtil.sendRequest(requestProvider: { apiClient.getInAppMessages(NSNumber(value: number)) },
+                                         successHandler: onSuccess,
+                                         failureHandler: onFailure,
+                                         authManager: authManager,
+                                         requestIdentifier: "getInAppMessages")
+        .map {
             InAppMessageParser.parse(payload: $0).compactMap { parseResult in
                 process(parseResult: parseResult, apiClient: apiClient)
             }
