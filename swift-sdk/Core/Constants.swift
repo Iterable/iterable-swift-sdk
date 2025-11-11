@@ -274,6 +274,7 @@ enum JsonKey {
     // Embedded Messages
     static let embeddedSessionId = "session"
     static let placementId = "placementId"
+    static let placementIds = "placementIds"
     static let embeddedSessionStart = "embeddedSessionStart"
     static let embeddedSessionEnd = "embeddedSessionEnd"
     static let embeddedButtonId = "buttonIdentifier"
@@ -316,6 +317,12 @@ enum JsonKey {
     enum Embedded {
         static let packageName = "packageName"
         static let sdkVersion = "SDKVersion"
+        
+        enum Session {
+            static let id = "id"
+            static let start = "start"
+            static let end = "end"
+        }
     }
     
     enum Header {
