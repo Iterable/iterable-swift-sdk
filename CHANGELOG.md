@@ -6,6 +6,8 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [6.6.3]
 
+- Fixed an issue with In-App Messages where JWT Tokens were not being refreshed after tokens got invalidated.
+
 ## [6.6.2]
 
 - Reverted a change to the deeplinking redirect flow introduced in 6.5.13 that caused link redirection issues for some users
