@@ -21,7 +21,7 @@ extension IterableError: LocalizedError {
 // either there is a success with result
 // or there is a failure with error
 // There is no way to set value a result in this class.
-class Pending<Value, Failure> where Failure: Error {
+public class Pending<Value, Failure> where Failure: Error {
     fileprivate var successCallbacks = [(Value) -> Void]()
     fileprivate var errorCallbacks = [(Failure) -> Void]()
     
@@ -98,8 +98,8 @@ class Pending<Value, Failure> where Failure: Error {
 }
 
 // need this class for testing failure
-class FailPending<Value, Failure: Error>: Pending<Value, Failure> {
-    init(error: Failure) {
+public class FailPending<Value, Failure: Error>: Pending<Value, Failure> {
+    public init(error: Failure) {
         super.init()
         self.result = .failure(error)
     }
@@ -194,7 +194,7 @@ extension Pending where Failure == Never {
 }
 
 // This class takes the responsibility of setting value for Pending
-class Fulfill<Value, Failure>: Pending<Value, Failure> where Failure: Error {
+public class Fulfill<Value, Failure>: Pending<Value, Failure> where Failure: Error {
     public init(value: Value? = nil) {
         ITBDebug()
         super.init()
