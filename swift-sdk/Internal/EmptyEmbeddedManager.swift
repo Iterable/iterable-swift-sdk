@@ -25,6 +25,10 @@ class EmptyEmbeddedManager: IterableInternalEmbeddedManagerProtocol {
         
     }
     
+    func syncMessages(onSuccess: OnSuccessHandler?, onFailure: OnFailureHandler?) {
+        onFailure?("Embedded messaging disabled", nil)
+    }
+    
     public func handleEmbeddedClick(message: IterableEmbeddedMessage, buttonIdentifier: String?, clickedUrl: String) {
 
     }

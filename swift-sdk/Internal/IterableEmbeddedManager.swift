@@ -249,4 +249,33 @@ extension IterableEmbeddedManager: EmbeddedNotifiable {
             retrieveEmbeddedMessages(completion: completion)
         }
     }
+    
+    public func syncMessages(onSuccess: OnSuccessHandler?, onFailure: OnFailureHandler?) {
+        guard enableEmbeddedMessaging else {
+            onFailure?("Embedded messaging not enabled", nil)
+            return
+        }
+        
+        apiClient.getEmbeddedMessages()
+            .onCompletion(
+                receiveValue: { [weak self] payload in
+                    guard let self = self else { return }
+                    var dict: [Int: [IterableEmbeddedMessage]] = [:]
+                    for placement in payload.placements {
+                        dict[placement.placementId!] = placement.embeddedMessages
+                    }
+                    let processor = EmbeddedMessagingProcessor(currentMessages: self.messages, fetchedMessages: dict)
+                    self.setMessages(processor)
+                    self.trackNewlyRetrieved(processor)
+                    self.notifyUpdateDelegates(processor)
+                    onSuccess?(nil)
+                },
+                receiveError: { [weak self] error in
+                    if error.reason == "SUBSCRIPTION_INACTIVE" || error.reason == "Invalid API Key" {
+                        self?.notifyDelegatesOfInvalidApiKeyOrSyncStop()
+                    }
+                    onFailure?(error.reason, error.data)
+                }
+            )
+    }
 }
