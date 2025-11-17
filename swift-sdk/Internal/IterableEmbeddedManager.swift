@@ -252,6 +252,7 @@ extension IterableEmbeddedManager: EmbeddedNotifiable {
     
     public func syncMessages(onSuccess: OnSuccessHandler?, onFailure: OnFailureHandler?) {
         guard enableEmbeddedMessaging else {
+            ITBError("Embedded messaging sync failed: not enabled")
             onFailure?("Embedded messaging not enabled", nil)
             return
         }
@@ -268,12 +269,14 @@ extension IterableEmbeddedManager: EmbeddedNotifiable {
                     self.setMessages(processor)
                     self.trackNewlyRetrieved(processor)
                     self.notifyUpdateDelegates(processor)
+                    ITBInfo("Embedded messages sync succeeded")
                     onSuccess?(nil)
                 },
                 receiveError: { [weak self] error in
                     if error.reason == "SUBSCRIPTION_INACTIVE" || error.reason == "Invalid API Key" {
                         self?.notifyDelegatesOfInvalidApiKeyOrSyncStop()
                     }
+                    ITBError("Embedded messages sync failed: \(error.reason ?? "unknown")")
                     onFailure?(error.reason, error.data)
                 }
             )
