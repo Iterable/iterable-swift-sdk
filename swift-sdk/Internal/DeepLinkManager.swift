@@ -69,17 +69,28 @@ class DeepLinkManager: NSObject {
         
         if isIterableDeepLink(appLinkURL.absoluteString) {
             redirectUrlSession.makeDataRequest(with: appLinkURL) { [unowned self] _, _, error in
-                if let error = error {
-                    ITBError("error: \(error.localizedDescription)")
-                    fulfill.resolve(with: (nil, nil))
-                } else {
+                // Check if we successfully captured redirect data FIRST
+                // The delegate callback happens before the error, so deepLinkLocation
+                // may be set even if we get NSURLErrorTimedOut (-1001) or 
+                // NSURLErrorCancelled (-999) from cancelling the redirect
+                if self.deepLinkLocation != nil {
+                    // We successfully intercepted the redirect
                     if let deepLinkCampaignId = self.deepLinkCampaignId,
                         let deepLinkTemplateId = self.deepLinkTemplateId,
                         let deepLinkMessageId = self.deepLinkMessageId {
                         fulfill.resolve(with: (self.deepLinkLocation, IterableAttributionInfo(campaignId: deepLinkCampaignId, templateId: deepLinkTemplateId, messageId: deepLinkMessageId)))
                     } else {
+                        // We have location but missing attribution cookies
+                        // This is still a success case - user can navigate to the deep link
                         fulfill.resolve(with: (self.deepLinkLocation, nil))
                     }
+                } else if let error = error {
+                    // Only treat as error if we didn't capture the redirect location
+                    ITBError("error: \(error.localizedDescription)")
+                    fulfill.resolve(with: (nil, nil))
+                } else {
+                    // No redirect, no error - shouldn't happen but handle gracefully
+                    fulfill.resolve(with: (nil, nil))
                 }
             }
         } else {
