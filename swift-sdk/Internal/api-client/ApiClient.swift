@@ -84,7 +84,10 @@ class ApiClient {
     
     func send(iterableRequest: IterableRequest) -> Pending<SendRequestValue, SendRequestError> {
         guard let urlRequest = convertToURLRequest(iterableRequest: iterableRequest) else {
-            return SendRequestError.createErroredFuture()
+            let path = iterableRequest.getPath()
+            let errorMessage = "Failed to create URL request for endpoint: '\(endpoint)', path: '\(path)'"
+            ITBError(errorMessage)
+            return SendRequestError.createErroredFuture(reason: errorMessage)
         }
         
         return RequestSender.sendRequest(urlRequest, usingSession: networkSession)
@@ -92,7 +95,10 @@ class ApiClient {
     
     func sendWithoutCreatedAt(iterableRequest: IterableRequest) -> Pending<SendRequestValue, SendRequestError> {
         guard let urlRequest = convertToURLRequestWithoutCreatedAt(iterableRequest: iterableRequest) else {
-            return SendRequestError.createErroredFuture()
+            let path = iterableRequest.getPath()
+            let errorMessage = "Failed to create URL request for endpoint: '\(endpoint)', path: '\(path)'"
+            ITBError(errorMessage)
+            return SendRequestError.createErroredFuture(reason: errorMessage)
         }
         
         return RequestSender.sendRequest(urlRequest, usingSession: networkSession)
@@ -100,7 +106,10 @@ class ApiClient {
     
     func send<T>(iterableRequest: IterableRequest) -> Pending<T, SendRequestError> where T: Decodable {
         guard let urlRequest = convertToURLRequest(iterableRequest: iterableRequest) else {
-            return SendRequestError.createErroredFuture()
+            let path = iterableRequest.getPath()
+            let errorMessage = "Failed to create URL request for endpoint: '\(endpoint)', path: '\(path)'"
+            ITBError(errorMessage)
+            return SendRequestError.createErroredFuture(reason: errorMessage)
         }
         
         return RequestSender.sendRequest(urlRequest, usingSession: networkSession)
