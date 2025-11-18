@@ -22,7 +22,11 @@ struct IterableAPICallTaskProcessor: IterableTaskProcessor {
         let iterableRequest = decodedIterableRequest.addingCreatedAt(task.scheduledAt)
         
         guard let urlRequest = iterableRequest.convertToURLRequest(sentAt: dateProvider.currentDate, processorType: .offline) else {
-            return IterableTaskError.createErroredFuture(reason: "could not convert to url request")
+            let endpoint = decodedIterableRequest.endpoint
+            let path = decodedIterableRequest.getPath()
+            let errorMessage = "Could not convert to URL request - endpoint: '\(endpoint)', path: '\(path)'"
+            ITBError(errorMessage)
+            return IterableTaskError.createErroredFuture(reason: errorMessage)
         }
         
         let result = Fulfill<IterableTaskResult, IterableTaskError>()
