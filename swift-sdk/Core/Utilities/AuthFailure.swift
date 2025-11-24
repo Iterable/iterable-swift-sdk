@@ -7,7 +7,7 @@
 //
 
 import Foundation
-@objc public class AuthFailure: NSObject {
+@objcMembers public class AuthFailure: NSObject {
 
     /// userId or email of the signed-in user
     public let userKey: String?
