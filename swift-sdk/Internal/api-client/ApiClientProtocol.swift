@@ -62,6 +62,8 @@ protocol ApiClientProtocol: AnyObject {
     
     func getEmbeddedMessages() -> Pending<PlacementsPayload, SendRequestError>
     
+    func getEmbeddedMessages(placementIds: [Int]?) -> Pending<PlacementsPayload, SendRequestError>
+    
     @discardableResult func track(embeddedMessageReceived message: IterableEmbeddedMessage) -> Pending<SendRequestValue, SendRequestError>
     
     @discardableResult func track(embeddedMessageClick message: IterableEmbeddedMessage, buttonIdentifier: String?, clickedUrl: String) -> Pending<SendRequestValue, SendRequestError>

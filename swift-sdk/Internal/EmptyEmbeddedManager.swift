@@ -25,6 +25,10 @@ class EmptyEmbeddedManager: IterableInternalEmbeddedManagerProtocol {
         
     }
     
+    func syncMessages(placementIds: [Int]?, completion: @escaping () -> Void) {
+        
+    }
+    
     public func handleEmbeddedClick(message: IterableEmbeddedMessage, buttonIdentifier: String?, clickedUrl: String) {
 
     }
