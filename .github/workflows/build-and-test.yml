@@ -1,6 +1,10 @@
 name: Build and test
 
-on: pull_request
+on:
+  pull_request:
+  push:
+    branches:
+      - master
 
 jobs:
   run-tests-job:
@@ -194,11 +198,12 @@ jobs:
               }
             });
 
-      - name: CocoaPods lint
-        run: pod lib lint --allow-warnings
-
       - name: Upload coverage report to codecov.io
+        if: success() || failure()
         uses: codecov/codecov-action@v4.1.0
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
           slug: Iterable/iterable-swift-sdk
+
+      - name: CocoaPods lint
+        run: pod lib lint --allow-warnings
