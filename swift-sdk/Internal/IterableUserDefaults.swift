@@ -170,6 +170,14 @@ class IterableUserDefaults {
         }
     }
     
+    var networkLoggingEnabled: Bool {
+        get {
+            bool(withKey: .networkLoggingEnabled)
+        } set {
+            save(bool: newValue, withKey: .networkLoggingEnabled)
+        }
+    }
+    
     func getAttributionInfo(currentDate: Date) -> IterableAttributionInfo? {
         (try? codable(withKey: .attributionInfo, currentDate: currentDate)) ?? nil
     }
@@ -346,6 +354,7 @@ class IterableUserDefaults {
 
         static let isNotificationsEnabled = UserDefaultsKey(value: Const.UserDefault.isNotificationsEnabled)
         static let hasStoredNotificationSetting = UserDefaultsKey(value: Const.UserDefault.hasStoredNotificationSetting)
+        static let networkLoggingEnabled = UserDefaultsKey(value: Const.UserDefault.networkLoggingEnabled)
     }
     private struct Envelope: Codable {
         let payload: Data

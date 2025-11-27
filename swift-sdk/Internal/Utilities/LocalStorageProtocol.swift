@@ -37,6 +37,8 @@ protocol LocalStorageProtocol {
     
     var hasStoredNotificationSetting: Bool { get set }
     
+    var networkLoggingEnabled: Bool { get set }
+    
     func getAttributionInfo(currentDate: Date) -> IterableAttributionInfo?
     
     func save(attributionInfo: IterableAttributionInfo?, withExpiration expiration: Date?)

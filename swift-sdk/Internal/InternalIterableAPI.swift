@@ -1006,6 +1006,7 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
         networkSession = dependencyContainer.networkSession
         notificationStateProvider = dependencyContainer.notificationStateProvider
         localStorage = dependencyContainer.localStorage
+        NetworkHelper.isNetworkLoggingEnabled = localStorage.networkLoggingEnabled
         inAppDisplayer = dependencyContainer.inAppDisplayer
         urlOpener = dependencyContainer.urlOpener
         notificationCenter = dependencyContainer.notificationCenter
@@ -1159,6 +1160,12 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
         requestHandler.getRemoteConfiguration().onSuccess { remoteConfiguration in
             self.localStorage.offlineMode = remoteConfiguration.offlineMode
             self.requestHandler.offlineMode = remoteConfiguration.offlineMode
+            
+            if let enableNetworkLogging = remoteConfiguration.enableNetworkLogging {
+                self.localStorage.networkLoggingEnabled = enableNetworkLogging
+                NetworkHelper.isNetworkLoggingEnabled = enableNetworkLogging
+            }
+            
             ITBInfo("setting offlineMode: \(self.requestHandler.offlineMode)")
         }.onError { error in
             let offlineMode = self.requestHandler.offlineMode

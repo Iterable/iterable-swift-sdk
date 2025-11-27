@@ -707,7 +707,7 @@ class RequestHandlerTests: XCTestCase {
     
     func testGetRemoteConfiguration() throws {
         let expectation1 = expectation(description: #function)
-        let expectedRemoteConfiguration = RemoteConfiguration(offlineMode: true)
+        let expectedRemoteConfiguration = RemoteConfiguration(offlineMode: true, enableNetworkLogging: nil)
         let data = try JSONEncoder().encode(expectedRemoteConfiguration)
         let notificationCenter = MockNotificationCenter()
         let networkSession = MockNetworkSession(statusCode: 200, data: data)
@@ -730,6 +730,52 @@ class RequestHandlerTests: XCTestCase {
             expectation1.fulfill()
         }
         wait(for: [expectation1], timeout: testExpectationTimeout)
+    }
+    
+    func testGetRemoteConfigurationWithNetworkLogging() throws {
+        let expectation1 = expectation(description: #function)
+        let expectedRemoteConfiguration = RemoteConfiguration(offlineMode: false, enableNetworkLogging: true)
+        let data = try JSONEncoder().encode(expectedRemoteConfiguration)
+        let notificationCenter = MockNotificationCenter()
+        let networkSession = MockNetworkSession(statusCode: 200, data: data)
+        
+        let requestHandler = createRequestHandler(networkSession: networkSession,
+                                                  notificationCenter: notificationCenter,
+                                                  selectOffline: false)
+        requestHandler.getRemoteConfiguration().onSuccess { remoteConfiguration in
+            XCTAssertEqual(remoteConfiguration, expectedRemoteConfiguration)
+            XCTAssertEqual(remoteConfiguration.enableNetworkLogging, true)
+            expectation1.fulfill()
+        }
+        wait(for: [expectation1], timeout: testExpectationTimeout)
+    }
+    
+    func testFeatureFlagTurnOnNetworkLogging() throws {
+        let expectation1 = expectation(description: "getRemoteConfiguration is called")
+        let remoteConfigurationData = """
+        {
+            "offlineMode": false,
+            "enableNetworkLogging": true
+        }
+        """.data(using: .utf8)!
+        var mapper = [String: Data?]()
+        mapper["getRemoteConfiguration"] = remoteConfigurationData
+        let networkSession = MockNetworkSession(statusCode: 200, urlPatternDataMapping: mapper)
+        networkSession.requestCallback = { request in
+            if request.url!.absoluteString.contains(Const.Path.getRemoteConfiguration) {
+                expectation1.fulfill()
+            }
+        }
+        let localStorage = MockLocalStorage()
+        localStorage.email = "user@example.com"
+        _ = InternalIterableAPI.initializeForTesting(networkSession: networkSession, localStorage: localStorage)
+        wait(for: [expectation1], timeout: testExpectationTimeout)
+        
+        // Check if NetworkHelper flag is set
+        XCTAssertTrue(NetworkHelper.isNetworkLoggingEnabled)
+        
+        // Reset it back
+        NetworkHelper.isNetworkLoggingEnabled = false
     }
     
     func testCreatedAtSentAtForOffline() throws {

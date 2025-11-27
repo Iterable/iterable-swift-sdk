@@ -140,6 +140,14 @@ struct LocalStorage: LocalStorageProtocol {
         }
     }
     
+    var networkLoggingEnabled: Bool {
+        get {
+            iterableUserDefaults.networkLoggingEnabled
+        } set {
+            iterableUserDefaults.networkLoggingEnabled = newValue
+        }
+    }
+    
     func getAttributionInfo(currentDate: Date) -> IterableAttributionInfo? {
         iterableUserDefaults.getAttributionInfo(currentDate: currentDate)
     }
