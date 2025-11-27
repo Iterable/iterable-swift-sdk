@@ -6,6 +6,10 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [6.6.4]
 
+- Fixed Carthage builds on Xcode 26 and Swift version 6.2.
+- Fixed Objective-C compatability issue with the `AuthFailure` class
+- Fixed Embedded Messages impressions analytics bug
+
 ## [6.6.3]
 
 - Fixed an issue with In-App Messages where JWT Tokens were not being refreshed after tokens got invalidated.
