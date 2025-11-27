@@ -2,6 +2,7 @@
 
 A complete testing framework that validates your Iterable Swift SDK integration locally on your Mac before deploying to production.
 
+
 ## 🎯 What This Does
 
 This testing framework helps you verify that your iOS app correctly integrates with Iterable's marketing platform by testing:
