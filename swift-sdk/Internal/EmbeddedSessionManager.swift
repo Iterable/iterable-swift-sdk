@@ -22,26 +22,29 @@ public class EmbeddedSessionManager {
     }
 
     public func endSession() {
-        guard session?.isActive == true else {
-            return
-        }
+        
         guard let session = session else {
             ITBError("No current session.")
+            return
+        }
+        
+        guard session.isActive == true else {
             return
         }
         
         for messageId in currentlyTrackingImpressions.keys {
             pauseImpression(messageId: messageId)
         }
+        
         session.embeddedSessionEnd = Date()
         updateDisplayDurations()
         
 
-        
         if session.impressions.isEmpty {
-                ITBInfo("No impressions in the session. Skipping tracking.")
-                return
-            }
+            ITBInfo("No impressions in the session. Skipping tracking.")
+            session.isActive = false
+            return
+        }
         
         for index in session.impressions.indices {
             let displayDuration = session.impressions[index].displayDuration
