@@ -4,6 +4,8 @@ All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 ## [Unreleased]
 
+## [6.6.4]
+
 ## [6.6.3]
 
 - Fixed an issue with In-App Messages where JWT Tokens were not being refreshed after tokens got invalidated.
