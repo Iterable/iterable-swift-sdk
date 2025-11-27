@@ -778,6 +778,82 @@ class RequestHandlerTests: XCTestCase {
         NetworkHelper.isNetworkLoggingEnabled = false
     }
     
+    func testNetworkLoggingActualLogs() throws {
+        // 1. Setup Mock Log Delegate
+        class MockLogDelegate: NSObject, IterableLogDelegate {
+            var loggedMessages: [String] = []
+            func log(level: LogLevel, message: String) {
+                loggedMessages.append(message)
+            }
+        }
+        let mockLogDelegate = MockLogDelegate()
+        IterableLogUtil.sharedInstance = IterableLogUtil(dateProvider: SystemDateProvider(), logDelegate: mockLogDelegate)
+        
+        // 2. Enable Network Logging
+        NetworkHelper.isNetworkLoggingEnabled = true
+        
+        // 3. Perform Request (Success)
+        let expectation1 = expectation(description: "Request success")
+        // Create a dummy JSON object to be returned as Data
+        let successData = try! JSONSerialization.data(withJSONObject: ["msg": "success"], options: [])
+        let networkSession = MockNetworkSession(statusCode: 200, data: successData)
+        
+        // Need to set up request callback to fulfill expectation when request completes
+        networkSession.requestCallback = { _ in
+            expectation1.fulfill()
+        }
+        
+        let requestHandler = createRequestHandler(networkSession: networkSession, notificationCenter: MockNotificationCenter(), selectOffline: false)
+        
+        requestHandler.track(event: "testEvent", dataFields: nil, onSuccess: nil, onFailure: nil)
+        
+        wait(for: [expectation1], timeout: testExpectationTimeout)
+        
+        // Wait a little for async logging dispatch
+        let loggingExpectation = expectation(description: "Logging wait")
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+            loggingExpectation.fulfill()
+        }
+        wait(for: [loggingExpectation], timeout: 1.0)
+        
+        // 4. Verify Logs for Success
+        // "sending request" and "successfully sent"
+        let successLogs = mockLogDelegate.loggedMessages.filter { $0.contains("sending request") || $0.contains("successfully sent") }
+        XCTAssertTrue(successLogs.count >= 2, "Should have logged request sending and success. Found: \(mockLogDelegate.loggedMessages)")
+        
+        // Clear logs for next test
+        mockLogDelegate.loggedMessages = []
+        
+        // 5. Perform Request (Failure/Retry)
+        let expectation2 = expectation(description: "Request failure")
+        // 500 status code triggers retry logic in NetworkHelper
+        let failureSession = MockNetworkSession(statusCode: 500, data: nil)
+        
+        // We expect it to fail eventually after retries
+        // The MockNetworkSession doesn't automatically retry, the NetworkHelper logic does.
+        // We need to wait for the final failure callback.
+        
+        let requestHandlerFailure = createRequestHandler(networkSession: failureSession, notificationCenter: MockNotificationCenter(), selectOffline: false)
+        
+        requestHandlerFailure.track(event: "testEventFail", dataFields: nil, onSuccess: nil, onFailure: { _, _ in
+            expectation2.fulfill()
+        })
+        
+        // Wait longer for retries
+        wait(for: [expectation2], timeout: testExpectationTimeout * 2)
+
+         // 6. Verify Logs for Failure
+         // Should see "retry attempt" and eventually "errored"
+         let retryLogs = mockLogDelegate.loggedMessages.filter { $0.contains("retry attempt") }
+         let errorLogs = mockLogDelegate.loggedMessages.filter { $0.contains("errored") }
+         
+         XCTAssertTrue(retryLogs.count > 0, "Should have logged retry attempts")
+         XCTAssertTrue(errorLogs.count > 0, "Should have logged final error")
+
+        // 7. Cleanup
+        NetworkHelper.isNetworkLoggingEnabled = false
+    }
+
     func testCreatedAtSentAtForOffline() throws {
         let expectation1 = expectation(description: #function)
         let date = Date().addingTimeInterval(-5000)
