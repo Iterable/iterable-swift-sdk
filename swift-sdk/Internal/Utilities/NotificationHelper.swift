@@ -9,7 +9,23 @@ import Foundation
 enum NotificationInfo {
     case silentPush(ITBLSilentPushNotificationInfo)
     case iterable(IterablePushNotificationMetadata)
+    case liveActivity(IterableLiveActivityMetadata)
     case other
+}
+
+struct IterableLiveActivityMetadata {
+    let vital: String
+    let duration: TimeInterval
+    let title: String
+    
+    static func parse(info: [String: Any]) -> IterableLiveActivityMetadata? {
+        guard let vital = info["vital"] as? String,
+              let duration = info["duration"] as? TimeInterval,
+              let title = info["title"] as? String else {
+            return nil
+        }
+        return IterableLiveActivityMetadata(vital: vital, duration: duration, title: title)
+    }
 }
 
 struct ITBLSilentPushNotificationInfo {
@@ -44,6 +60,11 @@ struct NotificationHelper {
             return .other
         }
         
+        if let liveActivityInfo = itblElement[Keys.liveActivity.rawValue] as? [String: Any],
+           let metadata = IterableLiveActivityMetadata.parse(info: liveActivityInfo) {
+            return .liveActivity(metadata)
+        }
+        
         if isGhostPush {
             if let silentPush = ITBLSilentPushNotificationInfo.parse(notification: notification) {
                 return .silentPush(silentPush)
@@ -66,6 +87,7 @@ struct NotificationHelper {
     private enum Keys: String {
         case itbl
         case isGhostPush
+        case liveActivity
     }
 }
 
