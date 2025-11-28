@@ -1,8 +1,7 @@
 ![Iterable logo](https://raw.githubusercontent.com/Iterable/swift-sdk/master/images/Iterable-Logo.png "Iterable Logo")
 
 [![License](https://img.shields.io/github/license/Iterable/swift-sdk)](https://opensource.org/licenses/MIT)
-[![Build Status](https://travis-ci.com/Iterable/swift-sdk.svg?branch=master)](https://travis-ci.com/Iterable/swift-sdk)
-[![codecov](https://codecov.io/gh/Iterable/swift-sdk/branch/master/graph/badge.svg)](https://codecov.io/gh/Iterable/swift-sdk)
+[![codecov](https://codecov.io/gh/Iterable/iterable-swift-sdk/branch/master/graph/badge.svg?token=0UoacOYS0G)](https://codecov.io/gh/Iterable/iterable-swift-sdk)
 [![pod](https://img.shields.io/cocoapods/v/Iterable-iOS-SDK)](https://cocoapods.org/pods/Iterable-iOS-SDK)
 [![Carthage compatible](https://img.shields.io/badge/Carthage-compatible-4BC51D.svg?style=flat)](https://github.com/Carthage/Carthage)
 
