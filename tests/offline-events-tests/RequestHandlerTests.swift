@@ -854,6 +854,53 @@ class RequestHandlerTests: XCTestCase {
         NetworkHelper.isNetworkLoggingEnabled = false
     }
 
+    func testNetworkLoggingGetRequest() throws {
+        // 1. Setup Mock Log Delegate
+        class MockLogDelegate: NSObject, IterableLogDelegate {
+            var loggedMessages: [String] = []
+            func log(level: LogLevel, message: String) {
+                loggedMessages.append(message)
+            }
+        }
+        let mockLogDelegate = MockLogDelegate()
+        IterableLogUtil.sharedInstance = IterableLogUtil(dateProvider: SystemDateProvider(), logDelegate: mockLogDelegate)
+        
+        // 2. Enable Network Logging
+        NetworkHelper.isNetworkLoggingEnabled = true
+        
+        // 3. Perform GET Request
+        let expectation1 = expectation(description: "GET Request success")
+        let networkSession = MockNetworkSession(statusCode: 200, data: "{}".data(using: .utf8)!)
+        
+        networkSession.requestCallback = { request in
+            expectation1.fulfill()
+        }
+        
+        let requestHandler = createRequestHandler(networkSession: networkSession, notificationCenter: MockNotificationCenter(), selectOffline: false)
+        
+        let _ = requestHandler.getRemoteConfiguration()
+        
+        wait(for: [expectation1], timeout: testExpectationTimeout)
+        
+        // Wait a little for async logging dispatch
+        let loggingExpectation = expectation(description: "Logging wait")
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+            loggingExpectation.fulfill()
+        }
+        wait(for: [loggingExpectation], timeout: 1.0)
+        
+        // 4. Verify Logs
+        // Should see "sending request" but NOT "request body"
+        let requestLogs = mockLogDelegate.loggedMessages.filter { $0.contains("sending request") }
+        let bodyLogs = mockLogDelegate.loggedMessages.filter { $0.contains("request body") }
+        
+        XCTAssertTrue(requestLogs.count > 0, "Should have logged request sending")
+        XCTAssertTrue(bodyLogs.count == 0, "Should NOT have logged body for GET request")
+        
+        // Cleanup
+        NetworkHelper.isNetworkLoggingEnabled = false
+    }
+
     func testCreatedAtSentAtForOffline() throws {
         let expectation1 = expectation(description: #function)
         let date = Date().addingTimeInterval(-5000)
