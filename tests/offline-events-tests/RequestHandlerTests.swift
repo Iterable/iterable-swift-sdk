@@ -707,7 +707,7 @@ class RequestHandlerTests: XCTestCase {
     
     func testGetRemoteConfiguration() throws {
         let expectation1 = expectation(description: #function)
-        let expectedRemoteConfiguration = RemoteConfiguration(offlineMode: true)
+        let expectedRemoteConfiguration = RemoteConfiguration(offlineMode: true, enableNetworkLogging: nil)
         let data = try JSONEncoder().encode(expectedRemoteConfiguration)
         let notificationCenter = MockNotificationCenter()
         let networkSession = MockNetworkSession(statusCode: 200, data: data)
@@ -732,6 +732,175 @@ class RequestHandlerTests: XCTestCase {
         wait(for: [expectation1], timeout: testExpectationTimeout)
     }
     
+    func testGetRemoteConfigurationWithNetworkLogging() throws {
+        let expectation1 = expectation(description: #function)
+        let expectedRemoteConfiguration = RemoteConfiguration(offlineMode: false, enableNetworkLogging: true)
+        let data = try JSONEncoder().encode(expectedRemoteConfiguration)
+        let notificationCenter = MockNotificationCenter()
+        let networkSession = MockNetworkSession(statusCode: 200, data: data)
+        
+        let requestHandler = createRequestHandler(networkSession: networkSession,
+                                                  notificationCenter: notificationCenter,
+                                                  selectOffline: false)
+        requestHandler.getRemoteConfiguration().onSuccess { remoteConfiguration in
+            XCTAssertEqual(remoteConfiguration, expectedRemoteConfiguration)
+            XCTAssertEqual(remoteConfiguration.enableNetworkLogging, true)
+            expectation1.fulfill()
+        }
+        wait(for: [expectation1], timeout: testExpectationTimeout)
+    }
+    
+    func testFeatureFlagTurnOnNetworkLogging() throws {
+        let expectation1 = expectation(description: "getRemoteConfiguration is called")
+        let remoteConfigurationData = """
+        {
+            "offlineMode": false,
+            "enableNetworkLogging": true
+        }
+        """.data(using: .utf8)!
+        var mapper = [String: Data?]()
+        mapper["getRemoteConfiguration"] = remoteConfigurationData
+        let networkSession = MockNetworkSession(statusCode: 200, urlPatternDataMapping: mapper)
+        networkSession.requestCallback = { request in
+            if request.url!.absoluteString.contains(Const.Path.getRemoteConfiguration) {
+                expectation1.fulfill()
+            }
+        }
+        let localStorage = MockLocalStorage()
+        localStorage.email = "user@example.com"
+        _ = InternalIterableAPI.initializeForTesting(networkSession: networkSession, localStorage: localStorage)
+        wait(for: [expectation1], timeout: testExpectationTimeout)
+        
+        // Check if NetworkHelper flag is set
+        XCTAssertTrue(NetworkHelper.isNetworkLoggingEnabled)
+        
+        // Reset it back
+        NetworkHelper.isNetworkLoggingEnabled = false
+    }
+    
+    func testNetworkLoggingActualLogs() throws {
+        // 1. Setup Mock Log Delegate
+        class MockLogDelegate: NSObject, IterableLogDelegate {
+            var loggedMessages: [String] = []
+            func log(level: LogLevel, message: String) {
+                loggedMessages.append(message)
+            }
+        }
+        let mockLogDelegate = MockLogDelegate()
+        IterableLogUtil.sharedInstance = IterableLogUtil(dateProvider: SystemDateProvider(), logDelegate: mockLogDelegate)
+        
+        // 2. Enable Network Logging
+        NetworkHelper.isNetworkLoggingEnabled = true
+        
+        // 3. Perform Request (Success)
+        let expectation1 = expectation(description: "Request success")
+        // Create a dummy JSON object to be returned as Data
+        let successData = try! JSONSerialization.data(withJSONObject: ["msg": "success"], options: [])
+        let networkSession = MockNetworkSession(statusCode: 200, data: successData)
+        
+        // Need to set up request callback to fulfill expectation when request completes
+        networkSession.requestCallback = { _ in
+            expectation1.fulfill()
+        }
+        
+        let requestHandler = createRequestHandler(networkSession: networkSession, notificationCenter: MockNotificationCenter(), selectOffline: false)
+        
+        requestHandler.track(event: "testEvent", dataFields: nil, onSuccess: nil, onFailure: nil)
+        
+        wait(for: [expectation1], timeout: testExpectationTimeout)
+        
+        // Wait a little for async logging dispatch
+        let loggingExpectation = expectation(description: "Logging wait")
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+            loggingExpectation.fulfill()
+        }
+        wait(for: [loggingExpectation], timeout: 1.0)
+        
+        // 4. Verify Logs for Success
+        // "sending request" and "successfully sent"
+        let successLogs = mockLogDelegate.loggedMessages.filter { $0.contains("sending request") || $0.contains("successfully sent") }
+        XCTAssertTrue(successLogs.count >= 2, "Should have logged request sending and success. Found: \(mockLogDelegate.loggedMessages)")
+        
+        // Clear logs for next test
+        mockLogDelegate.loggedMessages = []
+        
+        // 5. Perform Request (Failure/Retry)
+        let expectation2 = expectation(description: "Request failure")
+        // 500 status code triggers retry logic in NetworkHelper
+        let failureSession = MockNetworkSession(statusCode: 500, data: nil)
+        
+        // We expect it to fail eventually after retries
+        // The MockNetworkSession doesn't automatically retry, the NetworkHelper logic does.
+        // We need to wait for the final failure callback.
+        
+        let requestHandlerFailure = createRequestHandler(networkSession: failureSession, notificationCenter: MockNotificationCenter(), selectOffline: false)
+        
+        requestHandlerFailure.track(event: "testEventFail", dataFields: nil, onSuccess: nil, onFailure: { _, _ in
+            expectation2.fulfill()
+        })
+        
+        // Wait longer for retries
+        wait(for: [expectation2], timeout: testExpectationTimeout * 2)
+
+         // 6. Verify Logs for Failure
+         // Should see "retry attempt" and eventually "errored"
+         let retryLogs = mockLogDelegate.loggedMessages.filter { $0.contains("retry attempt") }
+         let errorLogs = mockLogDelegate.loggedMessages.filter { $0.contains("errored") }
+         
+         XCTAssertTrue(retryLogs.count > 0, "Should have logged retry attempts")
+         XCTAssertTrue(errorLogs.count > 0, "Should have logged final error")
+
+        // 7. Cleanup
+        NetworkHelper.isNetworkLoggingEnabled = false
+    }
+
+    func testNetworkLoggingGetRequest() throws {
+        // 1. Setup Mock Log Delegate
+        class MockLogDelegate: NSObject, IterableLogDelegate {
+            var loggedMessages: [String] = []
+            func log(level: LogLevel, message: String) {
+                loggedMessages.append(message)
+            }
+        }
+        let mockLogDelegate = MockLogDelegate()
+        IterableLogUtil.sharedInstance = IterableLogUtil(dateProvider: SystemDateProvider(), logDelegate: mockLogDelegate)
+        
+        // 2. Enable Network Logging
+        NetworkHelper.isNetworkLoggingEnabled = true
+        
+        // 3. Perform GET Request
+        let expectation1 = expectation(description: "GET Request success")
+        let networkSession = MockNetworkSession(statusCode: 200, data: "{}".data(using: .utf8)!)
+        
+        networkSession.requestCallback = { request in
+            expectation1.fulfill()
+        }
+        
+        let requestHandler = createRequestHandler(networkSession: networkSession, notificationCenter: MockNotificationCenter(), selectOffline: false)
+        
+        let _ = requestHandler.getRemoteConfiguration()
+        
+        wait(for: [expectation1], timeout: testExpectationTimeout)
+        
+        // Wait a little for async logging dispatch
+        let loggingExpectation = expectation(description: "Logging wait")
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+            loggingExpectation.fulfill()
+        }
+        wait(for: [loggingExpectation], timeout: 1.0)
+        
+        // 4. Verify Logs
+        // Should see "sending request" but NOT "request body"
+        let requestLogs = mockLogDelegate.loggedMessages.filter { $0.contains("sending request") }
+        let bodyLogs = mockLogDelegate.loggedMessages.filter { $0.contains("request body") }
+        
+        XCTAssertTrue(requestLogs.count > 0, "Should have logged request sending")
+        XCTAssertTrue(bodyLogs.count == 0, "Should NOT have logged body for GET request")
+        
+        // Cleanup
+        NetworkHelper.isNetworkLoggingEnabled = false
+    }
+
     func testCreatedAtSentAtForOffline() throws {
         let expectation1 = expectation(description: #function)
         let date = Date().addingTimeInterval(-5000)
