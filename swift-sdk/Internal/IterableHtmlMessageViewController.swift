@@ -356,7 +356,7 @@ extension IterableHtmlMessageViewController: WKNavigationDelegate {
     @available(iOS 13.0, *)
     func webView(_ webView: WKWebView, decidePolicyFor navigationAction: WKNavigationAction, preferences: WKWebpagePreferences, decisionHandler: @escaping (WKNavigationActionPolicy, WKWebpagePreferences) -> Void) {
         if #available(iOS 14.0, *) {
-            preferences.allowsContentJavaScript = false
+            preferences.allowsContentJavaScript = true
         }
         guard navigationAction.navigationType == .linkActivated, let url = navigationAction.request.url else {
             decisionHandler(.allow, preferences)
