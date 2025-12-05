@@ -147,7 +147,10 @@ struct InternalIterableAppIntegration {
     func application(_ application: ApplicationStateProviderProtocol, didReceiveRemoteNotification userInfo: [AnyHashable: Any], fetchCompletionHandler completionHandler: ((UIBackgroundFetchResult) -> Void)?) {
         ITBInfo()
         
-        if case let NotificationInfo.silentPush(silentPush) = NotificationHelper.inspect(notification: userInfo) {
+        let notificationInfo = NotificationHelper.inspect(notification: userInfo)
+        
+        switch notificationInfo {
+        case .silentPush(let silentPush):
             switch silentPush.notificationType {
             case .update:
                 _ = inAppNotifiable?.scheduleSync()
@@ -160,6 +163,15 @@ struct InternalIterableAppIntegration {
                     ITBError("messageId not found in 'remove' silent push")
                 }
             }
+        case .liveActivity(let metadata):
+            #if canImport(ActivityKit)
+            if #available(iOS 16.2, *) {
+                IterableLiveActivityManager.shared
+                    .startRunComparison(against: .alex, at: .normal)
+            }
+            #endif
+        case .iterable, .other:
+            break
         }
         
         completionHandler?(.noData)

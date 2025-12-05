@@ -429,6 +429,39 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
         register(token: token.hexString(), onSuccess: onSuccess, onFailure: onFailure)
     }
     
+    /// Register a Live Activity push token
+    /// This sends the token as a tracked event so it can be associated with the user profile
+    @available(iOS 16.1, *)
+    func registerLiveActivityToken(_ token: Data,
+                                   activityId: String,
+                                   onSuccess: OnSuccessHandler? = nil,
+                                   onFailure: OnFailureHandler? = nil) {
+        guard isEitherUserIdOrEmailSet() else {
+            let errorMessage = "Either userId or email must be set to register Live Activity token"
+            ITBError(errorMessage)
+            onFailure?(errorMessage, nil)
+            return
+        }
+        
+        let tokenString = token.hexString()
+        
+        // Track the Live Activity token registration as a custom event
+        // This allows the backend to associate the token with the user
+        let dataFields: [String: Any] = [
+            "liveActivityToken": tokenString,
+            "activityId": activityId,
+            "platform": "iOS",
+            "registeredAt": ISO8601DateFormatter().string(from: Date())
+        ]
+        
+        ITBInfo("Registering Live Activity token for activity: \(activityId)")
+        
+        track("liveActivityTokenRegistered",
+              dataFields: dataFields,
+              onSuccess: onSuccess,
+              onFailure: onFailure)
+    }
+    
     @discardableResult
     func disableDeviceForCurrentUser(withOnSuccess onSuccess: OnSuccessHandler? = nil,
                                      onFailure: OnFailureHandler? = nil) -> Pending<SendRequestValue, SendRequestError> {
