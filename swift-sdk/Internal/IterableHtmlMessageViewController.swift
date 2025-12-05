@@ -53,6 +53,19 @@ protocol MessageViewControllerDelegate: AnyObject {
     func messageDeinitialized()
 }
 
+/// Weak wrapper to avoid retain cycle with WKUserContentController
+private class WeakScriptMessageHandler: NSObject, WKScriptMessageHandler {
+    weak var delegate: WKScriptMessageHandler?
+    
+    init(delegate: WKScriptMessageHandler) {
+        self.delegate = delegate
+    }
+    
+    func userContentController(_ userContentController: WKUserContentController, didReceive message: WKScriptMessage) {
+        delegate?.userContentController(userContentController, didReceive: message)
+    }
+}
+
 class IterableHtmlMessageViewController: UIViewController, WKScriptMessageHandler {
     struct Parameters {
         let html: String
@@ -129,10 +142,8 @@ class IterableHtmlMessageViewController: UIViewController, WKScriptMessageHandle
         
         var html = parameters.html
         if let jsString = parameters.messageMetadata?.message.customPayload?["js"] as? String {
-            print("jsString: \(jsString)")
             html += "<script>\(jsString)</script>"
         }
-        
         webView.loadHTMLString(html, baseURL: URL(string: ""))
         webView.set(navigationDelegate: self)
         
@@ -202,6 +213,7 @@ class IterableHtmlMessageViewController: UIViewController, WKScriptMessageHandle
     
     deinit {
         ITBInfo()
+        webView.configuration.userContentController.removeScriptMessageHandler(forName: "textHandler")
         delegate?.messageDeinitialized()
     }
     
@@ -213,9 +225,11 @@ class IterableHtmlMessageViewController: UIViewController, WKScriptMessageHandle
     private var linkClicked = false
     private var clickedLink: String?
     
+    private lazy var scriptMessageHandler = WeakScriptMessageHandler(delegate: self)
+    
     private lazy var webView: WKWebView = {
         let contentController = WKUserContentController()
-        contentController.add(self, name: "textHandler")
+        contentController.add(scriptMessageHandler, name: "textHandler")
         
         let config = WKWebViewConfiguration()
         config.userContentController = contentController
