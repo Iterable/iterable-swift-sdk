@@ -53,7 +53,7 @@ protocol MessageViewControllerDelegate: AnyObject {
     func messageDeinitialized()
 }
 
-class IterableHtmlMessageViewController: UIViewController {
+class IterableHtmlMessageViewController: UIViewController, WKScriptMessageHandler {
     struct Parameters {
         let html: String
         let padding: Padding
@@ -128,7 +128,16 @@ class IterableHtmlMessageViewController: UIViewController {
         view.backgroundColor = InAppCalculations.initialViewBackgroundColor(isModal: parameters.isModal)
         
         webView.set(position: ViewPosition(width: view.frame.width, height: view.frame.height, center: view.center))
-        webView.loadHTMLString(parameters.html, baseURL: URL(string: ""))
+        if let wkWebView = webView.view as? WKWebView {
+            wkWebView.configuration.userContentController.add(self, name: "textHandler")
+        }
+        
+        var html = parameters.html
+        if let jsString = parameters.messageMetadata?.message.customPayload?["js"] as? String {
+            html += "<script>\(jsString)</script>"
+        }
+        
+        webView.loadHTMLString(html, baseURL: URL(string: ""))
         webView.set(navigationDelegate: self)
         
         view.addSubview(webView.view)
@@ -217,6 +226,8 @@ class IterableHtmlMessageViewController: UIViewController {
     private static func createWebView() -> WebViewProtocol {
         let webView = WKWebView(frame: .zero)
         webView.scrollView.bounces = false
+        webView.scrollView.delaysContentTouches = false
+        webView.isUserInteractionEnabled = true
         webView.isOpaque = false
         webView.backgroundColor = UIColor.clear
         return webView as WebViewProtocol
@@ -404,4 +415,10 @@ extension IterableHtmlMessageViewController: WKNavigationDelegate {
         }
     }
 
+}
+
+extension IterableHtmlMessageViewController {
+    func userContentController(_ userContentController: WKUserContentController, didReceive message: WKScriptMessage) {
+        print("userContentController Received: \(message.body)")
+    }
 }
