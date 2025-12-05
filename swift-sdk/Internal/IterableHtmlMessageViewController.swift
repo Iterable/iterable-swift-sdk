@@ -432,6 +432,34 @@ extension IterableHtmlMessageViewController: WKNavigationDelegate {
 
 extension IterableHtmlMessageViewController {
     func userContentController(_ userContentController: WKUserContentController, didReceive message: WKScriptMessage) {
-        print("userContentController Received: \(message.body)")
+        guard let messageString = message.body as? String else { return }
+        
+        let components = messageString
+            .lowercased()
+            .trimmingCharacters(in: .whitespaces)
+            .split(separator: "|")
+            .map { $0.trimmingCharacters(in: .whitespaces) }
+        
+        guard components.count == 2,
+              let runner = RunnerName.allCases.first(where: { $0.rawValue.lowercased() == components[0] }),
+              let pace = PaceLevel.allCases.first(where: { $0.rawValue.lowercased() == components[1] }) else {
+            ITBError("Failed to parse challenge message: \(messageString)")
+            return
+        }
+        
+        ITBInfo("Starting Live Activity: \(runner.rawValue) at \(pace.rawValue)")
+        
+        #if canImport(ActivityKit)
+        if #available(iOS 16.1, *) {
+            IterableLiveActivityManager.shared.startRunComparison(against: runner, at: pace)
+            IterableLiveActivityManager.shared.startMockUpdates(
+                activityId: IterableLiveActivityManager.shared.activeActivityIds.first ?? "",
+                updateInterval: 3.0
+            )
+        }
+        #endif
+        
+        // Dismiss the in-app view
+        animateWhileLeaving(webView.position)
     }
 }
