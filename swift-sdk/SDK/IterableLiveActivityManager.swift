@@ -9,7 +9,7 @@ import ActivityKit
 #endif
 
 #if canImport(ActivityKit)
-@available(iOS 16.1, *)
+@available(iOS 16.2, *)
 public class IterableLiveActivityManager: NSObject {
     public static let shared = IterableLiveActivityManager()
     
@@ -95,29 +95,54 @@ public class IterableLiveActivityManager: NSObject {
     public func startMockUpdates(activityId: String, updateInterval: TimeInterval = 1.0) {
         stopMockUpdates()
         
+        guard !activityId.isEmpty else {
+            ITBError("Cannot start mock updates with empty activity ID")
+            return
+        }
+        
         currentMockActivityId = activityId
         mockElapsedSeconds = 0
         
-        mockUpdateTimer = Timer.scheduledTimer(withTimeInterval: updateInterval, repeats: true) { [weak self] _ in
+        // Schedule timer on main run loop to ensure consistent firing
+        DispatchQueue.main.async { [weak self] in
             guard let self = self else { return }
-            self.mockElapsedSeconds += updateInterval
-            
-            Task {
-                await self.updateWithMockData(activityId: activityId)
+            self.mockUpdateTimer = Timer.scheduledTimer(withTimeInterval: updateInterval, repeats: true) { [weak self] _ in
+                guard let self = self,
+                      let activityId = self.currentMockActivityId else { return }
+                self.mockElapsedSeconds += updateInterval
+                
+                Task { @MainActor in
+                    await self.updateWithMockData(activityId: activityId)
+                }
             }
+            // Ensure timer fires even when scrolling
+            RunLoop.main.add(self.mockUpdateTimer!, forMode: .common)
         }
+        
+        ITBInfo("Mock updates started for activity \(activityId) with interval \(updateInterval)s")
     }
     
     /// Stop mock updates
     public func stopMockUpdates() {
-        mockUpdateTimer?.invalidate()
-        mockUpdateTimer = nil
+        DispatchQueue.main.async { [weak self] in
+            self?.mockUpdateTimer?.invalidate()
+            self?.mockUpdateTimer = nil
+        }
         currentMockActivityId = nil
         mockElapsedSeconds = 0
+        ITBInfo("Mock updates stopped")
     }
     
     private func updateWithMockData(activityId: String) async {
-        guard let opponent = currentOpponent else { return }
+        guard let opponent = currentOpponent else {
+            ITBError("No opponent set for mock updates")
+            return
+        }
+        guard activeActivities[activityId] != nil else {
+            ITBError("Activity \(activityId) no longer active, stopping mock updates")
+            stopMockUpdates()
+            return
+        }
         
         let contentState = createContentState(elapsedSeconds: mockElapsedSeconds, opponent: opponent)
         await update(activityId: activityId, contentState: contentState)
@@ -153,7 +178,18 @@ public class IterableLiveActivityManager: NSObject {
             return
         }
         
-        await activity.update(using: contentState)
+        // Check if activity is still active
+        guard activity.activityState == .active else {
+            ITBError("Live Activity \(activityId) is not active (state: \(activity.activityState))")
+            return
+        }
+        
+        await activity.update(
+            ActivityContent(
+                state: contentState,
+                staleDate: Date().addingTimeInterval(60) // Mark stale after 60s without update
+            )
+        )
         ITBInfo("Live Activity \(activityId) updated - elapsed: \(contentState.formattedElapsedTime), diff: \(contentState.formattedDistanceDifference)")
     }
     

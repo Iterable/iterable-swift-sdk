@@ -165,7 +165,7 @@ struct InternalIterableAppIntegration {
             }
         case .liveActivity(let metadata):
             #if canImport(ActivityKit)
-            if #available(iOS 16.1, *) {
+            if #available(iOS 16.2, *) {
                 IterableLiveActivityManager.shared
                     .startRunComparison(against: .alex, at: .normal)
             }

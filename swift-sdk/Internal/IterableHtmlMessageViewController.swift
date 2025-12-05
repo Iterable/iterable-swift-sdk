@@ -450,12 +450,10 @@ extension IterableHtmlMessageViewController {
         ITBInfo("Starting Live Activity: \(runner.rawValue) at \(pace.rawValue)")
         
         #if canImport(ActivityKit)
-        if #available(iOS 16.1, *) {
-            IterableLiveActivityManager.shared.startRunComparison(against: runner, at: pace)
-            IterableLiveActivityManager.shared.startMockUpdates(
-                activityId: IterableLiveActivityManager.shared.activeActivityIds.first ?? "",
-                updateInterval: 3.0
-            )
+        if #available(iOS 16.2, *) {
+            if let activityId = IterableLiveActivityManager.shared.startRunComparison(against: runner, at: pace) {
+                IterableLiveActivityManager.shared.startMockUpdates(activityId: activityId, updateInterval: 3.0)
+            }
         }
         #endif
         
