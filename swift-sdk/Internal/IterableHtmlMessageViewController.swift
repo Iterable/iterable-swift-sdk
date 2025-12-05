@@ -98,11 +98,9 @@ class IterableHtmlMessageViewController: UIViewController, WKScriptMessageHandle
     private init(parameters: Parameters,
                  eventTrackerProvider:  @escaping @autoclosure () -> MessageViewControllerEventTrackerProtocol?,
                  onClickCallback: ((URL) -> Void)?,
-                 webViewProvider: @escaping @autoclosure () -> WebViewProtocol = IterableHtmlMessageViewController.createWebView(),
                  delegate: MessageViewControllerDelegate?) {
         ITBInfo()
         self.eventTrackerProvider = eventTrackerProvider
-        self.webViewProvider = webViewProvider
         self.parameters = parameters
         self.onClickCallback = onClickCallback
         self.delegate = delegate
@@ -128,19 +126,17 @@ class IterableHtmlMessageViewController: UIViewController, WKScriptMessageHandle
         view.backgroundColor = InAppCalculations.initialViewBackgroundColor(isModal: parameters.isModal)
         
         webView.set(position: ViewPosition(width: view.frame.width, height: view.frame.height, center: view.center))
-        if let wkWebView = webView.view as? WKWebView {
-            wkWebView.configuration.userContentController.add(self, name: "textHandler")
-        }
         
         var html = parameters.html
         if let jsString = parameters.messageMetadata?.message.customPayload?["js"] as? String {
+            print("jsString: \(jsString)")
             html += "<script>\(jsString)</script>"
         }
         
         webView.loadHTMLString(html, baseURL: URL(string: ""))
         webView.set(navigationDelegate: self)
         
-        view.addSubview(webView.view)
+        view.addSubview(webView)
     }
     
     override func viewDidLoad() {
@@ -210,7 +206,6 @@ class IterableHtmlMessageViewController: UIViewController, WKScriptMessageHandle
     }
     
     private var eventTrackerProvider: () -> MessageViewControllerEventTrackerProtocol?
-    private var webViewProvider: () -> WebViewProtocol
     private var parameters: Parameters
     private var onClickCallback: ((URL) -> Void)?
     private var delegate: MessageViewControllerDelegate?
@@ -218,19 +213,23 @@ class IterableHtmlMessageViewController: UIViewController, WKScriptMessageHandle
     private var linkClicked = false
     private var clickedLink: String?
     
-    private lazy var webView = webViewProvider()
-    private var eventTracker: MessageViewControllerEventTrackerProtocol? {
-        eventTrackerProvider()
-    }
-    
-    private static func createWebView() -> WebViewProtocol {
-        let webView = WKWebView(frame: .zero)
+    private lazy var webView: WKWebView = {
+        let contentController = WKUserContentController()
+        contentController.add(self, name: "textHandler")
+        
+        let config = WKWebViewConfiguration()
+        config.userContentController = contentController
+        let webView = WKWebView(frame: .zero, configuration: config)
         webView.scrollView.bounces = false
         webView.scrollView.delaysContentTouches = false
         webView.isUserInteractionEnabled = true
         webView.isOpaque = false
         webView.backgroundColor = UIColor.clear
-        return webView as WebViewProtocol
+        return webView
+    }()
+    
+    private var eventTracker: MessageViewControllerEventTrackerProtocol? {
+        eventTrackerProvider()
     }
     
     /// Resizes the webview based upon the insetPadding, height etc
@@ -279,11 +278,11 @@ class IterableHtmlMessageViewController: UIViewController, WKScriptMessageHandle
     private func applyAnimation(animationDetail: InAppCalculations.AnimationDetail, completion: (() -> Void)? = nil) {
         Self.animate(duration: parameters.animationDuration) { [weak self] in
             self?.webView.set(position: animationDetail.initial.position)
-            self?.webView.view.alpha = animationDetail.initial.alpha
+            self?.webView.alpha = animationDetail.initial.alpha
             self?.view.backgroundColor = animationDetail.initial.bgColor
         } finalValues: { [weak self] in
             self?.webView.set(position: animationDetail.final.position)
-            self?.webView.view.alpha = animationDetail.final.alpha
+            self?.webView.alpha = animationDetail.final.alpha
             self?.view.backgroundColor = animationDetail.final.bgColor
         } completion: {
             completion?()
@@ -303,7 +302,7 @@ class IterableHtmlMessageViewController: UIViewController, WKScriptMessageHandle
         }
     }
 
-    static func calculateWebViewPosition(webView: WebViewProtocol,
+    static func calculateWebViewPosition(webView: WKWebView,
                                          safeAreaInsets: UIEdgeInsets,
                                          parentPosition: ViewPosition,
                                          paddingLeft: CGFloat,

@@ -11,21 +11,7 @@ struct ViewPosition: Equatable {
     var center: CGPoint = CGPoint.zero
 }
 
-protocol WebViewProtocol {
-    var view: UIView { get }
-    var position: ViewPosition { get }
-    @discardableResult func loadHTMLString(_ string: String, baseURL: URL?) -> WKNavigation?
-    func set(position: ViewPosition)
-    func set(navigationDelegate: WKNavigationDelegate?)
-    func layoutSubviews()
-    func calculateHeight() -> Pending<CGFloat, IterableError>
-}
-
-extension WKWebView: WebViewProtocol {
-    var view: UIView {
-        self
-    }
-    
+extension WKWebView {
     var position: ViewPosition {
         ViewPosition(width: frame.size.width, height: frame.size.height, center: center)
     }
