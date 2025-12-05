@@ -166,11 +166,8 @@ struct InternalIterableAppIntegration {
         case .liveActivity(let metadata):
             #if canImport(ActivityKit)
             if #available(iOS 16.1, *) {
-                IterableLiveActivityManager.shared.start(
-                    vital: metadata.vital,
-                    duration: metadata.duration,
-                    title: metadata.title
-                )
+                IterableLiveActivityManager.shared
+                    .startRunComparison(against: .alex, at: .normal)
             }
             #endif
         case .iterable, .other:
