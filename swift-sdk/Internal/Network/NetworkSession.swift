@@ -114,11 +114,13 @@ extension RedirectNetworkSession: URLSessionDelegate, URLSessionTaskDelegate {
         
         guard let headerFields = response.allHeaderFields as? [String: String] else {
             delegate?.onRedirect(deepLinkLocation: deepLinkLocation, campaignId: campaignId, templateId: templateId, messageId: messageId)
+            completionHandler(nil)
             return
         }
         
         guard let url = response.url else {
             delegate?.onRedirect(deepLinkLocation: deepLinkLocation, campaignId: campaignId, templateId: templateId, messageId: messageId)
+            completionHandler(nil)
             return
         }
         
