@@ -12,29 +12,34 @@ struct RequestProcessorUtil {
                             authManager: IterableAuthManagerProtocol? = nil,
                             requestIdentifier identifier: String) -> Pending<SendRequestValue, SendRequestError> {
         let result = Fulfill<SendRequestValue, SendRequestError>()
-        requestProvider().onSuccess { json in
-            resetAuthRetries(authManager: authManager, requestIdentifier: identifier)
-            reportSuccess(result: result, value: json, successHandler: onSuccess, identifier: identifier)
-        }
-        .onError { error in
-            if error.httpStatusCode == 401, matchesJWTErrorCode(error.iterableCode) {
-                ITBError("invalid JWT token, trying again: \(error.reason ?? "")")
-                authManager?.handleAuthFailure(failedAuthToken: authManager?.getAuthToken(), reason: getMappedErrorCodeForMessage(error.reason ?? ""))
-                authManager?.setIsLastAuthTokenValid(false)
-                let retryInterval = authManager?.getNextRetryInterval() ?? 1
-                DispatchQueue.main.async {
-                    authManager?.scheduleAuthTokenRefreshTimer(interval: retryInterval, isScheduledRefresh: false, successCallback: { _ in
-                        sendRequest(requestProvider: requestProvider, successHandler: onSuccess, failureHandler: onFailure, authManager: authManager, requestIdentifier: identifier)
-                    })
+
+        func attemptSend() {
+            requestProvider().onSuccess { json in
+                resetAuthRetries(authManager: authManager, requestIdentifier: identifier)
+                reportSuccess(result: result, value: json, successHandler: onSuccess, identifier: identifier)
+            }
+            .onError { error in
+                if error.httpStatusCode == 401, matchesJWTErrorCode(error.iterableCode) {
+                    ITBError("invalid JWT token, trying again: \(error.reason ?? "")")
+                    authManager?.handleAuthFailure(failedAuthToken: authManager?.getAuthToken(), reason: getMappedErrorCodeForMessage(error.reason ?? ""))
+                    authManager?.setIsLastAuthTokenValid(false)
+                    let retryInterval = authManager?.getNextRetryInterval() ?? 1
+                    DispatchQueue.main.async {
+                        authManager?.scheduleAuthTokenRefreshTimer(interval: retryInterval, isScheduledRefresh: false, successCallback: { _ in
+                            attemptSend()
+                        })
+                    }
+                } else if error.httpStatusCode == 401, error.iterableCode == JsonValue.Code.badApiKey {
+                    ITBError(error.reason)
+                    reportFailure(result: result, error: error, failureHandler: onFailure, identifier: identifier)
+                } else {
+                    ITBError(error.reason)
+                    reportFailure(result: result, error: error, failureHandler: onFailure, identifier: identifier)
                 }
-            } else if error.httpStatusCode == 401, error.iterableCode == JsonValue.Code.badApiKey {
-                ITBError(error.reason)
-                reportFailure(result: result, error: error, failureHandler: onFailure, identifier: identifier)
-            } else {
-                ITBError(error.reason)
-                reportFailure(result: result, error: error, failureHandler: onFailure, identifier: identifier)
             }
         }
+        
+        attemptSend()
         return result
     }
 
