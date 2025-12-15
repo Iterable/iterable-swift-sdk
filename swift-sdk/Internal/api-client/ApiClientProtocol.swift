@@ -60,7 +60,7 @@ protocol ApiClientProtocol: AnyObject {
     
     func trackConsent(consentTimestamp: Int64, email: String?, userId: String?, isUserKnown: Bool) -> Pending<SendRequestValue, SendRequestError>
     
-    func getEmbeddedMessages() -> Pending<PlacementsPayload, SendRequestError>
+    func getEmbeddedMessages(placementIds: [Int]?) -> Pending<PlacementsPayload, SendRequestError>
     
     @discardableResult func track(embeddedMessageReceived message: IterableEmbeddedMessage) -> Pending<SendRequestValue, SendRequestError>
     
@@ -71,4 +71,10 @@ protocol ApiClientProtocol: AnyObject {
     func track(embeddedMessageImpression message: IterableEmbeddedMessage) -> Pending<SendRequestValue, SendRequestError>
     
     @discardableResult func track(embeddedSession: IterableEmbeddedSession) -> Pending<SendRequestValue, SendRequestError>
+}
+
+extension ApiClientProtocol {
+    func getEmbeddedMessages() -> Pending<PlacementsPayload, SendRequestError> {
+        getEmbeddedMessages(placementIds: nil)
+    }
 }

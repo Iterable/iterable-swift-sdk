@@ -392,16 +392,19 @@ final class EmbeddedManagerTests: XCTestCase {
             invalidApiKey = true
         }
         
-        override func getEmbeddedMessages() -> IterableSDK.Pending<IterableSDK.PlacementsPayload, IterableSDK.SendRequestError> {
+        override func getEmbeddedMessages(placementIds: [Int]?) -> IterableSDK.Pending<IterableSDK.PlacementsPayload, IterableSDK.SendRequestError> {
             if invalidApiKey {
                 return FailPending(error: IterableSDK.SendRequestError(reason: "Invalid API Key"))
             }
             
             if newMessages {
                 var placements: [Placement] = []
+                let requested = Set(placementIds ?? [])
                 for (placementId, messages) in mockMessages {
-                    let placement = Placement(placementId: placementId, embeddedMessages: messages)
-                    placements.append(placement)
+                    if placementIds == nil || requested.contains(placementId) {
+                        let placement = Placement(placementId: placementId, embeddedMessages: messages)
+                        placements.append(placement)
+                    }
                 }
                 
                 let payload = PlacementsPayload(placements: placements)
