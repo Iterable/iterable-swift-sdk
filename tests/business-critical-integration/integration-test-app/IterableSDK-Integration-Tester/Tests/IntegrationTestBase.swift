@@ -727,7 +727,8 @@ class IntegrationTestBase: XCTestCase {
         XCTAssertTrue(statusFound, "\(description) - Expected 200 status code for \(endpoint)")
         
         // Additional validation: check that it's not an error status by looking for error codes
-        let errorStatusPredicate = NSPredicate(format: "label BEGINSWITH '4' OR label BEGINSWITH '5'")
+        // Use MATCHES to only match 3-digit status codes (4xx or 5xx), not timestamps like "4:08 PM"
+        let errorStatusPredicate = NSPredicate(format: "label MATCHES '^[45][0-9]{2}$'")
         let errorStatusLabel = endpointCell.staticTexts.containing(errorStatusPredicate).firstMatch
         XCTAssertFalse(errorStatusLabel.exists, "\(endpoint) should not have error status code (4xx/5xx)")
     }
