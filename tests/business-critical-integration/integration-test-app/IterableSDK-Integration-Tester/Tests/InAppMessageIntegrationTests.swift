@@ -73,7 +73,12 @@ class InAppMessageIntegrationTests: IntegrationTestBase {
             // Wait for button to be enabled before retapping
             if checkMessagesButton.isEnabled {
                 print("🔄 Retry \(retryCount + 1)/\(maxRetries): Tapping check-messages-button...")
-                checkMessagesButton.tap()
+                // Use coordinate tap to avoid scroll issues in CI
+                if checkMessagesButton.isHittable {
+                    checkMessagesButton.tap()
+                } else {
+                    checkMessagesButton.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.5)).tap()
+                }
                 retryCount += 1
                 
                 // Give time for network request to complete before checking again

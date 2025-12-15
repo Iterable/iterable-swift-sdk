@@ -648,8 +648,17 @@ class IntegrationTestBase: XCTestCase {
         // Open network monitor
         navigateToNetworkMonitor()
         
-        // Wait for network monitor to load
+        // Check if network monitor actually opened by looking for the navigation title
         let networkMonitorTitle = app.navigationBars["Network Monitor"]
+        if !networkMonitorTitle.waitForExistence(timeout: 3.0) {
+            print("⚠️ Network monitor didn't open, trying to tap network button again")
+            let networkButton = app.buttons["network-monitor-button"]
+            if networkButton.exists {
+                networkButton.tap()
+            }
+        }
+        
+        // Wait for network monitor to load
         XCTAssertTrue(networkMonitorTitle.waitForExistence(timeout: standardTimeout), "Network Monitor should be displayed")
         
         // Verify both critical API calls with 200 status codes
