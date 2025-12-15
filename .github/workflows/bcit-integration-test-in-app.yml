@@ -78,11 +78,11 @@ jobs:
           "${{ secrets.BCIT_ITERABLE_SERVER_KEY }}" \
           "${{ secrets.BCIT_ITERABLE_API_KEY }}"
 
-    # - name: Validate Setup
-    #   working-directory: tests/business-critical-integration
-    #   run: |
-    #     echo "🔍 Validating environment setup..."
-    #     ./scripts/validate-setup.sh
+    - name: Validate Setup
+      working-directory: tests/business-critical-integration
+      run: |
+        echo "🔍 Validating environment setup..."
+        ./scripts/validate-setup.sh
 
     - name: Run In App Messaging Tests
       working-directory: tests/business-critical-integration
