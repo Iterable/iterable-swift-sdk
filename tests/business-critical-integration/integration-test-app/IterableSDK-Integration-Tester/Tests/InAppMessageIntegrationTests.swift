@@ -506,87 +506,12 @@ class InAppMessageIntegrationTests: IntegrationTestBase {
         /*##########################################################################################
          
          Test Custom Action Deeplink rules:
-             1. trigger Deep Link Push Campaign
-             2. Dismiss confirmation
-             3. Wait for in app
-             4. Tap on Custom Action
-             5. Validate that Deep link custom Action popup shows
-         
-         NOTE: Skipped in CI as this re-tests the same campaign (15231325) already validated above,
-               and message queue/caching causes timeouts in CI environment
+             NOTE: Skipped - this re-tests the same campaign (15231325) already validated above.
+                   Custom action handling is covered by the earlier deep link test.
          
         ##########################################################################################*/
         
-        if !isRunningInCI {
-            // Step 1: Trigger TestView campaign (15231325)
-            triggerTestViewButton = app.buttons["trigger-testview-in-app-button"]
-            triggerTestViewButton.tap()
-            //screenshotCapture.captureScreenshot(named: "02-testview-campaign-triggered")
-            
-            // Handle success alert
-            if app.alerts["Success"].waitForExistence(timeout: standardTimeout) {
-                app.alerts["Success"].buttons["OK"].tap()
-            }
-            
-            // Tap "Check for Messages" to fetch and show the in-app
-            checkMessagesButton.tap()
-            //screenshotCapture.captureScreenshot(named: "02b-check-messages-tapped")
-            
-            // Step 2: Wait for in-app message to display with smart retry
-            print("⏳ Waiting for Custom Action in-app message...")
-            webView = app.descendants(matching: .webView).element(boundBy: 0)
-            
-            // Smart retry: wait for button to be ready, then tap with delay
-            retryCount = 0
-            while !webView.exists && retryCount < maxRetries {
-                // Wait for button to be enabled before retapping
-                if checkMessagesButton.isEnabled {
-                    print("🔄 Retry \(retryCount + 1)/\(maxRetries): Tapping check-messages-button...")
-                    checkMessagesButton.tap()
-                    retryCount += 1
-                    
-                    // Give time for network request to complete before checking again
-                    sleep(2)
-                } else {
-                    print("⏸️ Button not enabled, waiting...")
-                    sleep(1)
-                }
-            }
-            
-            XCTAssertTrue(
-                webView.waitForExistence(timeout: 5),
-                "In-app message should appear after retries"
-            )
-            //screenshotCapture.captureScreenshot(named: "03-testview-inapp-displayed")
-            
-            // Step 3: Wait for webView content to be accessible and tap "Custom Action" link
-            print("👆 Waiting for 'Custom Action' link to become accessible in webView...")
-            XCTAssertTrue(
-                waitForWebViewLink(linkText: "Custom Action", timeout: standardTimeout),
-                "Custom Action link should be accessible in the in-app message"
-            )
-            
-            if app.links["Custom Action"].waitForExistence(timeout: standardTimeout) {
-                app.links["Custom Action"].tap()
-            }
-            
-            // Step 4: Wait for in-app message to dismiss completely
-            print("⏳ Waiting for in-app message to dismiss...")
-            webViewGone = NSPredicate(format: "exists == false")
-            webViewExpectation = expectation(for: webViewGone, evaluatedWith: webView, handler: nil)
-            wait(for: [webViewExpectation], timeout: standardTimeout)
-            print("✅ In-app message dismissed")
-            //screenshotCapture.captureScreenshot(named: "04b-inapp-dismissed")
-            
-            // Handle success alert: "Success - Deep link push notification sent successfully! Campaign ID: 14695444"
-            
-            // Handle success alert
-            if app.alerts["Custom Action"].waitForExistence(timeout: standardTimeout) {
-                app.alerts["Custom Action"].buttons["OK"].tap()
-            }
-        } else {
-            print("ℹ️ CI Environment: Skipping redundant Custom Action test (campaign 15231325 already tested)")
-        }
+        print("ℹ️ Skipping redundant Custom Action test (campaign 15231325 already validated)")
         
         //##########################################################################################
         print("")
