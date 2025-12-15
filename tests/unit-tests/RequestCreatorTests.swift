@@ -177,6 +177,51 @@ class RequestCreatorTests: XCTestCase {
         XCTAssertEqual(args[JsonKey.InApp.count], inAppMessageRequestCount.stringValue)
         XCTAssertEqual(args[JsonKey.systemVersion], UIDevice.current.systemVersion)
     }
+
+    func testGetEmbeddedMessagesRequestFailure() {
+        let auth = Auth(userId: nil, email: nil, authToken: nil, userIdUnknownUser: nil)
+        let requestCreator = RequestCreator(auth: auth, deviceMetadata: deviceMetadata)
+        
+        let failingRequest = requestCreator.createGetEmbeddedMessagesRequest(placementIds: nil)
+        
+        if let _ = try? failingRequest.get() {
+            XCTFail("request succeeded despite userId and email being nil")
+        }
+    }
+    
+    func testGetEmbeddedMessagesRequest() {
+        let request = createRequestCreator().createGetEmbeddedMessagesRequest(placementIds: nil)
+        let urlRequest = convertToUrlRequest(request)
+        
+        TestUtils.validateHeader(urlRequest, apiKey)
+        TestUtils.validate(request: urlRequest, requestType: .get, apiEndPoint: Endpoint.api, path: Const.Path.getEmbeddedMessages)
+        
+        guard case let .success(.get(getRequest)) = request, let args = getRequest.args else {
+            XCTFail("could not unwrap to a get request and its arguments")
+            return
+        }
+        
+        XCTAssertEqual(args[JsonKey.email], auth.email)
+        XCTAssertEqual(args[JsonKey.Embedded.packageName], Bundle.main.appPackageName)
+        XCTAssertEqual(args[JsonKey.systemVersion], UIDevice.current.systemVersion)
+        XCTAssertNil(args[JsonKey.Embedded.placementIds])
+    }
+    
+    func testGetEmbeddedMessagesRequestWithPlacementIds() {
+        let request = createRequestCreator().createGetEmbeddedMessagesRequest(placementIds: [1, 2, 3])
+        let urlRequest = convertToUrlRequest(request)
+        
+        TestUtils.validateHeader(urlRequest, apiKey)
+        TestUtils.validate(request: urlRequest, requestType: .get, apiEndPoint: Endpoint.api, path: Const.Path.getEmbeddedMessages)
+        
+        guard case let .success(.get(getRequest)) = request, let args = getRequest.args else {
+            XCTFail("could not unwrap to a get request and its arguments")
+            return
+        }
+        
+        XCTAssertEqual(args[JsonKey.email], auth.email)
+        XCTAssertEqual(args[JsonKey.Embedded.placementIds], "1,2,3")
+    }
     
     func testTrackEventRequest() {
         let eventName = "dsfsdf"

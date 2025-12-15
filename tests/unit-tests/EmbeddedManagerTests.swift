@@ -109,6 +109,33 @@ final class EmbeddedManagerTests: XCTestCase {
         
         wait(for: [syncMessagesExpectation, delegateExpectation, syncSuccessExpectation], timeout: 2)
     }
+
+    func testSyncMessagesWithPlacementIdsDoesNotClearOtherPlacements() {
+        let mockApiClient = MockApiClient()
+        mockApiClient.populateMessages([
+            1: [IterableEmbeddedMessage(messageId: "1a", placementId: 1)],
+            2: [IterableEmbeddedMessage(messageId: "2a", placementId: 2)],
+        ])
+        
+        let manager = IterableEmbeddedManager(apiClient: mockApiClient,
+                                              urlDelegate: nil,
+                                              customActionDelegate: nil,
+                                              urlOpener: MockUrlOpener(),
+                                              allowedProtocols: [],
+                                              enableEmbeddedMessaging: true)
+        
+        manager.syncMessages { }
+        XCTAssertEqual(manager.getMessages(for: 2).map { $0.metadata.messageId }, ["2a"])
+        
+        // Update only placement 1 on the "server", then request only that placement.
+        mockApiClient.populateMessages([
+            1: [IterableEmbeddedMessage(messageId: "1b", placementId: 1)],
+        ])
+        manager.syncMessages(placementIds: [1]) { }
+        
+        XCTAssertEqual(manager.getMessages(for: 1).map { $0.metadata.messageId }, ["1b"])
+        XCTAssertEqual(manager.getMessages(for: 2).map { $0.metadata.messageId }, ["2a"])
+    }
     
     func testManagerReset() {
         let syncMessagesExpectation = expectation(description: "syncMessages should complete")
