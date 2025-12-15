@@ -76,6 +76,7 @@ DRY_RUN=false
 CLEANUP=true
 TIMEOUT=60
 FAST_TEST=false
+OPEN_SIMULATOR=false
 
 echo_header() {
     echo -e "${BLUE}============================================${NC}"
@@ -116,12 +117,14 @@ OPTIONS:
   --no-cleanup, -n  Skip cleanup after tests
   --timeout <sec>   Set test timeout in seconds (default: 60)
   --fast-test, -f   Enable fast test mode (skip detailed UI validations)
+  --open, -o        Open Simulator.app (local environment only)
   --help, -h        Show this help message
 
 EXAMPLES:
   $0 push                    # Run push notification tests
   $0 all --verbose           # Run all tests with verbose output
   $0 inapp --timeout 120     # Run in-app tests with 2 minute timeout
+  $0 inapp --open            # Run in-app tests and open Simulator.app
   $0 embedded --dry-run      # Preview embedded message tests
   $0 push --fast-test        # Run push tests in fast mode (skip UI validations)
 
@@ -156,6 +159,10 @@ parse_arguments() {
                 ;;
             --fast-test|-f)
                 FAST_TEST=true
+                shift
+                ;;
+            --open|-o)
+                OPEN_SIMULATOR=true
                 shift
                 ;;
             --help|-h)
@@ -276,6 +283,12 @@ setup_simulator() {
     # Boot simulator
     echo_info "Booting simulator..."
     xcrun simctl boot "$SIMULATOR_UUID" 2>/dev/null || echo_info "Simulator already booted"
+    
+    # Open Simulator.app if --open flag is set and not in CI environment
+    if [[ "$OPEN_SIMULATOR" == true ]] && [[ "$CI" != "1" ]]; then
+        echo_info "Opening Simulator.app..."
+        open -a Simulator
+    fi
     
     # Wait for simulator to be ready
     sleep 5
@@ -994,6 +1007,7 @@ main() {
     echo_info "Dry Run: $DRY_RUN"
     echo_info "Cleanup: $CLEANUP"
     echo_info "Fast Test: $FAST_TEST"
+    echo_info "Open Simulator: $OPEN_SIMULATOR"
     echo
     
     validate_environment
