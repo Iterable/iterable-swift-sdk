@@ -391,6 +391,18 @@ class InAppMessageIntegrationTests: IntegrationTestBase {
             sleep(2)
             
             navigateToNetworkMonitor()
+            
+            // Check if network monitor actually opened by looking for the navigation title
+            let networkMonitorTitle = app.navigationBars["Network Monitor"]
+            if !networkMonitorTitle.waitForExistence(timeout: 3.0) {
+                print("⚠️ Network monitor didn't open, trying to tap network button again")
+                let networkButton = app.buttons["network-monitor-button"]
+                if networkButton.exists {
+                    networkButton.tap()
+                    // Wait for network monitor to appear
+                    XCTAssertTrue(networkMonitorTitle.waitForExistence(timeout: 5.0), "Network Monitor should open after second attempt")
+                }
+            }
             //screenshotCapture.captureScreenshot(named: "07-network-monitor-opened")
             
             print("🔍 Verifying network calls in expected order...")
