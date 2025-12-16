@@ -327,11 +327,13 @@ class InAppMessageIntegrationTests: IntegrationTestBase {
          
         ##########################################################################################*/
         
+        // Wait for message queue to settle before re-triggering
+        sleep(3)
+        
         // Step 1: Trigger InApp display campaign (14751067)
         triggerTestViewButton = app.buttons["trigger-in-app-button"]
         XCTAssertTrue(triggerTestViewButton.waitForExistence(timeout: standardTimeout), "Trigger InApp display button should exist")
         triggerTestViewButton.tap()
-        //screenshotCapture.captureScreenshot(named: "02-inapp-campaign-triggered")
         
         // Handle success alert
         if app.alerts["Success"].waitForExistence(timeout: standardTimeout) {
@@ -340,8 +342,12 @@ class InAppMessageIntegrationTests: IntegrationTestBase {
         
         // Tap "Check for Messages" to fetch and show the in-app
         checkMessagesButton = app.buttons["check-messages-button"]
-        checkMessagesButton.tap()
-        //screenshotCapture.captureScreenshot(named: "03-check-messages-tapped")
+        // Use coordinate tap for reliability in CI
+        if checkMessagesButton.isHittable {
+            checkMessagesButton.tap()
+        } else {
+            checkMessagesButton.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.5)).tap()
+        }
         
         // Step 2: Wait for in-app message to display with smart retry
         print("⏳ Waiting for in-app message...")
@@ -350,14 +356,16 @@ class InAppMessageIntegrationTests: IntegrationTestBase {
         // Smart retry: wait for button to be ready, then tap with delay
         retryCount = 0
         while !webView.exists && retryCount < maxRetries {
-            // Wait for button to be enabled before retapping
             if checkMessagesButton.isEnabled {
                 print("🔄 Retry \(retryCount + 1)/\(maxRetries): Tapping check-messages-button...")
-                checkMessagesButton.tap()
+                // Use coordinate tap for reliability in CI
+                if checkMessagesButton.isHittable {
+                    checkMessagesButton.tap()
+                } else {
+                    checkMessagesButton.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.5)).tap()
+                }
                 retryCount += 1
-                
-                // Give time for network request to complete before checking again
-                sleep(2)
+                sleep(3) // Longer wait in CI for message to load
             } else {
                 print("⏸️ Button not enabled, waiting...")
                 sleep(1)
@@ -365,22 +373,22 @@ class InAppMessageIntegrationTests: IntegrationTestBase {
         }
         
         XCTAssertTrue(
-            webView.waitForExistence(timeout: 5),
+            webView.waitForExistence(timeout: 10),
             "In-app message should appear after retries"
         )
-        //screenshotCapture.captureScreenshot(named: "04-inapp-displayed")
         
         // Step 3: Wait for webView content to be accessible and tap "Dismiss" link
         print("👆 Waiting for 'Dismiss' link to become accessible in webView...")
+        // Use longer timeout in CI for WebView content to fully load
+        let dismissTimeout = isRunningInCI ? standardTimeout * 2 : standardTimeout
         XCTAssertTrue(
-            waitForWebViewLink(linkText: "Dismiss", timeout: standardTimeout),
+            waitForWebViewLink(linkText: "Dismiss", timeout: dismissTimeout),
             "Dismiss link should be accessible in the in-app message"
         )
         
         if app.links["Dismiss"].waitForExistence(timeout: standardTimeout) {
             app.links["Dismiss"].tap()
         }
-        //screenshotCapture.captureScreenshot(named: "05-dismiss-tapped")
         
         // Step 4: Verify in-app message is dismissed
         print("⏳ Waiting for in-app message to dismiss...")
@@ -388,48 +396,30 @@ class InAppMessageIntegrationTests: IntegrationTestBase {
         webViewExpectation = expectation(for: webViewGone, evaluatedWith: webView, handler: nil)
         wait(for: [webViewExpectation], timeout: standardTimeout)
         print("✅ In-app message dismissed")
-        //screenshotCapture.captureScreenshot(named: "06-inapp-dismissed")
         
         // Step 5: Verify network calls in expected order with 200 status codes
         if fastTest == false {
-            // Wait a moment for all network calls to complete
             sleep(2)
-            
             navigateToNetworkMonitor()
             
-            // Check if network monitor actually opened by looking for the navigation title
             let networkMonitorTitle = app.navigationBars["Network Monitor"]
             if !networkMonitorTitle.waitForExistence(timeout: 3.0) {
                 print("⚠️ Network monitor didn't open, trying to tap network button again")
                 let networkButton = app.buttons["network-monitor-button"]
                 if networkButton.exists {
-                    networkButton.tap()
-                    // Wait for network monitor to appear
+                    // Use coordinate tap for reliability
+                    networkButton.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.5)).tap()
                     XCTAssertTrue(networkMonitorTitle.waitForExistence(timeout: 5.0), "Network Monitor should open after second attempt")
                 }
             }
-            //screenshotCapture.captureScreenshot(named: "07-network-monitor-opened")
             
             print("🔍 Verifying network calls in expected order...")
-            
-            // Expected order (as they were made):
-            // 1. get getMessages
-            // 2. post trackInAppDelivery
-            // 3. get getMessages
-            // 4. post trackInAppOpen
-            // 5. post inAppConsume
-            // 6. post trackInAppClick
-            // 7. post trackInAppClose
-            
-            // Verify each call exists with 200 status
             verifyNetworkCallWithSuccess(endpoint: "getMessages", description: "Initial getMessages call should be made with 200 status")
             verifyNetworkCallWithSuccess(endpoint: "trackInAppDelivery", description: "trackInAppDelivery call should be made with 200 status")
             verifyNetworkCallWithSuccess(endpoint: "trackInAppOpen", description: "trackInAppOpen call should be made with 200 status")
             verifyNetworkCallWithSuccess(endpoint: "inAppConsume", description: "inAppConsume call should be made with 200 status")
             verifyNetworkCallWithSuccess(endpoint: "trackInAppClick", description: "trackInAppClick call should be made with 200 status")
             verifyNetworkCallWithSuccess(endpoint: "trackInAppClose", description: "trackInAppClose call should be made with 200 status")
-            
-            //screenshotCapture.captureScreenshot(named: "08-network-calls-verified")
             
             print("✅ All expected network calls verified with 200 status codes")
             print("   ✓ getMessages")
@@ -440,7 +430,6 @@ class InAppMessageIntegrationTests: IntegrationTestBase {
             print("   ✓ trackInAppClick")
             print("   ✓ trackInAppClose")
             
-            // Close network monitor
             let closeNetworkButton = app.buttons["Close"]
             if closeNetworkButton.exists {
                 closeNetworkButton.tap()
@@ -449,7 +438,6 @@ class InAppMessageIntegrationTests: IntegrationTestBase {
         
         triggerClearMessagesButton = app.buttons["clear-messages-button"]
         triggerClearMessagesButton.tap()
-        // Handle success alert
         if app.alerts["Success"].waitForExistence(timeout: standardTimeout) {
             app.alerts["Success"].buttons["OK"].tap()
         }

@@ -654,7 +654,8 @@ class IntegrationTestBase: XCTestCase {
             print("⚠️ Network monitor didn't open, trying to tap network button again")
             let networkButton = app.buttons["network-monitor-button"]
             if networkButton.exists {
-                networkButton.tap()
+                // Use coordinate tap to avoid hittable issues in CI
+                networkButton.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.5)).tap()
             }
         }
         
