@@ -12,6 +12,6 @@ import Foundation
     @objc optional func onEmbeddedMessagingSyncSucceeded()
     
     /// Called when an embedded messaging sync fails.
-    /// - Parameter error: An NSError describing the failure (domain/code/userInfo are SDK-defined).
+    /// - Parameter error: Failure reason string, if available.
     @objc optional func onEmbeddedMessagingSyncFailed(_ error: String?)
 }

@@ -10,8 +10,6 @@ protocol IterableInternalEmbeddedManagerProtocol: IterableEmbeddedManagerProtoco
 }
 
 class IterableEmbeddedManager: NSObject, IterableInternalEmbeddedManagerProtocol {
-    private static let embeddedSyncErrorDomain = "com.iterable.embeddedMessaging.sync"
-    
     init(apiClient: ApiClientProtocol,
          urlDelegate: IterableURLDelegate?,
          customActionDelegate: IterableCustomActionDelegate?,
