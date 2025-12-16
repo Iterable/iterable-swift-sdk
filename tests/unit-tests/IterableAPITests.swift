@@ -1048,6 +1048,67 @@ class IterableAPITests: XCTestCase {
         wait(for: [expectation1], timeout: testExpectationTimeout)
     }
     
+    func testIterableAPIUpdateSubscriptionsNotInitializedDoesNotCrash() {
+        let oldImplementation = IterableAPI.implementation
+        IterableAPI.implementation = nil
+        IterableAPI.updateSubscriptions(nil,
+                                        unsubscribedChannelIds: nil,
+                                        unsubscribedMessageTypeIds: nil,
+                                        subscribedMessageTypeIds: nil,
+                                        campaignId: nil,
+                                        templateId: nil,
+                                        onSuccess: nil,
+                                        onFailure: nil)
+        IterableAPI.implementation = oldImplementation
+    }
+    
+    func testIterableAPIUpdateSubscriptions() {
+        let expectation1 = expectation(description: "update subscriptions via IterableAPI")
+        let emailListIds = [NSNumber(value: 382)]
+        let unsubscibedChannelIds = [NSNumber(value: 7845), NSNumber(value: 1048)]
+        let unsubscribedMessageTypeIds = [NSNumber(value: 5671), NSNumber(value: 9087)]
+        let campaignId = NSNumber(value: 23)
+        let templateId = NSNumber(value: 10)
+        
+        let networkSession = MockNetworkSession(statusCode: 200)
+        networkSession.callback = { _, response, _ in
+            guard let (request, body) = TestUtils.matchingRequest(networkSession: networkSession,
+                                                                  response: response,
+                                                                  endPoint: Const.Path.updateSubscriptions) else {
+                return
+            }
+            TestUtils.validate(request: request,
+                               requestType: .post,
+                               apiEndPoint: Endpoint.api,
+                               path: Const.Path.updateSubscriptions,
+                               queryParams: [])
+            TestUtils.validateMatch(keyPath: KeyPath(keys: JsonKey.emailListIds), value: emailListIds, inDictionary: body)
+            TestUtils.validateMatch(keyPath: KeyPath(keys: JsonKey.unsubscribedChannelIds), value: unsubscibedChannelIds, inDictionary: body)
+            TestUtils.validateMatch(keyPath: KeyPath(keys: JsonKey.unsubscribedMessageTypeIds), value: unsubscribedMessageTypeIds, inDictionary: body)
+            TestUtils.validateMatch(keyPath: KeyPath(keys: JsonKey.campaignId), value: campaignId, inDictionary: body)
+            TestUtils.validateMatch(keyPath: KeyPath(keys: JsonKey.templateId), value: templateId, inDictionary: body)
+            expectation1.fulfill()
+        }
+        
+        let config = IterableConfig()
+        let localStorage = MockLocalStorage()
+        localStorage.email = "user1@example.com"
+        IterableAPI.initializeForTesting(apiKey: IterableAPITests.apiKey,
+                                         config: config,
+                                         networkSession: networkSession,
+                                         localStorage: localStorage)
+        
+        IterableAPI.updateSubscriptions(emailListIds,
+                                        unsubscribedChannelIds: unsubscibedChannelIds,
+                                        unsubscribedMessageTypeIds: unsubscribedMessageTypeIds,
+                                        subscribedMessageTypeIds: nil,
+                                        campaignId: campaignId,
+                                        templateId: templateId,
+                                        onSuccess: nil,
+                                        onFailure: nil)
+        wait(for: [expectation1], timeout: testExpectationTimeout)
+    }
+    
     func testInitializeWithLaunchOptionsAndCustomAction() {
         let expectation1 = expectation(description: "initializeWithLaunchOptions")
         let userInfo: [AnyHashable: Any] = [
