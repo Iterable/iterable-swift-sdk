@@ -164,7 +164,12 @@ class IterableEmbeddedManager: NSObject, IterableInternalEmbeddedManagerProtocol
     private func retrieveEmbeddedMessages(completion: @escaping () -> Void) {
         apiClient.getEmbeddedMessages()
             .onCompletion(
-                receiveValue: { embeddedMessagesPayload in
+                receiveValue: { [weak self] embeddedMessagesPayload in
+                    guard let self = self else {
+                        completion()
+                        return
+                    }
+                    
                     let placements = embeddedMessagesPayload.placements
                     
                     var fetchedMessagesDict: [Int: [IterableEmbeddedMessage]] = [:]
@@ -180,15 +185,15 @@ class IterableEmbeddedManager: NSObject, IterableInternalEmbeddedManagerProtocol
                     self.notifyUpdateDelegates(processor)
                     completion()
                 },
-                receiveError: { sendRequestError in
-                    print("receive error: \(sendRequestError)")
+                receiveError: { [weak self] sendRequestError in
+                    ITBDebug("receive error: \(sendRequestError)")
                     
                     if sendRequestError.reason == "SUBSCRIPTION_INACTIVE" ||
                         sendRequestError.reason == "Invalid API Key" {
-                        self.notifyDelegatesOfInvalidApiKeyOrSyncStop()
+                        self?.notifyDelegatesOfInvalidApiKeyOrSyncStop()
                         ITBInfo("Subscription inactive. Stopping embedded message sync")
                     } else {
-                        ITBError()
+                        ITBError("Embedded messages sync failed: \(sendRequestError.reason ?? "unknown")")
                     }
                     completion()
                 }
@@ -244,9 +249,224 @@ class IterableEmbeddedManager: NSObject, IterableInternalEmbeddedManagerProtocol
 }
 
 extension IterableEmbeddedManager: EmbeddedNotifiable {
+    // MARK: - Constants
+    
+    private static let syncIdentifier = "embeddedMessagesSync"
+    
+    /// Creates a SendRequestError for when embedded messaging is not enabled
+    /// Using SDK's established pattern for structured error responses
+    private static func createNotEnabledError() -> SendRequestError {
+        SendRequestError(reason: "Embedded messaging is not enabled",
+                         data: nil,
+                         httpStatusCode: nil,
+                         iterableCode: "EmbeddedMessagingNotEnabled",
+                         originalError: nil)
+    }
+    
+    // MARK: - Default Handlers (following RequestProcessorUtil pattern)
+    
+    private static func defaultOnSuccess(_ identifier: String) -> OnSuccessHandler {
+        { data in
+            if let data = data {
+                ITBInfo("\(identifier) succeeded, got response: \(data)")
+            } else {
+                ITBInfo("\(identifier) succeeded.")
+            }
+        }
+    }
+    
+    private static func defaultOnFailure(_ identifier: String) -> OnFailureHandler {
+        { reason, data in
+            var toLog = "\(identifier) failed:"
+            if let reason = reason {
+                toLog += ", \(reason)"
+            }
+            if let data = data {
+                toLog += ", got response \(String(data: data, encoding: .utf8) ?? "nil")"
+            }
+            ITBError(toLog)
+        }
+    }
+    
+    private static func defaultOnDetailedFailure(_ identifier: String) -> EmbeddedSyncErrorHandler {
+        { error in
+            var toLog = "\(identifier) failed:"
+            if let reason = error.reason {
+                toLog += ", \(reason)"
+            }
+            if let httpStatusCode = error.httpStatusCode {
+                toLog += ", httpStatus: \(httpStatusCode)"
+            }
+            if let iterableCode = error.iterableCode {
+                toLog += ", iterableCode: \(iterableCode)"
+            }
+            if let data = error.data {
+                toLog += ", got response \(String(data: data, encoding: .utf8) ?? "nil")"
+            }
+            ITBError(toLog)
+        }
+    }
+    
+    // MARK: - Callback Helpers
+    
+    private func reportSuccess(responseDict: [AnyHashable: Any], onSuccess: OnSuccessHandler?) {
+        if let onSuccess = onSuccess {
+            onSuccess(responseDict)
+        } else {
+            Self.defaultOnSuccess(Self.syncIdentifier)(responseDict)
+        }
+    }
+    
+    private func reportFailure(error: SendRequestError, onFailure: OnFailureHandler?) {
+        if let onFailure = onFailure {
+            onFailure(error.reason, error.data)
+        } else {
+            Self.defaultOnFailure(Self.syncIdentifier)(error.reason, error.data)
+        }
+    }
+    
+    private func reportDetailedFailure(error: SendRequestError, onFailure: EmbeddedSyncErrorHandler?) {
+        if let onFailure = onFailure {
+            onFailure(error)
+        } else {
+            Self.defaultOnDetailedFailure(Self.syncIdentifier)(error)
+        }
+    }
+    
+    // MARK: - Sync Methods
+    
     public func syncMessages(completion: @escaping () -> Void) {
         if (enableEmbeddedMessaging) {
             retrieveEmbeddedMessages(completion: completion)
         }
+    }
+    
+    public func syncMessages(onSuccess: OnSuccessHandler?, onFailure: OnFailureHandler?) {
+        guard enableEmbeddedMessaging else {
+            let error = Self.createNotEnabledError()
+            // Dispatch async for consistent callback timing
+            // Note: Don't use weak self here - we need to call the callback even if self is deallocated
+            DispatchQueue.main.async {
+                if let onFailure = onFailure {
+                    onFailure(error.reason, error.data)
+                } else {
+                    Self.defaultOnFailure(Self.syncIdentifier)(error.reason, error.data)
+                }
+            }
+            return
+        }
+        
+        apiClient.getEmbeddedMessages()
+            .onCompletion(
+                receiveValue: { [weak self] payload in
+                    // Issue 1: Still call callback even if self is deallocated
+                    guard let self = self else {
+                        // Can't process payload without self, but notify caller
+                        if let onSuccess = onSuccess {
+                            onSuccess([:])
+                        } else {
+                            Self.defaultOnSuccess(Self.syncIdentifier)([:])
+                        }
+                        return
+                    }
+                    let (processor, responseDict) = self.processPayload(payload)
+                    self.setMessages(processor)
+                    self.trackNewlyRetrieved(processor)
+                    self.notifyUpdateDelegates(processor)
+                    self.reportSuccess(responseDict: responseDict, onSuccess: onSuccess)
+                },
+                receiveError: { [weak self] error in
+                    if error.reason == "SUBSCRIPTION_INACTIVE" || error.reason == "Invalid API Key" {
+                        self?.notifyDelegatesOfInvalidApiKeyOrSyncStop()
+                    }
+                    // Issue 1: Call callback even if self is deallocated
+                    if let self = self {
+                        self.reportFailure(error: error, onFailure: onFailure)
+                    } else {
+                        if let onFailure = onFailure {
+                            onFailure(error.reason, error.data)
+                        } else {
+                            Self.defaultOnFailure(Self.syncIdentifier)(error.reason, error.data)
+                        }
+                    }
+                }
+            )
+    }
+    
+    public func syncMessagesWithCallback(onSuccess: OnSuccessHandler?, onFailure: EmbeddedSyncErrorHandler?) {
+        guard enableEmbeddedMessaging else {
+            let error = Self.createNotEnabledError()
+            // Dispatch async for consistent callback timing
+            // Note: Don't use weak self here - we need to call the callback even if self is deallocated
+            DispatchQueue.main.async {
+                if let onFailure = onFailure {
+                    onFailure(error)
+                } else {
+                    Self.defaultOnDetailedFailure(Self.syncIdentifier)(error)
+                }
+            }
+            return
+        }
+        
+        apiClient.getEmbeddedMessages()
+            .onCompletion(
+                receiveValue: { [weak self] payload in
+                    // Issue 1: Still call callback even if self is deallocated
+                    guard let self = self else {
+                        // Can't process payload without self, but notify caller
+                        if let onSuccess = onSuccess {
+                            onSuccess([:])
+                        } else {
+                            Self.defaultOnSuccess(Self.syncIdentifier)([:])
+                        }
+                        return
+                    }
+                    let (processor, responseDict) = self.processPayload(payload)
+                    self.setMessages(processor)
+                    self.trackNewlyRetrieved(processor)
+                    self.notifyUpdateDelegates(processor)
+                    self.reportSuccess(responseDict: responseDict, onSuccess: onSuccess)
+                },
+                receiveError: { [weak self] error in
+                    if error.reason == "SUBSCRIPTION_INACTIVE" || error.reason == "Invalid API Key" {
+                        self?.notifyDelegatesOfInvalidApiKeyOrSyncStop()
+                    }
+                    // Issue 1: Call callback even if self is deallocated
+                    if let self = self {
+                        self.reportDetailedFailure(error: error, onFailure: onFailure)
+                    } else {
+                        if let onFailure = onFailure {
+                            onFailure(error)
+                        } else {
+                            Self.defaultOnDetailedFailure(Self.syncIdentifier)(error)
+                        }
+                    }
+                }
+            )
+    }
+    
+    // MARK: - Private Helpers
+    
+    /// Processes the embedded messages payload and returns the processor along with a response dictionary
+    /// Following SDK pattern of returning [AnyHashable: Any] for success callbacks
+    private func processPayload(_ payload: PlacementsPayload) -> (EmbeddedMessagingProcessor, [AnyHashable: Any]) {
+        var dict: [Int: [IterableEmbeddedMessage]] = [:]
+        var totalMessageCount = 0
+        
+        for placement in payload.placements {
+            let placementMessages = placement.embeddedMessages ?? []
+            dict[placement.placementId!] = placementMessages
+            totalMessageCount += placementMessages.count
+        }
+        
+        let processor = EmbeddedMessagingProcessor(currentMessages: self.messages, fetchedMessages: dict)
+        
+        // Build response dictionary following SDK conventions
+        let responseDict: [AnyHashable: Any] = [
+            "placementCount": payload.placements.count,
+            "messageCount": totalMessageCount
+        ]
+        
+        return (processor, responseDict)
     }
 }
