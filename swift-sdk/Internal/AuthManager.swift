@@ -248,7 +248,7 @@ class AuthManager: IterableAuthManagerProtocol {
                 self.isInScheduledRefreshCallback = false
             } else {
                 ITBDebug("Email or userId is not available. Skipping token refresh")
-                self?.clearPendingCallbacks()
+                self.clearPendingCallbacks()
             }
         }
         
