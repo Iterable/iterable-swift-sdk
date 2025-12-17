@@ -891,6 +891,148 @@ class AuthTests: XCTestCase {
         }
         wait(for: [expectation1, expectation2], timeout: testExpectationTimeout)
     }
+    
+    func testRetryJwtFailureQueuesRequestsUntilNewJwtTokenIsReceived() throws {
+        let t0 = Date()
+        func log(_ message: String) {
+            let dt = String(format: "%.3f", Date().timeIntervalSince(t0))
+            print("[AuthTests][\(dt)s] \(message)")
+        }
+        
+        // This test intentionally avoids InternalIterableAPI login, because that can initiate a token request
+        // and mask the JWT-retry queueing behavior we want to validate.
+        let tokenRequestStarted = expectation(description: "auth token request started")
+        
+        let allSucceeded = expectation(description: "all requests succeeded after retry")
+        allSucceeded.expectedFulfillmentCount = 4
+        
+        let invalidJwtError = SendRequestError(
+            reason: "Invalid Request",
+            data: [JsonKey.Response.iterableCode: JsonValue.Code.invalidJwtPayload].toJsonData(),
+            httpStatusCode: 401,
+            iterableCode: JsonValue.Code.invalidJwtPayload
+        )
+        
+        let localStorage = MockLocalStorage()
+        localStorage.email = AuthTests.email
+        
+        var tokenRequestedCount = 0
+        var tokenDelivered = false
+        
+        final class DelayedAuthDelegate: IterableAuthDelegate {
+            let delay: TimeInterval
+            let token: String
+            let log: (String) -> Void
+            let onRequested: () -> Void
+            let onDelivered: () -> Void
+            
+            init(delay: TimeInterval,
+                 token: String,
+                 log: @escaping (String) -> Void,
+                 onRequested: @escaping () -> Void,
+                 onDelivered: @escaping () -> Void) {
+                self.delay = delay
+                self.token = token
+                self.log = log
+                self.onRequested = onRequested
+                self.onDelivered = onDelivered
+            }
+            
+            func onAuthTokenRequested(completion: @escaping AuthTokenRetrievalHandler) {
+                log("authDelegate.onAuthTokenRequested()")
+                onRequested()
+                DispatchQueue.main.asyncAfter(deadline: .now() + delay) { [token, onDelivered] in
+                    self.log("authDelegate delivering token")
+                    onDelivered()
+                    completion(token)
+                }
+            }
+            
+            func onAuthFailure(_ authFailure: AuthFailure) {}
+        }
+        
+        let authDelegate = DelayedAuthDelegate(
+            delay: 0.3,
+            token: AuthTests.authToken,
+            log: log,
+            onRequested: {
+                tokenRequestedCount += 1
+                log("tokenRequestedCount=\(tokenRequestedCount)")
+                tokenRequestStarted.fulfill()
+            },
+            onDelivered: {
+                tokenDelivered = true
+                log("tokenDelivered=true")
+            }
+        )
+        
+        let authManager = AuthManager(
+            delegate: authDelegate,
+            authRetryPolicy: RetryPolicy(maxRetry: 1, retryInterval: 0.01, retryBackoff: .linear),
+            expirationRefreshPeriod: 60,
+            localStorage: localStorage,
+            dateProvider: MockDateProvider()
+        )
+        
+        var totalAttempts = 0
+        var attemptsByRequest: [Int: Int] = [:]
+        
+        func makeRequestProvider(requestId: Int) -> () -> Pending<SendRequestValue, SendRequestError> {
+            return {
+                totalAttempts += 1
+                attemptsByRequest[requestId, default: 0] += 1
+                
+                let attempt = attemptsByRequest[requestId] ?? 0
+                log("requestProvider id=\(requestId) attempt=\(attempt) tokenDelivered=\(tokenDelivered)")
+                
+                // On retry, ensure we only retry after token is delivered.
+                if attempt >= 2 {
+                    XCTAssertTrue(tokenDelivered, "request \(requestId) retried before JWT token delivered")
+                }
+                
+                if attempt == 1 {
+                    return Fulfill(error: invalidJwtError)
+                } else {
+                    return Fulfill(value: [:])
+                }
+            }
+        }
+        
+        // 1) Fire the first request and wait until token request has started
+        _ = RequestProcessorUtil.sendRequest(
+            requestProvider: makeRequestProvider(requestId: 0),
+            authManager: authManager,
+            requestIdentifier: "test-request-0"
+        ).onSuccess { _ in
+            log("request 0 succeeded")
+            allSucceeded.fulfill()
+        }.onError { _ in
+            XCTFail()
+        }
+        
+        wait(for: [tokenRequestStarted], timeout: testExpectationTimeout)
+        log("token request started; firing remaining requests while token is pending")
+        
+        // 2) While token is still pending, fire 3 more requests that should be queued behind the same token refresh.
+        (1..<4).forEach { requestId in
+            _ = RequestProcessorUtil.sendRequest(
+                requestProvider: makeRequestProvider(requestId: requestId),
+                authManager: authManager,
+                requestIdentifier: "test-request-\(requestId)"
+            ).onSuccess { _ in
+                log("request \(requestId) succeeded")
+                allSucceeded.fulfill()
+            }.onError { _ in
+                XCTFail()
+            }
+        }
+        
+        wait(for: [allSucceeded], timeout: testExpectationTimeout)
+        
+        log("final: totalAttempts=\(totalAttempts) tokenRequestedCount=\(tokenRequestedCount) tokenDelivered=\(tokenDelivered) attemptsByRequest=\(attemptsByRequest)")
+        XCTAssertEqual(tokenRequestedCount, 1)
+        XCTAssertEqual(totalAttempts, 8)
+    }
 
     // MARK: - Private
     
