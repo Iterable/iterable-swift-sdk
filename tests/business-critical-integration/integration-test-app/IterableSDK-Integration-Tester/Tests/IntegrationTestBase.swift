@@ -648,8 +648,18 @@ class IntegrationTestBase: XCTestCase {
         // Open network monitor
         navigateToNetworkMonitor()
         
-        // Wait for network monitor to load
+        // Check if network monitor actually opened by looking for the navigation title
         let networkMonitorTitle = app.navigationBars["Network Monitor"]
+        if !networkMonitorTitle.waitForExistence(timeout: 3.0) {
+            print("⚠️ Network monitor didn't open, trying to tap network button again")
+            let networkButton = app.buttons["network-monitor-button"]
+            if networkButton.exists {
+                // Use coordinate tap to avoid hittable issues in CI
+                networkButton.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.5)).tap()
+            }
+        }
+        
+        // Wait for network monitor to load
         XCTAssertTrue(networkMonitorTitle.waitForExistence(timeout: standardTimeout), "Network Monitor should be displayed")
         
         // Verify both critical API calls with 200 status codes
@@ -718,7 +728,8 @@ class IntegrationTestBase: XCTestCase {
         XCTAssertTrue(statusFound, "\(description) - Expected 200 status code for \(endpoint)")
         
         // Additional validation: check that it's not an error status by looking for error codes
-        let errorStatusPredicate = NSPredicate(format: "label BEGINSWITH '4' OR label BEGINSWITH '5'")
+        // Use MATCHES to only match 3-digit status codes (4xx or 5xx), not timestamps like "4:08 PM"
+        let errorStatusPredicate = NSPredicate(format: "label MATCHES '^[45][0-9]{2}$'")
         let errorStatusLabel = endpointCell.staticTexts.containing(errorStatusPredicate).firstMatch
         XCTAssertFalse(errorStatusLabel.exists, "\(endpoint) should not have error status code (4xx/5xx)")
     }
