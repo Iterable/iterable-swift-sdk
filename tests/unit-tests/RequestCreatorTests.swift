@@ -195,16 +195,17 @@ class RequestCreatorTests: XCTestCase {
         
         TestUtils.validateHeader(urlRequest, apiKey)
         TestUtils.validate(request: urlRequest, requestType: .get, apiEndPoint: Endpoint.api, path: Const.Path.getEmbeddedMessages)
-        
-        guard case let .success(.get(getRequest)) = request, let args = getRequest.args else {
-            XCTFail("could not unwrap to a get request and its arguments")
+
+        guard let url = urlRequest.url, let urlComponents = URLComponents(url: url, resolvingAgainstBaseURL: false) else {
+            XCTFail("could not create URLComponents from request url")
             return
         }
-        
-        XCTAssertEqual(args[JsonKey.email], auth.email)
-        XCTAssertEqual(args[JsonKey.Embedded.packageName], Bundle.main.appPackageName)
-        XCTAssertEqual(args[JsonKey.systemVersion], UIDevice.current.systemVersion)
-        XCTAssertNil(args[JsonKey.Embedded.placementIds])
+
+        let queryItems = urlComponents.queryItems ?? []
+        XCTAssertEqual(queryItems.first(where: { $0.name == JsonKey.email })?.value, auth.email)
+        XCTAssertEqual(queryItems.first(where: { $0.name == JsonKey.Embedded.packageName })?.value, Bundle.main.appPackageName)
+        XCTAssertEqual(queryItems.first(where: { $0.name == JsonKey.systemVersion })?.value, UIDevice.current.systemVersion)
+        XCTAssertTrue(queryItems.filter { $0.name == JsonKey.Embedded.placementIds }.isEmpty)
     }
     
     func testGetEmbeddedMessagesRequestWithPlacementIds() {
@@ -213,14 +214,20 @@ class RequestCreatorTests: XCTestCase {
         
         TestUtils.validateHeader(urlRequest, apiKey)
         TestUtils.validate(request: urlRequest, requestType: .get, apiEndPoint: Endpoint.api, path: Const.Path.getEmbeddedMessages)
-        
-        guard case let .success(.get(getRequest)) = request, let args = getRequest.args else {
-            XCTFail("could not unwrap to a get request and its arguments")
+
+        guard let url = urlRequest.url, let urlComponents = URLComponents(url: url, resolvingAgainstBaseURL: false) else {
+            XCTFail("could not create URLComponents from request url")
             return
         }
-        
-        XCTAssertEqual(args[JsonKey.email], auth.email)
-        XCTAssertEqual(args[JsonKey.Embedded.placementIds], "1,2,3")
+
+        let queryItems = urlComponents.queryItems ?? []
+        XCTAssertEqual(queryItems.first(where: { $0.name == JsonKey.email })?.value, auth.email)
+
+        let placementIds = queryItems
+            .filter { $0.name == JsonKey.Embedded.placementIds }
+            .compactMap(\.value)
+
+        XCTAssertEqual(placementIds, ["1", "2", "3"])
     }
     
     func testTrackEventRequest() {

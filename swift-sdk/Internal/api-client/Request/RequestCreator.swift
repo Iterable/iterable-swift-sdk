@@ -513,14 +513,28 @@ struct RequestCreator {
         if let packageName = Bundle.main.appPackageName {
             args[JsonKey.Embedded.packageName] = packageName
         }
-        
-        if let placementIds, !placementIds.isEmpty {
-            args[JsonKey.Embedded.placementIds] = placementIds.map(String.init).joined(separator: ",")
-        }
-        
         setCurrentUser(inDict: &args)
-        
-        return .success(.get(createGetRequest(forPath: Const.Path.getEmbeddedMessages, withArgs: args as! [String: String])))
+
+        let placementIdQueryItems: [URLQueryItem]
+        if let placementIds, !placementIds.isEmpty {
+            placementIdQueryItems = placementIds.map { URLQueryItem(name: JsonKey.Embedded.placementIds, value: String($0)) }
+        } else {
+            placementIdQueryItems = []
+        }
+
+        let argsQueryItems: [URLQueryItem] = args.compactMap { key, value in
+            guard let key = key as? String, let value = value as? String else { return nil }
+            if key == JsonKey.Embedded.placementIds { return nil }
+            return URLQueryItem(name: key, value: value)
+        }
+
+        var components = URLComponents()
+        components.path = Const.Path.getEmbeddedMessages
+        components.queryItems = argsQueryItems + placementIdQueryItems
+        let query = components.percentEncodedQuery?.replacingOccurrences(of: "+", with: "%2B")
+        let pathWithQuery = components.path + (query.map { "?\($0)" } ?? "")
+
+        return .success(.get(GetRequest(path: pathWithQuery, args: nil)))
     }
     
     func createEmbeddedMessageReceivedRequest(_ message: IterableEmbeddedMessage) -> Result<IterableRequest, IterableError> {
