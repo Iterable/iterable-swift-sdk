@@ -178,6 +178,7 @@ class IterableEmbeddedManager: NSObject, IterableInternalEmbeddedManagerProtocol
                     self.setMessages(processor)
                     self.trackNewlyRetrieved(processor)
                     self.notifyUpdateDelegates(processor)
+                    self.notifySyncSucceeded()
                     completion()
                 },
                 receiveError: { sendRequestError in
@@ -190,6 +191,8 @@ class IterableEmbeddedManager: NSObject, IterableInternalEmbeddedManagerProtocol
                     } else {
                         ITBError()
                     }
+                    
+                    self.notifySyncFailed(sendRequestError)
                     completion()
                 }
             )
@@ -239,6 +242,18 @@ class IterableEmbeddedManager: NSObject, IterableInternalEmbeddedManagerProtocol
     private func notifyDelegatesOfInvalidApiKeyOrSyncStop() {
         for listener in listeners.allObjects {
             listener.onEmbeddedMessagingDisabled()
+        }
+    }
+    
+    private func notifySyncSucceeded() {
+        for listener in listeners.allObjects {
+            listener.onEmbeddedMessagingSyncSucceeded?()
+        }
+    }
+    
+    private func notifySyncFailed(_ error: SendRequestError) {
+        for listener in listeners.allObjects {
+            listener.onEmbeddedMessagingSyncFailed?(error.reason)
         }
     }
 }
