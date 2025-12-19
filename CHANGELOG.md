@@ -5,6 +5,12 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 ## [Unreleased]
 
 ## [6.6.5]
+### Fixed
+- Fixed an issue where concurrent API requests failing with JWT-related 401 errors could be dropped instead of retried after a new token was obtained, ensuring all affected calls are executed once authentication succeeds.
+
+### Added
+- Added optional Embedded Messaging sync callbacks via the `IterableEmbeddedUpdateDelegate` protocol, allowing apps to react when an embedded sync succeeds or fails.
+- Added an optional `placementIds` parameter to `syncMessages` on `IterableEmbeddedManager`, so apps can fetch and update embedded messages only for specific placements, bringing iOS to parity with the Android SDK.
 
 ## [6.6.4]
 
