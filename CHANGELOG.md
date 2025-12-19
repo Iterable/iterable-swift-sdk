@@ -4,6 +4,8 @@ All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 ## [Unreleased]
 
+## [6.6.5]
+
 ## [6.6.4]
 
 - Fixed Carthage builds on Xcode 26 and Swift version 6.2.
