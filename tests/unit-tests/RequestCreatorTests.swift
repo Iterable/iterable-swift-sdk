@@ -177,6 +177,58 @@ class RequestCreatorTests: XCTestCase {
         XCTAssertEqual(args[JsonKey.InApp.count], inAppMessageRequestCount.stringValue)
         XCTAssertEqual(args[JsonKey.systemVersion], UIDevice.current.systemVersion)
     }
+
+    func testGetEmbeddedMessagesRequestFailure() {
+        let auth = Auth(userId: nil, email: nil, authToken: nil, userIdUnknownUser: nil)
+        let requestCreator = RequestCreator(auth: auth, deviceMetadata: deviceMetadata)
+        
+        let failingRequest = requestCreator.createGetEmbeddedMessagesRequest(placementIds: nil)
+        
+        if let _ = try? failingRequest.get() {
+            XCTFail("request succeeded despite userId and email being nil")
+        }
+    }
+    
+    func testGetEmbeddedMessagesRequest() {
+        let request = createRequestCreator().createGetEmbeddedMessagesRequest(placementIds: nil)
+        let urlRequest = convertToUrlRequest(request)
+        
+        TestUtils.validateHeader(urlRequest, apiKey)
+        TestUtils.validate(request: urlRequest, requestType: .get, apiEndPoint: Endpoint.api, path: Const.Path.getEmbeddedMessages)
+
+        guard let url = urlRequest.url, let urlComponents = URLComponents(url: url, resolvingAgainstBaseURL: false) else {
+            XCTFail("could not create URLComponents from request url")
+            return
+        }
+
+        let queryItems = urlComponents.queryItems ?? []
+        XCTAssertEqual(queryItems.first(where: { $0.name == JsonKey.email })?.value, auth.email)
+        XCTAssertEqual(queryItems.first(where: { $0.name == JsonKey.Embedded.packageName })?.value, Bundle.main.appPackageName)
+        XCTAssertEqual(queryItems.first(where: { $0.name == JsonKey.systemVersion })?.value, UIDevice.current.systemVersion)
+        XCTAssertTrue(queryItems.filter { $0.name == JsonKey.Embedded.placementIds }.isEmpty)
+    }
+    
+    func testGetEmbeddedMessagesRequestWithPlacementIds() {
+        let request = createRequestCreator().createGetEmbeddedMessagesRequest(placementIds: [1, 2, 3])
+        let urlRequest = convertToUrlRequest(request)
+        
+        TestUtils.validateHeader(urlRequest, apiKey)
+        TestUtils.validate(request: urlRequest, requestType: .get, apiEndPoint: Endpoint.api, path: Const.Path.getEmbeddedMessages)
+
+        guard let url = urlRequest.url, let urlComponents = URLComponents(url: url, resolvingAgainstBaseURL: false) else {
+            XCTFail("could not create URLComponents from request url")
+            return
+        }
+
+        let queryItems = urlComponents.queryItems ?? []
+        XCTAssertEqual(queryItems.first(where: { $0.name == JsonKey.email })?.value, auth.email)
+
+        let placementIds = queryItems
+            .filter { $0.name == JsonKey.Embedded.placementIds }
+            .compactMap(\.value)
+
+        XCTAssertEqual(placementIds, ["1", "2", "3"])
+    }
     
     func testTrackEventRequest() {
         let eventName = "dsfsdf"
