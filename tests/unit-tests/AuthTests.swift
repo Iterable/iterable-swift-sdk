@@ -425,7 +425,9 @@ class AuthTests: XCTestCase {
         
         let expirationRefreshPeriod: TimeInterval = 0
         let waitTime: TimeInterval = 1.0
-        let expirationTimeSinceEpoch = Date(timeIntervalSinceNow: expirationRefreshPeriod + waitTime).timeIntervalSince1970
+        let mockDateProvider = MockDateProvider()
+        mockDateProvider.currentDate = Date(timeIntervalSince1970: 1_000_000_000)
+        let expirationTimeSinceEpoch = mockDateProvider.currentDate.timeIntervalSince1970 + expirationRefreshPeriod + waitTime
         let mockEncodedPayload = createMockEncodedPayload(exp: Int(expirationTimeSinceEpoch))
         
         let localStorage = MockLocalStorage()
@@ -437,11 +439,82 @@ class AuthTests: XCTestCase {
                                       authRetryPolicy: RetryPolicy(maxRetry: 1, retryInterval: 0, retryBackoff: .linear),
                                       expirationRefreshPeriod: expirationRefreshPeriod,
                                       localStorage: localStorage,
-                                      dateProvider: MockDateProvider())
+                                      dateProvider: mockDateProvider)
         
         let _ = authManager
         
         wait(for: [condition1], timeout: testExpectationTimeout)
+    }
+
+    func testPauseAuthRetriesBlocksScheduledRefresh() {
+        let callbackNotCalledExpectation = expectation(description: "\(#function) - callback got called when it shouldn't while paused")
+        callbackNotCalledExpectation.isInverted = true
+        
+        let authDelegate = createAuthDelegate({
+            callbackNotCalledExpectation.fulfill()
+            return nil
+        })
+        
+        let expirationRefreshPeriod: TimeInterval = 0
+        let waitTime: TimeInterval = 1.0
+        
+        let mockDateProvider = MockDateProvider()
+        mockDateProvider.currentDate = Date(timeIntervalSince1970: 1_000_000_000)
+        let expirationTimeSinceEpoch = mockDateProvider.currentDate.timeIntervalSince1970 + expirationRefreshPeriod + waitTime
+        let mockEncodedPayload = createMockEncodedPayload(exp: Int(expirationTimeSinceEpoch))
+        
+        let localStorage = MockLocalStorage()
+        localStorage.authToken = mockEncodedPayload
+        localStorage.userId = AuthTests.userId
+        
+        let authManager = AuthManager(delegate: authDelegate,
+                                      authRetryPolicy: RetryPolicy(maxRetry: 1, retryInterval: 0, retryBackoff: .linear),
+                                      expirationRefreshPeriod: expirationRefreshPeriod,
+                                      localStorage: localStorage,
+                                      dateProvider: mockDateProvider)
+        
+        authManager.pauseAuthRetries(true)
+        
+        wait(for: [callbackNotCalledExpectation], timeout: waitTime + 1.0)
+    }
+
+    func testMaxRetryLimitRespectedForScheduledRefresh() {
+        let secondCallbackNotCalledExpectation = expectation(description: "\(#function) - scheduled refresh requested auth token beyond maxRetry")
+        secondCallbackNotCalledExpectation.isInverted = true
+        
+        let expirationRefreshPeriod: TimeInterval = 0
+        let mockDateProvider = MockDateProvider()
+        mockDateProvider.currentDate = Date(timeIntervalSince1970: 1_000_000_000)
+        
+        let expiredExp = Int(mockDateProvider.currentDate.timeIntervalSince1970 - 10)
+        let expiredToken = createMockEncodedPayload(exp: expiredExp)
+        
+        var callbackCount = 0
+        let authDelegate = createAuthDelegate({
+            callbackCount += 1
+            if callbackCount > 1 {
+                secondCallbackNotCalledExpectation.fulfill()
+            }
+            return expiredToken
+        })
+        
+        let localStorage = MockLocalStorage()
+        localStorage.userId = AuthTests.userId
+        
+        let authManager = AuthManager(delegate: authDelegate,
+                                      authRetryPolicy: RetryPolicy(maxRetry: 1, retryInterval: 0, retryBackoff: .linear),
+                                      expirationRefreshPeriod: expirationRefreshPeriod,
+                                      localStorage: localStorage,
+                                      dateProvider: mockDateProvider)
+        
+        // 1st attempt increments retryCount to maxRetry
+        authManager.requestNewAuthToken(hasFailedPriorAuth: false, onSuccess: nil, shouldIgnoreRetryPolicy: true)
+        
+        // Scheduled refresh attempt must respect maxRetry even when shouldIgnoreRetryPolicy is true.
+        authManager.scheduleAuthTokenRefreshTimer(interval: 0.01, isScheduledRefresh: true, successCallback: nil)
+        
+        wait(for: [secondCallbackNotCalledExpectation], timeout: 1.0)
+        XCTAssertEqual(callbackCount, 1)
     }
     
     func testAuthTokenRefreshOnInit() {
