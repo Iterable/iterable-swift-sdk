@@ -93,6 +93,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				8A24D33A2E44F30600B53850 /* IterableAppExtensions in Frameworks */,
+				8A24D33C2E44F30600B53850 /* IterableSDK in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -173,6 +175,8 @@
 			);
 			name = "IterableSDK-Integration-TesterUITests";
 			packageProductDependencies = (
+				8A24D3392E44F30600B53850 /* IterableAppExtensions */,
+				8A24D33B2E44F30600B53850 /* IterableSDK */,
 			);
 			productName = "IterableSDK-Integration-TesterUITests";
 			productReference = 8AB716322E3119A3004AAB74 /* IterableSDK-Integration-TesterUITests.xctest */;
