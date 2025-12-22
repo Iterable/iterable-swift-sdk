@@ -155,6 +155,77 @@ CI=1 ./scripts/run-tests.sh
 - Updates JSON configuration automatically with date-prefixed email
 - Maintains backward compatibility with existing test infrastructure
 
+## Deep Link Integration Tests (SDK-292)
+
+### Overview
+Comprehensive deep link routing test infrastructure for validating URL delegate and custom action delegate callbacks.
+
+### What's Tested
+1. **URL Delegate Registration & Callbacks**
+   - Delegate registration during SDK initialization
+   - URL parameter extraction and validation
+   - `tester://` scheme handling for test deep links
+   
+2. **Custom Action Delegate Registration & Callbacks**
+   - Delegate registration and method invocation
+   - Custom action type and data parameter validation
+   
+3. **Deep Link Integration Flows**
+   - Deep link routing from push notifications
+   - Deep link routing from in-app messages
+   - Deep link routing from embedded messages
+   
+4. **Alert-Based Validation**
+   - Alert content validation for deep link callbacks
+   - Expected vs actual URL comparison
+   - Multiple alert sequence handling
+
+### Key Files
+- `DeepLinkingIntegrationTests.swift`: Main test suite with 8 comprehensive test methods
+- `DeepLinkHelpers.swift`: Alert validation, URL extraction, and comparison utilities  
+- `MockDelegates.swift`: Mock URL and custom action delegates with verification helpers
+- `AppDelegate.swift`: Production delegates implementation (lines 334-392)
+- `AppDelegate+IntegrationTest.swift`: Delegate wiring during SDK init (lines 79-80)
+
+### Test Infrastructure
+- **Mock Delegates**: Full verification support with call history tracking
+- **Alert Helpers**: `AlertExpectation` for declarative alert validation
+- **URL Validation**: Component-by-component URL comparison utilities
+- **CI Support**: Uses simulated push notifications for deep link testing
+
+### Running Deep Link Tests
+
+#### Local Testing
+```bash
+./scripts/run-tests.sh deeplink
+```
+
+#### CI Testing  
+```bash
+CI=1 ./scripts/run-tests.sh deeplink
+```
+
+### GitHub Actions Workflow
+- **File**: `.github/workflows/bcit-integration-test-deep-linking.yml`
+- **Triggers**: PR labels (`bcit`, `bcit-deeplink`), workflow_dispatch, release branches
+- **Timeout**: 30 minutes
+- **Artifacts**: Test results, screenshots, logs (7-day retention)
+
+### Current Scope (Pre-Custom Domain)
+- ✅ Delegate registration and callback validation
+- ✅ Alert-based deep link verification  
+- ✅ Integration with push, in-app, and embedded messages
+- ✅ URL parameter and context validation
+- ⏸️ Wrapped link testing (requires custom domains)
+- ⏸️ External source simulation (requires custom domains)
+
+### Future Enhancements
+Once custom domains are configured:
+1. Wrapped universal link testing
+2. External source simulation (Reminders, Notes, Messages)
+3. End-to-end click tracking validation
+4. Cross-platform attribution testing
+
 ## Benefits
 - ✅ Push notification tests run successfully in CI
 - ✅ No changes to existing local testing workflow  
@@ -169,3 +240,5 @@ CI=1 ./scripts/run-tests.sh
 - ✅ **NEW**: Enhanced logging provides comprehensive visibility into push simulation process
 - ✅ **NEW**: Robust file-based communication between iOS test and macOS test runner
 - ✅ **NEW**: Daily test user creation with date-prefixed emails for fresh testing environment
+- ✅ **NEW**: Deep link routing test framework with comprehensive delegate validation
+- ✅ **NEW**: Alert-based verification system for non-domain-dependent deep link testing

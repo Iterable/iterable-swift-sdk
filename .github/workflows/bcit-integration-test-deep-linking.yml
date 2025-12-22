@@ -1,0 +1,106 @@
+name: BCIT Deep Linking Integration Test
+permissions:
+  contents: read
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, labeled]
+  workflow_dispatch:
+    inputs:
+      ref:
+        description: 'Branch or commit to test (leave empty for current branch)'
+        required: false
+        type: string
+
+jobs:
+  deep-linking-test:
+    name: BCIT Deep Linking Integration Test
+    runs-on: macos-latest
+    timeout-minutes: 30
+    env:
+      XCODE_VERSION: '16.4'
+    if: >
+      github.event_name == 'workflow_dispatch' ||
+      (
+        github.event_name == 'pull_request' && (
+          contains(github.event.pull_request.labels.*.name, 'bcit') ||
+          contains(github.event.pull_request.labels.*.name, 'BCIT') ||
+          contains(github.event.pull_request.labels.*.name, 'bcit-deeplink') ||
+          contains(github.event.pull_request.labels.*.name, 'BCIT-DEEPLINK') ||
+          contains(github.event.pull_request.labels.*.name, 'bcit-deep-linking') ||
+          contains(github.event.pull_request.labels.*.name, 'BCIT-DEEP-LINKING') ||
+          contains(github.event.pull_request.labels.*.name, 'Bcit') ||
+          contains(github.event.pull_request.labels.*.name, 'Bcit-Deeplink') ||
+          startsWith(github.event.pull_request.head.ref, 'release/')
+        )
+      )
+
+    steps:
+    - name: Checkout Repository
+      uses: actions/checkout@v4
+      with:
+        ref: ${{ github.event.inputs.ref || github.ref }}
+
+    - name: Setup Xcode
+      uses: maxim-lobanov/setup-xcode@v1
+      with:
+        xcode-version: ${{ env.XCODE_VERSION }}
+
+    - name: Validate Xcode Version
+      run: |
+        echo "🔍 Validating Xcode version and environment..."
+        echo "DEVELOPER_DIR: $DEVELOPER_DIR"
+        
+        # Check xcodebuild version
+        echo "🔍 Checking xcodebuild version..."
+        ACTUAL_XCODE_VERSION=$(xcodebuild -version | head -n 1 | awk '{print $2}')
+        echo "Xcode version: $ACTUAL_XCODE_VERSION"
+        echo "Expected version: $XCODE_VERSION"
+        
+        # Check xcodebuild path
+        XCODEBUILD_PATH=$(which xcodebuild)
+        echo "xcodebuild path: $XCODEBUILD_PATH"
+        
+        # Verify we're using the correct Xcode version
+        if echo "$ACTUAL_XCODE_VERSION" | grep -q "$XCODE_VERSION"; then
+          echo "✅ Using correct Xcode version: $ACTUAL_XCODE_VERSION"
+        else
+          echo "❌ Incorrect Xcode version!"
+          echo "Current: $ACTUAL_XCODE_VERSION"
+          echo "Expected: $XCODE_VERSION"
+          exit 1
+        fi
+
+    - name: Setup Local Environment
+      working-directory: tests/business-critical-integration
+      run: |
+        echo "🚀 Setting up local environment for integration tests..."
+        
+        # Run setup script with parameters from repository secrets
+        ./scripts/setup-local-environment.sh \
+          "${{ secrets.BCIT_TEST_PROJECT_ID }}" \
+          "${{ secrets.BCIT_ITERABLE_SERVER_KEY }}" \
+          "${{ secrets.BCIT_ITERABLE_API_KEY }}"
+
+    - name: Validate Setup
+      working-directory: tests/business-critical-integration
+      run: |
+        echo "🔍 Validating environment setup..."
+        ./scripts/validate-setup.sh
+
+    - name: Run Deep Linking Tests
+      working-directory: tests/business-critical-integration
+      run: |
+        echo "🧪 Running deep linking integration tests..."
+        CI=true ./scripts/run-tests.sh deeplink
+
+    - name: Upload Test Results
+      if: always()
+      uses: actions/upload-artifact@v4
+      with:
+        name: deep-linking-test-results
+        path: |
+          tests/business-critical-integration/reports/
+          tests/business-critical-integration/screenshots/
+          tests/business-critical-integration/logs/
+        retention-days: 7

@@ -35,13 +35,16 @@
 		8A24D3B12E4508F400B53850 /* PBXFileSystemSynchronizedBuildFileExceptionSet */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
+				Tests/DeepLinkingIntegrationTests.swift,
 				Tests/EmbeddedMessageIntegrationTests.swift,
 				Tests/InAppMessageIntegrationTests.swift,
 				Tests/IntegrationTestBase.swift,
 				Tests/PushNotificationIntegrationTests.swift,
 				Tests/Utilities/CampaignManager.swift,
+				Tests/Utilities/DeepLinkHelpers.swift,
 				Tests/Utilities/IterableAPIClient.swift,
 				Tests/Utilities/MetricsValidator.swift,
+				Tests/Utilities/MockDelegates.swift,
 				Tests/Utilities/PushNotificationSender.swift,
 				Tests/Utilities/ScreenshotCapture.swift,
 			);
@@ -51,14 +54,17 @@
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
 				SupportingFiles/Info.plist,
+				Tests/DeepLinkingIntegrationTests.swift,
 				Tests/EmbeddedMessageIntegrationTests.swift,
 				Tests/InAppMessageIntegrationTests.swift,
 				Tests/Incomplete/DeepLinkingIntegrationTests.swift,
 				Tests/IntegrationTestBase.swift,
 				Tests/PushNotificationIntegrationTests.swift,
 				Tests/Utilities/CampaignManager.swift,
+				Tests/Utilities/DeepLinkHelpers.swift,
 				Tests/Utilities/IterableAPIClient.swift,
 				Tests/Utilities/MetricsValidator.swift,
+				Tests/Utilities/MockDelegates.swift,
 				Tests/Utilities/PushNotificationSender.swift,
 				Tests/Utilities/ScreenshotCapture.swift,
 			);
@@ -87,6 +93,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				8A24D33A2E44F30600B53850 /* IterableAppExtensions in Frameworks */,
+				8A24D33C2E44F30600B53850 /* IterableSDK in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -167,6 +175,8 @@
 			);
 			name = "IterableSDK-Integration-TesterUITests";
 			packageProductDependencies = (
+				8A24D3392E44F30600B53850 /* IterableAppExtensions */,
+				8A24D33B2E44F30600B53850 /* IterableSDK */,
 			);
 			productName = "IterableSDK-Integration-TesterUITests";
 			productReference = 8AB716322E3119A3004AAB74 /* IterableSDK-Integration-TesterUITests.xctest */;
