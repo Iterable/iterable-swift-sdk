@@ -37,8 +37,10 @@ class DeepLinkingIntegrationTests: IntegrationTestBase {
     func testURLDelegateRegistration() {
         print("🧪 Testing URL delegate registration and callback")
         
-        // Verify SDK is initialized
-        XCTAssertNotNil(IterableAPI.email, "SDK should be initialized with user email")
+        // Verify SDK UI shows initialized state
+        let emailValue = app.staticTexts["sdk-email-value"]
+        XCTAssertTrue(emailValue.exists, "SDK email value should exist")
+        XCTAssertNotEqual(emailValue.label, "Not set", "SDK should be initialized with user email")
         
         // The URL delegate is already set during SDK initialization in IntegrationTestBase
         // We just need to verify it's working by triggering a deep link
@@ -49,8 +51,10 @@ class DeepLinkingIntegrationTests: IntegrationTestBase {
     func testCustomActionDelegateRegistration() {
         print("🧪 Testing custom action delegate registration and callback")
         
-        // Verify SDK is initialized
-        XCTAssertNotNil(IterableAPI.email, "SDK should be initialized with user email")
+        // Verify SDK UI shows initialized state
+        let emailValue = app.staticTexts["sdk-email-value"]
+        XCTAssertTrue(emailValue.exists, "SDK email value should exist")
+        XCTAssertNotEqual(emailValue.label, "Not set", "SDK should be initialized with user email")
         
         // The custom action delegate is already set during SDK initialization in IntegrationTestBase
         // We just need to verify it's working by triggering a custom action
@@ -148,14 +152,14 @@ class DeepLinkingIntegrationTests: IntegrationTestBase {
             deepLinkHelper.dismissAlertIfPresent(withTitle: "Success")
         }
         
-        // Wait for push notification and tap it
-        sleep(5)
+        // Wait longer for push notification to arrive and be processed
+        sleep(8)
         
         // Verify the deep link alert appears with expected URL
         let expectedAlert = AlertExpectation(
             title: "Iterable Deep Link Opened",
             messageContains: "tester://",
-            timeout: 15.0
+            timeout: 20.0
         )
         
         XCTAssertTrue(deepLinkHelper.waitForAlert(expectedAlert), "Deep link alert should appear with tester:// URL")
@@ -298,11 +302,8 @@ class DeepLinkingIntegrationTests: IntegrationTestBase {
             sleep(3)
         }
         
-        // Navigate back and go to backend
-        let backButton = app.buttons["back-to-home-button"]
-        XCTAssertTrue(backButton.waitForExistence(timeout: standardTimeout))
-        backButton.tap()
-        
+        // Navigate directly to backend (we're already on home after registering)
+        // The push notification registration flow already brings us back to home
         navigateToBackendTab()
         
         // Send deep link push
@@ -316,8 +317,8 @@ class DeepLinkingIntegrationTests: IntegrationTestBase {
             deepLinkHelper.dismissAlertIfPresent(withTitle: "Success")
         }
         
-        // Wait for push and verify deep link alert
-        sleep(5)
+        // Wait longer for push to arrive and process
+        sleep(8)
         
         let expectedAlert = AlertExpectation(
             title: "Iterable Deep Link Opened",
