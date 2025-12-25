@@ -88,7 +88,7 @@ jobs:
       working-directory: tests/business-critical-integration
       run: |
         echo "🧪 Running in app integration tests..."
-        ./scripts/run-tests.sh inapp
+        CI=true ./scripts/run-tests.sh inapp
 
     - name: Upload Test Results
       if: always()
