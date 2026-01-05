@@ -934,6 +934,169 @@ class IntegrationTestBase: XCTestCase {
         print("✅ [TEST] Simulated embedded silent push sent with UpdateEmbedded notification type")
     }
     
+    // MARK: - External Source Deep Link Helpers
+    
+    /// Open a universal link from the Reminders app
+    func openLinkFromRemindersApp(url: String) {
+        print("📝 [TEST] Opening universal link from Reminders app: \(url)")
+        
+        let reminders = XCUIApplication(bundleIdentifier: "com.apple.reminders")
+        reminders.launch()
+        
+        // Wait for Reminders to load
+        XCTAssertTrue(reminders.wait(for: .runningForeground, timeout: standardTimeout), "Reminders app should launch")
+        sleep(2)
+        
+        // Dismiss welcome modal if it appears
+        let continueButton = reminders.buttons["Continue"]
+        if continueButton.waitForExistence(timeout: 3.0) {
+            print("📝 [TEST] Dismissing Reminders welcome modal")
+            continueButton.tap()
+            sleep(1)
+        }
+        
+        // Dismiss iCloud syncing modal if it appears
+        let notNowButton = reminders.buttons["Not Now"]
+        if notNowButton.waitForExistence(timeout: 3.0) {
+            print("📝 [TEST] Dismissing iCloud syncing modal")
+            notNowButton.tap()
+            sleep(1)
+        }
+        
+        // Tap the blue plus button (bottom right) to create new reminder
+        print("📝 [TEST] Looking for add button...")
+        let addButton = reminders.buttons.matching(identifier: "Add").firstMatch
+        if addButton.waitForExistence(timeout: 5.0) {
+            print("📝 [TEST] Found add button, tapping...")
+            addButton.tap()
+            sleep(1)
+        } else {
+            print("⚠️ [TEST] Add button not found, trying to find by coordinate")
+            // Fallback: tap bottom right area where plus button usually is
+            let coordinate = reminders.coordinate(withNormalizedOffset: CGVector(dx: 0.9, dy: 0.95))
+            coordinate.tap()
+            sleep(1)
+        }
+        
+        // Type the URL in the reminder text field (Reminders will auto-detect it as a link)
+        print("📝 [TEST] Typing URL into reminder: \(url)")
+        reminders.typeText(url)
+        reminders.typeText("\n")
+        
+        sleep(2)
+        
+        // Tap the link to open it
+        print("📝 [TEST] Looking for link to tap...")
+        let linkElement = reminders.links.firstMatch
+        if linkElement.waitForExistence(timeout: 5.0) {
+            print("✅ [TEST] Found link, tapping it...")
+            linkElement.tap()
+            print("✅ [TEST] Tapped link in Reminders app")
+        } else {
+            print("⚠️ [TEST] Link not found in Reminders")
+            print("📝 [TEST] Available elements:")
+            print("  - Links count: \(reminders.links.count)")
+            print("  - Buttons count: \(reminders.buttons.count)")
+            print("  - Text fields count: \(reminders.textFields.count)")
+            
+            // Try alternative: look for any tappable element with the URL
+            let urlElements = reminders.descendants(matching: .any).containing(NSPredicate(format: "label CONTAINS[c] %@", url))
+            if urlElements.firstMatch.exists {
+                print("📝 [TEST] Found element containing URL, tapping...")
+                urlElements.firstMatch.tap()
+            } else {
+                print("⚠️ [TEST] Could not find link, trying Safari fallback")
+                openLinkFromSafari(url: url)
+                return
+            }
+        }
+        
+        // Wait for our app to open
+        XCTAssertTrue(app.wait(for: .runningForeground, timeout: standardTimeout), "App should open from universal link")
+        
+        print("✅ [TEST] App opened from Reminders link")
+    }
+    
+    /// Open a universal link from the Notes app
+    func openLinkFromNotesApp(url: String) {
+        print("📝 [TEST] Opening universal link from Notes app: \(url)")
+        
+        let notes = XCUIApplication(bundleIdentifier: "com.apple.mobilenotes")
+        notes.launch()
+        
+        // Wait for Notes to load
+        XCTAssertTrue(notes.wait(for: .runningForeground, timeout: standardTimeout), "Notes app should launch")
+        sleep(2)
+        
+        // Create new note
+        let newNoteButton = notes.buttons["New Note"]
+        if newNoteButton.exists {
+            newNoteButton.tap()
+        } else {
+            // Try alternative button
+            let composeButton = notes.buttons["Compose"]
+            if composeButton.exists {
+                composeButton.tap()
+            }
+        }
+        
+        sleep(1)
+        
+        // Type the URL (Notes will auto-detect it as a link)
+        notes.typeText("Test deep link:\n")
+        notes.typeText(url)
+        notes.typeText("\n")
+        
+        sleep(1)
+        
+        // Tap the link to open it
+        let linkElement = notes.links.firstMatch
+        if linkElement.waitForExistence(timeout: 5.0) {
+            linkElement.tap()
+            print("✅ [TEST] Tapped link in Notes app")
+        } else {
+            print("⚠️ [TEST] Link not found in Notes, trying alternative approach")
+            // Alternative: Use Safari to open the link
+            openLinkFromSafari(url: url)
+        }
+        
+        // Wait for our app to open
+        XCTAssertTrue(app.wait(for: .runningForeground, timeout: standardTimeout), "App should open from universal link")
+        
+        print("✅ [TEST] App opened from Notes link")
+    }
+    
+    /// Fallback: Open a universal link from Safari
+    func openLinkFromSafari(url: String) {
+        print("🌐 [TEST] Opening universal link from Safari: \(url)")
+        
+        let safari = XCUIApplication(bundleIdentifier: "com.apple.mobilesafari")
+        safari.launch()
+        
+        // Wait for Safari to load
+        XCTAssertTrue(safari.wait(for: .runningForeground, timeout: standardTimeout), "Safari should launch")
+        sleep(2)
+        
+        // Tap address bar
+        let addressBar = safari.textFields["Address"]
+        if addressBar.exists {
+            addressBar.tap()
+            sleep(1)
+            
+            // Clear existing text and type URL
+            addressBar.typeText(url)
+            safari.keyboards.buttons["Go"].tap()
+            
+            print("✅ [TEST] Navigated to URL in Safari")
+        }
+        
+        // Wait for our app to open (universal link should trigger)
+        sleep(3)
+        XCTAssertTrue(app.wait(for: .runningForeground, timeout: standardTimeout), "App should open from universal link")
+        
+        print("✅ [TEST] App opened from Safari universal link")
+    }
+    
     // MARK: - Cleanup
     
     private func cleanupTestData() {

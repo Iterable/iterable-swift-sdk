@@ -605,9 +605,11 @@ run_xcode_tests() {
     # Run the test with verbose output
     echo_info "Executing: ${XCODEBUILD_CMD[*]}"
     echo_info "CI environment variable: CI=$CI"
+    echo_info "FAST_TEST environment variable: FAST_TEST=$FAST_TEST"
     
-    # Export CI to the test process environment
+    # Export CI and FAST_TEST to the test process environment
     export CI="$CI"
+    export FAST_TEST="$FAST_TEST"
     
     # Save full log to logs directory and a copy to reports for screenshot parsing
     "${XCODEBUILD_CMD[@]}" 2>&1 | tee "$LOG_FILE" "$TEST_REPORT.log"

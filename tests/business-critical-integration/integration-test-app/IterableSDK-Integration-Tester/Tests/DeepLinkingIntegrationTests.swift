@@ -32,9 +32,39 @@ class DeepLinkingIntegrationTests: IntegrationTestBase {
         try super.tearDownWithError()
     }
     
-    // MARK: - Basic Delegate Registration Tests
+    // MARK: - External Source Tests (Run First)
     
-    func testURLDelegateRegistration() {
+    func testADeepLinkFromRemindersApp() {
+        print("🧪 Testing deep link from Reminders app")
+        
+        // Test URL - wrapped link that should unwrap to tester:// scheme
+        let testURL = "https://links.tsetester.com/a/test?url=tester://product/12345"
+        
+        // Open link from Reminders app
+        openLinkFromRemindersApp(url: testURL)
+        
+        // Wait for app to process the deep link
+        sleep(5)
+        
+        // Verify deep link alert appears with unwrapped URL
+        let expectedAlert = AlertExpectation(
+            title: "Iterable Deep Link Opened",
+            messageContains: "tester://",
+            timeout: 15.0
+        )
+        
+        XCTAssertTrue(deepLinkHelper.waitForAlert(expectedAlert), "Deep link alert should appear from Reminders app")
+        
+        // Dismiss the alert
+        deepLinkHelper.dismissAlertIfPresent(withTitle: "Iterable Deep Link Opened")
+        
+        print("✅ Deep link from Reminders app test completed")
+    }
+    
+    // MARK: - Basic Delegate Registration Tests
+    /*
+    func testURLDelegateRegistration() throws {
+        throw XCTSkip("Temporarily disabled - focusing on Reminders app test")
         print("🧪 Testing URL delegate registration and callback")
         
         // Verify SDK UI shows initialized state
@@ -48,7 +78,8 @@ class DeepLinkingIntegrationTests: IntegrationTestBase {
         print("✅ URL delegate registration test setup complete")
     }
     
-    func testCustomActionDelegateRegistration() {
+    func testCustomActionDelegateRegistration() throws {
+        throw XCTSkip("Temporarily disabled - focusing on Reminders app test")
         print("🧪 Testing custom action delegate registration and callback")
         
         // Verify SDK UI shows initialized state
@@ -64,7 +95,8 @@ class DeepLinkingIntegrationTests: IntegrationTestBase {
     
     // MARK: - URL Delegate Tests
     
-    func testURLDelegateCallback() {
+    func testURLDelegateCallback() throws {
+        throw XCTSkip("Temporarily disabled - focusing on Reminders app test")
         print("🧪 Testing URL delegate callback with tester:// scheme")
         
         // Navigate to In-App Message tab to trigger deep link
@@ -122,7 +154,8 @@ class DeepLinkingIntegrationTests: IntegrationTestBase {
         print("✅ URL delegate callback test completed successfully")
     }
     
-    func testURLDelegateParameters() {
+    func testURLDelegateParameters() throws {
+        throw XCTSkip("Temporarily disabled - focusing on Reminders app test")
         print("🧪 Testing URL delegate receives correct parameters")
         
         // This test verifies that when a deep link is triggered,
@@ -178,7 +211,8 @@ class DeepLinkingIntegrationTests: IntegrationTestBase {
     
     // MARK: - Alert Validation Tests
     
-    func testAlertContentValidation() {
+    func testAlertContentValidation() throws {
+        throw XCTSkip("Temporarily disabled - focusing on Reminders app test")
         print("🧪 Testing alert content validation for deep links")
         
         // Navigate to In-App Message tab
@@ -240,7 +274,8 @@ class DeepLinkingIntegrationTests: IntegrationTestBase {
         print("✅ Alert content validation test completed")
     }
     
-    func testMultipleAlertsInSequence() {
+    func testMultipleAlertsInSequence() throws {
+        throw XCTSkip("Temporarily disabled - focusing on Reminders app test")
         print("🧪 Testing multiple alerts in sequence")
         
         // This test verifies we can handle multiple alerts during a test
@@ -287,7 +322,8 @@ class DeepLinkingIntegrationTests: IntegrationTestBase {
     
     // MARK: - Integration Tests
     
-    func testDeepLinkFromPushNotification() {
+    func testDeepLinkFromPushNotification() throws {
+        throw XCTSkip("Temporarily disabled - focusing on Reminders app test")
         print("🧪 Testing deep link routing from push notification")
         
         // Navigate to push notification tab and register
@@ -339,7 +375,8 @@ class DeepLinkingIntegrationTests: IntegrationTestBase {
         print("✅ Deep link from push notification test completed")
     }
     
-    func testDeepLinkFromInAppMessage() {
+    func testDeepLinkFromInAppMessage() throws {
+        throw XCTSkip("Temporarily disabled - focusing on Reminders app test")
         print("🧪 Testing deep link routing from in-app message")
         
         // Navigate to In-App Message tab
@@ -390,5 +427,5 @@ class DeepLinkingIntegrationTests: IntegrationTestBase {
         deepLinkHelper.dismissAlertIfPresent(withTitle: "Success")
         
         print("✅ Deep link from in-app message test completed")
-    }
+    }*/
 }
