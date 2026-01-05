@@ -963,19 +963,34 @@ class IntegrationTestBase: XCTestCase {
             sleep(1)
         }
         
-        // Tap the blue plus button (bottom right) to create new reminder
-        print("📝 [TEST] Looking for add button...")
-        let addButton = reminders.buttons.matching(identifier: "Add").firstMatch
-        if addButton.waitForExistence(timeout: 5.0) {
-            print("📝 [TEST] Found add button, tapping...")
-            addButton.tap()
-            sleep(1)
+        // Tap the "New Reminder" button to create new reminder
+        print("📝 [TEST] Looking for New Reminder button...")
+        let newReminderButton = reminders.buttons["New Reminder"]
+        if newReminderButton.waitForExistence(timeout: 5.0) {
+            print("📝 [TEST] Found New Reminder button, tapping...")
+            newReminderButton.tap()
+            sleep(2) // Wait for text field to appear and gain focus
         } else {
-            print("⚠️ [TEST] Add button not found, trying to find by coordinate")
-            // Fallback: tap bottom right area where plus button usually is
-            let coordinate = reminders.coordinate(withNormalizedOffset: CGVector(dx: 0.9, dy: 0.95))
-            coordinate.tap()
-            sleep(1)
+            print("⚠️ [TEST] New Reminder button not found")
+            print("📝 [TEST] Debugging - All available buttons:")
+            let allButtons = reminders.buttons.allElementsBoundByIndex
+            for (index, button) in allButtons.enumerated() {
+                print("  Button[\(index)]: label='\(button.label)', identifier='\(button.identifier)', exists=\(button.exists)")
+            }
+            
+            print("📝 [TEST] Trying Add button...")
+            let addButton = reminders.buttons.matching(identifier: "Add").firstMatch
+            if addButton.waitForExistence(timeout: 3.0) {
+                print("📝 [TEST] Found add button, tapping...")
+                addButton.tap()
+                sleep(2)
+            } else {
+                print("⚠️ [TEST] No button found, trying coordinate fallback")
+                // Last resort: tap bottom right area where plus button usually is
+                let coordinate = reminders.coordinate(withNormalizedOffset: CGVector(dx: 0.9, dy: 0.95))
+                coordinate.tap()
+                sleep(2)
+            }
         }
         
         // Type the URL in the reminder text field (Reminders will auto-detect it as a link)
