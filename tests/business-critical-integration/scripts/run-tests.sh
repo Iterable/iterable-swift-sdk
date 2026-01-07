@@ -799,25 +799,6 @@ run_deep_linking_tests() {
     return $EXIT_CODE
 }
 
-run_test_with_timeout() {
-    local test_name="$1"
-    local timeout="$2"
-    
-    echo_info "Running $test_name (timeout: ${timeout}s)"
-    
-    # For now, simulate test execution
-    # In a real implementation, this would call the actual test methods
-    sleep 2
-    
-    # Simulate success/failure based on test name
-    if [[ "$test_name" == *"fail"* ]]; then
-        echo_warning "Test $test_name completed with warnings"
-        return 1
-    else
-        echo_success "Test $test_name passed"
-        return 0
-    fi
-}
 
 generate_test_report() {
     local test_suite="$1"
