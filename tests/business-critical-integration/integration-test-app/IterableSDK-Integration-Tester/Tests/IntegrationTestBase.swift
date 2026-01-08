@@ -1076,23 +1076,22 @@ class IntegrationTestBase: XCTestCase {
             // Check if Safari opened with the app banner
             let safari = XCUIApplication(bundleIdentifier: "com.apple.mobilesafari")
             if safari.wait(for: .runningForeground, timeout: 3.0) {
-                print("🌐 [TEST] Safari opened, waiting for page to load and banner to appear...")
+                print("🌐 [TEST] Safari opened, capturing initial state...")
+                screenshotCapture.captureScreenshot(named: "safari-initial-state")
                 
-                // Wait for page to load and banner to appear (up to 5 seconds)
-                sleep(5)
+                print("🌐 [TEST] Waiting for page to load and banner to appear...")
+                sleep(2)
+                screenshotCapture.captureScreenshot(named: "safari-after-2s-wait")
                 
-                // Dismiss any Safari modals that might be blocking the banner
-                let closeButton = safari.buttons["Close"]
-                if closeButton.exists {
-                    print("🌐 [TEST] Dismissing Safari modal...")
-                    closeButton.tap()
-                    sleep(1)
-                }
+                sleep(3)
+                screenshotCapture.captureScreenshot(named: "safari-after-5s-total")
                 
-                // Look for the "OPEN" button in Safari's banner
+                // Look for the "OPEN" button in Safari's banner first (don't dismiss anything yet)
                 let openButton = safari.buttons["OPEN"]
                 if openButton.waitForExistence(timeout: 2.0) {
                     print("✅ [TEST] Found Safari banner OPEN button")
+                    screenshotCapture.captureScreenshot(named: "safari-open-button-found")
+                    
                     print("🔍 [TEST] Button frame: \(openButton.frame)")
                     print("🔍 [TEST] Button is hittable: \(openButton.isHittable)")
                     
@@ -1110,6 +1109,8 @@ class IntegrationTestBase: XCTestCase {
                     } else {
                         openButton.tap()
                     }
+                    
+                    screenshotCapture.captureScreenshot(named: "safari-after-open-tap")
                     sleep(2)
                     
                     // Check if app opened after tapping banner
@@ -1119,9 +1120,16 @@ class IntegrationTestBase: XCTestCase {
                     }
                 } else {
                     print("⚠️ [TEST] OPEN button not found, debugging Safari state...")
+                    screenshotCapture.captureScreenshot(named: "safari-no-open-button")
+                    
                     print("🔍 [TEST] All Safari buttons:")
                     for button in safari.buttons.allElementsBoundByIndex {
                         print("  - \(button.identifier): '\(button.label)'")
+                    }
+                    
+                    print("🔍 [TEST] All Safari static texts:")
+                    for text in safari.staticTexts.allElementsBoundByIndex.prefix(10) {
+                        print("  - '\(text.label)'")
                     }
                 }
             }
