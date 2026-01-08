@@ -316,6 +316,7 @@ enum JsonKey {
     enum Embedded {
         static let packageName = "packageName"
         static let sdkVersion = "SDKVersion"
+        static let placementIds = "placementIds"
     }
     
     enum Header {

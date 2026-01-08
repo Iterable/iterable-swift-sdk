@@ -74,6 +74,7 @@ final class EmbeddedManagerTests: XCTestCase {
     func testSyncMessagesSuccessful() {
         let syncMessagesExpectation = expectation(description: "syncMessages should complete")
         let delegateExpectation = expectation(description: "delegate should be notified")
+        let syncSuccessExpectation = expectation(description: "sync success callback should be notified")
         
         let mockApiClient = MockApiClient()
         
@@ -93,7 +94,11 @@ final class EmbeddedManagerTests: XCTestCase {
             onMessagesUpdatedCallback: {
                 delegateExpectation.fulfill()
             },
-            onEmbeddedMessagingDisabledCallback: nil
+            onEmbeddedMessagingDisabledCallback: nil,
+            onEmbeddedMessagingSyncSucceededCallback: {
+                syncSuccessExpectation.fulfill()
+            },
+            onEmbeddedMessagingSyncFailedCallback: nil
         )
         
         manager.addUpdateListener(view)
@@ -102,7 +107,34 @@ final class EmbeddedManagerTests: XCTestCase {
             syncMessagesExpectation.fulfill()
         }
         
-        wait(for: [syncMessagesExpectation, delegateExpectation], timeout: 2)
+        wait(for: [syncMessagesExpectation, delegateExpectation, syncSuccessExpectation], timeout: 2)
+    }
+
+    func testSyncMessagesWithPlacementIdsDoesNotClearOtherPlacements() {
+        let mockApiClient = MockApiClient()
+        mockApiClient.populateMessages([
+            1: [IterableEmbeddedMessage(messageId: "1a", placementId: 1)],
+            2: [IterableEmbeddedMessage(messageId: "2a", placementId: 2)],
+        ])
+        
+        let manager = IterableEmbeddedManager(apiClient: mockApiClient,
+                                              urlDelegate: nil,
+                                              customActionDelegate: nil,
+                                              urlOpener: MockUrlOpener(),
+                                              allowedProtocols: [],
+                                              enableEmbeddedMessaging: true)
+        
+        manager.syncMessages { }
+        XCTAssertEqual(manager.getMessages(for: 2).map { $0.metadata.messageId }, ["2a"])
+        
+        // Update only placement 1 on the "server", then request only that placement.
+        mockApiClient.populateMessages([
+            1: [IterableEmbeddedMessage(messageId: "1b", placementId: 1)],
+        ])
+        manager.syncMessages(placementIds: [1]) { }
+        
+        XCTAssertEqual(manager.getMessages(for: 1).map { $0.metadata.messageId }, ["1b"])
+        XCTAssertEqual(manager.getMessages(for: 2).map { $0.metadata.messageId }, ["2a"])
     }
     
     func testManagerReset() {
@@ -135,6 +167,7 @@ final class EmbeddedManagerTests: XCTestCase {
     
     func testSyncMessagesFailedDueToInvalidAPIKey() {
         let condition = expectation(description: "syncMessages should notify of disabled messaging due to invalid API Key")
+        let syncFailureExpectation = expectation(description: "sync failure callback should be notified")
         
         let mockApiClient = MockApiClient()
         mockApiClient.setInvalidAPIKey()
@@ -149,6 +182,11 @@ final class EmbeddedManagerTests: XCTestCase {
             onMessagesUpdatedCallback: nil,
             onEmbeddedMessagingDisabledCallback: {
                 condition.fulfill()
+            },
+            onEmbeddedMessagingSyncSucceededCallback: nil,
+            onEmbeddedMessagingSyncFailedCallback: { error in
+                XCTAssertNotNil(error)
+                syncFailureExpectation.fulfill()
             }
         )
         
@@ -156,7 +194,7 @@ final class EmbeddedManagerTests: XCTestCase {
         
         manager.syncMessages { }
         
-        wait(for: [condition], timeout: 2)
+        wait(for: [condition, syncFailureExpectation], timeout: 2)
     }
 
     // notify multiple delegates
@@ -320,11 +358,16 @@ final class EmbeddedManagerTests: XCTestCase {
 
     
     private class ViewWithUpdateDelegate: UIView, IterableEmbeddedUpdateDelegate {
-        init(onMessagesUpdatedCallback: (() -> Void)?, onEmbeddedMessagingDisabledCallback: (() -> Void)?) {
+        init(onMessagesUpdatedCallback: (() -> Void)?,
+             onEmbeddedMessagingDisabledCallback: (() -> Void)?,
+             onEmbeddedMessagingSyncSucceededCallback: (() -> Void)? = nil,
+             onEmbeddedMessagingSyncFailedCallback: ((String?) -> Void)? = nil) {
             super.init(frame: CGRect(x: 0, y: 0, width: 0, height: 0))
             
             self.onMessagesUpdatedCallback = onMessagesUpdatedCallback
             self.onEmbeddedMessagingDisabledCallback = onEmbeddedMessagingDisabledCallback
+            self.onEmbeddedMessagingSyncSucceededCallback = onEmbeddedMessagingSyncSucceededCallback
+            self.onEmbeddedMessagingSyncFailedCallback = onEmbeddedMessagingSyncFailedCallback
         }
         
         required init?(coder: NSCoder) {
@@ -333,6 +376,8 @@ final class EmbeddedManagerTests: XCTestCase {
         
         private var onMessagesUpdatedCallback: (() -> Void)?
         private var onEmbeddedMessagingDisabledCallback: (() -> Void)?
+        private var onEmbeddedMessagingSyncSucceededCallback: (() -> Void)?
+        private var onEmbeddedMessagingSyncFailedCallback: ((String?) -> Void)?
         
         func onMessagesUpdated() {
             onMessagesUpdatedCallback?()
@@ -340,6 +385,14 @@ final class EmbeddedManagerTests: XCTestCase {
         
         func onEmbeddedMessagingDisabled() {
             onEmbeddedMessagingDisabledCallback?()
+        }
+        
+        func onEmbeddedMessagingSyncSucceeded() {
+            onEmbeddedMessagingSyncSucceededCallback?()
+        }
+        
+        func onEmbeddedMessagingSyncFailed(_ error: String?) {
+            onEmbeddedMessagingSyncFailedCallback?(error)
         }
     }
     
@@ -366,16 +419,19 @@ final class EmbeddedManagerTests: XCTestCase {
             invalidApiKey = true
         }
         
-        override func getEmbeddedMessages() -> IterableSDK.Pending<IterableSDK.PlacementsPayload, IterableSDK.SendRequestError> {
+        override func getEmbeddedMessages(placementIds: [Int]?) -> IterableSDK.Pending<IterableSDK.PlacementsPayload, IterableSDK.SendRequestError> {
             if invalidApiKey {
                 return FailPending(error: IterableSDK.SendRequestError(reason: "Invalid API Key"))
             }
             
             if newMessages {
                 var placements: [Placement] = []
+                let requested = Set(placementIds ?? [])
                 for (placementId, messages) in mockMessages {
-                    let placement = Placement(placementId: placementId, embeddedMessages: messages)
-                    placements.append(placement)
+                    if placementIds == nil || requested.contains(placementId) {
+                        let placement = Placement(placementId: placementId, embeddedMessages: messages)
+                        placements.append(placement)
+                    }
                 }
                 
                 let payload = PlacementsPayload(placements: placements)

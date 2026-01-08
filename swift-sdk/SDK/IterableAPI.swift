@@ -7,7 +7,7 @@ import UIKit
 
 @objcMembers public final class IterableAPI: NSObject {
     /// The current SDK version
-    public static let sdkVersion = "6.6.3"
+    public static let sdkVersion = "6.6.5"
     
     /// The email of the logged in user that this IterableAPI is using
     public static var email: String? {
@@ -693,21 +693,25 @@ import UIKit
     ///     - unsubscribedMessageTypeIds: List of message types to unsubscribe from
     ///
     /// - Remark: passing in an empty array will clear subscription list, passing in `nil` will not modify the list
-    @objc(updateSubscriptions:unsubscribedChannelIds:unsubscribedMessageTypeIds:subscribedMessageTypeIds:campaignId:templateId:)
+    @objc(updateSubscriptions:unsubscribedChannelIds:unsubscribedMessageTypeIds:subscribedMessageTypeIds:campaignId:templateId:onSuccess:onFailure:)
     public static func updateSubscriptions(_ emailListIds: [NSNumber]?,
                                            unsubscribedChannelIds: [NSNumber]?,
                                            unsubscribedMessageTypeIds: [NSNumber]?,
                                            subscribedMessageTypeIds: [NSNumber]?,
                                            campaignId: NSNumber?,
-                                           templateId: NSNumber?) {
+                                           templateId: NSNumber?,
+                                           onSuccess: OnSuccessHandler?,
+                                           onFailure: OnFailureHandler?) {
         guard let implementation, implementation.isSDKInitialized() else { return }
         
         implementation.updateSubscriptions(emailListIds,
-                                            unsubscribedChannelIds: unsubscribedChannelIds,
-                                            unsubscribedMessageTypeIds: unsubscribedMessageTypeIds,
-                                            subscribedMessageTypeIds: subscribedMessageTypeIds,
-                                            campaignId: campaignId,
-                                            templateId: templateId)
+                                           unsubscribedChannelIds: unsubscribedChannelIds,
+                                           unsubscribedMessageTypeIds: unsubscribedMessageTypeIds,
+                                           subscribedMessageTypeIds: subscribedMessageTypeIds,
+                                           campaignId: campaignId,
+                                           templateId: templateId,
+                                           onSuccess: onSuccess,
+                                           onFailure: onFailure)
     }
     
     // MARK: Embedded Notifications

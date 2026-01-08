@@ -76,6 +76,7 @@ DRY_RUN=false
 CLEANUP=true
 TIMEOUT=60
 FAST_TEST=false
+OPEN_SIMULATOR=false
 
 echo_header() {
     echo -e "${BLUE}============================================${NC}"
@@ -116,12 +117,14 @@ OPTIONS:
   --no-cleanup, -n  Skip cleanup after tests
   --timeout <sec>   Set test timeout in seconds (default: 60)
   --fast-test, -f   Enable fast test mode (skip detailed UI validations)
+  --open, -o        Open Simulator.app (local environment only)
   --help, -h        Show this help message
 
 EXAMPLES:
   $0 push                    # Run push notification tests
   $0 all --verbose           # Run all tests with verbose output
   $0 inapp --timeout 120     # Run in-app tests with 2 minute timeout
+  $0 inapp --open            # Run in-app tests and open Simulator.app
   $0 embedded --dry-run      # Preview embedded message tests
   $0 push --fast-test        # Run push tests in fast mode (skip UI validations)
 
@@ -156,6 +159,10 @@ parse_arguments() {
                 ;;
             --fast-test|-f)
                 FAST_TEST=true
+                shift
+                ;;
+            --open|-o)
+                OPEN_SIMULATOR=true
                 shift
                 ;;
             --help|-h)
@@ -276,6 +283,12 @@ setup_simulator() {
     # Boot simulator
     echo_info "Booting simulator..."
     xcrun simctl boot "$SIMULATOR_UUID" 2>/dev/null || echo_info "Simulator already booted"
+    
+    # Open Simulator.app if --open flag is set and not in CI environment
+    if [[ "$OPEN_SIMULATOR" == true ]] && [[ "$CI" != "1" ]]; then
+        echo_info "Opening Simulator.app..."
+        open -a Simulator
+    fi
     
     # Wait for simulator to be ready
     sleep 5
@@ -592,9 +605,11 @@ run_xcode_tests() {
     # Run the test with verbose output
     echo_info "Executing: ${XCODEBUILD_CMD[*]}"
     echo_info "CI environment variable: CI=$CI"
+    echo_info "FAST_TEST environment variable: FAST_TEST=$FAST_TEST"
     
-    # Export CI to the test process environment
+    # Export CI and FAST_TEST to the test process environment
     export CI="$CI"
+    export FAST_TEST="$FAST_TEST"
     
     # Save full log to logs directory and a copy to reports for screenshot parsing
     "${XCODEBUILD_CMD[@]}" 2>&1 | tee "$LOG_FILE" "$TEST_REPORT.log"
@@ -748,27 +763,35 @@ run_deep_linking_tests() {
     
     if [[ "$DRY_RUN" == true ]]; then
         echo_info "[DRY RUN] Would run deep linking tests"
-        echo_info "[DRY RUN] - Universal link handling"
-        echo_info "[DRY RUN] - SMS/Email link processing"
-        echo_info "[DRY RUN] - URL parameter parsing"
-        echo_info "[DRY RUN] - Cross-platform compatibility"
-        echo_info "[DRY RUN] - Attribution tracking"
+        echo_info "[DRY RUN] - URL delegate registration and callbacks"
+        echo_info "[DRY RUN] - Custom action delegate registration and callbacks"
+        echo_info "[DRY RUN] - Deep link routing from push notifications"
+        echo_info "[DRY RUN] - Deep link routing from in-app messages"
+        echo_info "[DRY RUN] - Alert validation and URL parameter validation"
         return
     fi
     
     TEST_REPORT="$REPORTS_DIR/deep-linking-test-$(date +%Y%m%d-%H%M%S).json"
     
-    local EXIT_CODE=0
-
     echo_info "Starting deep linking test sequence..."
-
-    run_test_with_timeout "deeplink_universal" "$TIMEOUT"
-    run_test_with_timeout "deeplink_sms_email" "$TIMEOUT"
-    run_test_with_timeout "deeplink_parsing" "$TIMEOUT"
-    run_test_with_timeout "deeplink_attribution" "$TIMEOUT"
-    run_test_with_timeout "deeplink_metrics" "$TIMEOUT"
+    
+    # Set up push monitoring for CI environment (deep link push tests require this)
+    setup_push_monitoring
+    
+    # Set up cleanup trap to ensure monitor is stopped
+    trap cleanup_push_monitoring EXIT
+    
+    # Run all deep linking tests
+    local EXIT_CODE=0
+    run_xcode_tests "DeepLinkingIntegrationTests" || EXIT_CODE=$?
     
     generate_test_report "deep_linking" "$TEST_REPORT"
+    
+    # Clean up push monitoring
+    cleanup_push_monitoring
+    
+    # Reset trap
+    trap - EXIT
     
     echo_success "Deep linking tests completed"
     echo_info "Report: $TEST_REPORT"
@@ -776,25 +799,6 @@ run_deep_linking_tests() {
     return $EXIT_CODE
 }
 
-run_test_with_timeout() {
-    local test_name="$1"
-    local timeout="$2"
-    
-    echo_info "Running $test_name (timeout: ${timeout}s)"
-    
-    # For now, simulate test execution
-    # In a real implementation, this would call the actual test methods
-    sleep 2
-    
-    # Simulate success/failure based on test name
-    if [[ "$test_name" == *"fail"* ]]; then
-        echo_warning "Test $test_name completed with warnings"
-        return 1
-    else
-        echo_success "Test $test_name passed"
-        return 0
-    fi
-}
 
 generate_test_report() {
     local test_suite="$1"
@@ -994,6 +998,7 @@ main() {
     echo_info "Dry Run: $DRY_RUN"
     echo_info "Cleanup: $CLEANUP"
     echo_info "Fast Test: $FAST_TEST"
+    echo_info "Open Simulator: $OPEN_SIMULATOR"
     echo
     
     validate_environment

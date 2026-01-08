@@ -161,8 +161,8 @@ class IterableEmbeddedManager: NSObject, IterableInternalEmbeddedManagerProtocol
         syncMessages { }
     }
     
-    private func retrieveEmbeddedMessages(completion: @escaping () -> Void) {
-        apiClient.getEmbeddedMessages()
+    private func retrieveEmbeddedMessages(placementIds: [Int]?, completion: @escaping () -> Void) {
+        apiClient.getEmbeddedMessages(placementIds: placementIds)
             .onCompletion(
                 receiveValue: { embeddedMessagesPayload in
                     let placements = embeddedMessagesPayload.placements
@@ -172,12 +172,24 @@ class IterableEmbeddedManager: NSObject, IterableInternalEmbeddedManagerProtocol
                         fetchedMessagesDict[placement.placementId!] = placement.embeddedMessages
                     }
                     
-                    let processor = EmbeddedMessagingProcessor(currentMessages: self.messages,
+                    let currentMessagesSnapshot: [Int: [IterableEmbeddedMessage]] = self.messageProcessingQueue.sync {
+                        self.messages
+                    }
+                    
+                    if let placementIds, !placementIds.isEmpty {
+                        let requestedPlacementIds = Set(placementIds)
+                        for (placementId, currentMessages) in currentMessagesSnapshot where !requestedPlacementIds.contains(placementId) {
+                            fetchedMessagesDict[placementId] = currentMessages
+                        }
+                    }
+                    
+                    let processor = EmbeddedMessagingProcessor(currentMessages: currentMessagesSnapshot,
                                                                fetchedMessages: fetchedMessagesDict)
                     
                     self.setMessages(processor)
                     self.trackNewlyRetrieved(processor)
                     self.notifyUpdateDelegates(processor)
+                    self.notifySyncSucceeded()
                     completion()
                 },
                 receiveError: { sendRequestError in
@@ -190,6 +202,8 @@ class IterableEmbeddedManager: NSObject, IterableInternalEmbeddedManagerProtocol
                     } else {
                         ITBError()
                     }
+                    
+                    self.notifySyncFailed(sendRequestError)
                     completion()
                 }
             )
@@ -241,12 +255,28 @@ class IterableEmbeddedManager: NSObject, IterableInternalEmbeddedManagerProtocol
             listener.onEmbeddedMessagingDisabled()
         }
     }
+    
+    private func notifySyncSucceeded() {
+        for listener in listeners.allObjects {
+            listener.onEmbeddedMessagingSyncSucceeded?()
+        }
+    }
+    
+    private func notifySyncFailed(_ error: SendRequestError) {
+        for listener in listeners.allObjects {
+            listener.onEmbeddedMessagingSyncFailed?(error.reason)
+        }
+    }
 }
 
 extension IterableEmbeddedManager: EmbeddedNotifiable {
     public func syncMessages(completion: @escaping () -> Void) {
-        if (enableEmbeddedMessaging) {
-            retrieveEmbeddedMessages(completion: completion)
+        syncMessages(placementIds: nil, completion: completion)
+    }
+
+    public func syncMessages(placementIds: [Int]?, completion: @escaping () -> Void) {
+        if enableEmbeddedMessaging {
+            retrieveEmbeddedMessages(placementIds: placementIds, completion: completion)
         }
     }
 }

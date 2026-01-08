@@ -4,6 +4,20 @@ All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 ## [Unreleased]
 
+## [6.6.5]
+### Fixed
+- Fixed an issue where concurrent API requests failing with JWT-related 401 errors could be dropped instead of retried after a new token was obtained, ensuring all affected calls are executed once authentication succeeds.
+
+### Added
+- Added optional Embedded Messaging sync callbacks via the `IterableEmbeddedUpdateDelegate` protocol, allowing apps to react when an embedded sync succeeds or fails.
+- Added an optional `placementIds` parameter to `syncMessages` on `IterableEmbeddedManager`, so apps can fetch and update embedded messages only for specific placements, bringing iOS to parity with the Android SDK.
+
+## [6.6.4]
+
+- Fixed Carthage builds on Xcode 26 and Swift version 6.2.
+- Fixed Objective-C compatability issue with the `AuthFailure` class
+- Fixed Embedded Messages impressions analytics bug
+
 ## [6.6.3]
 
 - Fixed an issue with In-App Messages where JWT Tokens were not being refreshed after tokens got invalidated.
