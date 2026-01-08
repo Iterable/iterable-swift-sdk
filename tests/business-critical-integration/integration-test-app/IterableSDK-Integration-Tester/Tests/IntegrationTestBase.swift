@@ -1081,17 +1081,47 @@ class IntegrationTestBase: XCTestCase {
                 // Wait for page to load and banner to appear (up to 5 seconds)
                 sleep(5)
                 
+                // Dismiss any Safari modals that might be blocking the banner
+                let closeButton = safari.buttons["Close"]
+                if closeButton.exists {
+                    print("🌐 [TEST] Dismissing Safari modal...")
+                    closeButton.tap()
+                    sleep(1)
+                }
+                
                 // Look for the "OPEN" button in Safari's banner
                 let openButton = safari.buttons["OPEN"]
                 if openButton.waitForExistence(timeout: 2.0) {
-                    print("✅ [TEST] Found Safari banner OPEN button, tapping...")
-                    openButton.tap()
+                    print("✅ [TEST] Found Safari banner OPEN button")
+                    print("🔍 [TEST] Button frame: \(openButton.frame)")
+                    print("🔍 [TEST] Button is hittable: \(openButton.isHittable)")
+                    
+                    // Debug: Print all visible elements
+                    print("🔍 [TEST] All Safari buttons:")
+                    for button in safari.buttons.allElementsBoundByIndex {
+                        print("  - \(button.identifier): '\(button.label)' hittable=\(button.isHittable)")
+                    }
+                    
+                    // Try tapping using coordinate if button is not hittable
+                    if !openButton.isHittable {
+                        print("⚠️ [TEST] Button not hittable, trying coordinate tap...")
+                        let coordinate = openButton.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.5))
+                        coordinate.tap()
+                    } else {
+                        openButton.tap()
+                    }
                     sleep(2)
                     
                     // Check if app opened after tapping banner
                     if app.wait(for: .runningForeground, timeout: 5.0) {
                         print("✅ [TEST] App opened from Safari banner")
                         return
+                    }
+                } else {
+                    print("⚠️ [TEST] OPEN button not found, debugging Safari state...")
+                    print("🔍 [TEST] All Safari buttons:")
+                    for button in safari.buttons.allElementsBoundByIndex {
+                        print("  - \(button.identifier): '\(button.label)'")
                     }
                 }
             }
