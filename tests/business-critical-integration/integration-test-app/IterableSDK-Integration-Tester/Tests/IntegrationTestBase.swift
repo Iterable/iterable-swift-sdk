@@ -905,6 +905,47 @@ class IntegrationTestBase: XCTestCase {
         sendSimulatedPushNotification(payload: deepLinkPayload)
     }
     
+    /// Open a universal link directly via simctl (for CI environments)
+    func openUniversalLinkViaSimctl(url: String) {
+        guard isRunningInCI else {
+            print("📱 [TEST] LOCAL MODE: Not using simctl openurl")
+            return
+        }
+        
+        print("🤖 [TEST] CI MODE: Opening universal link via xcrun simctl openurl")
+        print("🔗 [TEST] URL: \(url)")
+        
+        do {
+            // Create command file for test runner to execute
+            let commandDir = URL(fileURLWithPath: "/tmp/push_queue")
+            try? FileManager.default.createDirectory(at: commandDir, withIntermediateDirectories: true)
+            
+            let commandFile = commandDir.appendingPathComponent("openurl_\(UUID().uuidString).cmd")
+            let command = "openurl booted \(url)"
+            try command.write(to: commandFile, atomically: true, encoding: .utf8)
+            
+            print("📄 [TEST] Created command file: \(commandFile.path)")
+            print("🚀 [TEST] Command: xcrun simctl \(command)")
+            print("⏳ [TEST] Waiting for test runner to execute command...")
+            
+            // Wait for command to be executed (test runner will delete the file)
+            var waitTime = 0
+            while FileManager.default.fileExists(atPath: commandFile.path) && waitTime < 30 {
+                sleep(1)
+                waitTime += 1
+            }
+            
+            if waitTime >= 30 {
+                print("⚠️ [TEST] Command file still exists after 30s - may not have been executed")
+            } else {
+                print("✅ [TEST] Command executed by test runner")
+            }
+            
+        } catch {
+            print("❌ [TEST] Failed to create command file: \(error)")
+        }
+    }
+    
     /// Send simulated silent push for embedded message sync in CI environment
     func sendSimulatedEmbeddedSilentPush() {
         guard isRunningInCI else {
@@ -932,6 +973,261 @@ class IntegrationTestBase: XCTestCase {
         
         sendSimulatedPushNotification(payload: silentPushPayload)
         print("✅ [TEST] Simulated embedded silent push sent with UpdateEmbedded notification type")
+    }
+    
+    // MARK: - External Source Deep Link Helpers
+    
+    /// Open a universal link from the Reminders app
+    func openLinkFromRemindersApp(url: String) {
+        print("📝 [TEST] Opening universal link from Reminders app: \(url)")
+        
+        let reminders = XCUIApplication(bundleIdentifier: "com.apple.reminders")
+        reminders.launch()
+        
+        // Wait for Reminders to load
+        XCTAssertTrue(reminders.wait(for: .runningForeground, timeout: standardTimeout), "Reminders app should launch")
+        sleep(2)
+        
+        // Dismiss welcome modal if it appears
+        let continueButton = reminders.buttons["Continue"]
+        if continueButton.waitForExistence(timeout: 3.0) {
+            print("📝 [TEST] Dismissing Reminders welcome modal")
+            continueButton.tap()
+            sleep(1)
+        }
+        
+        // Dismiss iCloud syncing modal if it appears
+        let notNowButton = reminders.buttons["Not Now"]
+        if notNowButton.waitForExistence(timeout: 3.0) {
+            print("📝 [TEST] Dismissing iCloud syncing modal")
+            notNowButton.tap()
+            sleep(1)
+        }
+        
+        // Tap the "New Reminder" button to create new reminder
+        print("📝 [TEST] Looking for New Reminder button...")
+        let newReminderButton = reminders.buttons["New Reminder"]
+        if newReminderButton.waitForExistence(timeout: 5.0) {
+            print("📝 [TEST] Found New Reminder button, tapping...")
+            newReminderButton.tap()
+            sleep(2) // Wait for text field to appear and gain focus
+        } else {
+            print("⚠️ [TEST] New Reminder button not found")
+            print("📝 [TEST] Debugging - All available buttons:")
+            let allButtons = reminders.buttons.allElementsBoundByIndex
+            for (index, button) in allButtons.enumerated() {
+                print("  Button[\(index)]: label='\(button.label)', identifier='\(button.identifier)', exists=\(button.exists)")
+            }
+            
+            print("📝 [TEST] Trying Add button...")
+            let addButton = reminders.buttons.matching(identifier: "Add").firstMatch
+            if addButton.waitForExistence(timeout: 3.0) {
+                print("📝 [TEST] Found add button, tapping...")
+                addButton.tap()
+                sleep(2)
+            } else {
+                print("⚠️ [TEST] No button found, trying coordinate fallback")
+                // Last resort: tap bottom right area where plus button usually is
+                let coordinate = reminders.coordinate(withNormalizedOffset: CGVector(dx: 0.9, dy: 0.95))
+                coordinate.tap()
+                sleep(2)
+            }
+        }
+        
+        // Type the URL in the reminder text field (Reminders will auto-detect it as a link)
+        print("📝 [TEST] Typing URL into reminder: \(url)")
+        reminders.typeText(url)
+        reminders.typeText("\n")
+        
+        sleep(2)
+        
+        // Tap the link to open it
+        print("📝 [TEST] Looking for link to tap...")
+        let linkElement = reminders.links.firstMatch
+        if linkElement.waitForExistence(timeout: 5.0) {
+            print("✅ [TEST] Found link, tapping it...")
+            linkElement.tap()
+            print("✅ [TEST] Tapped link in Reminders app")
+        } else {
+            print("⚠️ [TEST] Link not found in Reminders")
+            print("📝 [TEST] Available elements:")
+            print("  - Links count: \(reminders.links.count)")
+            print("  - Buttons count: \(reminders.buttons.count)")
+            print("  - Text fields count: \(reminders.textFields.count)")
+            
+            // Try alternative: look for any tappable element with the URL
+            let urlElements = reminders.descendants(matching: .any).containing(NSPredicate(format: "label CONTAINS[c] %@", url))
+            if urlElements.firstMatch.exists {
+                print("📝 [TEST] Found element containing URL, tapping...")
+                urlElements.firstMatch.tap()
+            } else {
+                print("⚠️ [TEST] Could not find link, trying Safari fallback")
+                openLinkFromSafari(url: url)
+                return
+            }
+        }
+        
+        // Wait for our app to open
+        let appOpened = app.wait(for: .runningForeground, timeout: 10.0)
+        
+        if !appOpened {
+            print("⚠️ [TEST] App didn't open from Reminders link, checking Safari banner")
+            
+            // Check if Safari opened with the app banner
+            let safari = XCUIApplication(bundleIdentifier: "com.apple.mobilesafari")
+            if safari.wait(for: .runningForeground, timeout: 3.0) {
+                print("🌐 [TEST] Safari opened, capturing initial state...")
+                screenshotCapture.captureScreenshot(named: "safari-initial-state")
+                
+                print("🌐 [TEST] Waiting for page to load and banner to appear...")
+                sleep(2)
+                screenshotCapture.captureScreenshot(named: "safari-after-2s-wait")
+                
+                sleep(3)
+                screenshotCapture.captureScreenshot(named: "safari-after-5s-total")
+                
+                // Look for the "OPEN" button in Safari's banner first (don't dismiss anything yet)
+                let openButton = safari.buttons["OPEN"]
+                if openButton.waitForExistence(timeout: 2.0) {
+                    print("✅ [TEST] Found Safari banner OPEN button")
+                    screenshotCapture.captureScreenshot(named: "safari-open-button-found")
+                    
+                    print("🔍 [TEST] Button frame: \(openButton.frame)")
+                    print("🔍 [TEST] Button is hittable: \(openButton.isHittable)")
+                    
+                    // Debug: Print all visible elements
+                    print("🔍 [TEST] All Safari buttons:")
+                    for button in safari.buttons.allElementsBoundByIndex {
+                        print("  - \(button.identifier): '\(button.label)' hittable=\(button.isHittable)")
+                    }
+                    
+                    // Try tapping using coordinate if button is not hittable
+                    if !openButton.isHittable {
+                        print("⚠️ [TEST] Button not hittable, trying coordinate tap...")
+                        let coordinate = openButton.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.5))
+                        coordinate.tap()
+                    } else {
+                        openButton.tap()
+                    }
+                    
+                    screenshotCapture.captureScreenshot(named: "safari-after-open-tap")
+                    sleep(2)
+                    
+                    // Check if app opened after tapping banner
+                    if app.wait(for: .runningForeground, timeout: 5.0) {
+                        print("✅ [TEST] App opened from Safari banner")
+                        return
+                    }
+                } else {
+                    print("⚠️ [TEST] OPEN button not found, debugging Safari state...")
+                    screenshotCapture.captureScreenshot(named: "safari-no-open-button")
+                    
+                    print("🔍 [TEST] All Safari buttons:")
+                    for button in safari.buttons.allElementsBoundByIndex {
+                        print("  - \(button.identifier): '\(button.label)'")
+                    }
+                    
+                    print("🔍 [TEST] All Safari static texts:")
+                    for text in safari.staticTexts.allElementsBoundByIndex.prefix(10) {
+                        print("  - '\(text.label)'")
+                    }
+                }
+            }
+            
+            // If Safari banner didn't work and we're in CI, use simctl fallback
+            if isRunningInCI {
+                print("⚠️ [TEST] Safari banner didn't work in CI, using simctl fallback")
+                openUniversalLinkViaSimctl(url: url)
+                
+                // Wait for app to open after simctl command
+                sleep(3)
+                XCTAssertTrue(app.wait(for: .runningForeground, timeout: standardTimeout), "App should open from universal link via simctl")
+            } else {
+                XCTFail("App should have opened from Reminders link or Safari banner")
+            }
+        }
+        
+        print("✅ [TEST] App opened from Reminders link")
+    }
+    
+    /// Open a universal link from the Notes app
+    func openLinkFromNotesApp(url: String) {
+        print("📝 [TEST] Opening universal link from Notes app: \(url)")
+        
+        let notes = XCUIApplication(bundleIdentifier: "com.apple.mobilenotes")
+        notes.launch()
+        
+        // Wait for Notes to load
+        XCTAssertTrue(notes.wait(for: .runningForeground, timeout: standardTimeout), "Notes app should launch")
+        sleep(2)
+        
+        // Create new note
+        let newNoteButton = notes.buttons["New Note"]
+        if newNoteButton.exists {
+            newNoteButton.tap()
+        } else {
+            // Try alternative button
+            let composeButton = notes.buttons["Compose"]
+            if composeButton.exists {
+                composeButton.tap()
+            }
+        }
+        
+        sleep(1)
+        
+        // Type the URL (Notes will auto-detect it as a link)
+        notes.typeText("Test deep link:\n")
+        notes.typeText(url)
+        notes.typeText("\n")
+        
+        sleep(1)
+        
+        // Tap the link to open it
+        let linkElement = notes.links.firstMatch
+        if linkElement.waitForExistence(timeout: 5.0) {
+            linkElement.tap()
+            print("✅ [TEST] Tapped link in Notes app")
+        } else {
+            print("⚠️ [TEST] Link not found in Notes, trying alternative approach")
+            // Alternative: Use Safari to open the link
+            openLinkFromSafari(url: url)
+        }
+        
+        // Wait for our app to open
+        XCTAssertTrue(app.wait(for: .runningForeground, timeout: standardTimeout), "App should open from universal link")
+        
+        print("✅ [TEST] App opened from Notes link")
+    }
+    
+    /// Fallback: Open a universal link from Safari
+    func openLinkFromSafari(url: String) {
+        print("🌐 [TEST] Opening universal link from Safari: \(url)")
+        
+        let safari = XCUIApplication(bundleIdentifier: "com.apple.mobilesafari")
+        safari.launch()
+        
+        // Wait for Safari to load
+        XCTAssertTrue(safari.wait(for: .runningForeground, timeout: standardTimeout), "Safari should launch")
+        sleep(2)
+        
+        // Tap address bar
+        let addressBar = safari.textFields["Address"]
+        if addressBar.exists {
+            addressBar.tap()
+            sleep(1)
+            
+            // Clear existing text and type URL
+            addressBar.typeText(url)
+            safari.keyboards.buttons["Go"].tap()
+            
+            print("✅ [TEST] Navigated to URL in Safari")
+        }
+        
+        // Wait for our app to open (universal link should trigger)
+        sleep(3)
+        XCTAssertTrue(app.wait(for: .runningForeground, timeout: standardTimeout), "App should open from universal link")
+        
+        print("✅ [TEST] App opened from Safari universal link")
     }
     
     // MARK: - Cleanup

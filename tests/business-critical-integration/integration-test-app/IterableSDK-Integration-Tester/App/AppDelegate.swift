@@ -86,10 +86,24 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         IterableAppIntegration.application(application, didReceiveRemoteNotification: userInfo, fetchCompletionHandler: completionHandler)
     }
     
-    // MARK: - Deep link
+    // MARK: - Deep link (Universal Links)
     
     func application(_ application: UIApplication, continue userActivity: NSUserActivity, restorationHandler: @escaping ([UIUserActivityRestoring]?) -> Void) -> Bool {
-        return true // No deep link handling in this test app
+        print("🔗 [APP] Universal link received via NSUserActivity")
+        print("🔗 [APP] Activity type: \(userActivity.activityType)")
+        
+        // Handle universal links (e.g., from Reminders, Notes, Safari, etc.)
+        if userActivity.activityType == NSUserActivityTypeBrowsingWeb,
+           let url = userActivity.webpageURL {
+            print("🔗 [APP] Universal link URL: \(url.absoluteString)")
+            
+            // Pass to Iterable SDK for unwrapping and handling
+            // The SDK will unwrap /a/ links and call the URL delegate with the destination URL
+            IterableAPI.handle(universalLink: url)
+            return true
+        }
+        
+        return false
     }
     
     func application(_ app: UIApplication, open url: URL, options: [UIApplication.OpenURLOptionsKey : Any] = [:]) -> Bool {
@@ -336,12 +350,13 @@ extension AppDelegate: IterableURLDelegate {
     func handle(iterableURL url: URL, inContext context: IterableActionContext) -> Bool {
         print("🔗 BREAKPOINT HERE: IterableURLDelegate.handle called!")
         print("🔗 URL: \(url.absoluteString)")
-        print("🔗 Context: \(context)")
+        print("🔗 Context source: \(context.source)")
         
         // Set a breakpoint on the next line to see if this method gets called
         let urlScheme = url.scheme ?? "no-scheme"
         print("🔗 URL scheme: \(urlScheme)")
         
+        // Handle tester:// deep links (unwrapped destination URLs)
         if url.scheme == "tester" {
             print("✅ App is opened via Iterable deep link - tester://")
             
@@ -367,6 +382,23 @@ extension AppDelegate: IterableURLDelegate {
             NotificationCenter.default.post(name: NSNotification.Name("AppOpenedViaDeepLink"), object: url)
             
             return true // We handled this URL
+        }
+        
+        // Handle https:// links (could be unwrapped universal links)
+        if url.scheme == "https" {
+            print("🌐 HTTPS URL received in URL delegate: \(url.absoluteString)")
+            
+            // Check if this is from our tracking domain (shouldn't happen if SDK unwrapped correctly)
+            if url.host == "links.tsetester.com" {
+                print("⚠️ Received wrapped tracking URL - SDK may not have unwrapped it")
+            }
+            
+            // Show alert for HTTPS deep links
+            DispatchQueue.main.async {
+                self.showDeepLinkAlert(url: url)
+            }
+            
+            return true
         }
         
         print("🔗 URL scheme '\(url.scheme ?? "nil")' not handled by our app")
