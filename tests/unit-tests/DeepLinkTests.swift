@@ -132,6 +132,26 @@ class DeepLinkTests: XCTestCase {
         wait(for: [expectation1], timeout: testExpectationTimeout)
     }
     
+    // MARK: - isIterableDeepLink Tests
+    
+    func testIsIterableDeepLinkReturnsTrueForValidDeepLink() {
+        XCTAssertTrue(IterableAPI.isIterableDeepLink(iterableRewriteURL))
+    }
+    
+    func testIsIterableDeepLinkReturnsFalseForNonRewriteLink() {
+        XCTAssertFalse(IterableAPI.isIterableDeepLink(iterableNoRewriteURL))
+    }
+    
+    func testIsIterableDeepLinkReturnsFalseForNonIterableLink() {
+        XCTAssertFalse(IterableAPI.isIterableDeepLink("https://example.com/some/path"))
+    }
+    
+    func testIsIterableDeepLinkReturnsFalseForEmptyString() {
+        XCTAssertFalse(IterableAPI.isIterableDeepLink(""))
+    }
+    
+    // MARK: - Other Tests
+    
     /// this is a service that automatically redirects if that url is hit, make sure we are not actually hitting the url but our servers
     func testNoURLRedirect() {
         let expectation1 = expectation(description: "testNoURLRedirect")
