@@ -17,7 +17,7 @@ class DeepLinkManager: NSObject {
                              urlDelegate: IterableURLDelegate?,
                              urlOpener: UrlOpenerProtocol,
                              allowedProtocols: [String] = []) -> (Bool, Pending<IterableAttributionInfo?, Error>) {
-        if isIterableDeepLink(url.absoluteString) {
+        if DeepLinkManager.isIterableDeepLink(url.absoluteString) {
             let pending = resolve(appLinkURL: url).map { (resolvedUrl, attributionInfo) -> IterableAttributionInfo? in
                 var resolvedUrlString: String
                 if let resolvedUrl = resolvedUrl {
@@ -67,7 +67,7 @@ class DeepLinkManager: NSObject {
         deepLinkTemplateId = nil
         deepLinkMessageId = nil
         
-        if isIterableDeepLink(appLinkURL.absoluteString) {
+        if DeepLinkManager.isIterableDeepLink(appLinkURL.absoluteString) {
             redirectUrlSession.makeDataRequest(with: appLinkURL) { [unowned self] _, _, error in
                 if let error = error {
                     ITBError("error: \(error.localizedDescription)")
@@ -89,7 +89,7 @@ class DeepLinkManager: NSObject {
         return fulfill
     }
     
-    private func isIterableDeepLink(_ urlString: String) -> Bool {
+    static func isIterableDeepLink(_ urlString: String) -> Bool {
         guard let regex = try? NSRegularExpression(pattern: Const.deepLinkRegex, options: []) else {
             return false
         }
