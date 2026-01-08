@@ -1051,6 +1051,7 @@ class IntegrationTestBase: XCTestCase {
             }
         } else {
             XCTAssertTrue(appOpened, "App should open from universal link")
+        }
         
         print("✅ [TEST] App opened from Reminders link")
     }
