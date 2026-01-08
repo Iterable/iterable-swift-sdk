@@ -905,6 +905,47 @@ class IntegrationTestBase: XCTestCase {
         sendSimulatedPushNotification(payload: deepLinkPayload)
     }
     
+    /// Open a universal link directly via simctl (for CI environments)
+    func openUniversalLinkViaSimctl(url: String) {
+        guard isRunningInCI else {
+            print("📱 [TEST] LOCAL MODE: Not using simctl openurl")
+            return
+        }
+        
+        print("🤖 [TEST] CI MODE: Opening universal link via xcrun simctl openurl")
+        print("🔗 [TEST] URL: \(url)")
+        
+        do {
+            // Create command file for test runner to execute
+            let commandDir = URL(fileURLWithPath: "/tmp/push_queue")
+            try? FileManager.default.createDirectory(at: commandDir, withIntermediateDirectories: true)
+            
+            let commandFile = commandDir.appendingPathComponent("openurl_\(UUID().uuidString).cmd")
+            let command = "openurl booted \(url)"
+            try command.write(to: commandFile, atomically: true, encoding: .utf8)
+            
+            print("📄 [TEST] Created command file: \(commandFile.path)")
+            print("🚀 [TEST] Command: xcrun simctl \(command)")
+            print("⏳ [TEST] Waiting for test runner to execute command...")
+            
+            // Wait for command to be executed (test runner will delete the file)
+            var waitTime = 0
+            while FileManager.default.fileExists(atPath: commandFile.path) && waitTime < 30 {
+                sleep(1)
+                waitTime += 1
+            }
+            
+            if waitTime >= 30 {
+                print("⚠️ [TEST] Command file still exists after 30s - may not have been executed")
+            } else {
+                print("✅ [TEST] Command executed by test runner")
+            }
+            
+        } catch {
+            print("❌ [TEST] Failed to create command file: \(error)")
+        }
+    }
+    
     /// Send simulated silent push for embedded message sync in CI environment
     func sendSimulatedEmbeddedSilentPush() {
         guard isRunningInCI else {
@@ -1031,24 +1072,11 @@ class IntegrationTestBase: XCTestCase {
         let appOpened = app.wait(for: .runningForeground, timeout: 10.0)
         if !appOpened && isRunningInCI {
             print("⚠️ [TEST] App didn't open from Reminders link in CI, using simctl fallback")
-            print("📝 [TEST] Opening URL via simctl: \(url)")
+            openUniversalLinkViaSimctl(url: url)
             
-            // Use simctl to directly open the URL (works better in CI)
-            let simulatorUUID = ProcessInfo.processInfo.environment["SIMULATOR_UUID"] ?? ""
-            if !simulatorUUID.isEmpty {
-                let process = Process()
-                process.launchPath = "/usr/bin/xcrun"
-                process.arguments = ["simctl", "openurl", simulatorUUID, url]
-                process.launch()
-                process.waitUntilExit()
-                print("📝 [TEST] simctl openurl executed")
-                
-                // Wait again for app to open
-                sleep(3)
-                XCTAssertTrue(app.wait(for: .runningForeground, timeout: standardTimeout), "App should open from universal link via simctl")
-            } else {
-                XCTFail("App should open from universal link, but SIMULATOR_UUID not available for fallback")
-            }
+            // Wait for app to open after simctl command
+            sleep(3)
+            XCTAssertTrue(app.wait(for: .runningForeground, timeout: standardTimeout), "App should open from universal link via simctl")
         } else {
             XCTAssertTrue(appOpened, "App should open from universal link")
         }
