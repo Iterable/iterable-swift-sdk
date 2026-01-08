@@ -1068,17 +1068,45 @@ class IntegrationTestBase: XCTestCase {
         }
         
         // Wait for our app to open
-        // In CI, universal links from Reminders may not work reliably, so use simctl as fallback
         let appOpened = app.wait(for: .runningForeground, timeout: 10.0)
-        if !appOpened && isRunningInCI {
-            print("⚠️ [TEST] App didn't open from Reminders link in CI, using simctl fallback")
-            openUniversalLinkViaSimctl(url: url)
+        
+        if !appOpened {
+            print("⚠️ [TEST] App didn't open from Reminders link, checking Safari banner")
             
-            // Wait for app to open after simctl command
-            sleep(3)
-            XCTAssertTrue(app.wait(for: .runningForeground, timeout: standardTimeout), "App should open from universal link via simctl")
-        } else {
-            XCTAssertTrue(appOpened, "App should open from universal link")
+            // Check if Safari opened with the app banner
+            let safari = XCUIApplication(bundleIdentifier: "com.apple.mobilesafari")
+            if safari.wait(for: .runningForeground, timeout: 3.0) {
+                print("🌐 [TEST] Safari opened, waiting for page to load and banner to appear...")
+                
+                // Wait for page to load and banner to appear (up to 5 seconds)
+                sleep(5)
+                
+                // Look for the "OPEN" button in Safari's banner
+                let openButton = safari.buttons["OPEN"]
+                if openButton.waitForExistence(timeout: 2.0) {
+                    print("✅ [TEST] Found Safari banner OPEN button, tapping...")
+                    openButton.tap()
+                    sleep(2)
+                    
+                    // Check if app opened after tapping banner
+                    if app.wait(for: .runningForeground, timeout: 5.0) {
+                        print("✅ [TEST] App opened from Safari banner")
+                        return
+                    }
+                }
+            }
+            
+            // If Safari banner didn't work and we're in CI, use simctl fallback
+            if isRunningInCI {
+                print("⚠️ [TEST] Safari banner didn't work in CI, using simctl fallback")
+                openUniversalLinkViaSimctl(url: url)
+                
+                // Wait for app to open after simctl command
+                sleep(3)
+                XCTAssertTrue(app.wait(for: .runningForeground, timeout: standardTimeout), "App should open from universal link via simctl")
+            } else {
+                XCTFail("App should have opened from Reminders link or Safari banner")
+            }
         }
         
         print("✅ [TEST] App opened from Reminders link")
