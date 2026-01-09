@@ -4,6 +4,11 @@ import Foundation
 
 class IntegrationTestBase: XCTestCase {
     
+    // MARK: - Class Properties
+    
+    // Track if any test has failed (for local mode early exit)
+    private static var hasAnyTestFailed = false
+    
     // MARK: - Properties
     
     var app: XCUIApplication!
@@ -113,12 +118,36 @@ class IntegrationTestBase: XCTestCase {
         return isCI
     }()
     
+    // MARK: - Class Setup
+    
+    override class func setUp() {
+        super.setUp()
+        // Reset failure flag at the start of test suite
+        hasAnyTestFailed = false
+        print("🧪 Test suite starting - failure tracking reset")
+    }
+    
     // MARK: - Setup & Teardown
     
     override func setUpWithError() throws {
         try super.setUpWithError()
         
+        // Control whether to continue after assertion failures within a test
+        // Always stop within the same test on failure for cleaner logs
         continueAfterFailure = false
+        
+        // Control whether to run next test after a test failure
+        // CI: Run all tests to collect all failures
+        // Local: Stop after first failure for faster feedback
+        if !isRunningInCI {
+            // Local mode: Check if any previous test failed
+            if Self.hasAnyTestFailed {
+                print("⏭️ [LOCAL MODE] Skipping test - previous test failed")
+                throw XCTSkip("Skipping remaining tests after first failure (local mode)")
+            }
+        } else {
+            print("🤖 [CI MODE] Running all tests regardless of failures")
+        }
         
         // Log test mode for visibility
         print("🧪 Test Mode: \(fastTest ? "FAST (skipping detailed validations)" : "COMPREHENSIVE (full validation suite)")")
@@ -150,6 +179,12 @@ class IntegrationTestBase: XCTestCase {
     }
     
     override func tearDownWithError() throws {
+        // Track if this test failed (for local mode early exit)
+        if testRun?.hasSucceeded == false {
+            Self.hasAnyTestFailed = true
+            print("❌ Test failed - marking for early exit in local mode")
+        }
+        
         // Capture final screenshot
         screenshotCapture?.captureScreenshot(named: "final-\(name)")
         
