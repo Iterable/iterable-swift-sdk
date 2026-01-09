@@ -1276,6 +1276,11 @@ class IntegrationTestBase: XCTestCase {
     
     private func cleanupTestData() {
         // Remove test user from backend
+        guard let apiClient = apiClient else {
+            print("⏭️ Skipping cleanup - apiClient not initialized")
+            return
+        }
+        
         let expectation = XCTestExpectation(description: "Cleanup test data")
         
         apiClient.cleanupTestUser(email: testUserEmail) { success in
