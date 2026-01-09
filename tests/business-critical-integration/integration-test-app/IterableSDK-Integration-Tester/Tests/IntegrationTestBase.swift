@@ -1046,7 +1046,14 @@ class IntegrationTestBase: XCTestCase {
         let linkElement = reminders.links.firstMatch
         if linkElement.waitForExistence(timeout: 5.0) {
             print("✅ [TEST] Found link, tapping it...")
-            linkElement.tap()
+            
+            // Scroll up to ensure link is fully visible and in tappable area
+            reminders.swipeDown()
+            sleep(1)
+            
+            // Tap at the beginning of the link (left side) where it's most likely to be interactive
+            let coordinate = linkElement.coordinate(withNormalizedOffset: CGVector(dx: 0.1, dy: 0.5))
+            coordinate.tap()
             print("✅ [TEST] Tapped link in Reminders app")
         } else {
             print("⚠️ [TEST] Link not found in Reminders")
