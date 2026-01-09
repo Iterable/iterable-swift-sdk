@@ -39,12 +39,23 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
            let activity = userActivity["UIApplicationLaunchOptionsUserActivityKey"] as? NSUserActivity,
            activity.activityType == NSUserActivityTypeBrowsingWeb {
             print("🔗 [APP] App launched via universal link - initializing SDK early")
+            print("🔗 [APP] Launch options: \(launchOptions ?? [:])")
+            print("🔗 [APP] User activity: \(activity)")
+            if let webpageURL = activity.webpageURL {
+                print("🔗 [APP] Webpage URL: \(webpageURL.absoluteString)")
+            }
+            
             AppDelegate.initializeIterableSDK()
+            print("✅ [APP] SDK initialization complete")
             
             // Also register test user email
             if let testEmail = AppDelegate.loadTestUserEmailFromConfig() {
+                print("📧 [APP] Registering test email: \(testEmail)")
                 AppDelegate.registerEmailToIterableSDK(email: testEmail)
                 print("✅ [APP] SDK initialized and user registered for deep link handling")
+                print("✅ [APP] IterableAPI.email is now: \(IterableAPI.email ?? "nil")")
+            } else {
+                print("⚠️ [APP] Could not load test email from config")
             }
         }
 
@@ -106,18 +117,25 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     func application(_ application: UIApplication, continue userActivity: NSUserActivity, restorationHandler: @escaping ([UIUserActivityRestoring]?) -> Void) -> Bool {
         print("🔗 [APP] Universal link received via NSUserActivity")
         print("🔗 [APP] Activity type: \(userActivity.activityType)")
+        print("🔗 [APP] Current IterableAPI.email: \(IterableAPI.email ?? "nil")")
+        print("🔗 [APP] Is SDK initialized: \(IterableAPI.email != nil)")
         
         // Handle universal links (e.g., from Reminders, Notes, Safari, etc.)
         if userActivity.activityType == NSUserActivityTypeBrowsingWeb,
            let url = userActivity.webpageURL {
             print("🔗 [APP] Universal link URL: \(url.absoluteString)")
+            print("🔗 [APP] URL host: \(url.host ?? "nil")")
+            print("🔗 [APP] URL path: \(url.path)")
             
             // Pass to Iterable SDK for unwrapping and handling
             // The SDK will unwrap /a/ links and call the URL delegate with the destination URL
-            IterableAPI.handle(universalLink: url)
+            print("🔗 [APP] About to call IterableAPI.handle(universalLink:)")
+            let result = IterableAPI.handle(universalLink: url)
+            print("🔗 [APP] IterableAPI.handle(universalLink:) returned: \(result)")
             return true
         }
         
+        print("⚠️ [APP] Universal link not handled - activity type mismatch")
         return false
     }
     
@@ -385,13 +403,18 @@ extension AppDelegate: UNUserNotificationCenterDelegate {
 extension AppDelegate: IterableURLDelegate {
     // return true if we handled the url
     func handle(iterableURL url: URL, inContext context: IterableActionContext) -> Bool {
+        print("========================================")
         print("🔗 BREAKPOINT HERE: IterableURLDelegate.handle called!")
         print("🔗 URL: \(url.absoluteString)")
+        print("🔗 URL host: \(url.host ?? "nil")")
+        print("🔗 URL path: \(url.path)")
+        print("🔗 URL scheme: \(url.scheme ?? "nil")")
         print("🔗 Context source: \(context.source)")
+        print("🔗 Context action: \(context.action)")
+        print("========================================")
         
         // Set a breakpoint on the next line to see if this method gets called
         let urlScheme = url.scheme ?? "no-scheme"
-        print("🔗 URL scheme: \(urlScheme)")
         
         // Handle tester:// deep links (unwrapped destination URLs)
         if url.scheme == "tester" {
