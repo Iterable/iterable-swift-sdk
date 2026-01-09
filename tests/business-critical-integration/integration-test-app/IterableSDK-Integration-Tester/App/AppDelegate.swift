@@ -249,6 +249,28 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     private func showDeepLinkAlert(url: URL) {
         showAlert(with: "Iterable Deep Link Opened", and: "🔗 App was opened via Iterable SDK deep link:\n\(url.absoluteString)")
     }
+    
+    private func navigateToUpdateScreen(url: URL) {
+        guard let rootViewController = window?.rootViewController else {
+            print("❌ Could not get root view controller")
+            return
+        }
+        
+        // Create the update view controller with the path
+        let updateVC = UpdateViewController(path: url.path)
+        updateVC.modalPresentationStyle = .fullScreen
+        
+        // Find the topmost presented view controller
+        var topViewController = rootViewController
+        while let presentedViewController = topViewController.presentedViewController {
+            topViewController = presentedViewController
+        }
+        
+        print("✅ Presenting UpdateViewController for path: \(url.path)")
+        topViewController.present(updateVC, animated: true) {
+            print("✅ UpdateViewController presented successfully")
+        }
+    }
 }
 
 // MARK: - UNUserNotificationCenterDelegate
@@ -393,7 +415,27 @@ extension AppDelegate: IterableURLDelegate {
                 print("⚠️ Received wrapped tracking URL - SDK may not have unwrapped it")
             }
             
-            // Show alert for HTTPS deep links
+            // Handle tsetester.com URLs with routing
+            if url.host == "tsetester.com" {
+                print("🎯 tsetester.com URL detected: \(url.path)")
+                
+                if url.path.hasPrefix("/update/") {
+                    print("📱 Navigating to update screen for path: \(url.path)")
+                    DispatchQueue.main.async {
+                        self.navigateToUpdateScreen(url: url)
+                    }
+                    return true
+                }
+                
+                // For other tsetester.com paths, show generic alert
+                print("📱 Showing alert for tsetester.com path: \(url.path)")
+                DispatchQueue.main.async {
+                    self.showDeepLinkAlert(url: url)
+                }
+                return true
+            }
+            
+            // Show alert for other HTTPS deep links
             DispatchQueue.main.async {
                 self.showDeepLinkAlert(url: url)
             }
