@@ -32,6 +32,21 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         
         // Reset device token session state on app launch for clean testing
         AppDelegate.resetDeviceTokenSessionState()
+        
+        // CRITICAL: Initialize SDK early if app is opened via universal link
+        // This ensures SDK is ready to handle the deep link when continue userActivity is called
+        if let userActivity = launchOptions?[.userActivityDictionary] as? [String: Any],
+           let activity = userActivity["UIApplicationLaunchOptionsUserActivityKey"] as? NSUserActivity,
+           activity.activityType == NSUserActivityTypeBrowsingWeb {
+            print("🔗 [APP] App launched via universal link - initializing SDK early")
+            AppDelegate.initializeIterableSDK()
+            
+            // Also register test user email
+            if let testEmail = AppDelegate.loadTestUserEmailFromConfig() {
+                AppDelegate.registerEmailToIterableSDK(email: testEmail)
+                print("✅ [APP] SDK initialized and user registered for deep link handling")
+            }
+        }
 
         return true
     }
