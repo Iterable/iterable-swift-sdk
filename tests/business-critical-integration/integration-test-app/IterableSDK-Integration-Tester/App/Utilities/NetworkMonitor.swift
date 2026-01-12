@@ -178,13 +178,18 @@ class NetworkMonitorURLProtocol: URLProtocol {
         
         // Only monitor HTTP/HTTPS requests
         guard let scheme = request.url?.scheme?.lowercased() else { return false }
-        let canHandle = scheme == "http" || scheme == "https"
+        guard scheme == "http" || scheme == "https" else { return false }
         
-        if canHandle {
-            //print("🔍 URLProtocol canInit: YES for \(request.url?.absoluteString ?? "unknown")")
+        // IMPORTANT: Don't intercept Iterable deep link redirect requests
+        // These need to be handled by SDK's custom RedirectNetworkSession delegate
+        // to properly capture redirect locations for link unwrapping
+        if let urlString = request.url?.absoluteString,
+           urlString.contains("/a/") && (urlString.contains("links.") || urlString.contains("iterable.")) {
+            print("🔍 URLProtocol: Skipping Iterable deep link redirect request: \(urlString)")
+            return false
         }
         
-        return canHandle
+        return true
     }
     
     override class func canonicalRequest(for request: URLRequest) -> URLRequest {
@@ -258,7 +263,10 @@ class NetworkMonitorURLProtocol: URLProtocol {
         NetworkMonitor.shared.addRequest(networkRequest)
         
         // Create session to make actual request
-        let session = URLSession(configuration: .default)
+        // IMPORTANT: Use .ephemeral to avoid interfering with SDK's custom session delegates
+        let config = URLSessionConfiguration.ephemeral
+        // Don't follow redirects automatically - let the SDK handle them
+        let session = URLSession(configuration: config, delegate: nil, delegateQueue: nil)
         
         dataTask = session.dataTask(with: mutableRequest as URLRequest) { [weak self] data, response, error in
             guard let self = self, let requestId = self.requestId else { return }

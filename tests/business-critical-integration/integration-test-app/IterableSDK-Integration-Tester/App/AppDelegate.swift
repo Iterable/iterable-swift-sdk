@@ -127,6 +127,21 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             print("🔗 [APP] URL host: \(url.host ?? "nil")")
             print("🔗 [APP] URL path: \(url.path)")
             
+            // Initialize SDK if not already initialized
+            if IterableAPI.email == nil {
+                print("🔗 [APP] SDK not initialized - initializing now for universal link handling")
+                AppDelegate.initializeIterableSDK()
+                
+                if let testEmail = AppDelegate.loadTestUserEmailFromConfig() {
+                    print("📧 [APP] Registering test email: \(testEmail)")
+                    AppDelegate.registerEmailToIterableSDK(email: testEmail)
+                    print("✅ [APP] SDK initialized and user registered for deep link handling")
+                    print("✅ [APP] IterableAPI.email is now: \(IterableAPI.email ?? "nil")")
+                } else {
+                    print("⚠️ [APP] Could not load test email from config")
+                }
+            }
+            
             // Pass to Iterable SDK for unwrapping and handling
             // The SDK will unwrap /a/ links and call the URL delegate with the destination URL
             print("🔗 [APP] About to call IterableAPI.handle(universalLink:)")
