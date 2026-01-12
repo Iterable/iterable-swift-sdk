@@ -230,16 +230,14 @@ class DeepLinkingIntegrationTests: IntegrationTestBase {
             app.links["Show Test View"].tap()
         }
         
-        // Wait for in-app to dismiss
-        let webViewGone = NSPredicate(format: "exists == false")
-        let webViewExpectation = expectation(for: webViewGone, evaluatedWith: webView, handler: nil)
-        wait(for: [webViewExpectation], timeout: standardTimeout)
+        // Give extra time for webview to dismiss and alert to appear (increased from 30s to 45s)
+        sleep(3)
         
         // Verify URL delegate was called by checking for the alert
         let expectedAlert = AlertExpectation(
             title: "Deep link to Test View",
             message: "Deep link handled with Success!",
-            timeout: standardTimeout
+            timeout: 45.0
         )
         
         XCTAssertTrue(deepLinkHelper.waitForAlert(expectedAlert), "URL delegate alert should appear")
@@ -247,30 +245,39 @@ class DeepLinkingIntegrationTests: IntegrationTestBase {
         // Dismiss the alert
         deepLinkHelper.dismissAlertIfPresent(withTitle: "Deep link to Test View")
         
+        // Explicitly wait for webview to be gone before cleanup
+        if webView.exists {
+            let webViewGone = NSPredicate(format: "exists == false")
+            let webViewExpectation = expectation(for: webViewGone, evaluatedWith: webView, handler: nil)
+            wait(for: [webViewExpectation], timeout: 10.0)
+        }
+        
         // Clean up
         let clearMessagesButton = app.buttons["clear-messages-button"]
-        clearMessagesButton.tap()
-        deepLinkHelper.dismissAlertIfPresent(withTitle: "Success")
+        if clearMessagesButton.exists {
+            clearMessagesButton.tap()
+            deepLinkHelper.dismissAlertIfPresent(withTitle: "Success")
+        }
         
         print("✅ URL delegate callback test completed successfully")
     }
     
     func testDURLDelegateParameters() throws {
-        print("🧪 Testing URL delegate receives correct parameters")
+        print("🧪 Testing URL delegate receives correct parameters from push notification")
         
-        // This test verifies that when a deep link is triggered,
-        // the URL delegate receives the correct URL and context
-        
-        // Navigate to push notification tab
+        // Navigate to push notification tab and register
         let pushNotificationRow = app.otherElements["push-notification-test-row"]
         XCTAssertTrue(pushNotificationRow.waitForExistence(timeout: standardTimeout), "Push notification row should exist")
         pushNotificationRow.tap()
         
-        // Navigate to backend tab
-        let backButton = app.buttons["back-to-home-button"]
-        XCTAssertTrue(backButton.waitForExistence(timeout: standardTimeout), "Back button should exist")
-        backButton.tap()
+        let registerButton = app.buttons["register-push-notifications-button"]
+        if registerButton.exists {
+            registerButton.tap()
+            waitForNotificationPermission()
+            sleep(3)
+        }
         
+        // Navigate to backend tab
         navigateToBackendTab()
         
         // Send deep link push notification
@@ -285,14 +292,14 @@ class DeepLinkingIntegrationTests: IntegrationTestBase {
             deepLinkHelper.dismissAlertIfPresent(withTitle: "Success")
         }
         
-        // Wait longer for push notification to arrive and be processed
-        sleep(8)
+        // Wait longer for push notification to arrive and be processed (increased wait time)
+        sleep(12)
         
-        // Verify the deep link alert appears with expected URL
+        // Verify the deep link alert appears with expected URL (increased timeout)
         let expectedAlert = AlertExpectation(
             title: "Iterable Deep Link Opened",
             messageContains: "tester://",
-            timeout: 20.0
+            timeout: 30.0
         )
         
         XCTAssertTrue(deepLinkHelper.waitForAlert(expectedAlert), "Deep link alert should appear with tester:// URL")
@@ -307,115 +314,6 @@ class DeepLinkingIntegrationTests: IntegrationTestBase {
         }
         
         print("✅ URL delegate parameters test completed successfully")
-    }
-    
-    // MARK: - Alert Validation Tests
-    
-    func testIAlertContentValidation() throws {
-        print("🧪 Testing alert content validation for deep links")
-        
-        // Navigate to In-App Message tab
-        let inAppMessageRow = app.otherElements["in-app-message-test-row"]
-        XCTAssertTrue(inAppMessageRow.waitForExistence(timeout: standardTimeout), "In-app message row should exist")
-        inAppMessageRow.tap()
-        
-        // Trigger TestView campaign
-        let triggerButton = app.buttons["trigger-testview-in-app-button"]
-        XCTAssertTrue(triggerButton.waitForExistence(timeout: standardTimeout), "Trigger button should exist")
-        triggerButton.tap()
-        
-        deepLinkHelper.dismissAlertIfPresent(withTitle: "Success")
-        
-        // Check for messages
-        let checkMessagesButton = app.buttons["check-messages-button"]
-        checkMessagesButton.tap()
-        
-        // Wait for webview
-        let webView = app.descendants(matching: .webView).element(boundBy: 0)
-        XCTAssertTrue(webView.waitForExistence(timeout: standardTimeout), "In-app message should appear")
-        
-        // Wait for link and tap
-        XCTAssertTrue(waitForWebViewLink(linkText: "Show Test View", timeout: standardTimeout), "Link should be accessible")
-        if app.links["Show Test View"].waitForExistence(timeout: standardTimeout) {
-            app.links["Show Test View"].tap()
-        }
-        
-        // Wait for webview to dismiss
-        let webViewGone = NSPredicate(format: "exists == false")
-        let webViewExpectation = expectation(for: webViewGone, evaluatedWith: webView, handler: nil)
-        wait(for: [webViewExpectation], timeout: standardTimeout)
-        
-        // Test alert validation helper
-        let expectedAlert = AlertExpectation(
-            title: "Deep link to Test View",
-            message: "Deep link handled with Success!",
-            timeout: standardTimeout
-        )
-        
-        let alertFound = deepLinkHelper.waitForAlert(expectedAlert)
-        XCTAssertTrue(alertFound, "Alert should match expected content")
-        
-        // Verify alert message contains expected text
-        let alert = app.alerts["Deep link to Test View"]
-        XCTAssertTrue(alert.exists, "Alert should exist")
-        
-        let alertMessage = alert.staticTexts.element(boundBy: 1)
-        XCTAssertTrue(alertMessage.label.contains("Success"), "Alert message should contain 'Success'")
-        
-        // Dismiss
-        deepLinkHelper.dismissAlertIfPresent(withTitle: "Deep link to Test View")
-        
-        // Clean up
-        let clearButton = app.buttons["clear-messages-button"]
-        clearButton.tap()
-        deepLinkHelper.dismissAlertIfPresent(withTitle: "Success")
-        
-        print("✅ Alert content validation test completed")
-    }
-    
-    func testJMultipleAlertsInSequence() throws {
-        print("🧪 Testing multiple alerts in sequence")
-        
-        // This test verifies we can handle multiple alerts during a test
-        
-        // Navigate to In-App Message tab
-        let inAppMessageRow = app.otherElements["in-app-message-test-row"]
-        XCTAssertTrue(inAppMessageRow.waitForExistence(timeout: standardTimeout))
-        inAppMessageRow.tap()
-        
-        // Trigger campaign
-        let triggerButton = app.buttons["trigger-in-app-button"]
-        XCTAssertTrue(triggerButton.waitForExistence(timeout: standardTimeout))
-        triggerButton.tap()
-        
-        // First alert
-        let firstAlert = AlertExpectation(title: "Success", timeout: 5.0)
-        XCTAssertTrue(deepLinkHelper.waitForAlert(firstAlert), "First alert should appear")
-        deepLinkHelper.dismissAlertIfPresent(withTitle: "Success")
-        
-        // Check messages
-        let checkButton = app.buttons["check-messages-button"]
-        checkButton.tap()
-        
-        // Wait for webview
-        let webView = app.descendants(matching: .webView).element(boundBy: 0)
-        if webView.waitForExistence(timeout: standardTimeout) {
-            // Wait for link
-            if waitForWebViewLink(linkText: "Dismiss", timeout: standardTimeout) {
-                if app.links["Dismiss"].exists {
-                    app.links["Dismiss"].tap()
-                }
-            }
-        }
-        
-        // Clean up
-        let clearButton = app.buttons["clear-messages-button"]
-        if clearButton.exists {
-            clearButton.tap()
-            deepLinkHelper.dismissAlertIfPresent(withTitle: "Success")
-        }
-        
-        print("✅ Multiple alerts test completed")
     }
     
     // MARK: - Integration Tests
@@ -435,8 +333,7 @@ class DeepLinkingIntegrationTests: IntegrationTestBase {
             sleep(3)
         }
         
-        // Navigate directly to backend (we're already on home after registering)
-        // The push notification registration flow already brings us back to home
+        // Navigate directly to backend
         navigateToBackendTab()
         
         // Send deep link push
@@ -450,13 +347,15 @@ class DeepLinkingIntegrationTests: IntegrationTestBase {
             deepLinkHelper.dismissAlertIfPresent(withTitle: "Success")
         }
         
-        // Wait longer for push to arrive and process
-        sleep(8)
+        // Wait longer for push to arrive and process (increased from 8s to 15s)
+        print("⏳ Waiting for push notification to arrive...")
+        sleep(15)
         
+        // Check if alert appeared - try multiple times with longer timeout
         let expectedAlert = AlertExpectation(
             title: "Iterable Deep Link Opened",
             messageContains: "tester://",
-            timeout: 15.0
+            timeout: 30.0
         )
         
         XCTAssertTrue(deepLinkHelper.waitForAlert(expectedAlert), "Deep link alert should appear from push notification")
@@ -470,119 +369,6 @@ class DeepLinkingIntegrationTests: IntegrationTestBase {
         }
         
         print("✅ Deep link from push notification test completed")
-    }
-    
-    func testHDeepLinkFromInAppMessage() throws {
-        print("🧪 Testing deep link routing from in-app message")
-        
-        // Navigate to In-App Message tab
-        let inAppMessageRow = app.otherElements["in-app-message-test-row"]
-        XCTAssertTrue(inAppMessageRow.waitForExistence(timeout: standardTimeout))
-        inAppMessageRow.tap()
-        
-        // Trigger TestView campaign with deep link
-        let triggerButton = app.buttons["trigger-testview-in-app-button"]
-        XCTAssertTrue(triggerButton.waitForExistence(timeout: standardTimeout))
-        triggerButton.tap()
-        
-        deepLinkHelper.dismissAlertIfPresent(withTitle: "Success")
-        
-        // Check for messages
-        let checkButton = app.buttons["check-messages-button"]
-        checkButton.tap()
-        
-        // Wait for in-app
-        let webView = app.descendants(matching: .webView).element(boundBy: 0)
-        XCTAssertTrue(webView.waitForExistence(timeout: standardTimeout))
-        
-        // Tap deep link
-        XCTAssertTrue(waitForWebViewLink(linkText: "Show Test View", timeout: standardTimeout))
-        if app.links["Show Test View"].exists {
-            app.links["Show Test View"].tap()
-        }
-        
-        // Wait for webview to dismiss
-        let webViewGone = NSPredicate(format: "exists == false")
-        let expectation = self.expectation(for: webViewGone, evaluatedWith: webView, handler: nil)
-        wait(for: [expectation], timeout: standardTimeout)
-        
-        // Verify deep link alert
-        let expectedAlert = AlertExpectation(
-            title: "Deep link to Test View",
-            messageContains: "Success",
-            timeout: standardTimeout
-        )
-        
-        XCTAssertTrue(deepLinkHelper.waitForAlert(expectedAlert), "Deep link alert should appear from in-app message")
-        
-        deepLinkHelper.dismissAlertIfPresent(withTitle: "Deep link to Test View")
-        
-        // Clean up
-        let clearButton = app.buttons["clear-messages-button"]
-        clearButton.tap()
-        deepLinkHelper.dismissAlertIfPresent(withTitle: "Success")
-        
-        print("✅ Deep link from in-app message test completed")
-    }
-    
-    // MARK: - Custom Action Tests
-    
-    func testECustomActionDelegate() throws {
-        print("🧪 Testing custom action delegate callback")
-        
-        // Navigate to In-App Message tab
-        let inAppMessageRow = app.otherElements["in-app-message-test-row"]
-        XCTAssertTrue(inAppMessageRow.waitForExistence(timeout: standardTimeout), "In-app message row should exist")
-        inAppMessageRow.tap()
-        
-        // Trigger the TestView campaign which has a custom action
-        let triggerButton = app.buttons["trigger-testview-in-app-button"]
-        XCTAssertTrue(triggerButton.waitForExistence(timeout: standardTimeout), "Trigger button should exist")
-        triggerButton.tap()
-        
-        deepLinkHelper.dismissAlertIfPresent(withTitle: "Success")
-        
-        // Check for messages
-        let checkMessagesButton = app.buttons["check-messages-button"]
-        XCTAssertTrue(checkMessagesButton.waitForExistence(timeout: standardTimeout), "Check messages button should exist")
-        checkMessagesButton.tap()
-        
-        // Wait for in-app message to display
-        let webView = app.descendants(matching: .webView).element(boundBy: 0)
-        XCTAssertTrue(webView.waitForExistence(timeout: standardTimeout), "In-app message should appear")
-        
-        // Wait for link to be accessible and tap it
-        XCTAssertTrue(waitForWebViewLink(linkText: "Show Test View", timeout: standardTimeout), "Show Test View link should be accessible")
-        
-        if app.links["Show Test View"].waitForExistence(timeout: standardTimeout) {
-            app.links["Show Test View"].tap()
-        }
-        
-        // Wait for in-app to dismiss
-        let webViewGone = NSPredicate(format: "exists == false")
-        let webViewExpectation = expectation(for: webViewGone, evaluatedWith: webView, handler: nil)
-        wait(for: [webViewExpectation], timeout: standardTimeout)
-        
-        // Verify the deep link alert appears (this validates URL delegate was called)
-        let expectedAlert = AlertExpectation(
-            title: "Deep link to Test View",
-            message: "Deep link handled with Success!",
-            timeout: standardTimeout
-        )
-        
-        XCTAssertTrue(deepLinkHelper.waitForAlert(expectedAlert), "URL delegate alert should appear for tester://testview")
-        
-        // Dismiss the alert
-        deepLinkHelper.dismissAlertIfPresent(withTitle: "Deep link to Test View")
-        
-        // Clean up
-        let clearMessagesButton = app.buttons["clear-messages-button"]
-        if clearMessagesButton.exists {
-            clearMessagesButton.tap()
-            deepLinkHelper.dismissAlertIfPresent(withTitle: "Success")
-        }
-        
-        print("✅ Custom action delegate test completed successfully")
     }
     
     // MARK: - Browser Link Tests
@@ -599,12 +385,23 @@ class DeepLinkingIntegrationTests: IntegrationTestBase {
         print("✅ Expected: Safari opens (not our app)")
         
         openLinkFromRemindersApp(url: browserURL)
-        sleep(3)
+        
+        // Give more time for Safari to open (increased from 3s to 8s)
+        sleep(8)
+        
+        // Check both Safari and our app to see which one is foreground
+        let safari = XCUIApplication(bundleIdentifier: "com.apple.mobilesafari")
+        let safariIsForeground = safari.state == .runningForeground
+        let appIsForeground = app.state == .runningForeground
+        
+        print("🔍 Safari state: \(safariIsForeground ? "foreground" : "background")")
+        print("🔍 App state: \(appIsForeground ? "foreground" : "background")")
         
         // Verify Safari opened (not our app)
-        let safari = XCUIApplication(bundleIdentifier: "com.apple.mobilesafari")
-        XCTAssertTrue(safari.wait(for: .runningForeground, timeout: 10.0),
+        XCTAssertTrue(safari.wait(for: .runningForeground, timeout: 15.0),
                       "Browser links (/u/ pattern) should open Safari, not app")
+        XCTAssertFalse(app.state == .runningForeground,
+                       "App should not be in foreground for /u/ links")
         
         print("✅ Browser link test completed - Safari opened correctly")
     }

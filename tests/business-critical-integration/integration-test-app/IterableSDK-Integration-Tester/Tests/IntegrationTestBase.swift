@@ -1017,6 +1017,33 @@ class IntegrationTestBase: XCTestCase {
     
     // MARK: - External Source Deep Link Helpers
     
+    /// Clean up previous test link from Reminders app
+    private func cleanupRemindersLinks(reminders: XCUIApplication) {
+        print("🗑️ [TEST] Cleaning up previous test link from Reminders...")
+        
+        // Look for the first reminder cell (from previous test)
+        let firstCell = reminders.cells.firstMatch
+        
+        guard firstCell.waitForExistence(timeout: 2.0) else {
+            print("🗑️ [TEST] No previous reminder to clean up")
+            return
+        }
+        
+        // Swipe left to reveal delete button
+        firstCell.swipeLeft()
+        sleep(1)
+        
+        // Look for Delete button and tap it
+        let deleteButton = reminders.buttons["Delete"]
+        if deleteButton.waitForExistence(timeout: 2.0) {
+            deleteButton.tap()
+            print("🗑️ [TEST] Deleted previous test reminder")
+            sleep(1)
+        } else {
+            print("🗑️ [TEST] No delete button found")
+        }
+    }
+    
     /// Open a universal link from the Reminders app
     func openLinkFromRemindersApp(url: String) {
         print("📝 [TEST] Opening universal link from Reminders app: \(url)")
@@ -1043,6 +1070,9 @@ class IntegrationTestBase: XCTestCase {
             notNowButton.tap()
             sleep(1)
         }
+        
+        // Clean up any previous test links before adding new one
+        cleanupRemindersLinks(reminders: reminders)
         
         // Tap the "New Reminder" button to create new reminder
         print("📝 [TEST] Looking for New Reminder button...")
