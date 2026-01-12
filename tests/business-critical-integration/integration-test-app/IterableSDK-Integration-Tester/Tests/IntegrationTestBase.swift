@@ -1045,6 +1045,75 @@ class IntegrationTestBase: XCTestCase {
     }
     
     /// Open a universal link from the Reminders app
+    func openBrowserLinkFromRemindersApp(url: String) {
+        print("📝 [TEST] Opening browser link from Reminders app: \(url)")
+        
+        let reminders = XCUIApplication(bundleIdentifier: "com.apple.reminders")
+        reminders.launch()
+        
+        XCTAssertTrue(reminders.wait(for: .runningForeground, timeout: standardTimeout), "Reminders app should launch")
+        sleep(2)
+        
+        let continueButton = reminders.buttons["Continue"]
+        if continueButton.waitForExistence(timeout: 3.0) {
+            print("📝 [TEST] Dismissing Reminders welcome modal")
+            continueButton.tap()
+            sleep(1)
+        }
+        
+        let notNowButton = reminders.buttons["Not Now"]
+        if notNowButton.waitForExistence(timeout: 3.0) {
+            print("📝 [TEST] Dismissing iCloud syncing modal")
+            notNowButton.tap()
+            sleep(1)
+        }
+        
+        cleanupRemindersLinks(reminders: reminders)
+        
+        print("📝 [TEST] Looking for New Reminder button...")
+        let newReminderButton = reminders.buttons["New Reminder"]
+        if newReminderButton.waitForExistence(timeout: 5.0) {
+            print("📝 [TEST] Found New Reminder button, tapping...")
+            newReminderButton.tap()
+            sleep(2)
+        } else {
+            print("⚠️ [TEST] New Reminder button not found")
+            let addButton = reminders.buttons.matching(identifier: "Add").firstMatch
+            if addButton.waitForExistence(timeout: 3.0) {
+                print("📝 [TEST] Found add button, tapping...")
+                addButton.tap()
+                sleep(2)
+            } else {
+                print("⚠️ [TEST] No button found, trying coordinate fallback")
+                let coordinate = reminders.coordinate(withNormalizedOffset: CGVector(dx: 0.9, dy: 0.95))
+                coordinate.tap()
+                sleep(2)
+            }
+        }
+        
+        print("📝 [TEST] Typing URL into reminder: \(url)")
+        reminders.typeText(url)
+        reminders.typeText("\n")
+        sleep(2)
+        
+        print("📝 [TEST] Looking for link to tap...")
+        let linkElement = reminders.links.firstMatch
+        if linkElement.waitForExistence(timeout: 5.0) {
+            print("✅ [TEST] Found link, tapping it...")
+            reminders.swipeDown()
+            sleep(1)
+            let coordinate = linkElement.coordinate(withNormalizedOffset: CGVector(dx: 0.1, dy: 0.5))
+            coordinate.tap()
+            print("✅ [TEST] Tapped link in Reminders app")
+        } else {
+            print("⚠️ [TEST] Link not found in Reminders")
+            openLinkFromSafari(url: url)
+            return
+        }
+        
+        print("✅ [TEST] Browser link opened successfully")
+    }
+    
     func openLinkFromRemindersApp(url: String) {
         print("📝 [TEST] Opening universal link from Reminders app: \(url)")
         

@@ -32,9 +32,44 @@ class DeepLinkingIntegrationTests: IntegrationTestBase {
         try super.tearDownWithError()
     }
     
-    // MARK: - External Source Tests (Run First)
+    // MARK: - Browser Link Tests (Run First)
     
-    func testADeepLinkFromRemindersApp() {
+    // MARK: - Browser Link Tests
+    
+    // MARK: - Browser Link Tests
+    
+    func testABrowserLinksOpenSafari() throws {
+        print("🧪 Testing non-app links open in Safari (not app)")
+        print("🎯 Links with /u/ pattern or non-AASA paths should open Safari")
+        
+        let browserURL = "https://links.tsetester.com/u/click?url=https://iterable.com"
+        
+        print("🔗 Test URL: \(browserURL)")
+        print("✅ Expected: Safari opens (not our app)")
+        
+        openBrowserLinkFromRemindersApp(url: browserURL)
+        
+        sleep(3)
+        
+        let safari = XCUIApplication(bundleIdentifier: "com.apple.mobilesafari")
+        let safariIsForeground = safari.state == .runningForeground
+        let appIsForeground = app.state == .runningForeground
+        
+        print("🔍 Safari state: \(safariIsForeground ? "foreground" : "background")")
+        print("🔍 App state: \(appIsForeground ? "foreground" : "background")")
+        
+        XCTAssertTrue(safari.wait(for: .runningForeground, timeout: 15.0),
+                      "Browser links (/u/ pattern) should open Safari, not app")
+        XCTAssertFalse(app.state == .runningForeground,
+                       "App should not be in foreground for /u/ links")
+        
+        print("✅ Browser link test completed - Safari opened correctly")
+    }
+    
+    
+    // MARK: - External Source Tests
+    
+    func testBDeepLinkFromRemindersApp() {
         print("🧪 Testing deep link from Reminders app with Jena's test link")
         
         // Jena's test URL - wrapped link that should unwrap to https://tsetester.com/update/hi
@@ -76,7 +111,7 @@ class DeepLinkingIntegrationTests: IntegrationTestBase {
         print("✅ Deep link from Reminders app test completed - SDK correctly unwrapped to first redirect")
     }
     
-    func testBSingleRedirectPolicy() {
+    func testDSingleRedirectPolicy() {
         print("🧪 Testing SDK follows exactly one redirect (GreenFi bug fix validation)")
         print("🎯 This test validates that SDK stops at first redirect, not following multiple hops")
         print("📚 HOW IT WORKS: SDK's RedirectNetworkSession.willPerformHTTPRedirection returns nil")
@@ -195,46 +230,45 @@ class DeepLinkingIntegrationTests: IntegrationTestBase {
         print("✅ Validated via: 1) Alert content, 2) Network Monitor redirect count")
     }
     
-    // MARK: - Custom Action Tests
-    
+
     func testCCustomActionHandling() throws {
         print("🧪 Testing custom action delegate handles showtestsuccess action")
         print("🎯 This validates IterableCustomActionDelegate is invoked for custom action types")
-        
+
         // Navigate to In-App Message tab
         let inAppMessageRow = app.otherElements["in-app-message-test-row"]
         XCTAssertTrue(inAppMessageRow.waitForExistence(timeout: standardTimeout), "In-app message row should exist")
         inAppMessageRow.tap()
-        
+
         // Trigger the TestView in-app campaign which has a custom action
         // Note: We're reusing the TestView campaign as it triggers the custom action delegate
         let triggerTestViewButton = app.buttons["trigger-testview-in-app-button"]
         XCTAssertTrue(triggerTestViewButton.waitForExistence(timeout: standardTimeout), "Trigger TestView button should exist")
         triggerTestViewButton.tap()
-        
+
         // Handle success alert
         deepLinkHelper.dismissAlertIfPresent(withTitle: "Success")
-        
+
         // Tap "Check for Messages" to fetch and show the in-app
         let checkMessagesButton = app.buttons["check-messages-button"]
         XCTAssertTrue(checkMessagesButton.waitForExistence(timeout: standardTimeout), "Check for Messages button should exist")
         checkMessagesButton.tap()
-        
+
         // Wait for in-app message to display
         let webView = app.descendants(matching: .webView).element(boundBy: 0)
         XCTAssertTrue(webView.waitForExistence(timeout: standardTimeout), "In-app message should appear")
-        
+
         // Wait for link to be accessible
         XCTAssertTrue(waitForWebViewLink(linkText: "Show Test View", timeout: standardTimeout), "Show Test View link should be accessible")
-        
+
         // Tap the custom action button
         if app.links["Show Test View"].waitForExistence(timeout: standardTimeout) {
             app.links["Show Test View"].tap()
         }
-        
+
         // Wait for webview to dismiss and alert to appear
         sleep(3)
-        
+
         // Verify custom action was handled - the AppDelegate shows "Deep link to Test View" alert
         // which confirms the custom action delegate was invoked
         let expectedAlert = AlertExpectation(
@@ -242,62 +276,28 @@ class DeepLinkingIntegrationTests: IntegrationTestBase {
             message: "Deep link handled with Success!",
             timeout: 45.0
         )
-        
+
         XCTAssertTrue(deepLinkHelper.waitForAlert(expectedAlert), "Custom action should trigger alert")
-        
+
         // Dismiss the alert
         deepLinkHelper.dismissAlertIfPresent(withTitle: "Deep link to Test View")
-        
+
         // Wait for webview to be gone before cleanup
         if webView.exists {
             let webViewGone = NSPredicate(format: "exists == false")
             let webViewExpectation = expectation(for: webViewGone, evaluatedWith: webView, handler: nil)
             wait(for: [webViewExpectation], timeout: 10.0)
         }
-        
+
         // Clean up
         let clearMessagesButton = app.buttons["clear-messages-button"]
         if clearMessagesButton.exists {
             clearMessagesButton.tap()
             deepLinkHelper.dismissAlertIfPresent(withTitle: "Success")
         }
-        
+
         print("✅ Custom action handling test completed successfully")
         print("✅ Validated: IterableCustomActionDelegate invoked and handled custom action")
     }
-    
-    // MARK: - Browser Link Tests
-    
-    func testFBrowserLinksOpenSafari() throws {
-        print("🧪 Testing non-app links open in Safari (not app)")
-        print("🎯 Links with /u/ pattern or non-AASA paths should open Safari")
-        
-        // Link with /u/ pattern (untracked) should open Safari, not our app
-        // This is NOT in the AASA file, so iOS should open Safari
-        let browserURL = "https://links.tsetester.com/u/click?url=https://iterable.com"
-        
-        print("🔗 Test URL: \(browserURL)")
-        print("✅ Expected: Safari opens (not our app)")
-        
-        openLinkFromRemindersApp(url: browserURL)
-        
-        // Give more time for Safari to open (increased from 3s to 8s)
-        sleep(8)
-        
-        // Check both Safari and our app to see which one is foreground
-        let safari = XCUIApplication(bundleIdentifier: "com.apple.mobilesafari")
-        let safariIsForeground = safari.state == .runningForeground
-        let appIsForeground = app.state == .runningForeground
-        
-        print("🔍 Safari state: \(safariIsForeground ? "foreground" : "background")")
-        print("🔍 App state: \(appIsForeground ? "foreground" : "background")")
-        
-        // Verify Safari opened (not our app)
-        XCTAssertTrue(safari.wait(for: .runningForeground, timeout: 15.0),
-                      "Browser links (/u/ pattern) should open Safari, not app")
-        XCTAssertFalse(app.state == .runningForeground,
-                       "App should not be in foreground for /u/ links")
-        
-        print("✅ Browser link test completed - Safari opened correctly")
-    }
+
 }
