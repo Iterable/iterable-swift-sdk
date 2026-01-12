@@ -111,6 +111,75 @@ class DeepLinkingIntegrationTests: IntegrationTestBase {
         print("✅ Deep link from Reminders app test completed - SDK correctly unwrapped to first redirect")
     }
     
+    func testCCustomActionHandling() throws {
+        print("🧪 Testing custom action delegate handles showtestsuccess action")
+        print("🎯 This validates IterableCustomActionDelegate is invoked for custom action types")
+
+        // Navigate to In-App Message tab
+        let inAppMessageRow = app.otherElements["in-app-message-test-row"]
+        XCTAssertTrue(inAppMessageRow.waitForExistence(timeout: standardTimeout), "In-app message row should exist")
+        inAppMessageRow.tap()
+
+        // Trigger the TestView in-app campaign which has a custom action
+        // Note: We're reusing the TestView campaign as it triggers the custom action delegate
+        let triggerTestViewButton = app.buttons["trigger-testview-in-app-button"]
+        XCTAssertTrue(triggerTestViewButton.waitForExistence(timeout: standardTimeout), "Trigger TestView button should exist")
+        triggerTestViewButton.tap()
+
+        // Handle success alert
+        deepLinkHelper.dismissAlertIfPresent(withTitle: "Success")
+
+        // Tap "Check for Messages" to fetch and show the in-app
+        let checkMessagesButton = app.buttons["check-messages-button"]
+        XCTAssertTrue(checkMessagesButton.waitForExistence(timeout: standardTimeout), "Check for Messages button should exist")
+        checkMessagesButton.tap()
+
+        // Wait for in-app message to display
+        let webView = app.descendants(matching: .webView).element(boundBy: 0)
+        XCTAssertTrue(webView.waitForExistence(timeout: standardTimeout), "In-app message should appear")
+
+        // Wait for link to be accessible
+        XCTAssertTrue(waitForWebViewLink(linkText: "Show Test View", timeout: standardTimeout), "Show Test View link should be accessible")
+
+        // Tap the custom action button
+        if app.links["Show Test View"].waitForExistence(timeout: standardTimeout) {
+            app.links["Show Test View"].tap()
+        }
+
+        // Wait for webview to dismiss and alert to appear
+        sleep(3)
+
+        // Verify custom action was handled - the AppDelegate shows "Deep link to Test View" alert
+        // which confirms the custom action delegate was invoked
+        let expectedAlert = AlertExpectation(
+            title: "Deep link to Test View",
+            message: "Deep link handled with Success!",
+            timeout: 45.0
+        )
+
+        XCTAssertTrue(deepLinkHelper.waitForAlert(expectedAlert), "Custom action should trigger alert")
+
+        // Dismiss the alert
+        deepLinkHelper.dismissAlertIfPresent(withTitle: "Deep link to Test View")
+
+        // Wait for webview to be gone before cleanup
+        if webView.exists {
+            let webViewGone = NSPredicate(format: "exists == false")
+            let webViewExpectation = expectation(for: webViewGone, evaluatedWith: webView, handler: nil)
+            wait(for: [webViewExpectation], timeout: 10.0)
+        }
+
+        // Clean up
+        let clearMessagesButton = app.buttons["clear-messages-button"]
+        if clearMessagesButton.exists {
+            clearMessagesButton.tap()
+            deepLinkHelper.dismissAlertIfPresent(withTitle: "Success")
+        }
+
+        print("✅ Custom action handling test completed successfully")
+        print("✅ Validated: IterableCustomActionDelegate invoked and handled custom action")
+    }
+    
     func testDSingleRedirectPolicy() {
         print("🧪 Testing SDK follows exactly one redirect (GreenFi bug fix validation)")
         print("🎯 This test validates that SDK stops at first redirect, not following multiple hops")
@@ -230,74 +299,5 @@ class DeepLinkingIntegrationTests: IntegrationTestBase {
         print("✅ Validated via: 1) Alert content, 2) Network Monitor redirect count")
     }
     
-
-    func testCCustomActionHandling() throws {
-        print("🧪 Testing custom action delegate handles showtestsuccess action")
-        print("🎯 This validates IterableCustomActionDelegate is invoked for custom action types")
-
-        // Navigate to In-App Message tab
-        let inAppMessageRow = app.otherElements["in-app-message-test-row"]
-        XCTAssertTrue(inAppMessageRow.waitForExistence(timeout: standardTimeout), "In-app message row should exist")
-        inAppMessageRow.tap()
-
-        // Trigger the TestView in-app campaign which has a custom action
-        // Note: We're reusing the TestView campaign as it triggers the custom action delegate
-        let triggerTestViewButton = app.buttons["trigger-testview-in-app-button"]
-        XCTAssertTrue(triggerTestViewButton.waitForExistence(timeout: standardTimeout), "Trigger TestView button should exist")
-        triggerTestViewButton.tap()
-
-        // Handle success alert
-        deepLinkHelper.dismissAlertIfPresent(withTitle: "Success")
-
-        // Tap "Check for Messages" to fetch and show the in-app
-        let checkMessagesButton = app.buttons["check-messages-button"]
-        XCTAssertTrue(checkMessagesButton.waitForExistence(timeout: standardTimeout), "Check for Messages button should exist")
-        checkMessagesButton.tap()
-
-        // Wait for in-app message to display
-        let webView = app.descendants(matching: .webView).element(boundBy: 0)
-        XCTAssertTrue(webView.waitForExistence(timeout: standardTimeout), "In-app message should appear")
-
-        // Wait for link to be accessible
-        XCTAssertTrue(waitForWebViewLink(linkText: "Show Test View", timeout: standardTimeout), "Show Test View link should be accessible")
-
-        // Tap the custom action button
-        if app.links["Show Test View"].waitForExistence(timeout: standardTimeout) {
-            app.links["Show Test View"].tap()
-        }
-
-        // Wait for webview to dismiss and alert to appear
-        sleep(3)
-
-        // Verify custom action was handled - the AppDelegate shows "Deep link to Test View" alert
-        // which confirms the custom action delegate was invoked
-        let expectedAlert = AlertExpectation(
-            title: "Deep link to Test View",
-            message: "Deep link handled with Success!",
-            timeout: 45.0
-        )
-
-        XCTAssertTrue(deepLinkHelper.waitForAlert(expectedAlert), "Custom action should trigger alert")
-
-        // Dismiss the alert
-        deepLinkHelper.dismissAlertIfPresent(withTitle: "Deep link to Test View")
-
-        // Wait for webview to be gone before cleanup
-        if webView.exists {
-            let webViewGone = NSPredicate(format: "exists == false")
-            let webViewExpectation = expectation(for: webViewGone, evaluatedWith: webView, handler: nil)
-            wait(for: [webViewExpectation], timeout: 10.0)
-        }
-
-        // Clean up
-        let clearMessagesButton = app.buttons["clear-messages-button"]
-        if clearMessagesButton.exists {
-            clearMessagesButton.tap()
-            deepLinkHelper.dismissAlertIfPresent(withTitle: "Success")
-        }
-
-        print("✅ Custom action handling test completed successfully")
-        print("✅ Validated: IterableCustomActionDelegate invoked and handled custom action")
-    }
 
 }
