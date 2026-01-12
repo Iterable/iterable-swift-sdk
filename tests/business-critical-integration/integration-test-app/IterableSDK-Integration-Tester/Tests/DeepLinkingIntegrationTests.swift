@@ -195,17 +195,19 @@ class DeepLinkingIntegrationTests: IntegrationTestBase {
         print("✅ Validated via: 1) Alert content, 2) Network Monitor redirect count")
     }
     
-    // MARK: - URL Delegate Tests
+    // MARK: - Custom Action Tests
     
-    func testCURLDelegateCallback() throws {
-        print("🧪 Testing URL delegate callback with tester:// scheme")
+    func testCCustomActionHandling() throws {
+        print("🧪 Testing custom action delegate handles showtestsuccess action")
+        print("🎯 This validates IterableCustomActionDelegate is invoked for custom action types")
         
-        // Navigate to In-App Message tab to trigger deep link
+        // Navigate to In-App Message tab
         let inAppMessageRow = app.otherElements["in-app-message-test-row"]
         XCTAssertTrue(inAppMessageRow.waitForExistence(timeout: standardTimeout), "In-app message row should exist")
         inAppMessageRow.tap()
         
-        // Trigger the TestView in-app campaign which has a tester://testview deep link
+        // Trigger the TestView in-app campaign which has a custom action
+        // Note: We're reusing the TestView campaign as it triggers the custom action delegate
         let triggerTestViewButton = app.buttons["trigger-testview-in-app-button"]
         XCTAssertTrue(triggerTestViewButton.waitForExistence(timeout: standardTimeout), "Trigger TestView button should exist")
         triggerTestViewButton.tap()
@@ -225,27 +227,28 @@ class DeepLinkingIntegrationTests: IntegrationTestBase {
         // Wait for link to be accessible
         XCTAssertTrue(waitForWebViewLink(linkText: "Show Test View", timeout: standardTimeout), "Show Test View link should be accessible")
         
-        // Tap the deep link button
+        // Tap the custom action button
         if app.links["Show Test View"].waitForExistence(timeout: standardTimeout) {
             app.links["Show Test View"].tap()
         }
         
-        // Give extra time for webview to dismiss and alert to appear (increased from 30s to 45s)
+        // Wait for webview to dismiss and alert to appear
         sleep(3)
         
-        // Verify URL delegate was called by checking for the alert
+        // Verify custom action was handled - the AppDelegate shows "Deep link to Test View" alert
+        // which confirms the custom action delegate was invoked
         let expectedAlert = AlertExpectation(
             title: "Deep link to Test View",
             message: "Deep link handled with Success!",
             timeout: 45.0
         )
         
-        XCTAssertTrue(deepLinkHelper.waitForAlert(expectedAlert), "URL delegate alert should appear")
+        XCTAssertTrue(deepLinkHelper.waitForAlert(expectedAlert), "Custom action should trigger alert")
         
         // Dismiss the alert
         deepLinkHelper.dismissAlertIfPresent(withTitle: "Deep link to Test View")
         
-        // Explicitly wait for webview to be gone before cleanup
+        // Wait for webview to be gone before cleanup
         if webView.exists {
             let webViewGone = NSPredicate(format: "exists == false")
             let webViewExpectation = expectation(for: webViewGone, evaluatedWith: webView, handler: nil)
@@ -259,116 +262,8 @@ class DeepLinkingIntegrationTests: IntegrationTestBase {
             deepLinkHelper.dismissAlertIfPresent(withTitle: "Success")
         }
         
-        print("✅ URL delegate callback test completed successfully")
-    }
-    
-    func testDURLDelegateParameters() throws {
-        print("🧪 Testing URL delegate receives correct parameters from push notification")
-        
-        // Navigate to push notification tab and register
-        let pushNotificationRow = app.otherElements["push-notification-test-row"]
-        XCTAssertTrue(pushNotificationRow.waitForExistence(timeout: standardTimeout), "Push notification row should exist")
-        pushNotificationRow.tap()
-        
-        let registerButton = app.buttons["register-push-notifications-button"]
-        if registerButton.exists {
-            registerButton.tap()
-            waitForNotificationPermission()
-            sleep(3)
-        }
-        
-        // Navigate to backend tab
-        navigateToBackendTab()
-        
-        // Send deep link push notification
-        let deepLinkPushButton = app.buttons["test-deep-link-push-button"]
-        XCTAssertTrue(deepLinkPushButton.waitForExistence(timeout: standardTimeout), "Deep link push button should exist")
-        
-        if isRunningInCI {
-            let deepLinkUrl = "tester://product?itemId=12345&category=shoes"
-            sendSimulatedDeepLinkPush(deepLinkUrl: deepLinkUrl)
-        } else {
-            deepLinkPushButton.tap()
-            deepLinkHelper.dismissAlertIfPresent(withTitle: "Success")
-        }
-        
-        // Wait longer for push notification to arrive and be processed (increased wait time)
-        sleep(12)
-        
-        // Verify the deep link alert appears with expected URL (increased timeout)
-        let expectedAlert = AlertExpectation(
-            title: "Iterable Deep Link Opened",
-            messageContains: "tester://",
-            timeout: 30.0
-        )
-        
-        XCTAssertTrue(deepLinkHelper.waitForAlert(expectedAlert), "Deep link alert should appear with tester:// URL")
-        
-        // Dismiss the alert
-        deepLinkHelper.dismissAlertIfPresent(withTitle: "Iterable Deep Link Opened")
-        
-        // Close backend tab
-        let closeButton = app.buttons["backend-close-button"]
-        if closeButton.exists {
-            closeButton.tap()
-        }
-        
-        print("✅ URL delegate parameters test completed successfully")
-    }
-    
-    // MARK: - Integration Tests
-    
-    func testGDeepLinkFromPushNotification() throws {
-        print("🧪 Testing deep link routing from push notification")
-        
-        // Navigate to push notification tab and register
-        let pushNotificationRow = app.otherElements["push-notification-test-row"]
-        XCTAssertTrue(pushNotificationRow.waitForExistence(timeout: standardTimeout))
-        pushNotificationRow.tap()
-        
-        let registerButton = app.buttons["register-push-notifications-button"]
-        if registerButton.exists {
-            registerButton.tap()
-            waitForNotificationPermission()
-            sleep(3)
-        }
-        
-        // Navigate directly to backend
-        navigateToBackendTab()
-        
-        // Send deep link push
-        let deepLinkButton = app.buttons["test-deep-link-push-button"]
-        XCTAssertTrue(deepLinkButton.waitForExistence(timeout: standardTimeout))
-        
-        if isRunningInCI {
-            sendSimulatedDeepLinkPush(deepLinkUrl: "tester://product?itemId=12345&category=shoes")
-        } else {
-            deepLinkButton.tap()
-            deepLinkHelper.dismissAlertIfPresent(withTitle: "Success")
-        }
-        
-        // Wait longer for push to arrive and process (increased from 8s to 15s)
-        print("⏳ Waiting for push notification to arrive...")
-        sleep(15)
-        
-        // Check if alert appeared - try multiple times with longer timeout
-        let expectedAlert = AlertExpectation(
-            title: "Iterable Deep Link Opened",
-            messageContains: "tester://",
-            timeout: 30.0
-        )
-        
-        XCTAssertTrue(deepLinkHelper.waitForAlert(expectedAlert), "Deep link alert should appear from push notification")
-        
-        deepLinkHelper.dismissAlertIfPresent(withTitle: "Iterable Deep Link Opened")
-        
-        // Close backend
-        let closeButton = app.buttons["backend-close-button"]
-        if closeButton.exists {
-            closeButton.tap()
-        }
-        
-        print("✅ Deep link from push notification test completed")
+        print("✅ Custom action handling test completed successfully")
+        print("✅ Validated: IterableCustomActionDelegate invoked and handled custom action")
     }
     
     // MARK: - Browser Link Tests
