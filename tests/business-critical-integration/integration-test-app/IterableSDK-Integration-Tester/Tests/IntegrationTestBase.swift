@@ -51,6 +51,17 @@ class IntegrationTestBase: XCTestCase {
         return false
     }()
     
+    // Check for early exit on test failure mode (enabled via script parameter)
+    let exitOnTestFailure: Bool = {
+        if let exitFlag = ProcessInfo.processInfo.environment["EXIT_ON_TEST_FAILURE"] {
+            let shouldExit = exitFlag.lowercased() == "true" || exitFlag == "1"
+            print("🛑 Exit On Test Failure: \(shouldExit ? "ENABLED" : "DISABLED") (from EXIT_ON_TEST_FAILURE=\(exitFlag))")
+            return shouldExit
+        }
+        print("🛑 Exit On Test Failure: DISABLED (default)")
+        return false
+    }()
+    
     // CI Environment Detection
     let isRunningInCI: Bool = {
         // Check for force simulation mode (for testing simulated pushes locally)
@@ -137,16 +148,10 @@ class IntegrationTestBase: XCTestCase {
         continueAfterFailure = false
         
         // Control whether to run next test after a test failure
-        // CI: Run all tests to collect all failures
-        // Local: Stop after first failure for faster feedback
-        if !isRunningInCI {
-            // Local mode: Check if any previous test failed
-            if Self.hasAnyTestFailed {
-                print("⏭️ [LOCAL MODE] Skipping test - previous test failed")
-                throw XCTSkip("Skipping remaining tests after first failure (local mode)")
-            }
-        } else {
-            print("🤖 [CI MODE] Running all tests regardless of failures")
+        // Only skip if EXIT_ON_TEST_FAILURE is enabled from script
+        if exitOnTestFailure && Self.hasAnyTestFailed {
+            print("⏭️ [EXIT MODE] Skipping test - previous test failed (EXIT_ON_TEST_FAILURE=1)")
+            throw XCTSkip("Skipping remaining tests after first failure (exit on failure mode enabled)")
         }
         
         // Log test mode for visibility
@@ -179,10 +184,10 @@ class IntegrationTestBase: XCTestCase {
     }
     
     override func tearDownWithError() throws {
-        // Track if this test failed (for local mode early exit)
-        if testRun?.hasSucceeded == false {
+        // Track if this test failed (only if EXIT_ON_TEST_FAILURE is enabled)
+        if exitOnTestFailure && testRun?.hasSucceeded == false {
             Self.hasAnyTestFailed = true
-            print("❌ Test failed - marking for early exit in local mode")
+            print("❌ Test failed - marking for early exit (EXIT_ON_TEST_FAILURE=1)")
         }
         
         // Capture final screenshot
