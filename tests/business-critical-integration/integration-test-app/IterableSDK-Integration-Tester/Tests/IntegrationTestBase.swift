@@ -1267,23 +1267,28 @@ class IntegrationTestBase: XCTestCase {
                 } else {
                     print("⚠️ [TEST] OPEN button not found, debugging Safari state...")
                     screenshotCapture.captureScreenshot(named: "safari-no-open-button")
-                    
-                    print("🔍 [TEST] All Safari buttons:")
-                    let buttons = safari.buttons.allElementsBoundByIndex
-                    for i in 0..<min(buttons.count, 10) {
-                        if i < buttons.count {
-                            let button = buttons[i]
-                            print("  - \(button.identifier): '\(button.label)'")
+
+                    // Skip expensive debugging in CI mode since we have simctl fallback
+                    if !isRunningInCI {
+                        print("🔍 [TEST] All Safari buttons:")
+                        let buttons = safari.buttons.allElementsBoundByIndex
+                        for i in 0..<min(buttons.count, 10) {
+                            if i < buttons.count {
+                                let button = buttons[i]
+                                print("  - \(button.identifier): '\(button.label)'")
+                            }
                         }
-                    }
-                    
-                    print("🔍 [TEST] All Safari static texts:")
-                    let staticTexts = safari.staticTexts.allElementsBoundByIndex
-                    for i in 0..<min(staticTexts.count, 10) {
-                        if i < staticTexts.count {
-                            let text = staticTexts[i]
-                            print("  - '\(text.label)'")
+
+                        print("🔍 [TEST] All Safari static texts:")
+                        let staticTexts = safari.staticTexts.allElementsBoundByIndex
+                        for i in 0..<min(staticTexts.count, 10) {
+                            if i < staticTexts.count {
+                                let text = staticTexts[i]
+                                print("  - '\(text.label)'")
+                            }
                         }
+                    } else {
+                        print("🤖 [TEST] Skipping detailed Safari debugging in CI mode (using simctl fallback)")
                     }
                 }
             }
