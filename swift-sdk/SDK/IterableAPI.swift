@@ -152,6 +152,16 @@ import UIKit
         implementation?.setUserId(userId, authToken: authToken, successHandler: successHandler, failureHandler: failureHandler, identityResolution: identityResolution)
     }
     
+    /// Checks if a URL is an Iterable deep link
+    ///
+    /// - Parameters:
+    ///    - urlString: The URL string to check
+    ///
+    /// - Returns: `true` if the URL matches the Iterable deep link pattern
+    public static func isIterableDeepLink(_ urlString: String) -> Bool {
+        DeepLinkManager.isIterableDeepLink(urlString)
+    }
+    
     /// Handle a Universal Link
     ///
     /// For Iterable links, it will track the click and retrieve the original URL,
