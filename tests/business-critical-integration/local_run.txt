@@ -1,0 +1,1436 @@
+sumeru.chatterjee:business-critical-integration[feature/BCIT-deeplink]% ./scripts/run-tests.sh deeplink --fast-test
+============================================
+Iterable SDK - Local Integration Test Runner
+============================================
+ℹ️  Test Type: deeplink
+ℹ️  Timeout: 60s
+ℹ️  Verbose: false
+ℹ️  Dry Run: false
+ℹ️  Cleanup: true
+ℹ️  Fast Test: true
+ℹ️  Exit On Failure: false
+ℹ️  Open Simulator: false
+
+============================================
+Validating Local Environment
+============================================
+✅ API keys configured (Mobile + Server)
+✅ Test simulator available: 8E94985B-0D1E-44BE-8E1B-9A5B3F7F7F04
+✅ Environment validation passed
+============================================
+Preparing Test Environment
+============================================
+ℹ️  Test User: 2025-12-30-integration-test-user@test.com
+ℹ️  Project ID: 28411
+ℹ️  Base URL: https://api.iterable.com
+ℹ️  📱 Local Environment - using real APNS push notifications
+✅ Test environment prepared
+============================================
+Setting Up iOS Simulator
+============================================
+ℹ️  Using existing simulator: 8E94985B-0D1E-44BE-8E1B-9A5B3F7F7F04
+ℹ️  Booting simulator...
+ℹ️  Simulator already booted
+An error was encountered processing the command (domain=NSPOSIXErrorDomain, code=1):
+Simulator device failed to complete the requested operation.
+Operation not permitted
+Underlying error (domain=NSPOSIXErrorDomain, code=1):
+	Failed to reset access
+	Operation not permitted
+✅ Simulator ready: 8E94985B-0D1E-44BE-8E1B-9A5B3F7F7F04
+============================================
+Building Test Project
+============================================
+ℹ️  Running build script...
+Building Iterable SDK Integration Tester app and tests...
+🔍 Project directory: /Users/sumeru.chatterjee/MyProjects/iterable-swift-sdk/tests/business-critical-integration
+🔍 Current directory: /Users/sumeru.chatterjee/MyProjects/iterable-swift-sdk/tests/business-critical-integration/integration-test-app
+🔍 Contents of current directory:
+total 16
+drwxr-xr-x   7 sumeru.chatterjee  staff   224 Jan 12 15:47 .
+drwxr-xr-x  12 sumeru.chatterjee  staff   384 Jan 12 16:03 ..
+-rw-r--r--@  1 sumeru.chatterjee  staff  6148 Jan 13 01:17 .DS_Store
+drwxr-xr-x   3 sumeru.chatterjee  staff    96 Jan 12 17:24 config
+drwxr-xr-x   6 sumeru.chatterjee  staff   192 Dec 30 20:29 IterableSDK-Integration-Tester
+drwxr-xr-x@  6 sumeru.chatterjee  staff   192 Jan  9 20:23 IterableSDK-Integration-Tester.xcodeproj
+drwxr-xr-x   4 sumeru.chatterjee  staff   128 Dec 30 20:29 IterableSDK-Integration-TesterUITests
+🔍 Looking for .xcodeproj files:
+./IterableSDK-Integration-Tester.xcodeproj
+🔍 Checking if target project exists:
+✅ Project file found: IterableSDK-Integration-Tester.xcodeproj
+🔍 Project file details:
+total 48
+drwxr-xr-x@ 6 sumeru.chatterjee  staff    192 Jan  9 20:23 .
+drwxr-xr-x  7 sumeru.chatterjee  staff    224 Jan 12 15:47 ..
+-rw-r--r--  1 sumeru.chatterjee  staff  21764 Jan  9 20:23 project.pbxproj
+drwxr-xr-x@ 5 sumeru.chatterjee  staff    160 Dec 30 20:56 project.xcworkspace
+drwxr-xr-x  3 sumeru.chatterjee  staff     96 Dec 30 20:29 xcshareddata
+drwxr-xr-x  3 sumeru.chatterjee  staff     96 Dec 30 20:56 xcuserdata
+🎯 Using simulator from config: 8E94985B-0D1E-44BE-8E1B-9A5B3F7F7F04
+📱 Building main app target...
+✅ Main app build succeeded!
+🧪 Building test target...
+✅ Test target build succeeded!
+🎉 All builds completed successfully!
+✅ Integration test project built successfully
+============================================
+Clearing Screenshots Directory
+============================================
+ℹ️  Removing existing screenshots from: /Users/sumeru.chatterjee/MyProjects/iterable-swift-sdk/tests/business-critical-integration/scripts/../screenshots
+✅ Screenshots directory cleared
+ℹ️  Screenshots will be saved to: /Users/sumeru.chatterjee/MyProjects/iterable-swift-sdk/tests/business-critical-integration/scripts/../screenshots
+============================================
+Cleaning Test Environment
+============================================
+ℹ️  Resetting simulator to clean state...
+✅ Simulator erased successfully
+ℹ️  Booting clean simulator...
+ℹ️  Waiting for simulator to be ready...
+✅ Test environment cleaned and ready
+============================================
+Running Deep Linking Integration Tests
+============================================
+ℹ️  Starting deep linking test sequence...
+ℹ️  📱 Local environment - push monitoring not needed
+ℹ️  Running XCTest: DeepLinkingIntegrationTests
+ℹ️  Executing: xcodebuild -project IterableSDK-Integration-Tester.xcodeproj -scheme IterableSDK-Integration-Tester -configuration Debug -sdk iphonesimulator -destination id=8E94985B-0D1E-44BE-8E1B-9A5B3F7F7F04 -parallel-testing-enabled NO -resultBundlePath /Users/sumeru.chatterjee/MyProjects/iterable-swift-sdk/tests/business-critical-integration/scripts/../reports/deeplinkingintegrationtests-20260113-214402.xcresult test-without-building SCREENSHOTS_DIR=/Users/sumeru.chatterjee/MyProjects/iterable-swift-sdk/tests/business-critical-integration/scripts/../screenshots ITERABLE_MOBILE_API_KEY=210cbfd06c7840488216ffe169961dc8 ITERABLE_SERVER_API_KEY=9098112776ac4b96b16e3d4d204b9496 TEST_USER_EMAIL=2025-12-30-integration-test-user@test.com TEST_PROJECT_ID=28411 TEST_TIMEOUT=60 FAST_TEST=true -only-testing IterableSDK-Integration-TesterUITests/DeepLinkingIntegrationTests
+ℹ️  CI environment variable: CI=0
+ℹ️  FAST_TEST environment variable: FAST_TEST=true
+ℹ️  EXIT_ON_TEST_FAILURE environment variable: EXIT_ON_TEST_FAILURE=0
+Command line invocation:
+    /Applications/Xcode.app/Contents/Developer/usr/bin/xcodebuild -project IterableSDK-Integration-Tester.xcodeproj -scheme IterableSDK-Integration-Tester -configuration Debug -sdk iphonesimulator -destination id=8E94985B-0D1E-44BE-8E1B-9A5B3F7F7F04 -parallel-testing-enabled NO -resultBundlePath /Users/sumeru.chatterjee/MyProjects/iterable-swift-sdk/tests/business-critical-integration/scripts/../reports/deeplinkingintegrationtests-20260113-214402.xcresult test-without-building SCREENSHOTS_DIR=/Users/sumeru.chatterjee/MyProjects/iterable-swift-sdk/tests/business-critical-integration/scripts/../screenshots ITERABLE_MOBILE_API_KEY=210cbfd06c7840488216ffe169961dc8 ITERABLE_SERVER_API_KEY=9098112776ac4b96b16e3d4d204b9496 "TEST_USER_EMAIL=2025-12-30-integration-test-user@test.com" TEST_PROJECT_ID=28411 TEST_TIMEOUT=60 FAST_TEST=true -only-testing IterableSDK-Integration-TesterUITests/DeepLinkingIntegrationTests
+
+Build settings from command line:
+    FAST_TEST = true
+    ITERABLE_MOBILE_API_KEY = 210cbfd06c7840488216ffe169961dc8
+    ITERABLE_SERVER_API_KEY = 9098112776ac4b96b16e3d4d204b9496
+    SCREENSHOTS_DIR = /Users/sumeru.chatterjee/MyProjects/iterable-swift-sdk/tests/business-critical-integration/scripts/../screenshots
+    SDKROOT = iphonesimulator26.2
+    TEST_PROJECT_ID = 28411
+    TEST_TIMEOUT = 60
+    TEST_USER_EMAIL = 2025-12-30-integration-test-user@test.com
+
+Resolve Package Graph
+
+
+Resolved source packages:
+  IterableSDK: /Users/sumeru.chatterjee/MyProjects/iterable-swift-sdk @ local
+
+Writing result bundle at path:
+	/Users/sumeru.chatterjee/MyProjects/iterable-swift-sdk/tests/business-critical-integration/reports/deeplinkingintegrationtests-20260113-214402.xcresult
+
+Resolve Package Graph
+
+Resolve Package Graph
+
+2026-01-13 21:44:32.492218+0530 IterableSDK-Integration-TesterUITests-Runner[21604:9814257] [Default] Running tests...
+🚀 Fast Test Mode: DISABLED (comprehensive testing mode)
+🛑 Exit On Test Failure: DISABLED (default)
+📋 [TEST] Full config.json contents:
+{
+  "mobileApiKey": "210cbfd06c7840488216ffe169961dc8",
+  "serverApiKey": "9098112776ac4b96b16e3d4d204b9496",
+  "projectId": "28411",
+  "testUserEmail": "2025-12-30-integration-test-user@test.com",
+  "baseUrl": "https://api.iterable.com",
+  "environment": "local",
+  "simulator": {
+    "deviceType": "iPhone 16 Pro",
+    "osVersion": "latest",
+    "simulatorUuid": "8E94985B-0D1E-44BE-8E1B-9A5B3F7F7F04"
+  },
+  "testing": {
+    "timeout": 60,
+    "retryAttempts": 3,
+    "enableMocks": false,
+    "enableDebugLogging": true,
+    "ciMode": false
+  },
+  "features": {
+    "pushNotifications": true,
+    "inAppMessages": true,
+    "embeddedMessages": true,
+    "deepLinking": true
+  }
+}
+
+🔍 [TEST] Config file path: /Users/sumeru.chatterjee/Library/Developer/Xcode/DerivedData/IterableSDK-Integration-Tester-aqxunitlildtbpcxwgjtugmgjyuy/Build/Products/Debug-iphonesimulator/IterableSDK-Integration-Tester.app/test-config.json
+🔍 [TEST] Environment CI: false
+🔍 [TEST] Config CI: false
+📱 [TEST] LOCAL ENVIRONMENT DETECTED
+🌐 [TEST] Push notification testing will use real APNS pushes
+📱 [TEST] Real device tokens will be obtained from APNS
+🚀 Fast Test Mode: DISABLED (comprehensive testing mode)
+🛑 Exit On Test Failure: DISABLED (default)
+📋 [TEST] Full config.json contents:
+{
+  "mobileApiKey": "210cbfd06c7840488216ffe169961dc8",
+  "serverApiKey": "9098112776ac4b96b16e3d4d204b9496",
+  "projectId": "28411",
+  "testUserEmail": "2025-12-30-integration-test-user@test.com",
+  "baseUrl": "https://api.iterable.com",
+  "environment": "local",
+  "simulator": {
+    "deviceType": "iPhone 16 Pro",
+    "osVersion": "latest",
+    "simulatorUuid": "8E94985B-0D1E-44BE-8E1B-9A5B3F7F7F04"
+  },
+  "testing": {
+    "timeout": 60,
+    "retryAttempts": 3,
+    "enableMocks": false,
+    "enableDebugLogging": true,
+    "ciMode": false
+  },
+  "features": {
+    "pushNotifications": true,
+    "inAppMessages": true,
+    "embeddedMessages": true,
+    "deepLinking": true
+  }
+}
+
+🔍 [TEST] Config file path: /Users/sumeru.chatterjee/Library/Developer/Xcode/DerivedData/IterableSDK-Integration-Tester-aqxunitlildtbpcxwgjtugmgjyuy/Build/Products/Debug-iphonesimulator/IterableSDK-Integration-Tester.app/test-config.json
+🔍 [TEST] Environment CI: false
+🔍 [TEST] Config CI: false
+📱 [TEST] LOCAL ENVIRONMENT DETECTED
+🌐 [TEST] Push notification testing will use real APNS pushes
+📱 [TEST] Real device tokens will be obtained from APNS
+🚀 Fast Test Mode: DISABLED (comprehensive testing mode)
+🛑 Exit On Test Failure: DISABLED (default)
+📋 [TEST] Full config.json contents:
+{
+  "mobileApiKey": "210cbfd06c7840488216ffe169961dc8",
+  "serverApiKey": "9098112776ac4b96b16e3d4d204b9496",
+  "projectId": "28411",
+  "testUserEmail": "2025-12-30-integration-test-user@test.com",
+  "baseUrl": "https://api.iterable.com",
+  "environment": "local",
+  "simulator": {
+    "deviceType": "iPhone 16 Pro",
+    "osVersion": "latest",
+    "simulatorUuid": "8E94985B-0D1E-44BE-8E1B-9A5B3F7F7F04"
+  },
+  "testing": {
+    "timeout": 60,
+    "retryAttempts": 3,
+    "enableMocks": false,
+    "enableDebugLogging": true,
+    "ciMode": false
+  },
+  "features": {
+    "pushNotifications": true,
+    "inAppMessages": true,
+    "embeddedMessages": true,
+    "deepLinking": true
+  }
+}
+
+🔍 [TEST] Config file path: /Users/sumeru.chatterjee/Library/Developer/Xcode/DerivedData/IterableSDK-Integration-Tester-aqxunitlildtbpcxwgjtugmgjyuy/Build/Products/Debug-iphonesimulator/IterableSDK-Integration-Tester.app/test-config.json
+🔍 [TEST] Environment CI: false
+🔍 [TEST] Config CI: false
+📱 [TEST] LOCAL ENVIRONMENT DETECTED
+🌐 [TEST] Push notification testing will use real APNS pushes
+📱 [TEST] Real device tokens will be obtained from APNS
+🚀 Fast Test Mode: DISABLED (comprehensive testing mode)
+🛑 Exit On Test Failure: DISABLED (default)
+📋 [TEST] Full config.json contents:
+{
+  "mobileApiKey": "210cbfd06c7840488216ffe169961dc8",
+  "serverApiKey": "9098112776ac4b96b16e3d4d204b9496",
+  "projectId": "28411",
+  "testUserEmail": "2025-12-30-integration-test-user@test.com",
+  "baseUrl": "https://api.iterable.com",
+  "environment": "local",
+  "simulator": {
+    "deviceType": "iPhone 16 Pro",
+    "osVersion": "latest",
+    "simulatorUuid": "8E94985B-0D1E-44BE-8E1B-9A5B3F7F7F04"
+  },
+  "testing": {
+    "timeout": 60,
+    "retryAttempts": 3,
+    "enableMocks": false,
+    "enableDebugLogging": true,
+    "ciMode": false
+  },
+  "features": {
+    "pushNotifications": true,
+    "inAppMessages": true,
+    "embeddedMessages": true,
+    "deepLinking": true
+  }
+}
+
+🔍 [TEST] Config file path: /Users/sumeru.chatterjee/Library/Developer/Xcode/DerivedData/IterableSDK-Integration-Tester-aqxunitlildtbpcxwgjtugmgjyuy/Build/Products/Debug-iphonesimulator/IterableSDK-Integration-Tester.app/test-config.json
+🔍 [TEST] Environment CI: false
+🔍 [TEST] Config CI: false
+📱 [TEST] LOCAL ENVIRONMENT DETECTED
+🌐 [TEST] Push notification testing will use real APNS pushes
+📱 [TEST] Real device tokens will be obtained from APNS
+Test Suite 'Selected tests' started at 2026-01-13 21:44:39.585.
+Test Suite 'IterableSDK-Integration-TesterUITests.xctest' started at 2026-01-13 21:44:39.585.
+Test Suite 'DeepLinkingIntegrationTests' started at 2026-01-13 21:44:39.585.
+    t =      nans Suite Set Up
+🧪 Test suite starting - failure tracking reset
+Test Case '-[IterableSDK_Integration_TesterUITests.DeepLinkingIntegrationTests testABrowserLinksOpenSafari]' started.
+    t =     0.00s Start Test at 2026-01-13 21:44:39.586
+    t =     0.17s Set Up
+🧪 Test Mode: COMPREHENSIVE (full validation suite)
+✅ Loaded test configuration from test-config.json
+📸 SCREENSHOTS_DIR not set, trying to find project screenshots directory
+📸 Current working directory: /
+📸 Using Documents fallback: /Users/sumeru.chatterjee/Library/Developer/CoreSimulator/Devices/8E94985B-0D1E-44BE-8E1B-9A5B3F7F7F04/data/Containers/Data/Application/1B6D0C27-256B-45C5-85B6-938DDFBC1823/Documents/IterableSDK-Screenshots
+📸 ⚠️  For CI/proper usage, set SCREENSHOTS_DIR environment variable
+📸 Screenshot capture initialized
+📸 Screenshots will be saved to: /Users/sumeru.chatterjee/Library/Developer/CoreSimulator/Devices/8E94985B-0D1E-44BE-8E1B-9A5B3F7F7F04/data/Containers/Data/Application/1B6D0C27-256B-45C5-85B6-938DDFBC1823/Documents/IterableSDK-Screenshots
+📸 Directory exists: true
+✅ UI Interruption Monitors configured for permission dialogs
+    t =     0.24s     Open com.sumeru.IterableSDK-Integration-Tester
+    t =     0.24s         Launch com.sumeru.IterableSDK-Integration-Tester
+Resolve Package Graph
+
+    t =     1.90s             Setting up automation session
+    t =     2.77s             Wait for com.sumeru.IterableSDK-Integration-Tester to idle
+    t =     5.03s     Checking `Expect predicate `exists == 1` for object "app-ready-indicator" StaticText`
+    t =     5.04s         Checking existence of `"app-ready-indicator" StaticText`
+    t =     5.09s     Waiting 30.0s for "sdk-ready-indicator" StaticText to exist
+    t =     6.13s         Checking `Expect predicate `existsNoRetry == 1` for object "sdk-ready-indicator" StaticText`
+    t =     6.13s             Checking existence of `"sdk-ready-indicator" StaticText`
+    t =     6.14s     Find the "sdk-ready-indicator" StaticText
+    t =     6.16s     Waiting 30.0s for "user-email-textfield" TextField to exist
+    t =     7.20s         Checking `Expect predicate `existsNoRetry == 1` for object "user-email-textfield" TextField`
+    t =     7.20s             Checking existence of `"user-email-textfield" TextField`
+    t =     7.21s     Find the "user-email-textfield" TextField
+    t =     7.23s     Waiting 30.0s for "sdk-email-value" StaticText to exist
+    t =     8.26s         Checking `Expect predicate `existsNoRetry == 1` for object "sdk-email-value" StaticText`
+    t =     8.26s             Checking existence of `"sdk-email-value" StaticText`
+    t =     8.28s     Find the "sdk-email-value" StaticText
+📸 Screenshot saved: 001_sdk-before-initialization_2026-01-13_21-44-47.png
+    t =     8.38s     Added attachment named 'sdk-before-initialization'
+    t =     8.38s     Waiting 30.0s for "initialize-sdk-button" Button to exist
+    t =     9.41s         Checking `Expect predicate `existsNoRetry == 1` for object "initialize-sdk-button" Button`
+    t =     9.41s             Checking existence of `"initialize-sdk-button" Button`
+    t =     9.43s     Tap "initialize-sdk-button" Button
+    t =     9.43s         Wait for com.sumeru.IterableSDK-Integration-Tester to idle
+    t =     9.43s         Find the "initialize-sdk-button" Button
+    t =     9.45s         Check for interrupting elements affecting "initialize-sdk-button" Button
+    t =     9.47s         Synthesize event
+    t =     9.87s         Wait for com.sumeru.IterableSDK-Integration-Tester to idle
+    t =    10.20s     Waiting 30.0s for "sdk-ready-indicator" StaticText to exist
+    t =    11.24s         Checking `Expect predicate `existsNoRetry == 1` for object "sdk-ready-indicator" StaticText`
+    t =    11.24s             Checking existence of `"sdk-ready-indicator" StaticText`
+    t =    12.29s     Checking `Expect predicate `label == "✓"` for object "sdk-ready-indicator" StaticText`
+    t =    12.29s         Find the "sdk-ready-indicator" StaticText
+    t =    12.30s     Waiting 30.0s for "register-email-button" Button to exist
+    t =    13.34s         Checking `Expect predicate `existsNoRetry == 1` for object "register-email-button" Button`
+    t =    13.34s             Checking existence of `"register-email-button" Button`
+    t =    13.35s     Tap "register-email-button" Button
+    t =    13.35s         Wait for com.sumeru.IterableSDK-Integration-Tester to idle
+    t =    13.36s         Find the "register-email-button" Button
+    t =    13.37s         Check for interrupting elements affecting "register-email-button" Button
+    t =    13.39s         Synthesize event
+    t =    13.67s         Wait for com.sumeru.IterableSDK-Integration-Tester to idle
+    t =    14.96s     Waiting 30.0s for "sdk-email-value" StaticText to exist
+    t =    16.00s         Checking `Expect predicate `existsNoRetry == 1` for object "sdk-email-value" StaticText`
+    t =    16.00s             Checking existence of `"sdk-email-value" StaticText`
+    t =    16.02s     Find the "sdk-email-value" StaticText
+    t =    16.03s     Waiting 30.0s for "network-monitor-button" Button to exist
+    t =    17.06s         Checking `Expect predicate `existsNoRetry == 1` for object "network-monitor-button" Button`
+    t =    17.06s             Checking existence of `"network-monitor-button" Button`
+    t =    18.12s     Checking `Expect predicate `isHittable == 1` for object "network-monitor-button" Button`
+    t =    18.12s         Find the "network-monitor-button" Button
+    t =    18.14s     Tap "network-monitor-button" Button
+    t =    18.14s         Wait for com.sumeru.IterableSDK-Integration-Tester to idle
+    t =    18.14s         Find the "network-monitor-button" Button
+    t =    18.16s         Check for interrupting elements affecting "network-monitor-button" Button
+    t =    18.18s         Synthesize event
+    t =    18.47s         Wait for com.sumeru.IterableSDK-Integration-Tester to idle
+    t =    18.82s     Waiting 3.0s for "Network Monitor" NavigationBar to exist
+    t =    19.86s         Checking `Expect predicate `existsNoRetry == 1` for object "Network Monitor" NavigationBar`
+    t =    19.86s             Checking existence of `"Network Monitor" NavigationBar`
+    t =    19.89s     Waiting 30.0s for "Network Monitor" NavigationBar to exist
+    t =    20.93s         Checking `Expect predicate `existsNoRetry == 1` for object "Network Monitor" NavigationBar`
+    t =    20.93s             Checking existence of `"Network Monitor" NavigationBar`
+    t =    20.95s     Waiting 5.0s for Cell (First Match) to exist
+    t =    21.99s         Checking `Expect predicate `existsNoRetry == 1` for object Cell (First Match)`
+    t =    21.99s             Checking existence of `Cell (First Match)`
+🔍 Debug: Static texts in getRemoteConfiguration cell:
+    t =    22.01s     Get all elements bound by index for: Descendants matching type StaticText
+    t =    22.04s     Checking existence of `StaticText (Element at index 0)`
+    t =    22.06s     Find the StaticText (Element at index 0)
+   - Label: 'GET'
+    t =    22.08s     Checking existence of `StaticText (Element at index 1)`
+    t =    22.13s     Find the StaticText (Element at index 1)
+   - Label: '/api/mobile/getRemoteConfiguration'
+    t =    22.15s     Checking existence of `StaticText (Element at index 2)`
+    t =    22.18s     Find the StaticText (Element at index 2)
+   - Label: '9:44:49 PM'
+    t =    22.21s     Checking existence of `StaticText (Element at index 3)`
+    t =    22.23s     Find the StaticText (Element at index 3)
+   - Label: '200'
+    t =    22.25s     Checking existence of `StaticText (First Match)`
+    t =    22.28s     Checking existence of `StaticText (First Match)`
+    t =    22.31s     Waiting 5.0s for Cell (First Match) to exist
+    t =    23.35s         Checking `Expect predicate `existsNoRetry == 1` for object Cell (First Match)`
+    t =    23.35s             Checking existence of `Cell (First Match)`
+🔍 Debug: Static texts in getMessages cell:
+    t =    23.37s     Get all elements bound by index for: Descendants matching type StaticText
+    t =    23.39s     Checking existence of `StaticText (Element at index 0)`
+    t =    23.42s     Find the StaticText (Element at index 0)
+   - Label: 'GET'
+    t =    23.44s     Checking existence of `StaticText (Element at index 1)`
+    t =    23.47s     Find the StaticText (Element at index 1)
+   - Label: '/api/inApp/getMessages'
+    t =    23.49s     Checking existence of `StaticText (Element at index 2)`
+    t =    23.52s     Find the StaticText (Element at index 2)
+   - Label: '9:44:53 PM'
+    t =    23.54s     Checking existence of `StaticText (Element at index 3)`
+    t =    23.57s     Find the StaticText (Element at index 3)
+   - Label: '200'
+    t =    23.59s     Checking existence of `StaticText (First Match)`
+    t =    23.61s     Checking existence of `StaticText (First Match)`
+📸 Screenshot saved: 002_sdk-initialization-network-calls_2026-01-13_21-45-03.png
+    t =    23.72s     Added attachment named 'sdk-initialization-network-calls'
+    t =    23.72s     Checking existence of `"Close" Button`
+    t =    23.74s     Tap "Close" Button
+    t =    23.74s         Wait for com.sumeru.IterableSDK-Integration-Tester to idle
+    t =    23.74s         Find the "Close" Button
+    t =    23.76s         Check for interrupting elements affecting "Close" Button
+    t =    23.79s             Wait for com.apple.springboard to idle
+    t =    23.88s         Found 1 interrupting element:
+    t =    23.88s             Find the "NotificationShortLookView" BannerNotification
+    t =    23.90s     "NotificationShortLookView" BannerNotification from Application 'com.apple.springboard'
+    t =    23.90s         Invoking UI interruption monitors for "NotificationShortLookView" BannerNotification from Application 'com.apple.springboard'
+    t =    23.90s     Invoking General System Permission
+⚙️ UI Interruption Monitor: Handling general system permission dialog
+    t =    23.90s                 Checking existence of `"Allow" Button`
+    t =    23.93s                 Checking existence of `"OK" Button`
+    t =    23.95s                 Checking existence of `"Continue" Button`
+    t =    23.97s                 Checking existence of `"Yes" Button`
+    t =    23.98s                 Get all elements bound by index for: Descendants matching type Button
+    t =    24.00s                 Find the Button (Element at index 0)
+📱 Tapping last button 'now, Ready for Apple Intelligence, Time to experience the new personal intelligence system.' as fallback
+    t =    24.02s                 Tap "ShortLook.Platter.Content.Seamless" Button
+    t =    24.02s                     Wait for com.apple.springboard to idle
+    t =    24.02s                     Find the "ShortLook.Platter.Content.Seamless" Button
+    t =    24.04s                     Check for interrupting elements affecting "ShortLook.Platter.Content.Seamless" Button
+    t =    24.05s                         Wait for com.sumeru.IterableSDK-Integration-Tester to idle
+    t =    24.09s                     Synthesize event
+    t =    24.38s                     Wait for com.apple.springboard to idle
+    t =    25.53s             Verifying handling...
+    t =    25.55s                 Wait for com.apple.Preferences to idle
+    t =    28.88s     Confirmed successful handling of interrupting element
+    t =    28.88s         Open com.sumeru.IterableSDK-Integration-Tester
+    t =    28.88s             Activate com.sumeru.IterableSDK-Integration-Tester
+    t =    28.92s                 Wait for com.sumeru.IterableSDK-Integration-Tester to idle
+    t =    28.92s         Synthesize event
+    t =    28.93s             Scroll element to visible
+    t =    28.93s             Find the "Close" Button
+    t =    28.97s             Computed hit point {-1, -1} after scrolling to visible
+    t =    28.97s             Failed: Failed to scroll to visible (by AX action) Button, {{6.7, 17.0}, {22.8, 12.0}}, label: 'Close', error: Error kAXErrorCannotComplete performing AXAction kAXScrollToVisibleAction on element AX element pid: 21675, elementOrHash.elementID: 4387589632.63
+    t =    29.97s         Retrying `Tap "Close" Button` (attempt #2)
+    t =    29.97s             Wait for com.sumeru.IterableSDK-Integration-Tester to idle
+    t =    29.98s             Find the "Close" Button
+    t =    30.00s             Check for interrupting elements affecting "Close" Button
+    t =    30.03s             Synthesize event
+    t =    30.32s             Wait for com.sumeru.IterableSDK-Integration-Tester to idle
+📸 Screenshot saved: 003_sdk-initialized_2026-01-13_21-45-10.png
+    t =    31.18s     Added attachment named 'sdk-initialized'
+✅ Deep linking test infrastructure initialized
+🧪 Testing non-app links open in Safari (not app)
+🎯 Links with /u/ pattern or non-AASA paths should open Safari
+🔗 Test URL: https://links.tsetester.com/u/click?url=https://iterable.com
+✅ Expected: Safari opens (not our app)
+📝 [TEST] Opening browser link from Reminders app: https://links.tsetester.com/u/click?url=https://iterable.com
+    t =    31.18s Open com.apple.reminders
+    t =    31.18s     Launch com.apple.reminders
+    t =    31.29s         Setting up automation session
+    t =    32.10s         Wait for com.apple.reminders to idle
+    t =    35.00s Checking `Expect predicate `state == 4` for object Application 'com.apple.reminders'`
+    t =    37.00s Waiting 3.0s for "Continue" Button to exist
+    t =    38.03s     Checking `Expect predicate `existsNoRetry == 1` for object "Continue" Button`
+    t =    38.04s         Checking existence of `"Continue" Button`
+📝 [TEST] Dismissing Reminders welcome modal
+    t =    38.09s Tap "Continue" Button
+    t =    38.09s     Wait for com.apple.reminders to idle
+    t =    38.09s     Find the "Continue" Button
+    t =    38.11s     Check for interrupting elements affecting "Continue" Button
+    t =    38.14s     Synthesize event
+    t =    38.42s     Wait for com.apple.reminders to idle
+    t =    39.78s Waiting 3.0s for "Not Now" Button to exist
+    t =    40.80s     Checking `Expect predicate `existsNoRetry == 1` for object "Not Now" Button`
+    t =    40.80s         Checking existence of `"Not Now" Button`
+📝 [TEST] Dismissing iCloud syncing modal
+    t =    40.83s Tap "Not Now" Button
+    t =    40.83s     Wait for com.apple.reminders to idle
+    t =    40.83s     Find the "Not Now" Button
+    t =    40.85s     Check for interrupting elements affecting "Not Now" Button
+    t =    40.87s     Synthesize event
+    t =    41.16s     Wait for com.apple.reminders to idle
+🗑️ [TEST] Cleaning up previous test link from Reminders...
+    t =    42.39s Waiting 2.0s for Cell (First Match) to exist
+    t =    43.42s     Checking `Expect predicate `existsNoRetry == 1` for object Cell (First Match)`
+    t =    43.42s         Checking existence of `Cell (First Match)`
+    t =    43.43s         Capturing element debug description
+    t =    44.39s     Checking `Expect predicate `existsNoRetry == 1` for object Cell (First Match)`
+    t =    44.39s         Checking existence of `Cell (First Match)`
+    t =    44.41s         Capturing element debug description
+    t =    44.41s     Checking existence of `Cell (First Match)`
+    t =    44.43s Collecting debug information to assist test failure triage
+    t =    44.43s     Requesting snapshot of accessibility hierarchy for app with pid 21706
+🗑️ [TEST] No previous reminder to clean up
+📝 [TEST] Looking for New Reminder button...
+    t =    44.46s Waiting 5.0s for "New Reminder" Button to exist
+    t =    45.49s     Checking `Expect predicate `existsNoRetry == 1` for object "New Reminder" Button`
+    t =    45.49s         Checking existence of `"New Reminder" Button`
+📝 [TEST] Found New Reminder button, tapping...
+    t =    45.51s Tap "New Reminder" Button
+    t =    45.51s     Wait for com.apple.reminders to idle
+    t =    45.51s     Find the "New Reminder" Button
+    t =    45.53s     Check for interrupting elements affecting "New Reminder" Button
+    t =    45.55s     Synthesize event
+    t =    45.84s     Wait for com.apple.reminders to idle
+📝 [TEST] Typing URL into reminder: https://links.tsetester.com/u/click?url=https://iterable.com
+    t =    49.12s Type 'https://links.tset...' into Application 'com.apple.reminders'
+    t =    49.12s     Wait for com.apple.reminders to idle
+    t =    49.12s     Find the Application 'com.apple.reminders'
+    t =    49.17s     Check for interrupting elements affecting "Reminders" Application
+    t =    49.20s     Synthesize event
+    t =    49.21s         Get number of matches for: Elements containing elements matching predicate 'hasKeyboardFocus == 1'
+    t =    50.43s     Wait for com.apple.reminders to idle
+    t =    50.43s Type '
+' into Application 'com.apple.reminders'
+    t =    50.43s     Wait for com.apple.reminders to idle
+    t =    50.44s     Find the Application 'com.apple.reminders'
+    t =    50.46s     Check for interrupting elements affecting "Reminders" Application
+    t =    50.50s     Synthesize event
+    t =    50.50s         Get number of matches for: Elements containing elements matching predicate 'hasKeyboardFocus == 1'
+    t =    50.74s     Wait for com.apple.reminders to idle
+📝 [TEST] Looking for link to tap...
+    t =    52.75s Waiting 5.0s for Link (First Match) to exist
+    t =    53.78s     Checking `Expect predicate `existsNoRetry == 1` for object Link (First Match)`
+    t =    53.78s         Checking existence of `Link (First Match)`
+✅ [TEST] Found link, tapping it...
+    t =    53.82s Swipe down Application 'com.apple.reminders'
+    t =    53.82s     Wait for com.apple.reminders to idle
+    t =    53.82s     Find the Application 'com.apple.reminders'
+    t =    53.85s     Check for interrupting elements affecting "Reminders" Application
+    t =    53.89s     Synthesize event
+    t =    54.31s     Wait for com.apple.reminders to idle
+    t =    55.63s Tap Link (First Match)[0.10, 0.50]
+    t =    55.63s     Wait for com.apple.reminders to idle
+    t =    55.63s     Find the Link (First Match)
+    t =    55.65s     Check for interrupting elements affecting "https://links.tsetester.com/u/click?url=https://iterable.com" Link
+    t =    55.68s     Synthesize event
+    t =    55.68s         Find the "https://links.tsetester.com/u/click?url=https://iterable.com" Link
+    t =    55.70s         Find the "https://links.tsetester.com/u/click?url=https://iterable.com" Link
+    t =    55.72s         Find the "https://links.tsetester.com/u/click?url=https://iterable.com" Link
+    t =    56.02s     Wait for com.apple.reminders to idle
+✅ [TEST] Tapped link in Reminders app
+✅ [TEST] Browser link opened successfully
+🔍 Safari state: foreground
+🔍 App state: background
+    t =    60.08s Checking `Expect predicate `state == 4` for object Application 'com.apple.mobilesafari'`
+✅ Browser link test completed - Safari opened correctly
+    t =    60.08s Tear Down
+📸 Screenshot saved: 004_final--[DeepLinkingIntegrationTests testABrowserLinksOpenSafari]_2026-01-13_21-45-39.png
+    t =    60.15s     Added attachment named 'final--[DeepLinkingIntegrationTests testABrowserLinksOpenSafari]'
+⚠️ Warning: Error cleaning up test user: httpError(401)
+    t =    61.18s     Terminate com.sumeru.IterableSDK-Integration-Tester:21675
+Test Case '-[IterableSDK_Integration_TesterUITests.DeepLinkingIntegrationTests testABrowserLinksOpenSafari]' passed (62.499 seconds).
+Test Case '-[IterableSDK_Integration_TesterUITests.DeepLinkingIntegrationTests testBDeepLinkFromRemindersApp]' started.
+    t =     0.00s Start Test at 2026-01-13 21:45:42.085
+    t =     0.03s Set Up
+🧪 Test Mode: COMPREHENSIVE (full validation suite)
+✅ Loaded test configuration from test-config.json
+📸 SCREENSHOTS_DIR not set, trying to find project screenshots directory
+📸 Current working directory: /
+📸 Using Documents fallback: /Users/sumeru.chatterjee/Library/Developer/CoreSimulator/Devices/8E94985B-0D1E-44BE-8E1B-9A5B3F7F7F04/data/Containers/Data/Application/1B6D0C27-256B-45C5-85B6-938DDFBC1823/Documents/IterableSDK-Screenshots
+📸 ⚠️  For CI/proper usage, set SCREENSHOTS_DIR environment variable
+📸 Screenshot capture initialized
+📸 Screenshots will be saved to: /Users/sumeru.chatterjee/Library/Developer/CoreSimulator/Devices/8E94985B-0D1E-44BE-8E1B-9A5B3F7F7F04/data/Containers/Data/Application/1B6D0C27-256B-45C5-85B6-938DDFBC1823/Documents/IterableSDK-Screenshots
+📸 Directory exists: true
+✅ UI Interruption Monitors configured for permission dialogs
+    t =     0.03s     Open com.sumeru.IterableSDK-Integration-Tester
+    t =     0.03s         Launch com.sumeru.IterableSDK-Integration-Tester
+    t =     0.25s             Setting up automation session
+    t =     1.04s             Wait for com.sumeru.IterableSDK-Integration-Tester to idle
+Resolve Package Graph
+
+    t =     3.27s     Checking `Expect predicate `exists == 1` for object "app-ready-indicator" StaticText`
+    t =     3.27s         Checking existence of `"app-ready-indicator" StaticText`
+    t =     3.32s     Waiting 30.0s for "sdk-ready-indicator" StaticText to exist
+    t =     4.35s         Checking `Expect predicate `existsNoRetry == 1` for object "sdk-ready-indicator" StaticText`
+    t =     4.35s             Checking existence of `"sdk-ready-indicator" StaticText`
+    t =     4.37s     Find the "sdk-ready-indicator" StaticText
+    t =     4.38s     Waiting 30.0s for "user-email-textfield" TextField to exist
+    t =     5.40s         Checking `Expect predicate `existsNoRetry == 1` for object "user-email-textfield" TextField`
+    t =     5.40s             Checking existence of `"user-email-textfield" TextField`
+    t =     5.42s     Find the "user-email-textfield" TextField
+    t =     5.44s     Waiting 30.0s for "sdk-email-value" StaticText to exist
+    t =     6.47s         Checking `Expect predicate `existsNoRetry == 1` for object "sdk-email-value" StaticText`
+    t =     6.47s             Checking existence of `"sdk-email-value" StaticText`
+    t =     6.50s     Find the "sdk-email-value" StaticText
+📸 Screenshot saved: 001_sdk-before-initialization_2026-01-13_21-45-48.png
+    t =     6.59s     Added attachment named 'sdk-before-initialization'
+    t =     6.59s     Waiting 30.0s for "initialize-sdk-button" Button to exist
+    t =     7.63s         Checking `Expect predicate `existsNoRetry == 1` for object "initialize-sdk-button" Button`
+    t =     7.63s             Checking existence of `"initialize-sdk-button" Button`
+    t =     7.64s     Tap "initialize-sdk-button" Button
+    t =     7.64s         Wait for com.sumeru.IterableSDK-Integration-Tester to idle
+    t =     7.64s         Find the "initialize-sdk-button" Button
+    t =     7.66s         Check for interrupting elements affecting "initialize-sdk-button" Button
+    t =     7.67s         Synthesize event
+    t =     7.96s         Wait for com.sumeru.IterableSDK-Integration-Tester to idle
+    t =     8.27s     Waiting 30.0s for "sdk-ready-indicator" StaticText to exist
+    t =     9.30s         Checking `Expect predicate `existsNoRetry == 1` for object "sdk-ready-indicator" StaticText`
+    t =     9.30s             Checking existence of `"sdk-ready-indicator" StaticText`
+    t =    10.37s     Checking `Expect predicate `label == "✓"` for object "sdk-ready-indicator" StaticText`
+    t =    10.37s         Find the "sdk-ready-indicator" StaticText
+    t =    10.40s     Waiting 30.0s for "register-email-button" Button to exist
+    t =    11.43s         Checking `Expect predicate `existsNoRetry == 1` for object "register-email-button" Button`
+    t =    11.43s             Checking existence of `"register-email-button" Button`
+    t =    11.46s     Tap "register-email-button" Button
+    t =    11.46s         Wait for com.sumeru.IterableSDK-Integration-Tester to idle
+    t =    11.46s         Find the "register-email-button" Button
+    t =    11.48s         Check for interrupting elements affecting "register-email-button" Button
+    t =    11.50s         Synthesize event
+    t =    11.79s         Wait for com.sumeru.IterableSDK-Integration-Tester to idle
+    t =    13.07s     Waiting 30.0s for "sdk-email-value" StaticText to exist
+    t =    14.10s         Checking `Expect predicate `existsNoRetry == 1` for object "sdk-email-value" StaticText`
+    t =    14.10s             Checking existence of `"sdk-email-value" StaticText`
+    t =    14.13s     Find the "sdk-email-value" StaticText
+    t =    14.15s     Waiting 30.0s for "network-monitor-button" Button to exist
+    t =    15.18s         Checking `Expect predicate `existsNoRetry == 1` for object "network-monitor-button" Button`
+    t =    15.18s             Checking existence of `"network-monitor-button" Button`
+    t =    16.22s     Checking `Expect predicate `isHittable == 1` for object "network-monitor-button" Button`
+    t =    16.22s         Find the "network-monitor-button" Button
+    t =    16.26s     Tap "network-monitor-button" Button
+    t =    16.26s         Wait for com.sumeru.IterableSDK-Integration-Tester to idle
+    t =    16.26s         Find the "network-monitor-button" Button
+    t =    16.28s         Check for interrupting elements affecting "network-monitor-button" Button
+    t =    16.29s         Synthesize event
+    t =    16.58s         Wait for com.sumeru.IterableSDK-Integration-Tester to idle
+    t =    16.94s     Waiting 3.0s for "Network Monitor" NavigationBar to exist
+    t =    17.97s         Checking `Expect predicate `existsNoRetry == 1` for object "Network Monitor" NavigationBar`
+    t =    17.97s             Checking existence of `"Network Monitor" NavigationBar`
+    t =    18.01s     Waiting 30.0s for "Network Monitor" NavigationBar to exist
+    t =    19.03s         Checking `Expect predicate `existsNoRetry == 1` for object "Network Monitor" NavigationBar`
+    t =    19.03s             Checking existence of `"Network Monitor" NavigationBar`
+    t =    19.06s     Waiting 5.0s for Cell (First Match) to exist
+    t =    20.10s         Checking `Expect predicate `existsNoRetry == 1` for object Cell (First Match)`
+    t =    20.10s             Checking existence of `Cell (First Match)`
+🔍 Debug: Static texts in getRemoteConfiguration cell:
+    t =    20.14s     Get all elements bound by index for: Descendants matching type StaticText
+    t =    20.17s     Checking existence of `StaticText (Element at index 0)`
+    t =    20.21s     Find the StaticText (Element at index 0)
+   - Label: 'GET'
+    t =    20.23s     Checking existence of `StaticText (Element at index 1)`
+    t =    20.26s     Find the StaticText (Element at index 1)
+   - Label: '/api/mobile/getRemoteConfiguration'
+    t =    20.28s     Checking existence of `StaticText (Element at index 2)`
+    t =    20.31s     Find the StaticText (Element at index 2)
+   - Label: '9:45:49 PM'
+    t =    20.33s     Checking existence of `StaticText (Element at index 3)`
+    t =    20.36s     Find the StaticText (Element at index 3)
+   - Label: '200'
+    t =    20.38s     Checking existence of `StaticText (First Match)`
+    t =    20.41s     Checking existence of `StaticText (First Match)`
+    t =    20.43s     Waiting 5.0s for Cell (First Match) to exist
+    t =    21.47s         Checking `Expect predicate `existsNoRetry == 1` for object Cell (First Match)`
+    t =    21.47s             Checking existence of `Cell (First Match)`
+🔍 Debug: Static texts in getMessages cell:
+    t =    21.52s     Get all elements bound by index for: Descendants matching type StaticText
+    t =    21.55s     Checking existence of `StaticText (Element at index 0)`
+    t =    21.57s     Find the StaticText (Element at index 0)
+   - Label: 'GET'
+    t =    21.60s     Checking existence of `StaticText (Element at index 1)`
+    t =    21.62s     Find the StaticText (Element at index 1)
+   - Label: '/api/inApp/getMessages'
+    t =    21.64s     Checking existence of `StaticText (Element at index 2)`
+    t =    21.67s     Find the StaticText (Element at index 2)
+   - Label: '9:45:49 PM'
+    t =    21.69s     Checking existence of `StaticText (Element at index 3)`
+    t =    21.73s     Find the StaticText (Element at index 3)
+   - Label: '200'
+    t =    21.75s     Checking existence of `StaticText (First Match)`
+    t =    21.77s     Checking existence of `StaticText (First Match)`
+📸 Screenshot saved: 002_sdk-initialization-network-calls_2026-01-13_21-46-03.png
+    t =    21.87s     Added attachment named 'sdk-initialization-network-calls'
+    t =    21.87s     Checking existence of `"Close" Button`
+    t =    21.89s     Tap "Close" Button
+    t =    21.89s         Wait for com.sumeru.IterableSDK-Integration-Tester to idle
+    t =    21.89s         Find the "Close" Button
+    t =    21.92s         Check for interrupting elements affecting "Close" Button
+    t =    21.94s         Synthesize event
+    t =    22.23s         Wait for com.sumeru.IterableSDK-Integration-Tester to idle
+📸 Screenshot saved: 003_sdk-initialized_2026-01-13_21-46-05.png
+    t =    23.07s     Added attachment named 'sdk-initialized'
+✅ Deep linking test infrastructure initialized
+🧪 Testing deep link from Reminders app with Jena's test link
+🔗 Test URL: https://links.tsetester.com/a/click?_t=5cce074b113d48fa9ef346e4333ed8e8&_m=74aKPNrAjTpuZM4vZTDueu64xMdbHDz5Tn&_e=l6cj19GbssUn6h5qtXjRcC5os6azNW1cqdk9lsvmxxRl4ZTAW8mIB4IHJA97wE1i5f0eRDtm-KpgKI7-tM-Cly6umZo4P8HU8krftMYvL3T2sCpm3uFDBF2iJ5vQ-G6sqNMmae4_8jkE1DU9aKRhraZ1zzUZ3j-dFbQJrxdLt4tb0C7jnXSARVFf27FKFhBKnYSO23taBmf_4G5dTTXKmC_1CGnT9bu1nAwP-WMyYShoQhmjoGO9ppDCrVStSYPsimwub0h5XnC11g4u5yML_WZssgC7LSUOX7qCNOIDr9dLhrx2Rc2TY12k0maESyanjNgNZ4Lr8LMClCMJ3d9TMg%3D%3D
+🎯 Expected unwrapped destination: https://tsetester.com/update/hi
+📝 [TEST] Opening universal link from Reminders app: https://links.tsetester.com/a/click?_t=5cce074b113d48fa9ef346e4333ed8e8&_m=74aKPNrAjTpuZM4vZTDueu64xMdbHDz5Tn&_e=l6cj19GbssUn6h5qtXjRcC5os6azNW1cqdk9lsvmxxRl4ZTAW8mIB4IHJA97wE1i5f0eRDtm-KpgKI7-tM-Cly6umZo4P8HU8krftMYvL3T2sCpm3uFDBF2iJ5vQ-G6sqNMmae4_8jkE1DU9aKRhraZ1zzUZ3j-dFbQJrxdLt4tb0C7jnXSARVFf27FKFhBKnYSO23taBmf_4G5dTTXKmC_1CGnT9bu1nAwP-WMyYShoQhmjoGO9ppDCrVStSYPsimwub0h5XnC11g4u5yML_WZssgC7LSUOX7qCNOIDr9dLhrx2Rc2TY12k0maESyanjNgNZ4Lr8LMClCMJ3d9TMg%3D%3D
+    t =    23.08s Open com.apple.reminders
+    t =    23.08s     Launch com.apple.reminders
+    t =    23.08s         Terminate com.apple.reminders:21706
+    t =    24.26s         Setting up automation session
+    t =    24.75s         Wait for com.apple.reminders to idle
+    t =    27.20s Checking `Expect predicate `state == 4` for object Application 'com.apple.reminders'`
+    t =    29.21s Waiting 3.0s for "Continue" Button to exist
+    t =    30.24s     Checking `Expect predicate `existsNoRetry == 1` for object "Continue" Button`
+    t =    30.24s         Checking existence of `"Continue" Button`
+    t =    30.33s         Capturing element debug description
+    t =    31.26s     Checking `Expect predicate `existsNoRetry == 1` for object "Continue" Button`
+    t =    31.26s         Checking existence of `"Continue" Button`
+    t =    31.28s         Capturing element debug description
+    t =    32.21s     Checking `Expect predicate `existsNoRetry == 1` for object "Continue" Button`
+    t =    32.21s         Checking existence of `"Continue" Button`
+    t =    32.24s         Capturing element debug description
+    t =    32.24s     Checking existence of `"Continue" Button`
+    t =    32.26s Collecting debug information to assist test failure triage
+    t =    32.26s     Requesting snapshot of accessibility hierarchy for app with pid 21808
+    t =    32.30s Waiting 3.0s for "Not Now" Button to exist
+    t =    33.32s     Checking `Expect predicate `existsNoRetry == 1` for object "Not Now" Button`
+    t =    33.32s         Checking existence of `"Not Now" Button`
+    t =    33.35s         Capturing element debug description
+    t =    34.39s     Checking `Expect predicate `existsNoRetry == 1` for object "Not Now" Button`
+    t =    34.39s         Checking existence of `"Not Now" Button`
+    t =    34.41s         Capturing element debug description
+    t =    35.30s     Checking `Expect predicate `existsNoRetry == 1` for object "Not Now" Button`
+    t =    35.30s         Checking existence of `"Not Now" Button`
+    t =    35.32s         Capturing element debug description
+    t =    35.32s     Checking existence of `"Not Now" Button`
+    t =    35.34s Collecting debug information to assist test failure triage
+    t =    35.34s     Requesting snapshot of accessibility hierarchy for app with pid 21808
+🗑️ [TEST] Cleaning up previous test link from Reminders...
+    t =    35.37s Waiting 2.0s for Cell (First Match) to exist
+    t =    36.39s     Checking `Expect predicate `existsNoRetry == 1` for object Cell (First Match)`
+    t =    36.39s         Checking existence of `Cell (First Match)`
+    t =    36.42s Swipe left Cell (First Match)
+    t =    36.42s     Wait for com.apple.reminders to idle
+    t =    36.43s     Find the Cell (First Match)
+    t =    36.44s     Check for interrupting elements affecting "<x-apple-reminderkit://REMCDReminder/91F1E23E-2F7E-473F-A8F1-21448A2FB309>" Cell
+    t =    36.46s     Synthesize event
+    t =    36.91s     Wait for com.apple.reminders to idle
+    t =    38.49s Waiting 2.0s for "Delete" Button to exist
+    t =    39.51s     Checking `Expect predicate `existsNoRetry == 1` for object "Delete" Button`
+    t =    39.51s         Checking existence of `"Delete" Button`
+    t =    39.56s Tap "Delete" Button
+    t =    39.56s     Wait for com.apple.reminders to idle
+    t =    39.56s     Find the "Delete" Button
+    t =    39.58s     Check for interrupting elements affecting "Delete" Button
+    t =    39.60s     Synthesize event
+    t =    39.90s     Wait for com.apple.reminders to idle
+🗑️ [TEST] Deleted previous test reminder
+📝 [TEST] Looking for New Reminder button...
+    t =    41.12s Waiting 5.0s for "New Reminder" Button to exist
+    t =    42.14s     Checking `Expect predicate `existsNoRetry == 1` for object "New Reminder" Button`
+    t =    42.15s         Checking existence of `"New Reminder" Button`
+📝 [TEST] Found New Reminder button, tapping...
+    t =    42.18s Tap "New Reminder" Button
+    t =    42.18s     Wait for com.apple.reminders to idle
+    t =    42.18s     Find the "New Reminder" Button
+    t =    42.20s     Check for interrupting elements affecting "New Reminder" Button
+    t =    42.22s     Synthesize event
+    t =    42.51s     Wait for com.apple.reminders to idle
+📝 [TEST] Typing URL into reminder: https://links.tsetester.com/a/click?_t=5cce074b113d48fa9ef346e4333ed8e8&_m=74aKPNrAjTpuZM4vZTDueu64xMdbHDz5Tn&_e=l6cj19GbssUn6h5qtXjRcC5os6azNW1cqdk9lsvmxxRl4ZTAW8mIB4IHJA97wE1i5f0eRDtm-KpgKI7-tM-Cly6umZo4P8HU8krftMYvL3T2sCpm3uFDBF2iJ5vQ-G6sqNMmae4_8jkE1DU9aKRhraZ1zzUZ3j-dFbQJrxdLt4tb0C7jnXSARVFf27FKFhBKnYSO23taBmf_4G5dTTXKmC_1CGnT9bu1nAwP-WMyYShoQhmjoGO9ppDCrVStSYPsimwub0h5XnC11g4u5yML_WZssgC7LSUOX7qCNOIDr9dLhrx2Rc2TY12k0maESyanjNgNZ4Lr8LMClCMJ3d9TMg%3D%3D
+    t =    45.54s Type 'https://links.tset...' into Application 'com.apple.reminders'
+    t =    45.54s     Wait for com.apple.reminders to idle
+    t =    45.55s     Find the Application 'com.apple.reminders'
+    t =    45.60s     Check for interrupting elements affecting "Reminders" Application
+    t =    45.63s     Synthesize event
+    t =    45.64s         Get number of matches for: Elements containing elements matching predicate 'hasKeyboardFocus == 1'
+    t =    53.55s     Wait for com.apple.reminders to idle
+    t =    53.55s Type '
+' into Application 'com.apple.reminders'
+    t =    53.55s     Wait for com.apple.reminders to idle
+    t =    53.55s     Find the Application 'com.apple.reminders'
+    t =    53.59s     Check for interrupting elements affecting "Reminders" Application
+    t =    53.63s     Synthesize event
+    t =    53.63s         Get number of matches for: Elements containing elements matching predicate 'hasKeyboardFocus == 1'
+    t =    53.87s     Wait for com.apple.reminders to idle
+📝 [TEST] Looking for link to tap...
+    t =    55.88s Waiting 5.0s for Link (First Match) to exist
+    t =    56.90s     Checking `Expect predicate `existsNoRetry == 1` for object Link (First Match)`
+    t =    56.90s         Checking existence of `Link (First Match)`
+✅ [TEST] Found link, tapping it...
+    t =    56.97s Swipe down Application 'com.apple.reminders'
+    t =    56.97s     Wait for com.apple.reminders to idle
+    t =    56.97s     Find the Application 'com.apple.reminders'
+    t =    57.00s     Check for interrupting elements affecting "Reminders" Application
+    t =    57.04s     Synthesize event
+    t =    57.46s     Wait for com.apple.reminders to idle
+    t =    59.22s Tap Link (First Match)[0.10, 0.50]
+    t =    59.22s     Wait for com.apple.reminders to idle
+    t =    59.23s     Find the Link (First Match)
+    t =    59.26s     Check for interrupting elements affecting "https://links.tsetester.com/a/click?_t=5cce074b113d48fa9ef346e4333ed8e8&_m=74aKPNrAjTpuZM4vZTDueu64xMdbHDz5Tn&_e=l6cj19GbssUn6h5qtXjRcC5os6azNW1cqdk9lsvmxxRl4ZTAW8mIB4IHJA97wE1i5f0eRDtm-KpgKI7-tM-Cly6umZo4P8HU8krftMYvL3T2sCpm3uFDBF2iJ5vQ-G6sqNMmae4_8jkE1DU9aKRhraZ1zzUZ3j-dFbQJrxdLt4tb0C7jnXSARVFf27FKFhBKnYSO23taBmf_4G5dTTXKmC_1CGnT9bu1nAwP-WMyYShoQhmjoGO9ppDCrVStSYPsimwub0h5XnC11g4u5yML_WZssgC7LSUOX7qCNOIDr9dLhrx2Rc2TY12k0maESyanjNgNZ4Lr8LMClCMJ3d9TMg%3D%3D" Link
+    t =    59.29s     Synthesize event
+    t =    59.29s         Find the "https://links.tsetester.com/a/click?_t=5cce074b113d48fa9ef346e4333ed8e8&_m=74aKPNrAjTpuZM4vZTDueu64xMdbHDz5Tn&_e=l6cj19GbssUn6h5qtXjRcC5os6azNW1cqdk9lsvmxxRl4ZTAW8mIB4IHJA97wE1i5f0eRDtm-KpgKI7-tM-Cly6umZo4P8HU8krftMYvL3T2sCpm3uFDBF2iJ5vQ-G6sqNMmae4_8jkE1DU9aKRhraZ1zzUZ3j-dFbQJrxdLt4tb0C7jnXSARVFf27FKFhBKnYSO23taBmf_4G5dTTXKmC_1CGnT9bu1nAwP-WMyYShoQhmjoGO9ppDCrVStSYPsimwub0h5XnC11g4u5yML_WZssgC7LSUOX7qCNOIDr9dLhrx2Rc2TY12k0maESyanjNgNZ4Lr8LMClCMJ3d9TMg%3D%3D" Link
+    t =    59.31s         Find the "https://links.tsetester.com/a/click?_t=5cce074b113d48fa9ef346e4333ed8e8&_m=74aKPNrAjTpuZM4vZTDueu64xMdbHDz5Tn&_e=l6cj19GbssUn6h5qtXjRcC5os6azNW1cqdk9lsvmxxRl4ZTAW8mIB4IHJA97wE1i5f0eRDtm-KpgKI7-tM-Cly6umZo4P8HU8krftMYvL3T2sCpm3uFDBF2iJ5vQ-G6sqNMmae4_8jkE1DU9aKRhraZ1zzUZ3j-dFbQJrxdLt4tb0C7jnXSARVFf27FKFhBKnYSO23taBmf_4G5dTTXKmC_1CGnT9bu1nAwP-WMyYShoQhmjoGO9ppDCrVStSYPsimwub0h5XnC11g4u5yML_WZssgC7LSUOX7qCNOIDr9dLhrx2Rc2TY12k0maESyanjNgNZ4Lr8LMClCMJ3d9TMg%3D%3D" Link
+    t =    59.33s         Find the "https://links.tsetester.com/a/click?_t=5cce074b113d48fa9ef346e4333ed8e8&_m=74aKPNrAjTpuZM4vZTDueu64xMdbHDz5Tn&_e=l6cj19GbssUn6h5qtXjRcC5os6azNW1cqdk9lsvmxxRl4ZTAW8mIB4IHJA97wE1i5f0eRDtm-KpgKI7-tM-Cly6umZo4P8HU8krftMYvL3T2sCpm3uFDBF2iJ5vQ-G6sqNMmae4_8jkE1DU9aKRhraZ1zzUZ3j-dFbQJrxdLt4tb0C7jnXSARVFf27FKFhBKnYSO23taBmf_4G5dTTXKmC_1CGnT9bu1nAwP-WMyYShoQhmjoGO9ppDCrVStSYPsimwub0h5XnC11g4u5yML_WZssgC7LSUOX7qCNOIDr9dLhrx2Rc2TY12k0maESyanjNgNZ4Lr8LMClCMJ3d9TMg%3D%3D" Link
+    t =    59.64s     Wait for com.apple.reminders to idle
+✅ [TEST] Tapped link in Reminders app
+    t =    60.69s Checking `Expect predicate `state == 4` for object Target Application 'com.sumeru.IterableSDK-Integration-Tester'`
+✅ [TEST] App opened from Reminders link
+    t =    65.69s Waiting 15.0s for "update-view-header" StaticText to exist
+    t =    66.73s     Checking `Expect predicate `existsNoRetry == 1` for object "update-view-header" StaticText`
+    t =    66.73s         Checking existence of `"update-view-header" StaticText`
+    t =    66.75s Find the "update-view-header" StaticText
+    t =    66.76s Checking existence of `"update-view-path" StaticText`
+    t =    66.77s Find the "update-view-path" StaticText
+    t =    66.78s Find the "update-view-path" StaticText
+✅ Update screen displayed with correct path: Path: /update/hi
+📸 Screenshot saved: 004_update-screen-from-deep-link_2026-01-13_21-46-48.png
+    t =    66.87s Added attachment named 'update-screen-from-deep-link'
+    t =    66.87s Checking existence of `"update-view-close-button" Button`
+    t =    66.87s Tap "update-view-close-button" Button
+    t =    66.87s     Wait for com.sumeru.IterableSDK-Integration-Tester to idle
+    t =    66.88s     Find the "update-view-close-button" Button
+    t =    66.88s     Check for interrupting elements affecting "update-view-close-button" Button
+    t =    66.90s     Synthesize event
+    t =    67.18s     Wait for com.sumeru.IterableSDK-Integration-Tester to idle
+✅ Deep link from Reminders app test completed - SDK correctly unwrapped to first redirect
+    t =    68.51s Tear Down
+📸 Screenshot saved: 005_final--[DeepLinkingIntegrationTests testBDeepLinkFromRemindersApp]_2026-01-13_21-46-50.png
+    t =    68.61s     Added attachment named 'final--[DeepLinkingIntegrationTests testBDeepLinkFromRemindersApp]'
+⚠️ Warning: Error cleaning up test user: httpError(401)
+    t =    69.70s     Terminate com.sumeru.IterableSDK-Integration-Tester:21785
+Test Case '-[IterableSDK_Integration_TesterUITests.DeepLinkingIntegrationTests testBDeepLinkFromRemindersApp]' passed (71.099 seconds).
+Test Case '-[IterableSDK_Integration_TesterUITests.DeepLinkingIntegrationTests testCCustomActionHandling]' started.
+    t =     0.00s Start Test at 2026-01-13 21:46:53.186
+    t =     0.03s Set Up
+🧪 Test Mode: COMPREHENSIVE (full validation suite)
+✅ Loaded test configuration from test-config.json
+📸 SCREENSHOTS_DIR not set, trying to find project screenshots directory
+📸 Current working directory: /
+📸 Using Documents fallback: /Users/sumeru.chatterjee/Library/Developer/CoreSimulator/Devices/8E94985B-0D1E-44BE-8E1B-9A5B3F7F7F04/data/Containers/Data/Application/1B6D0C27-256B-45C5-85B6-938DDFBC1823/Documents/IterableSDK-Screenshots
+📸 ⚠️  For CI/proper usage, set SCREENSHOTS_DIR environment variable
+📸 Screenshot capture initialized
+📸 Screenshots will be saved to: /Users/sumeru.chatterjee/Library/Developer/CoreSimulator/Devices/8E94985B-0D1E-44BE-8E1B-9A5B3F7F7F04/data/Containers/Data/Application/1B6D0C27-256B-45C5-85B6-938DDFBC1823/Documents/IterableSDK-Screenshots
+📸 Directory exists: true
+✅ UI Interruption Monitors configured for permission dialogs
+    t =     0.03s     Open com.sumeru.IterableSDK-Integration-Tester
+    t =     0.03s         Launch com.sumeru.IterableSDK-Integration-Tester
+    t =     0.25s             Setting up automation session
+    t =     0.96s             Wait for com.sumeru.IterableSDK-Integration-Tester to idle
+Resolve Package Graph
+
+    t =     3.17s     Checking `Expect predicate `exists == 1` for object "app-ready-indicator" StaticText`
+    t =     3.17s         Checking existence of `"app-ready-indicator" StaticText`
+    t =     3.23s     Waiting 30.0s for "sdk-ready-indicator" StaticText to exist
+    t =     4.27s         Checking `Expect predicate `existsNoRetry == 1` for object "sdk-ready-indicator" StaticText`
+    t =     4.27s             Checking existence of `"sdk-ready-indicator" StaticText`
+    t =     4.30s     Find the "sdk-ready-indicator" StaticText
+    t =     4.32s     Waiting 30.0s for "user-email-textfield" TextField to exist
+    t =     5.35s         Checking `Expect predicate `existsNoRetry == 1` for object "user-email-textfield" TextField`
+    t =     5.35s             Checking existence of `"user-email-textfield" TextField`
+    t =     5.38s     Find the "user-email-textfield" TextField
+    t =     5.39s     Waiting 30.0s for "sdk-email-value" StaticText to exist
+    t =     6.42s         Checking `Expect predicate `existsNoRetry == 1` for object "sdk-email-value" StaticText`
+    t =     6.42s             Checking existence of `"sdk-email-value" StaticText`
+    t =     6.45s     Find the "sdk-email-value" StaticText
+📸 Screenshot saved: 001_sdk-before-initialization_2026-01-13_21-46-59.png
+    t =     6.55s     Added attachment named 'sdk-before-initialization'
+    t =     6.55s     Waiting 30.0s for "initialize-sdk-button" Button to exist
+    t =     7.59s         Checking `Expect predicate `existsNoRetry == 1` for object "initialize-sdk-button" Button`
+    t =     7.59s             Checking existence of `"initialize-sdk-button" Button`
+    t =     7.61s     Tap "initialize-sdk-button" Button
+    t =     7.61s         Wait for com.sumeru.IterableSDK-Integration-Tester to idle
+    t =     7.62s         Find the "initialize-sdk-button" Button
+    t =     7.63s         Check for interrupting elements affecting "initialize-sdk-button" Button
+    t =     7.65s         Synthesize event
+    t =     7.94s         Wait for com.sumeru.IterableSDK-Integration-Tester to idle
+    t =     8.26s     Waiting 30.0s for "sdk-ready-indicator" StaticText to exist
+    t =     9.30s         Checking `Expect predicate `existsNoRetry == 1` for object "sdk-ready-indicator" StaticText`
+    t =     9.30s             Checking existence of `"sdk-ready-indicator" StaticText`
+    t =    10.37s     Checking `Expect predicate `label == "✓"` for object "sdk-ready-indicator" StaticText`
+    t =    10.37s         Find the "sdk-ready-indicator" StaticText
+    t =    10.39s     Waiting 30.0s for "register-email-button" Button to exist
+    t =    11.44s         Checking `Expect predicate `existsNoRetry == 1` for object "register-email-button" Button`
+    t =    11.44s             Checking existence of `"register-email-button" Button`
+    t =    11.47s     Tap "register-email-button" Button
+    t =    11.47s         Wait for com.sumeru.IterableSDK-Integration-Tester to idle
+    t =    11.47s         Find the "register-email-button" Button
+    t =    11.49s         Check for interrupting elements affecting "register-email-button" Button
+    t =    11.51s         Synthesize event
+    t =    11.80s         Wait for com.sumeru.IterableSDK-Integration-Tester to idle
+    t =    13.07s     Waiting 30.0s for "sdk-email-value" StaticText to exist
+    t =    14.10s         Checking `Expect predicate `existsNoRetry == 1` for object "sdk-email-value" StaticText`
+    t =    14.10s             Checking existence of `"sdk-email-value" StaticText`
+    t =    14.13s     Find the "sdk-email-value" StaticText
+    t =    14.15s     Waiting 30.0s for "network-monitor-button" Button to exist
+    t =    15.19s         Checking `Expect predicate `existsNoRetry == 1` for object "network-monitor-button" Button`
+    t =    15.19s             Checking existence of `"network-monitor-button" Button`
+    t =    16.24s     Checking `Expect predicate `isHittable == 1` for object "network-monitor-button" Button`
+    t =    16.24s         Find the "network-monitor-button" Button
+    t =    16.27s     Tap "network-monitor-button" Button
+    t =    16.27s         Wait for com.sumeru.IterableSDK-Integration-Tester to idle
+    t =    16.28s         Find the "network-monitor-button" Button
+    t =    16.29s         Check for interrupting elements affecting "network-monitor-button" Button
+    t =    16.31s         Synthesize event
+    t =    16.59s         Wait for com.sumeru.IterableSDK-Integration-Tester to idle
+    t =    16.96s     Waiting 3.0s for "Network Monitor" NavigationBar to exist
+    t =    17.99s         Checking `Expect predicate `existsNoRetry == 1` for object "Network Monitor" NavigationBar`
+    t =    18.00s             Checking existence of `"Network Monitor" NavigationBar`
+    t =    18.03s     Waiting 30.0s for "Network Monitor" NavigationBar to exist
+    t =    19.06s         Checking `Expect predicate `existsNoRetry == 1` for object "Network Monitor" NavigationBar`
+    t =    19.06s             Checking existence of `"Network Monitor" NavigationBar`
+    t =    19.09s     Waiting 5.0s for Cell (First Match) to exist
+    t =    20.13s         Checking `Expect predicate `existsNoRetry == 1` for object Cell (First Match)`
+    t =    20.13s             Checking existence of `Cell (First Match)`
+🔍 Debug: Static texts in getRemoteConfiguration cell:
+    t =    20.17s     Get all elements bound by index for: Descendants matching type StaticText
+    t =    20.20s     Checking existence of `StaticText (Element at index 0)`
+    t =    20.22s     Find the StaticText (Element at index 0)
+   - Label: 'GET'
+    t =    20.25s     Checking existence of `StaticText (Element at index 1)`
+    t =    20.27s     Find the StaticText (Element at index 1)
+   - Label: '/api/mobile/getRemoteConfiguration'
+    t =    20.30s     Checking existence of `StaticText (Element at index 2)`
+    t =    20.32s     Find the StaticText (Element at index 2)
+   - Label: '9:47:00 PM'
+    t =    20.35s     Checking existence of `StaticText (Element at index 3)`
+    t =    20.38s     Find the StaticText (Element at index 3)
+   - Label: '200'
+    t =    20.40s     Checking existence of `StaticText (First Match)`
+    t =    20.43s     Checking existence of `StaticText (First Match)`
+    t =    20.46s     Waiting 5.0s for Cell (First Match) to exist
+    t =    21.49s         Checking `Expect predicate `existsNoRetry == 1` for object Cell (First Match)`
+    t =    21.49s             Checking existence of `Cell (First Match)`
+🔍 Debug: Static texts in getMessages cell:
+    t =    21.53s     Get all elements bound by index for: Descendants matching type StaticText
+    t =    21.58s     Checking existence of `StaticText (Element at index 0)`
+    t =    21.61s     Find the StaticText (Element at index 0)
+   - Label: 'GET'
+    t =    21.64s     Checking existence of `StaticText (Element at index 1)`
+    t =    21.66s     Find the StaticText (Element at index 1)
+   - Label: '/api/inApp/getMessages'
+    t =    21.68s     Checking existence of `StaticText (Element at index 2)`
+    t =    21.70s     Find the StaticText (Element at index 2)
+   - Label: '9:47:00 PM'
+    t =    21.72s     Checking existence of `StaticText (Element at index 3)`
+    t =    21.74s     Find the StaticText (Element at index 3)
+   - Label: '200'
+    t =    21.76s     Checking existence of `StaticText (First Match)`
+    t =    21.78s     Checking existence of `StaticText (First Match)`
+📸 Screenshot saved: 002_sdk-initialization-network-calls_2026-01-13_21-47-14.png
+    t =    21.88s     Added attachment named 'sdk-initialization-network-calls'
+    t =    21.88s     Checking existence of `"Close" Button`
+    t =    21.90s     Tap "Close" Button
+    t =    21.90s         Wait for com.sumeru.IterableSDK-Integration-Tester to idle
+    t =    21.90s         Find the "Close" Button
+    t =    21.92s         Check for interrupting elements affecting "Close" Button
+    t =    21.94s         Synthesize event
+    t =    22.24s         Wait for com.sumeru.IterableSDK-Integration-Tester to idle
+📸 Screenshot saved: 003_sdk-initialized_2026-01-13_21-47-16.png
+    t =    23.07s     Added attachment named 'sdk-initialized'
+✅ Deep linking test infrastructure initialized
+🧪 Testing custom action delegate handles showtestsuccess action
+🎯 This validates IterableCustomActionDelegate is invoked for custom action types
+    t =    23.07s Waiting 30.0s for "in-app-message-test-row" Other to exist
+    t =    24.11s     Checking `Expect predicate `existsNoRetry == 1` for object "in-app-message-test-row" Other`
+    t =    24.11s         Checking existence of `"in-app-message-test-row" Other`
+    t =    24.14s Tap "in-app-message-test-row" Other
+    t =    24.14s     Wait for com.sumeru.IterableSDK-Integration-Tester to idle
+    t =    24.14s     Find the "in-app-message-test-row" Other
+    t =    24.16s     Check for interrupting elements affecting "in-app-message-test-row" Other
+    t =    24.18s     Synthesize event
+    t =    24.47s     Wait for com.sumeru.IterableSDK-Integration-Tester to idle
+    t =    25.30s Waiting 30.0s for "trigger-testview-in-app-button" Button to exist
+    t =    26.32s     Checking `Expect predicate `existsNoRetry == 1` for object "trigger-testview-in-app-button" Button`
+    t =    26.32s         Checking existence of `"trigger-testview-in-app-button" Button`
+    t =    26.37s Tap "trigger-testview-in-app-button" Button
+    t =    26.37s     Wait for com.sumeru.IterableSDK-Integration-Tester to idle
+    t =    26.37s     Find the "trigger-testview-in-app-button" Button
+    t =    26.40s     Check for interrupting elements affecting "trigger-testview-in-app-button" Button
+    t =    26.42s     Synthesize event
+    t =    26.71s     Wait for com.sumeru.IterableSDK-Integration-Tester to idle
+    t =    26.71s Checking existence of `"Success" Alert`
+    t =    26.74s Waiting 30.0s for "check-messages-button" Button to exist
+    t =    27.77s     Checking `Expect predicate `existsNoRetry == 1` for object "check-messages-button" Button`
+    t =    27.77s         Checking existence of `"check-messages-button" Button`
+    t =    27.80s Tap "check-messages-button" Button
+    t =    27.80s     Wait for com.sumeru.IterableSDK-Integration-Tester to idle
+    t =    27.80s     Find the "check-messages-button" Button
+    t =    27.82s     Check for interrupting elements affecting "check-messages-button" Button
+    t =    27.85s     Synthesize event
+    t =    28.13s     Wait for com.sumeru.IterableSDK-Integration-Tester to idle
+    t =    28.14s Waiting 30.0s for WebView (Element at index 0) to exist
+    t =    29.17s     Checking `Expect predicate `existsNoRetry == 1` for object WebView (Element at index 0)`
+    t =    29.17s         Checking existence of `WebView (Element at index 0)`
+    t =    29.20s         Capturing element debug description
+    t =    30.24s     Checking `Expect predicate `existsNoRetry == 1` for object WebView (Element at index 0)`
+    t =    30.24s         Checking existence of `WebView (Element at index 0)`
+🔍 Polling for webView link 'Show Test View' (timeout: 30.0s)
+    t =    30.26s Checking existence of `"Show Test View" Link`
+    t =    30.29s Checking existence of `"Show Test View" Link`
+    t =    30.32s Checking existence of `"Show Test View" Link`
+    t =    30.34s Checking existence of `"Show Test View" Link`
+    t =    30.38s Checking existence of `"Show Test View" Link`
+    t =    30.40s Checking existence of `"Show Test View" Link`
+    t =    30.42s Checking existence of `"Show Test View" Link`
+    t =    30.45s Checking existence of `"Show Test View" Link`
+    t =    30.47s Checking existence of `"Show Test View" Link`
+    t =    30.50s Checking existence of `"Show Test View" Link`
+    t =    30.52s Checking existence of `"Show Test View" Link`
+    t =    30.55s Checking existence of `"Show Test View" Link`
+    t =    30.57s Checking existence of `"Show Test View" Link`
+    t =    30.59s Checking existence of `"Show Test View" Link`
+    t =    30.61s Checking existence of `"Show Test View" Link`
+    t =    30.64s Checking existence of `"Show Test View" Link`
+    t =    30.66s Checking existence of `"Show Test View" Link`
+    t =    30.68s Checking existence of `"Show Test View" Link`
+    t =    30.70s Checking existence of `"Show Test View" Link`
+    t =    30.73s Checking existence of `"Show Test View" Link`
+    t =    30.75s Checking existence of `"Show Test View" Link`
+    t =    30.77s Checking existence of `"Show Test View" Link`
+    t =    30.79s Checking existence of `"Show Test View" Link`
+    t =    30.82s Checking existence of `"Show Test View" Link`
+    t =    30.86s Checking existence of `"Show Test View" Link`
+    t =    30.89s Checking existence of `"Show Test View" Link`
+    t =    30.91s Checking existence of `"Show Test View" Link`
+    t =    30.93s Checking existence of `"Show Test View" Link`
+    t =    30.96s Checking existence of `"Show Test View" Link`
+    t =    30.98s Checking existence of `"Show Test View" Link`
+    t =    31.02s Checking existence of `"Show Test View" Link`
+    t =    31.04s Checking existence of `"Show Test View" Link`
+    t =    31.07s Checking existence of `"Show Test View" Link`
+    t =    31.09s Checking existence of `"Show Test View" Link`
+    t =    31.11s Checking existence of `"Show Test View" Link`
+    t =    31.13s Checking existence of `"Show Test View" Link`
+    t =    31.16s Checking existence of `"Show Test View" Link`
+    t =    31.18s Checking existence of `"Show Test View" Link`
+    t =    31.20s Checking existence of `"Show Test View" Link`
+    t =    31.22s Checking existence of `"Show Test View" Link`
+    t =    31.25s Checking existence of `"Show Test View" Link`
+    t =    31.27s Checking existence of `"Show Test View" Link`
+    t =    31.29s Checking existence of `"Show Test View" Link`
+    t =    31.31s Checking existence of `"Show Test View" Link`
+    t =    31.34s Checking existence of `"Show Test View" Link`
+    t =    31.36s Checking existence of `"Show Test View" Link`
+    t =    31.38s Checking existence of `"Show Test View" Link`
+    t =    31.40s Checking existence of `"Show Test View" Link`
+    t =    31.42s Checking existence of `"Show Test View" Link`
+    t =    31.45s Checking existence of `"Show Test View" Link`
+    t =    31.47s Checking existence of `"Show Test View" Link`
+✅ Link 'Show Test View' found after 1.3s, validating stability...
+    t =    32.53s Checking existence of `"Show Test View" Link`
+✅ Link 'Show Test View' confirmed stable and accessible
+    t =    32.57s Waiting 30.0s for "Show Test View" Link to exist
+    t =    33.60s     Checking `Expect predicate `existsNoRetry == 1` for object "Show Test View" Link`
+    t =    33.60s         Checking existence of `"Show Test View" Link`
+    t =    33.65s Tap "Show Test View" Link
+    t =    33.66s     Wait for com.sumeru.IterableSDK-Integration-Tester to idle
+    t =    33.66s     Find the "Show Test View" Link
+    t =    33.69s     Check for interrupting elements affecting "Show Test View" Link
+    t =    33.73s     Synthesize event
+    t =    34.03s     Wait for com.sumeru.IterableSDK-Integration-Tester to idle
+    t =    37.04s Waiting 45.0s for "Deep link to Test View" Alert to exist
+    t =    38.07s     Checking `Expect predicate `existsNoRetry == 1` for object "Deep link to Test View" Alert`
+    t =    38.07s         Checking existence of `"Deep link to Test View" Alert`
+✅ Alert 'Deep link to Test View' appeared
+    t =    38.12s Find the StaticText (Element at index 1)
+✅ Alert message matches: 'Deep link handled with Success!'
+    t =    38.14s Checking existence of `"Deep link to Test View" Alert`
+    t =    38.17s Checking existence of `"OK" Button`
+    t =    38.20s Tap "OK" Button
+    t =    38.20s     Wait for com.sumeru.IterableSDK-Integration-Tester to idle
+    t =    38.20s     Find the "OK" Button
+    t =    38.23s     Check for interrupting elements affecting "OK" Button
+    t =    38.27s     Synthesize event
+    t =    38.56s     Wait for com.sumeru.IterableSDK-Integration-Tester to idle
+✅ Dismissed alert 'Deep link to Test View'
+    t =    38.79s Checking existence of `WebView (Element at index 0)`
+    t =    38.82s Checking existence of `"clear-messages-button" Button`
+    t =    38.85s Tap "clear-messages-button" Button
+    t =    38.85s     Wait for com.sumeru.IterableSDK-Integration-Tester to idle
+    t =    38.85s     Find the "clear-messages-button" Button
+    t =    38.87s     Check for interrupting elements affecting "clear-messages-button" Button
+    t =    38.91s     Found 1 interrupting element:
+    t =    38.91s         Find the "Success" Alert
+    t =    38.93s "Success" Alert from Target Application 'com.sumeru.IterableSDK-Integration-Tester'
+    t =    38.93s     Invoking UI interruption monitors for "Success" Alert from Target Application 'com.sumeru.IterableSDK-Integration-Tester'
+    t =    38.93s Invoking General System Permission
+⚙️ UI Interruption Monitor: Handling general system permission dialog
+    t =    38.93s             Checking existence of `"Allow" Button`
+    t =    38.95s             Checking existence of `"OK" Button`
+📱 Tapping 'OK' button for system permission
+    t =    38.98s             Tap "OK" Button
+    t =    38.98s                 Wait for com.sumeru.IterableSDK-Integration-Tester to idle
+    t =    38.98s                 Find the "OK" Button
+    t =    39.00s                 Check for interrupting elements affecting "OK" Button
+    t =    39.03s                 Synthesize event
+    t =    39.32s                 Wait for com.sumeru.IterableSDK-Integration-Tester to idle
+    t =    39.57s         Verifying handling...
+    t =    39.60s Confirmed successful handling of interrupting element
+    t =    39.60s     Synthesize event
+    t =    39.89s     Wait for com.sumeru.IterableSDK-Integration-Tester to idle
+    t =    39.90s Checking existence of `"Success" Alert`
+✅ Custom action handling test completed successfully
+✅ Validated: IterableCustomActionDelegate invoked and handled custom action
+    t =    39.92s Tear Down
+📸 Screenshot saved: 004_final--[DeepLinkingIntegrationTests testCCustomActionHandling]_2026-01-13_21-47-33.png
+    t =    40.00s     Added attachment named 'final--[DeepLinkingIntegrationTests testCCustomActionHandling]'
+⚠️ Warning: Error cleaning up test user: httpError(401)
+    t =    41.11s     Terminate com.sumeru.IterableSDK-Integration-Tester:21840
+Test Case '-[IterableSDK_Integration_TesterUITests.DeepLinkingIntegrationTests testCCustomActionHandling]' passed (42.213 seconds).
+Test Case '-[IterableSDK_Integration_TesterUITests.DeepLinkingIntegrationTests testDSingleRedirectPolicy]' started.
+    t =     0.00s Start Test at 2026-01-13 21:47:35.400
+    t =     0.02s Set Up
+🧪 Test Mode: COMPREHENSIVE (full validation suite)
+✅ Loaded test configuration from test-config.json
+📸 SCREENSHOTS_DIR not set, trying to find project screenshots directory
+📸 Current working directory: /
+📸 Using Documents fallback: /Users/sumeru.chatterjee/Library/Developer/CoreSimulator/Devices/8E94985B-0D1E-44BE-8E1B-9A5B3F7F7F04/data/Containers/Data/Application/1B6D0C27-256B-45C5-85B6-938DDFBC1823/Documents/IterableSDK-Screenshots
+📸 ⚠️  For CI/proper usage, set SCREENSHOTS_DIR environment variable
+📸 Screenshot capture initialized
+📸 Screenshots will be saved to: /Users/sumeru.chatterjee/Library/Developer/CoreSimulator/Devices/8E94985B-0D1E-44BE-8E1B-9A5B3F7F7F04/data/Containers/Data/Application/1B6D0C27-256B-45C5-85B6-938DDFBC1823/Documents/IterableSDK-Screenshots
+📸 Directory exists: true
+✅ UI Interruption Monitors configured for permission dialogs
+    t =     0.03s     Open com.sumeru.IterableSDK-Integration-Tester
+    t =     0.03s         Launch com.sumeru.IterableSDK-Integration-Tester
+    t =     0.24s             Setting up automation session
+    t =     0.94s             Wait for com.sumeru.IterableSDK-Integration-Tester to idle
+Resolve Package Graph
+
+    t =     3.16s     Checking `Expect predicate `exists == 1` for object "app-ready-indicator" StaticText`
+    t =     3.16s         Checking existence of `"app-ready-indicator" StaticText`
+    t =     3.22s     Waiting 30.0s for "sdk-ready-indicator" StaticText to exist
+    t =     4.26s         Checking `Expect predicate `existsNoRetry == 1` for object "sdk-ready-indicator" StaticText`
+    t =     4.26s             Checking existence of `"sdk-ready-indicator" StaticText`
+    t =     4.30s     Find the "sdk-ready-indicator" StaticText
+    t =     4.32s     Waiting 30.0s for "user-email-textfield" TextField to exist
+    t =     5.34s         Checking `Expect predicate `existsNoRetry == 1` for object "user-email-textfield" TextField`
+    t =     5.34s             Checking existence of `"user-email-textfield" TextField`
+    t =     5.37s     Find the "user-email-textfield" TextField
+    t =     5.39s     Waiting 30.0s for "sdk-email-value" StaticText to exist
+    t =     6.42s         Checking `Expect predicate `existsNoRetry == 1` for object "sdk-email-value" StaticText`
+    t =     6.42s             Checking existence of `"sdk-email-value" StaticText`
+    t =     6.45s     Find the "sdk-email-value" StaticText
+📸 Screenshot saved: 001_sdk-before-initialization_2026-01-13_21-47-41.png
+    t =     6.54s     Added attachment named 'sdk-before-initialization'
+    t =     6.54s     Waiting 30.0s for "initialize-sdk-button" Button to exist
+    t =     7.57s         Checking `Expect predicate `existsNoRetry == 1` for object "initialize-sdk-button" Button`
+    t =     7.57s             Checking existence of `"initialize-sdk-button" Button`
+    t =     7.61s     Tap "initialize-sdk-button" Button
+    t =     7.61s         Wait for com.sumeru.IterableSDK-Integration-Tester to idle
+    t =     7.61s         Find the "initialize-sdk-button" Button
+    t =     7.63s         Check for interrupting elements affecting "initialize-sdk-button" Button
+    t =     7.65s         Synthesize event
+    t =     7.94s         Wait for com.sumeru.IterableSDK-Integration-Tester to idle
+    t =     8.29s     Waiting 30.0s for "sdk-ready-indicator" StaticText to exist
+    t =     9.31s         Checking `Expect predicate `existsNoRetry == 1` for object "sdk-ready-indicator" StaticText`
+    t =     9.31s             Checking existence of `"sdk-ready-indicator" StaticText`
+    t =    10.36s     Checking `Expect predicate `label == "✓"` for object "sdk-ready-indicator" StaticText`
+    t =    10.36s         Find the "sdk-ready-indicator" StaticText
+    t =    10.40s     Waiting 30.0s for "register-email-button" Button to exist
+    t =    11.42s         Checking `Expect predicate `existsNoRetry == 1` for object "register-email-button" Button`
+    t =    11.42s             Checking existence of `"register-email-button" Button`
+    t =    11.45s     Tap "register-email-button" Button
+    t =    11.45s         Wait for com.sumeru.IterableSDK-Integration-Tester to idle
+    t =    11.46s         Find the "register-email-button" Button
+    t =    11.49s         Check for interrupting elements affecting "register-email-button" Button
+    t =    11.51s         Synthesize event
+    t =    11.80s         Wait for com.sumeru.IterableSDK-Integration-Tester to idle
+    t =    13.08s     Waiting 30.0s for "sdk-email-value" StaticText to exist
+    t =    14.11s         Checking `Expect predicate `existsNoRetry == 1` for object "sdk-email-value" StaticText`
+    t =    14.11s             Checking existence of `"sdk-email-value" StaticText`
+    t =    14.14s     Find the "sdk-email-value" StaticText
+    t =    14.16s     Waiting 30.0s for "network-monitor-button" Button to exist
+    t =    15.17s         Checking `Expect predicate `existsNoRetry == 1` for object "network-monitor-button" Button`
+    t =    15.17s             Checking existence of `"network-monitor-button" Button`
+    t =    16.23s     Checking `Expect predicate `isHittable == 1` for object "network-monitor-button" Button`
+    t =    16.23s         Find the "network-monitor-button" Button
+    t =    16.26s     Tap "network-monitor-button" Button
+    t =    16.26s         Wait for com.sumeru.IterableSDK-Integration-Tester to idle
+    t =    16.26s         Find the "network-monitor-button" Button
+    t =    16.28s         Check for interrupting elements affecting "network-monitor-button" Button
+    t =    16.29s         Synthesize event
+    t =    16.58s         Wait for com.sumeru.IterableSDK-Integration-Tester to idle
+    t =    16.95s     Waiting 3.0s for "Network Monitor" NavigationBar to exist
+    t =    17.98s         Checking `Expect predicate `existsNoRetry == 1` for object "Network Monitor" NavigationBar`
+    t =    17.99s             Checking existence of `"Network Monitor" NavigationBar`
+    t =    18.03s     Waiting 30.0s for "Network Monitor" NavigationBar to exist
+    t =    19.03s         Checking `Expect predicate `existsNoRetry == 1` for object "Network Monitor" NavigationBar`
+    t =    19.03s             Checking existence of `"Network Monitor" NavigationBar`
+    t =    19.07s     Waiting 5.0s for Cell (First Match) to exist
+    t =    20.09s         Checking `Expect predicate `existsNoRetry == 1` for object Cell (First Match)`
+    t =    20.09s             Checking existence of `Cell (First Match)`
+🔍 Debug: Static texts in getRemoteConfiguration cell:
+    t =    20.13s     Get all elements bound by index for: Descendants matching type StaticText
+    t =    20.16s     Checking existence of `StaticText (Element at index 0)`
+    t =    20.19s     Find the StaticText (Element at index 0)
+   - Label: 'GET'
+    t =    20.22s     Checking existence of `StaticText (Element at index 1)`
+    t =    20.24s     Find the StaticText (Element at index 1)
+   - Label: '/api/mobile/getRemoteConfiguration'
+    t =    20.27s     Checking existence of `StaticText (Element at index 2)`
+    t =    20.29s     Find the StaticText (Element at index 2)
+   - Label: '9:47:43 PM'
+    t =    20.31s     Checking existence of `StaticText (Element at index 3)`
+    t =    20.34s     Find the StaticText (Element at index 3)
+   - Label: '200'
+    t =    20.36s     Checking existence of `StaticText (First Match)`
+    t =    20.39s     Checking existence of `StaticText (First Match)`
+    t =    20.41s     Waiting 5.0s for Cell (First Match) to exist
+    t =    21.45s         Checking `Expect predicate `existsNoRetry == 1` for object Cell (First Match)`
+    t =    21.45s             Checking existence of `Cell (First Match)`
+🔍 Debug: Static texts in getMessages cell:
+    t =    21.48s     Get all elements bound by index for: Descendants matching type StaticText
+    t =    21.51s     Checking existence of `StaticText (Element at index 0)`
+    t =    21.53s     Find the StaticText (Element at index 0)
+   - Label: 'GET'
+    t =    21.55s     Checking existence of `StaticText (Element at index 1)`
+    t =    21.57s     Find the StaticText (Element at index 1)
+   - Label: '/api/inApp/getMessages'
+    t =    21.59s     Checking existence of `StaticText (Element at index 2)`
+    t =    21.62s     Find the StaticText (Element at index 2)
+   - Label: '9:47:43 PM'
+    t =    21.64s     Checking existence of `StaticText (Element at index 3)`
+    t =    21.66s     Find the StaticText (Element at index 3)
+   - Label: '200'
+    t =    21.68s     Checking existence of `StaticText (First Match)`
+    t =    21.70s     Checking existence of `StaticText (First Match)`
+📸 Screenshot saved: 002_sdk-initialization-network-calls_2026-01-13_21-47-57.png
+    t =    21.80s     Added attachment named 'sdk-initialization-network-calls'
+    t =    21.80s     Checking existence of `"Close" Button`
+    t =    21.82s     Tap "Close" Button
+    t =    21.82s         Wait for com.sumeru.IterableSDK-Integration-Tester to idle
+    t =    21.82s         Find the "Close" Button
+    t =    21.84s         Check for interrupting elements affecting "Close" Button
+    t =    21.86s         Synthesize event
+    t =    22.16s         Wait for com.sumeru.IterableSDK-Integration-Tester to idle
+📸 Screenshot saved: 003_sdk-initialized_2026-01-13_21-47-58.png
+    t =    23.01s     Added attachment named 'sdk-initialized'
+✅ Deep linking test infrastructure initialized
+🧪 Testing SDK follows exactly one redirect (GreenFi bug fix validation)
+🎯 This test validates that SDK stops at first redirect, not following multiple hops
+📚 HOW IT WORKS: SDK's RedirectNetworkSession.willPerformHTTPRedirection returns nil
+   to completionHandler, which tells URLSession to STOP following redirects
+   See: swift-sdk/Internal/Network/NetworkSession.swift:136
+🔗 Test URL: https://links.tsetester.com/a/click?_t=5cce074b113d48fa9ef346e4333ed8e8&_m=74aKPNrAjTpuZM4vZTDueu64xMdbHDz5Tn&_e=l6cj19GbssUn6h5qtXjRcC5os6azNW1cqdk9lsvmxxRl4ZTAW8mIB4IHJA97wE1i5f0eRDtm-KpgKI7-tM-Cly6umZo4P8HU8krftMYvL3T2sCpm3uFDBF2iJ5vQ-G6sqNMmae4_8jkE1DU9aKRhraZ1zzUZ3j-dFbQJrxdLt4tb0C7jnXSARVFf27FKFhBKnYSO23taBmf_4G5dTTXKmC_1CGnT9bu1nAwP-WMyYShoQhmjoGO9ppDCrVStSYPsimwub0h5XnC11g4u5yML_WZssgC7LSUOX7qCNOIDr9dLhrx2Rc2TY12k0maESyanjNgNZ4Lr8LMClCMJ3d9TMg%3D%3D
+✅ Expected: SDK stops at first redirect (tsetester.com/update/hi)
+❌ Should NOT follow: Any subsequent redirects beyond the first one
+📝 [TEST] Opening universal link from Reminders app: https://links.tsetester.com/a/click?_t=5cce074b113d48fa9ef346e4333ed8e8&_m=74aKPNrAjTpuZM4vZTDueu64xMdbHDz5Tn&_e=l6cj19GbssUn6h5qtXjRcC5os6azNW1cqdk9lsvmxxRl4ZTAW8mIB4IHJA97wE1i5f0eRDtm-KpgKI7-tM-Cly6umZo4P8HU8krftMYvL3T2sCpm3uFDBF2iJ5vQ-G6sqNMmae4_8jkE1DU9aKRhraZ1zzUZ3j-dFbQJrxdLt4tb0C7jnXSARVFf27FKFhBKnYSO23taBmf_4G5dTTXKmC_1CGnT9bu1nAwP-WMyYShoQhmjoGO9ppDCrVStSYPsimwub0h5XnC11g4u5yML_WZssgC7LSUOX7qCNOIDr9dLhrx2Rc2TY12k0maESyanjNgNZ4Lr8LMClCMJ3d9TMg%3D%3D
+    t =    23.01s Open com.apple.reminders
+    t =    23.01s     Launch com.apple.reminders
+    t =    23.01s         Terminate com.apple.reminders:21808
+    t =    24.19s         Setting up automation session
+    t =    24.67s         Wait for com.apple.reminders to idle
+    t =    27.11s Checking `Expect predicate `state == 4` for object Application 'com.apple.reminders'`
+    t =    29.12s Waiting 3.0s for "Continue" Button to exist
+    t =    30.15s     Checking `Expect predicate `existsNoRetry == 1` for object "Continue" Button`
+    t =    30.15s         Checking existence of `"Continue" Button`
+    t =    30.23s         Capturing element debug description
+    t =    31.15s     Checking `Expect predicate `existsNoRetry == 1` for object "Continue" Button`
+    t =    31.16s         Checking existence of `"Continue" Button`
+    t =    31.20s         Capturing element debug description
+    t =    32.12s     Checking `Expect predicate `existsNoRetry == 1` for object "Continue" Button`
+    t =    32.12s         Checking existence of `"Continue" Button`
+    t =    32.15s         Capturing element debug description
+    t =    32.15s     Checking existence of `"Continue" Button`
+    t =    32.17s Collecting debug information to assist test failure triage
+    t =    32.17s     Requesting snapshot of accessibility hierarchy for app with pid 21870
+    t =    32.20s Waiting 3.0s for "Not Now" Button to exist
+    t =    33.23s     Checking `Expect predicate `existsNoRetry == 1` for object "Not Now" Button`
+    t =    33.23s         Checking existence of `"Not Now" Button`
+    t =    33.26s         Capturing element debug description
+    t =    34.29s     Checking `Expect predicate `existsNoRetry == 1` for object "Not Now" Button`
+    t =    34.29s         Checking existence of `"Not Now" Button`
+    t =    34.32s         Capturing element debug description
+    t =    35.20s     Checking `Expect predicate `existsNoRetry == 1` for object "Not Now" Button`
+    t =    35.20s         Checking existence of `"Not Now" Button`
+    t =    35.24s         Capturing element debug description
+    t =    35.24s     Checking existence of `"Not Now" Button`
+    t =    35.26s Collecting debug information to assist test failure triage
+    t =    35.26s     Requesting snapshot of accessibility hierarchy for app with pid 21870
+🗑️ [TEST] Cleaning up previous test link from Reminders...
+    t =    35.29s Waiting 2.0s for Cell (First Match) to exist
+    t =    36.32s     Checking `Expect predicate `existsNoRetry == 1` for object Cell (First Match)`
+    t =    36.32s         Checking existence of `Cell (First Match)`
+    t =    36.33s Swipe left Cell (First Match)
+    t =    36.33s     Wait for com.apple.reminders to idle
+    t =    36.34s     Find the Cell (First Match)
+    t =    36.35s     Check for interrupting elements affecting "<x-apple-reminderkit://REMCDReminder/32B09AF3-A1C1-430D-88C4-0DC826E3FEB5>" Cell
+    t =    36.37s     Synthesize event
+    t =    36.82s     Wait for com.apple.reminders to idle
+    t =    38.40s Waiting 2.0s for "Delete" Button to exist
+    t =    39.43s     Checking `Expect predicate `existsNoRetry == 1` for object "Delete" Button`
+    t =    39.43s         Checking existence of `"Delete" Button`
+    t =    39.47s Tap "Delete" Button
+    t =    39.47s     Wait for com.apple.reminders to idle
+    t =    39.48s     Find the "Delete" Button
+    t =    39.50s     Check for interrupting elements affecting "Delete" Button
+    t =    39.52s     Synthesize event
+    t =    39.81s     Wait for com.apple.reminders to idle
+🗑️ [TEST] Deleted previous test reminder
+📝 [TEST] Looking for New Reminder button...
+    t =    41.04s Waiting 5.0s for "New Reminder" Button to exist
+    t =    42.07s     Checking `Expect predicate `existsNoRetry == 1` for object "New Reminder" Button`
+    t =    42.07s         Checking existence of `"New Reminder" Button`
+📝 [TEST] Found New Reminder button, tapping...
+    t =    42.10s Tap "New Reminder" Button
+    t =    42.10s     Wait for com.apple.reminders to idle
+    t =    42.10s     Find the "New Reminder" Button
+    t =    42.11s     Check for interrupting elements affecting "New Reminder" Button
+    t =    42.13s     Synthesize event
+    t =    42.42s     Wait for com.apple.reminders to idle
+📝 [TEST] Typing URL into reminder: https://links.tsetester.com/a/click?_t=5cce074b113d48fa9ef346e4333ed8e8&_m=74aKPNrAjTpuZM4vZTDueu64xMdbHDz5Tn&_e=l6cj19GbssUn6h5qtXjRcC5os6azNW1cqdk9lsvmxxRl4ZTAW8mIB4IHJA97wE1i5f0eRDtm-KpgKI7-tM-Cly6umZo4P8HU8krftMYvL3T2sCpm3uFDBF2iJ5vQ-G6sqNMmae4_8jkE1DU9aKRhraZ1zzUZ3j-dFbQJrxdLt4tb0C7jnXSARVFf27FKFhBKnYSO23taBmf_4G5dTTXKmC_1CGnT9bu1nAwP-WMyYShoQhmjoGO9ppDCrVStSYPsimwub0h5XnC11g4u5yML_WZssgC7LSUOX7qCNOIDr9dLhrx2Rc2TY12k0maESyanjNgNZ4Lr8LMClCMJ3d9TMg%3D%3D
+    t =    45.41s Type 'https://links.tset...' into Application 'com.apple.reminders'
+    t =    45.41s     Wait for com.apple.reminders to idle
+    t =    45.42s     Find the Application 'com.apple.reminders'
+    t =    45.47s     Check for interrupting elements affecting "Reminders" Application
+    t =    45.51s     Synthesize event
+    t =    45.51s         Get number of matches for: Elements containing elements matching predicate 'hasKeyboardFocus == 1'
+    t =    53.42s     Wait for com.apple.reminders to idle
+    t =    53.43s Type '
+' into Application 'com.apple.reminders'
+    t =    53.43s     Wait for com.apple.reminders to idle
+    t =    53.43s     Find the Application 'com.apple.reminders'
+    t =    53.48s     Check for interrupting elements affecting "Reminders" Application
+    t =    53.51s     Synthesize event
+    t =    53.52s         Get number of matches for: Elements containing elements matching predicate 'hasKeyboardFocus == 1'
+    t =    53.76s     Wait for com.apple.reminders to idle
+📝 [TEST] Looking for link to tap...
+    t =    56.36s Waiting 5.0s for Link (First Match) to exist
+    t =    57.38s     Checking `Expect predicate `existsNoRetry == 1` for object Link (First Match)`
+    t =    57.38s         Checking existence of `Link (First Match)`
+✅ [TEST] Found link, tapping it...
+    t =    57.44s Swipe down Application 'com.apple.reminders'
+    t =    57.44s     Wait for com.apple.reminders to idle
+    t =    57.44s     Find the Application 'com.apple.reminders'
+    t =    57.48s     Check for interrupting elements affecting "Reminders" Application
+    t =    57.52s     Synthesize event
+    t =    57.94s     Wait for com.apple.reminders to idle
+    t =    59.69s Tap Link (First Match)[0.10, 0.50]
+    t =    59.69s     Wait for com.apple.reminders to idle
+    t =    59.70s     Find the Link (First Match)
+    t =    59.73s     Check for interrupting elements affecting "https://links.tsetester.com/a/click?_t=5cce074b113d48fa9ef346e4333ed8e8&_m=74aKPNrAjTpuZM4vZTDueu64xMdbHDz5Tn&_e=l6cj19GbssUn6h5qtXjRcC5os6azNW1cqdk9lsvmxxRl4ZTAW8mIB4IHJA97wE1i5f0eRDtm-KpgKI7-tM-Cly6umZo4P8HU8krftMYvL3T2sCpm3uFDBF2iJ5vQ-G6sqNMmae4_8jkE1DU9aKRhraZ1zzUZ3j-dFbQJrxdLt4tb0C7jnXSARVFf27FKFhBKnYSO23taBmf_4G5dTTXKmC_1CGnT9bu1nAwP-WMyYShoQhmjoGO9ppDCrVStSYPsimwub0h5XnC11g4u5yML_WZssgC7LSUOX7qCNOIDr9dLhrx2Rc2TY12k0maESyanjNgNZ4Lr8LMClCMJ3d9TMg%3D%3D" Link
+    t =    59.76s     Synthesize event
+    t =    59.76s         Find the "https://links.tsetester.com/a/click?_t=5cce074b113d48fa9ef346e4333ed8e8&_m=74aKPNrAjTpuZM4vZTDueu64xMdbHDz5Tn&_e=l6cj19GbssUn6h5qtXjRcC5os6azNW1cqdk9lsvmxxRl4ZTAW8mIB4IHJA97wE1i5f0eRDtm-KpgKI7-tM-Cly6umZo4P8HU8krftMYvL3T2sCpm3uFDBF2iJ5vQ-G6sqNMmae4_8jkE1DU9aKRhraZ1zzUZ3j-dFbQJrxdLt4tb0C7jnXSARVFf27FKFhBKnYSO23taBmf_4G5dTTXKmC_1CGnT9bu1nAwP-WMyYShoQhmjoGO9ppDCrVStSYPsimwub0h5XnC11g4u5yML_WZssgC7LSUOX7qCNOIDr9dLhrx2Rc2TY12k0maESyanjNgNZ4Lr8LMClCMJ3d9TMg%3D%3D" Link
+    t =    59.78s         Find the "https://links.tsetester.com/a/click?_t=5cce074b113d48fa9ef346e4333ed8e8&_m=74aKPNrAjTpuZM4vZTDueu64xMdbHDz5Tn&_e=l6cj19GbssUn6h5qtXjRcC5os6azNW1cqdk9lsvmxxRl4ZTAW8mIB4IHJA97wE1i5f0eRDtm-KpgKI7-tM-Cly6umZo4P8HU8krftMYvL3T2sCpm3uFDBF2iJ5vQ-G6sqNMmae4_8jkE1DU9aKRhraZ1zzUZ3j-dFbQJrxdLt4tb0C7jnXSARVFf27FKFhBKnYSO23taBmf_4G5dTTXKmC_1CGnT9bu1nAwP-WMyYShoQhmjoGO9ppDCrVStSYPsimwub0h5XnC11g4u5yML_WZssgC7LSUOX7qCNOIDr9dLhrx2Rc2TY12k0maESyanjNgNZ4Lr8LMClCMJ3d9TMg%3D%3D" Link
+    t =    59.80s         Find the "https://links.tsetester.com/a/click?_t=5cce074b113d48fa9ef346e4333ed8e8&_m=74aKPNrAjTpuZM4vZTDueu64xMdbHDz5Tn&_e=l6cj19GbssUn6h5qtXjRcC5os6azNW1cqdk9lsvmxxRl4ZTAW8mIB4IHJA97wE1i5f0eRDtm-KpgKI7-tM-Cly6umZo4P8HU8krftMYvL3T2sCpm3uFDBF2iJ5vQ-G6sqNMmae4_8jkE1DU9aKRhraZ1zzUZ3j-dFbQJrxdLt4tb0C7jnXSARVFf27FKFhBKnYSO23taBmf_4G5dTTXKmC_1CGnT9bu1nAwP-WMyYShoQhmjoGO9ppDCrVStSYPsimwub0h5XnC11g4u5yML_WZssgC7LSUOX7qCNOIDr9dLhrx2Rc2TY12k0maESyanjNgNZ4Lr8LMClCMJ3d9TMg%3D%3D" Link
+    t =    60.11s     Wait for com.apple.reminders to idle
+✅ [TEST] Tapped link in Reminders app
+    t =    61.15s Checking `Expect predicate `state == 4` for object Target Application 'com.sumeru.IterableSDK-Integration-Tester'`
+✅ [TEST] App opened from Reminders link
+    t =    66.15s Waiting 15.0s for "update-view-header" StaticText to exist
+    t =    67.18s     Checking `Expect predicate `existsNoRetry == 1` for object "update-view-header" StaticText`
+    t =    67.18s         Checking existence of `"update-view-header" StaticText`
+    t =    67.19s Checking existence of `"update-view-path" StaticText`
+    t =    67.20s Find the "update-view-path" StaticText
+    t =    67.21s Find the "update-view-path" StaticText
+    t =    67.22s Find the "update-view-path" StaticText
+✅ Update screen shows first redirect destination: Path: /update/hi
+📸 Screenshot saved: 004_single-redirect-validation_2026-01-13_21-48-42.png
+    t =    67.31s Added attachment named 'single-redirect-validation'
+    t =    67.31s Checking existence of `"update-view-close-button" Button`
+    t =    67.31s Tap "update-view-close-button" Button
+    t =    67.31s     Wait for com.sumeru.IterableSDK-Integration-Tester to idle
+    t =    67.32s     Find the "update-view-close-button" Button
+    t =    67.33s     Check for interrupting elements affecting "update-view-close-button" Button
+    t =    67.34s     Synthesize event
+    t =    67.63s     Wait for com.sumeru.IterableSDK-Integration-Tester to idle
+🔍 Opening Network Monitor to validate single redirect policy...
+    t =    68.96s Waiting 30.0s for "network-monitor-button" Button to exist
+    t =    69.99s     Checking `Expect predicate `existsNoRetry == 1` for object "network-monitor-button" Button`
+    t =    69.99s         Checking existence of `"network-monitor-button" Button`
+    t =    71.05s Checking `Expect predicate `isHittable == 1` for object "network-monitor-button" Button`
+    t =    71.05s     Find the "network-monitor-button" Button
+    t =    71.10s Tap "network-monitor-button" Button
+    t =    71.10s     Wait for com.sumeru.IterableSDK-Integration-Tester to idle
+    t =    71.10s     Find the "network-monitor-button" Button
+    t =    71.12s     Check for interrupting elements affecting "network-monitor-button" Button
+    t =    71.13s     Synthesize event
+    t =    71.42s     Wait for com.sumeru.IterableSDK-Integration-Tester to idle
+    t =    71.78s Waiting 30.0s for "Network Monitor" NavigationBar to exist
+    t =    72.80s     Checking `Expect predicate `existsNoRetry == 1` for object "Network Monitor" NavigationBar`
+    t =    72.80s         Checking existence of `"Network Monitor" NavigationBar`
+    t =    72.85s Waiting 5.0s for Cell (First Match) to exist
+    t =    73.88s     Checking `Expect predicate `existsNoRetry == 1` for object Cell (First Match)`
+    t =    73.88s         Checking existence of `Cell (First Match)`
+    t =    73.95s         Capturing element debug description
+    t =    74.88s     Checking `Expect predicate `existsNoRetry == 1` for object Cell (First Match)`
+    t =    74.88s         Checking existence of `Cell (First Match)`
+    t =    74.93s         Capturing element debug description
+    t =    75.87s     Checking `Expect predicate `existsNoRetry == 1` for object Cell (First Match)`
+    t =    75.87s         Checking existence of `Cell (First Match)`
+    t =    75.94s         Capturing element debug description
+    t =    76.86s     Checking `Expect predicate `existsNoRetry == 1` for object Cell (First Match)`
+    t =    76.86s         Checking existence of `Cell (First Match)`
+    t =    76.93s         Capturing element debug description
+    t =    77.85s     Checking `Expect predicate `existsNoRetry == 1` for object Cell (First Match)`
+    t =    77.85s         Checking existence of `Cell (First Match)`
+    t =    77.92s         Capturing element debug description
+    t =    77.92s     Checking existence of `Cell (First Match)`
+    t =    77.97s Collecting debug information to assist test failure triage
+    t =    77.97s     Requesting snapshot of accessibility hierarchy for app with pid 21861
+⚠️ Could not find wrapped link in Network Monitor (may have been unwrapped internally)
+    t =    78.01s Get all elements bound by index for: Descendants matching type Cell
+    t =    78.03s Find the StaticText (First Match)
+    t =    78.06s Find the StaticText (First Match)
+    t =    78.08s Find the StaticText (First Match)
+    t =    78.09s Find the StaticText (First Match)
+    t =    78.11s Find the StaticText (First Match)
+🔍 Unique domains in network requests: []
+✅ Network Monitor validation: Only expected domains found, no multi-hop redirect detected
+    t =    78.13s Checking existence of `"Close" Button`
+    t =    78.15s Tap "Close" Button
+    t =    78.15s     Wait for com.sumeru.IterableSDK-Integration-Tester to idle
+    t =    78.16s     Find the "Close" Button
+    t =    78.18s     Check for interrupting elements affecting "Close" Button
+    t =    78.20s     Synthesize event
+    t =    78.50s     Wait for com.sumeru.IterableSDK-Integration-Tester to idle
+✅ Single redirect policy test completed - SDK correctly stops at first redirect
+✅ Validated via: 1) Alert content, 2) Network Monitor redirect count
+    t =    79.25s Tear Down
+📸 Screenshot saved: 005_final--[DeepLinkingIntegrationTests testDSingleRedirectPolicy]_2026-01-13_21-48-54.png
+    t =    79.34s     Added attachment named 'final--[DeepLinkingIntegrationTests testDSingleRedirectPolicy]'
+⚠️ Warning: Error cleaning up test user: httpError(401)
+    t =    81.46s     Terminate com.sumeru.IterableSDK-Integration-Tester:21861
+Test Case '-[IterableSDK_Integration_TesterUITests.DeepLinkingIntegrationTests testDSingleRedirectPolicy]' passed (82.771 seconds).
+Test Suite 'DeepLinkingIntegrationTests' passed at 2026-01-13 21:48:58.171.
+	 Executed 4 tests, with 0 failures (0 unexpected) in 258.582 (258.586) seconds
+Test Suite 'IterableSDK-Integration-TesterUITests.xctest' passed at 2026-01-13 21:48:58.172.
+	 Executed 4 tests, with 0 failures (0 unexpected) in 258.582 (258.587) seconds
+Test Suite 'Selected tests' passed at 2026-01-13 21:48:58.173.
+	 Executed 4 tests, with 0 failures (0 unexpected) in 258.582 (258.588) seconds
+2026-01-13 21:48:58.574 xcodebuild[21493:9811960] [MT] IDETestOperationsObserverDebug: 292.034 elapsed -- Testing started completed.
+2026-01-13 21:48:58.574 xcodebuild[21493:9811960] [MT] IDETestOperationsObserverDebug: 0.000 sec, +0.000 sec -- start
+2026-01-13 21:48:58.574 xcodebuild[21493:9811960] [MT] IDETestOperationsObserverDebug: 292.034 sec, +292.034 sec -- end
+
+Test session results, code coverage, and logs:
+	/Users/sumeru.chatterjee/MyProjects/iterable-swift-sdk/tests/business-critical-integration/reports/deeplinkingintegrationtests-20260113-214402.xcresult
+
+** TEST EXECUTE SUCCEEDED **
+
+Testing started
+✅ DeepLinkingIntegrationTests tests completed successfully
+✅ Deep linking tests completed
+ℹ️  Report: /Users/sumeru.chatterjee/MyProjects/iterable-swift-sdk/tests/business-critical-integration/scripts/../reports/deep-linking-test-20260113-214402.json
+============================================
+Copying Screenshots from Simulator
+============================================
+ℹ️  Using test log file: /Users/sumeru.chatterjee/MyProjects/iterable-swift-sdk/tests/business-critical-integration/scripts/../reports/deeplinkingintegrationtests-20260113-214402.json.log
+ℹ️  Found simulator screenshots directory from logs: /Users/sumeru.chatterjee/Library/Developer/CoreSimulator/Devices/8E94985B-0D1E-44BE-8E1B-9A5B3F7F7F04/data/Containers/Data/Application/1B6D0C27-256B-45C5-85B6-938DDFBC1823/Documents/IterableSDK-Screenshots
+ℹ️  Found simulator screenshots at: /Users/sumeru.chatterjee/Library/Developer/CoreSimulator/Devices/8E94985B-0D1E-44BE-8E1B-9A5B3F7F7F04/data/Containers/Data/Application/1B6D0C27-256B-45C5-85B6-938DDFBC1823/Documents/IterableSDK-Screenshots
+ℹ️  Copying 18 screenshots to project directory...
+✅ Successfully copied 18 screenshots to: /Users/sumeru.chatterjee/MyProjects/iterable-swift-sdk/tests/business-critical-integration/scripts/../screenshots
+ℹ️  Cleared simulator screenshots after copying
+============================================
+Cleaning Up Test Environment
+============================================
+ℹ️  Resetting simulator state...
+ℹ️  Simulator cleanup skipped
+✅ Cleanup completed
+============================================
+Test Execution Complete! 🎉
+============================================
+✅ Local integration tests finished successfully
+ℹ️  Reports available in: /Users/sumeru.chatterjee/MyProjects/iterable-swift-sdk/tests/business-critical-integration/scripts/../reports
+ℹ️  Screenshots saved in: /Users/sumeru.chatterjee/MyProjects/iterable-swift-sdk/tests/business-critical-integration/scripts/../screenshots
+ℹ️  Logs available in: /Users/sumeru.chatterjee/MyProjects/iterable-swift-sdk/tests/business-critical-integration/scripts/../logs
+ℹ️  🔄 Reset config.json ciMode to false
+sumeru.chatterjee:business-critical-integration[feature/BCIT-deeplink]% 
