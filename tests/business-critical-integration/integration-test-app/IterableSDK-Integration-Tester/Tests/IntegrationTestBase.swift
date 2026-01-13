@@ -960,8 +960,8 @@ class IntegrationTestBase: XCTestCase {
             let commandDir = URL(fileURLWithPath: "/tmp/push_queue")
             try? FileManager.default.createDirectory(at: commandDir, withIntermediateDirectories: true)
             
-            let commandFile = commandDir.appendingPathComponent("openurl_\(UUID().uuidString).cmd")
-            let command = "openurl booted \(url)"
+            let commandFile = commandDir.appendingPathComponent("command_\(Date().timeIntervalSince1970).txt")
+            let command = "xcrun simctl openurl booted \(url)"
             try command.write(to: commandFile, atomically: true, encoding: .utf8)
             
             print("📄 [TEST] Created command file: \(commandFile.path)")
