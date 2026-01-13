@@ -77,6 +77,7 @@ CLEANUP=true
 TIMEOUT=60
 FAST_TEST=false
 OPEN_SIMULATOR=false
+EXIT_ON_FAILURE=false
 
 echo_header() {
     echo -e "${BLUE}============================================${NC}"
@@ -112,21 +113,23 @@ TEST_TYPE:
   all         Run all integration tests sequentially
 
 OPTIONS:
-  --verbose, -v     Enable verbose output
-  --dry-run, -d     Show what would be done without executing
-  --no-cleanup, -n  Skip cleanup after tests
-  --timeout <sec>   Set test timeout in seconds (default: 60)
-  --fast-test, -f   Enable fast test mode (skip detailed UI validations)
-  --open, -o        Open Simulator.app (local environment only)
-  --help, -h        Show this help message
+  --verbose, -v          Enable verbose output
+  --dry-run, -d          Show what would be done without executing
+  --no-cleanup, -n       Skip cleanup after tests
+  --timeout <sec>        Set test timeout in seconds (default: 60)
+  --fast-test, -f        Enable fast test mode (skip detailed UI validations)
+  --exit-on-failure      Stop test execution after first test failure
+  --open, -o             Open Simulator.app (local environment only)
+  --help, -h             Show this help message
 
 EXAMPLES:
-  $0 push                    # Run push notification tests
-  $0 all --verbose           # Run all tests with verbose output
-  $0 inapp --timeout 120     # Run in-app tests with 2 minute timeout
-  $0 inapp --open            # Run in-app tests and open Simulator.app
-  $0 embedded --dry-run      # Preview embedded message tests
-  $0 push --fast-test        # Run push tests in fast mode (skip UI validations)
+  $0 push                         # Run push notification tests
+  $0 all --verbose                # Run all tests with verbose output
+  $0 inapp --timeout 120          # Run in-app tests with 2 minute timeout
+  $0 inapp --open                 # Run in-app tests and open Simulator.app
+  $0 embedded --dry-run           # Preview embedded message tests
+  $0 push --fast-test             # Run push tests in fast mode (skip UI validations)
+  $0 deeplink --exit-on-failure   # Run deep link tests, stop after first failure
 
 SETUP:
   Run ./setup-local-environment.sh first to configure your environment.
@@ -159,6 +162,10 @@ parse_arguments() {
                 ;;
             --fast-test|-f)
                 FAST_TEST=true
+                shift
+                ;;
+            --exit-on-failure)
+                EXIT_ON_FAILURE=true
                 shift
                 ;;
             --open|-o)
@@ -376,6 +383,10 @@ prepare_test_environment() {
     
     if [[ "$FAST_TEST" == true ]]; then
         export FAST_TEST="true"
+    fi
+    
+    if [[ "$EXIT_ON_FAILURE" == true ]]; then
+        export EXIT_ON_TEST_FAILURE="1"
     fi
     
     echo_success "Test environment prepared"
@@ -606,10 +617,12 @@ run_xcode_tests() {
     echo_info "Executing: ${XCODEBUILD_CMD[*]}"
     echo_info "CI environment variable: CI=$CI"
     echo_info "FAST_TEST environment variable: FAST_TEST=$FAST_TEST"
+    echo_info "EXIT_ON_TEST_FAILURE environment variable: EXIT_ON_TEST_FAILURE=${EXIT_ON_TEST_FAILURE:-0}"
     
-    # Export CI and FAST_TEST to the test process environment
+    # Export CI, FAST_TEST, and EXIT_ON_TEST_FAILURE to the test process environment
     export CI="$CI"
     export FAST_TEST="$FAST_TEST"
+    export EXIT_ON_TEST_FAILURE="${EXIT_ON_TEST_FAILURE:-0}"
     
     # Save full log to logs directory and a copy to reports for screenshot parsing
     "${XCODEBUILD_CMD[@]}" 2>&1 | tee "$LOG_FILE" "$TEST_REPORT.log"
@@ -998,6 +1011,7 @@ main() {
     echo_info "Dry Run: $DRY_RUN"
     echo_info "Cleanup: $CLEANUP"
     echo_info "Fast Test: $FAST_TEST"
+    echo_info "Exit On Failure: $EXIT_ON_FAILURE"
     echo_info "Open Simulator: $OPEN_SIMULATOR"
     echo
     
