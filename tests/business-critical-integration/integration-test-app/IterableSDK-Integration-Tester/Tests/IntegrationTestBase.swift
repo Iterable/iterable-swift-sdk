@@ -1269,13 +1269,21 @@ class IntegrationTestBase: XCTestCase {
                     screenshotCapture.captureScreenshot(named: "safari-no-open-button")
                     
                     print("🔍 [TEST] All Safari buttons:")
-                    for button in safari.buttons.allElementsBoundByIndex {
-                        print("  - \(button.identifier): '\(button.label)'")
+                    let buttons = safari.buttons.allElementsBoundByIndex
+                    for i in 0..<min(buttons.count, 10) {
+                        if i < buttons.count {
+                            let button = buttons[i]
+                            print("  - \(button.identifier): '\(button.label)'")
+                        }
                     }
                     
                     print("🔍 [TEST] All Safari static texts:")
-                    for text in safari.staticTexts.allElementsBoundByIndex.prefix(10) {
-                        print("  - '\(text.label)'")
+                    let staticTexts = safari.staticTexts.allElementsBoundByIndex
+                    for i in 0..<min(staticTexts.count, 10) {
+                        if i < staticTexts.count {
+                            let text = staticTexts[i]
+                            print("  - '\(text.label)'")
+                        }
                     }
                 }
             }
