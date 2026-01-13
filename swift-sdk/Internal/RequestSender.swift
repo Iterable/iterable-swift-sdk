@@ -4,20 +4,20 @@
 
 import Foundation
 
-typealias SendRequestValue = [AnyHashable: Any]
+public typealias SendRequestValue = [AnyHashable: Any]
 
-struct SendRequestError: Error {
-    let reason: String?
-    let data: Data?
-    let httpStatusCode: Int?
-    let iterableCode: String?
-    let originalError: Error?
+public struct SendRequestError: Error {
+    public let reason: String?
+    public let data: Data?
+    public let httpStatusCode: Int?
+    public let iterableCode: String?
+    public let originalError: Error?
     
-    init(reason: String? = nil,
-         data: Data? = nil,
-         httpStatusCode: Int? = nil,
-         iterableCode: String? = nil,
-         originalError: Error? = nil) {
+    public init(reason: String? = nil,
+                data: Data? = nil,
+                httpStatusCode: Int? = nil,
+                iterableCode: String? = nil,
+                originalError: Error? = nil) {
         self.reason = reason
         self.data = data
         self.httpStatusCode = httpStatusCode
@@ -84,7 +84,7 @@ struct SendRequestError: Error {
 }
 
 extension SendRequestError: LocalizedError {
-    var errorDescription: String? {
+    public var errorDescription: String? {
         reason
     }
 }
