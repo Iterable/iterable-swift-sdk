@@ -22,7 +22,11 @@ class MockWebView: WebViewProtocol {
     }
     
     func set(navigationDelegate _: WKNavigationDelegate?) {}
-    
+
+    func set(contentInset: UIEdgeInsets) {
+        self.contentInset = contentInset
+    }
+
     func layoutSubviews() {}
     
     func calculateHeight() -> Pending<CGFloat, IterableError> {
@@ -30,7 +34,8 @@ class MockWebView: WebViewProtocol {
     }
     
     var position: ViewPosition = ViewPosition()
-    
+    var contentInset: UIEdgeInsets = .zero
+
     private var height: CGFloat
     
     init(height: CGFloat) {

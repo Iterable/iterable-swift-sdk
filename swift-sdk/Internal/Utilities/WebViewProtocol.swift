@@ -17,6 +17,7 @@ protocol WebViewProtocol {
     @discardableResult func loadHTMLString(_ string: String, baseURL: URL?) -> WKNavigation?
     func set(position: ViewPosition)
     func set(navigationDelegate: WKNavigationDelegate?)
+    func set(contentInset: UIEdgeInsets)
     func layoutSubviews()
     func calculateHeight() -> Pending<CGFloat, IterableError>
 }
@@ -39,7 +40,11 @@ extension WKWebView: WebViewProtocol {
     func set(navigationDelegate: WKNavigationDelegate?) {
         self.navigationDelegate = navigationDelegate
     }
-    
+
+    func set(contentInset: UIEdgeInsets) {
+        scrollView.contentInset = contentInset
+    }
+
     func calculateHeight() -> Pending<CGFloat, IterableError> {
         let fulfill = Fulfill<CGFloat, IterableError>()
         
