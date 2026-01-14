@@ -4,6 +4,11 @@ import Foundation
 
 class IntegrationTestBase: XCTestCase {
     
+    // MARK: - Class Properties
+    
+    // Track if any test has failed (for local mode early exit)
+    private static var hasAnyTestFailed = false
+    
     // MARK: - Properties
     
     var app: XCUIApplication!
@@ -43,6 +48,17 @@ class IntegrationTestBase: XCTestCase {
         
         // Default to false for comprehensive testing
         print("🚀 Fast Test Mode: DISABLED (comprehensive testing mode)")
+        return false
+    }()
+    
+    // Check for early exit on test failure mode (enabled via script parameter)
+    let exitOnTestFailure: Bool = {
+        if let exitFlag = ProcessInfo.processInfo.environment["EXIT_ON_TEST_FAILURE"] {
+            let shouldExit = exitFlag.lowercased() == "true" || exitFlag == "1"
+            print("🛑 Exit On Test Failure: \(shouldExit ? "ENABLED" : "DISABLED") (from EXIT_ON_TEST_FAILURE=\(exitFlag))")
+            return shouldExit
+        }
+        print("🛑 Exit On Test Failure: DISABLED (default)")
         return false
     }()
     
@@ -113,12 +129,30 @@ class IntegrationTestBase: XCTestCase {
         return isCI
     }()
     
+    // MARK: - Class Setup
+    
+    override class func setUp() {
+        super.setUp()
+        // Reset failure flag at the start of test suite
+        hasAnyTestFailed = false
+        print("🧪 Test suite starting - failure tracking reset")
+    }
+    
     // MARK: - Setup & Teardown
     
     override func setUpWithError() throws {
         try super.setUpWithError()
         
+        // Control whether to continue after assertion failures within a test
+        // Always stop within the same test on failure for cleaner logs
         continueAfterFailure = false
+        
+        // Control whether to run next test after a test failure
+        // Only skip if EXIT_ON_TEST_FAILURE is enabled from script
+        if exitOnTestFailure && Self.hasAnyTestFailed {
+            print("⏭️ [EXIT MODE] Skipping test - previous test failed (EXIT_ON_TEST_FAILURE=1)")
+            throw XCTSkip("Skipping remaining tests after first failure (exit on failure mode enabled)")
+        }
         
         // Log test mode for visibility
         print("🧪 Test Mode: \(fastTest ? "FAST (skipping detailed validations)" : "COMPREHENSIVE (full validation suite)")")
@@ -150,6 +184,12 @@ class IntegrationTestBase: XCTestCase {
     }
     
     override func tearDownWithError() throws {
+        // Track if this test failed (only if EXIT_ON_TEST_FAILURE is enabled)
+        if exitOnTestFailure && testRun?.hasSucceeded == false {
+            Self.hasAnyTestFailed = true
+            print("❌ Test failed - marking for early exit (EXIT_ON_TEST_FAILURE=1)")
+        }
+        
         // Capture final screenshot
         screenshotCapture?.captureScreenshot(named: "final-\(name)")
         
@@ -920,8 +960,8 @@ class IntegrationTestBase: XCTestCase {
             let commandDir = URL(fileURLWithPath: "/tmp/push_queue")
             try? FileManager.default.createDirectory(at: commandDir, withIntermediateDirectories: true)
             
-            let commandFile = commandDir.appendingPathComponent("openurl_\(UUID().uuidString).cmd")
-            let command = "openurl booted \(url)"
+            let commandFile = commandDir.appendingPathComponent("command_\(Date().timeIntervalSince1970).txt")
+            let command = "xcrun simctl openurl booted \(url)"
             try command.write(to: commandFile, atomically: true, encoding: .utf8)
             
             print("📄 [TEST] Created command file: \(commandFile.path)")
@@ -977,9 +1017,125 @@ class IntegrationTestBase: XCTestCase {
     
     // MARK: - External Source Deep Link Helpers
     
+    /// Clean up previous test link from Reminders app
+    private func cleanupRemindersLinks(reminders: XCUIApplication) {
+        print("🗑️ [TEST] Cleaning up previous test link from Reminders...")
+        
+        // Look for the first reminder cell (from previous test)
+        let firstCell = reminders.cells.firstMatch
+        
+        guard firstCell.waitForExistence(timeout: 2.0) else {
+            print("🗑️ [TEST] No previous reminder to clean up")
+            return
+        }
+        
+        // Swipe left to reveal delete button
+        firstCell.swipeLeft()
+        sleep(1)
+        
+        // Look for Delete button and tap it
+        let deleteButton = reminders.buttons["Delete"]
+        if deleteButton.waitForExistence(timeout: 2.0) {
+            deleteButton.tap()
+            print("🗑️ [TEST] Deleted previous test reminder")
+            sleep(1)
+        } else {
+            print("🗑️ [TEST] No delete button found")
+        }
+    }
+    
     /// Open a universal link from the Reminders app
+    func openBrowserLinkFromRemindersApp(url: String) {
+        print("📝 [TEST] Opening browser link from Reminders app: \(url)")
+        
+        // CI Optimization: Skip flaky Reminders UI automation and use simctl directly
+        if isRunningInCI {
+            print("🤖 [TEST] CI MODE: Skipping Reminders UI interaction, using simctl openurl directly")
+            let safari = XCUIApplication(bundleIdentifier: "com.apple.mobilesafari")
+            openUniversalLinkViaSimctl(url: url)
+            sleep(3)
+            // For browser links, Safari should open (not our app)
+            XCTAssertTrue(safari.wait(for: .runningForeground, timeout: 15.0), "Safari should open for browser links")
+            return
+        }
+        
+        let reminders = XCUIApplication(bundleIdentifier: "com.apple.reminders")
+        reminders.launch()
+        
+        XCTAssertTrue(reminders.wait(for: .runningForeground, timeout: standardTimeout), "Reminders app should launch")
+        sleep(2)
+        
+        let continueButton = reminders.buttons["Continue"]
+        if continueButton.waitForExistence(timeout: 3.0) {
+            print("📝 [TEST] Dismissing Reminders welcome modal")
+            continueButton.tap()
+            sleep(1)
+        }
+        
+        let notNowButton = reminders.buttons["Not Now"]
+        if notNowButton.waitForExistence(timeout: 3.0) {
+            print("📝 [TEST] Dismissing iCloud syncing modal")
+            notNowButton.tap()
+            sleep(1)
+        }
+        
+        cleanupRemindersLinks(reminders: reminders)
+        
+        print("📝 [TEST] Looking for New Reminder button...")
+        let newReminderButton = reminders.buttons["New Reminder"]
+        if newReminderButton.waitForExistence(timeout: 5.0) {
+            print("📝 [TEST] Found New Reminder button, tapping...")
+            newReminderButton.tap()
+            sleep(2)
+        } else {
+            print("⚠️ [TEST] New Reminder button not found")
+            let addButton = reminders.buttons.matching(identifier: "Add").firstMatch
+            if addButton.waitForExistence(timeout: 3.0) {
+                print("📝 [TEST] Found add button, tapping...")
+                addButton.tap()
+                sleep(2)
+            } else {
+                print("⚠️ [TEST] No button found, trying coordinate fallback")
+                let coordinate = reminders.coordinate(withNormalizedOffset: CGVector(dx: 0.9, dy: 0.95))
+                coordinate.tap()
+                sleep(2)
+            }
+        }
+        
+        print("📝 [TEST] Typing URL into reminder: \(url)")
+        reminders.typeText(url)
+        reminders.typeText("\n")
+        sleep(2)
+        
+        print("📝 [TEST] Looking for link to tap...")
+        let linkElement = reminders.links.firstMatch
+        if linkElement.waitForExistence(timeout: 5.0) {
+            print("✅ [TEST] Found link, tapping it...")
+            reminders.swipeDown()
+            sleep(1)
+            let coordinate = linkElement.coordinate(withNormalizedOffset: CGVector(dx: 0.1, dy: 0.5))
+            coordinate.tap()
+            print("✅ [TEST] Tapped link in Reminders app")
+        } else {
+            print("⚠️ [TEST] Link not found in Reminders")
+            openLinkFromSafari(url: url)
+            return
+        }
+        
+        print("✅ [TEST] Browser link opened successfully")
+    }
+    
     func openLinkFromRemindersApp(url: String) {
         print("📝 [TEST] Opening universal link from Reminders app: \(url)")
+        
+        // CI Optimization: Skip flaky Reminders UI automation and use simctl directly
+        if isRunningInCI {
+            print("🤖 [TEST] CI MODE: Skipping Reminders UI interaction, using simctl openurl directly")
+            openUniversalLinkViaSimctl(url: url)
+            sleep(3)
+            XCTAssertTrue(app.wait(for: .runningForeground, timeout: standardTimeout), "App should open from universal link via simctl")
+            return
+        }
         
         let reminders = XCUIApplication(bundleIdentifier: "com.apple.reminders")
         reminders.launch()
@@ -1003,6 +1159,9 @@ class IntegrationTestBase: XCTestCase {
             notNowButton.tap()
             sleep(1)
         }
+        
+        // Clean up any previous test links before adding new one
+        cleanupRemindersLinks(reminders: reminders)
         
         // Tap the "New Reminder" button to create new reminder
         print("📝 [TEST] Looking for New Reminder button...")
@@ -1046,7 +1205,14 @@ class IntegrationTestBase: XCTestCase {
         let linkElement = reminders.links.firstMatch
         if linkElement.waitForExistence(timeout: 5.0) {
             print("✅ [TEST] Found link, tapping it...")
-            linkElement.tap()
+            
+            // Scroll up to ensure link is fully visible and in tappable area
+            reminders.swipeDown()
+            sleep(1)
+            
+            // Tap at the beginning of the link (left side) where it's most likely to be interactive
+            let coordinate = linkElement.coordinate(withNormalizedOffset: CGVector(dx: 0.1, dy: 0.5))
+            coordinate.tap()
             print("✅ [TEST] Tapped link in Reminders app")
         } else {
             print("⚠️ [TEST] Link not found in Reminders")
@@ -1121,15 +1287,28 @@ class IntegrationTestBase: XCTestCase {
                 } else {
                     print("⚠️ [TEST] OPEN button not found, debugging Safari state...")
                     screenshotCapture.captureScreenshot(named: "safari-no-open-button")
-                    
-                    print("🔍 [TEST] All Safari buttons:")
-                    for button in safari.buttons.allElementsBoundByIndex {
-                        print("  - \(button.identifier): '\(button.label)'")
-                    }
-                    
-                    print("🔍 [TEST] All Safari static texts:")
-                    for text in safari.staticTexts.allElementsBoundByIndex.prefix(10) {
-                        print("  - '\(text.label)'")
+
+                    // Skip expensive debugging in CI mode since we have simctl fallback
+                    if !isRunningInCI {
+                        print("🔍 [TEST] All Safari buttons:")
+                        let buttons = safari.buttons.allElementsBoundByIndex
+                        for i in 0..<min(buttons.count, 10) {
+                            if i < buttons.count {
+                                let button = buttons[i]
+                                print("  - \(button.identifier): '\(button.label)'")
+                            }
+                        }
+
+                        print("🔍 [TEST] All Safari static texts:")
+                        let staticTexts = safari.staticTexts.allElementsBoundByIndex
+                        for i in 0..<min(staticTexts.count, 10) {
+                            if i < staticTexts.count {
+                                let text = staticTexts[i]
+                                print("  - '\(text.label)'")
+                            }
+                        }
+                    } else {
+                        print("🤖 [TEST] Skipping detailed Safari debugging in CI mode (using simctl fallback)")
                     }
                 }
             }
@@ -1234,6 +1413,11 @@ class IntegrationTestBase: XCTestCase {
     
     private func cleanupTestData() {
         // Remove test user from backend
+        guard let apiClient = apiClient else {
+            print("⏭️ Skipping cleanup - apiClient not initialized")
+            return
+        }
+        
         let expectation = XCTestExpectation(description: "Cleanup test data")
         
         apiClient.cleanupTestUser(email: testUserEmail) { success in

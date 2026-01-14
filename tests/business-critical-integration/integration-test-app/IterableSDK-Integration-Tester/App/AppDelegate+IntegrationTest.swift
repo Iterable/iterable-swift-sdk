@@ -69,10 +69,16 @@ extension AppDelegate {
     }
         
     static func initializeIterableSDK() {
+        print("🚀 [SDK INIT] Starting SDK initialization...")
+        
         guard let appDelegate = UIApplication.shared.delegate as? AppDelegate else {
-            print("❌ Failed to get AppDelegate")
+            print("❌ [SDK INIT] Failed to get AppDelegate")
             return
         }
+        
+        print("✅ [SDK INIT] Got AppDelegate instance")
+        print("🔍 [SDK INIT] AppDelegate conforms to IterableURLDelegate: \(appDelegate is IterableURLDelegate)")
+        print("🔍 [SDK INIT] AppDelegate conforms to IterableCustomActionDelegate: \(appDelegate is IterableCustomActionDelegate)")
         
         // ITBL: Initialize API
         let config = IterableConfig()
@@ -80,25 +86,31 @@ extension AppDelegate {
         config.urlDelegate = appDelegate
         config.inAppDisplayInterval = 1
         config.autoPushRegistration = false  // Disable automatic push registration for testing control
-        config.allowedProtocols = ["tester"]  // Allow our custom tester:// deep link scheme
+        config.allowedProtocols = ["tester", "https", "http"]  // Allow custom tester:// and https:// deep link schemes
         config.enableEmbeddedMessaging = true
         
+        print("✅ [SDK INIT] Config created with delegates:")
+        print("   - URL delegate: \(String(describing: config.urlDelegate))")
+        print("   - Custom action delegate: \(String(describing: config.customActionDelegate))")
+        print("   - Allowed protocols: \(config.allowedProtocols ?? [])")
+        
         let apiKey = loadApiKeyFromConfig()
+        print("🔑 [SDK INIT] API key loaded: \(apiKey.prefix(8))...")
+        
+        print("🚀 [SDK INIT] Calling IterableAPI.initialize...")
         IterableAPI.initialize(apiKey: apiKey,
                                launchOptions: nil,
                                config: config)
         
-        print("✅ SDK initialized for testing")
-        print("✅ URL delegate set to: \(String(describing: config.urlDelegate))")
-        
-        // Verify the delegate is actually set
-        print("🔍 AppDelegate conforms to IterableURLDelegate: \(appDelegate is IterableURLDelegate)")
+        print("✅ [SDK INIT] SDK initialized for testing")
+        print("✅ [SDK INIT] Initialization complete")
     }
     
     static func registerEmailToIterableSDK(email: String) {
+        print("📧 [SDK INIT] Registering email with SDK: \(email)")
         IterableAPI.email = email
-        print("✅ Test user email configured: \(email)")
-        
+        print("✅ [SDK INIT] Test user email configured: \(email)")
+        print("🔍 [SDK INIT] IterableAPI.email is now: \(IterableAPI.email ?? "nil")")
     }
     
     static func registerUserIDToIterableSDK(userId: String) {
