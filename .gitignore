@@ -39,3 +39,5 @@ CI.swift
 *.mdb
 .build/arm64-apple-macosx/debug/IterableSDK.build/output-file-map.json
 .build
+
+agent/
