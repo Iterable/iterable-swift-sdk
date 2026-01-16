@@ -227,13 +227,23 @@ class IterableHtmlMessageViewController: UIViewController {
         let parentPosition = ViewPosition(width: view.bounds.width,
                                           height: view.bounds.height,
                                           center: view.center)
+        let safeAreaInsets = InAppCalculations.safeAreaInsets(for: view)
         IterableHtmlMessageViewController.calculateWebViewPosition(webView: webView,
-                                                                   safeAreaInsets: InAppCalculations.safeAreaInsets(for: view),
+                                                                   safeAreaInsets: safeAreaInsets,
                                                                    parentPosition: parentPosition,
                                                                    paddingLeft: CGFloat(parameters.padding.left),
                                                                    paddingRight: CGFloat(parameters.padding.right),
                                                                    location: location)
             .onSuccess { [weak self] position in
+                // Apply safe area insets to scrollView content for full position
+                // This keeps the webView covering the full screen (edge-to-edge background)
+                // while ensuring content is not hidden behind notch or home indicator
+                if self?.location == .full {
+                    self?.webView.set(contentInset: safeAreaInsets)
+                } else {
+                    self?.webView.set(contentInset: .zero)
+                }
+
                 if animate {
                     self?.animateWhileEntering(position)
                 } else {
