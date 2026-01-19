@@ -53,7 +53,20 @@ protocol MessageViewControllerDelegate: AnyObject {
     func messageDeinitialized()
 }
 
-class IterableHtmlMessageViewController: UIViewController {
+/// Weak wrapper to avoid retain cycle with WKUserContentController
+private class WeakScriptMessageHandler: NSObject, WKScriptMessageHandler {
+    weak var delegate: WKScriptMessageHandler?
+    
+    init(delegate: WKScriptMessageHandler) {
+        self.delegate = delegate
+    }
+    
+    func userContentController(_ userContentController: WKUserContentController, didReceive message: WKScriptMessage) {
+        delegate?.userContentController(userContentController, didReceive: message)
+    }
+}
+
+class IterableHtmlMessageViewController: UIViewController, WKScriptMessageHandler {
     struct Parameters {
         let html: String
         let padding: Padding
@@ -98,11 +111,9 @@ class IterableHtmlMessageViewController: UIViewController {
     private init(parameters: Parameters,
                  eventTrackerProvider:  @escaping @autoclosure () -> MessageViewControllerEventTrackerProtocol?,
                  onClickCallback: ((URL) -> Void)?,
-                 webViewProvider: @escaping @autoclosure () -> WebViewProtocol = IterableHtmlMessageViewController.createWebView(),
                  delegate: MessageViewControllerDelegate?) {
         ITBInfo()
         self.eventTrackerProvider = eventTrackerProvider
-        self.webViewProvider = webViewProvider
         self.parameters = parameters
         self.onClickCallback = onClickCallback
         self.delegate = delegate
@@ -128,10 +139,15 @@ class IterableHtmlMessageViewController: UIViewController {
         view.backgroundColor = InAppCalculations.initialViewBackgroundColor(isModal: parameters.isModal)
         
         webView.set(position: ViewPosition(width: view.frame.width, height: view.frame.height, center: view.center))
-        webView.loadHTMLString(parameters.html, baseURL: URL(string: ""))
+        
+        var html = parameters.html
+        if let jsString = parameters.messageMetadata?.message.customPayload?["js"] as? String {
+            html += "<script>\(jsString)</script>"
+        }
+        webView.loadHTMLString(html, baseURL: URL(string: ""))
         webView.set(navigationDelegate: self)
         
-        view.addSubview(webView.view)
+        view.addSubview(webView)
     }
     
     override func viewDidLoad() {
@@ -197,11 +213,11 @@ class IterableHtmlMessageViewController: UIViewController {
     
     deinit {
         ITBInfo()
+        webView.configuration.userContentController.removeScriptMessageHandler(forName: "textHandler")
         delegate?.messageDeinitialized()
     }
     
     private var eventTrackerProvider: () -> MessageViewControllerEventTrackerProtocol?
-    private var webViewProvider: () -> WebViewProtocol
     private var parameters: Parameters
     private var onClickCallback: ((URL) -> Void)?
     private var delegate: MessageViewControllerDelegate?
@@ -209,17 +225,25 @@ class IterableHtmlMessageViewController: UIViewController {
     private var linkClicked = false
     private var clickedLink: String?
     
-    private lazy var webView = webViewProvider()
-    private var eventTracker: MessageViewControllerEventTrackerProtocol? {
-        eventTrackerProvider()
-    }
+    private lazy var scriptMessageHandler = WeakScriptMessageHandler(delegate: self)
     
-    private static func createWebView() -> WebViewProtocol {
-        let webView = WKWebView(frame: .zero)
+    private lazy var webView: WKWebView = {
+        let contentController = WKUserContentController()
+        contentController.add(scriptMessageHandler, name: "textHandler")
+        
+        let config = WKWebViewConfiguration()
+        config.userContentController = contentController
+        let webView = WKWebView(frame: .zero, configuration: config)
         webView.scrollView.bounces = false
+        webView.scrollView.delaysContentTouches = false
+        webView.isUserInteractionEnabled = true
         webView.isOpaque = false
         webView.backgroundColor = UIColor.clear
-        return webView as WebViewProtocol
+        return webView
+    }()
+    
+    private var eventTracker: MessageViewControllerEventTrackerProtocol? {
+        eventTrackerProvider()
     }
     
     /// Resizes the webview based upon the insetPadding, height etc
@@ -268,11 +292,11 @@ class IterableHtmlMessageViewController: UIViewController {
     private func applyAnimation(animationDetail: InAppCalculations.AnimationDetail, completion: (() -> Void)? = nil) {
         Self.animate(duration: parameters.animationDuration) { [weak self] in
             self?.webView.set(position: animationDetail.initial.position)
-            self?.webView.view.alpha = animationDetail.initial.alpha
+            self?.webView.alpha = animationDetail.initial.alpha
             self?.view.backgroundColor = animationDetail.initial.bgColor
         } finalValues: { [weak self] in
             self?.webView.set(position: animationDetail.final.position)
-            self?.webView.view.alpha = animationDetail.final.alpha
+            self?.webView.alpha = animationDetail.final.alpha
             self?.view.backgroundColor = animationDetail.final.bgColor
         } completion: {
             completion?()
@@ -292,7 +316,7 @@ class IterableHtmlMessageViewController: UIViewController {
         }
     }
 
-    static func calculateWebViewPosition(webView: WebViewProtocol,
+    static func calculateWebViewPosition(webView: WKWebView,
                                          safeAreaInsets: UIEdgeInsets,
                                          parentPosition: ViewPosition,
                                          paddingLeft: CGFloat,
@@ -356,7 +380,7 @@ extension IterableHtmlMessageViewController: WKNavigationDelegate {
     @available(iOS 13.0, *)
     func webView(_ webView: WKWebView, decidePolicyFor navigationAction: WKNavigationAction, preferences: WKWebpagePreferences, decisionHandler: @escaping (WKNavigationActionPolicy, WKWebpagePreferences) -> Void) {
         if #available(iOS 14.0, *) {
-            preferences.allowsContentJavaScript = false
+            preferences.allowsContentJavaScript = true
         }
         guard navigationAction.navigationType == .linkActivated, let url = navigationAction.request.url else {
             decisionHandler(.allow, preferences)
@@ -404,4 +428,36 @@ extension IterableHtmlMessageViewController: WKNavigationDelegate {
         }
     }
 
+}
+
+extension IterableHtmlMessageViewController {
+    func userContentController(_ userContentController: WKUserContentController, didReceive message: WKScriptMessage) {
+        guard let messageString = message.body as? String else { return }
+        
+        let components = messageString
+            .lowercased()
+            .trimmingCharacters(in: .whitespaces)
+            .split(separator: "|")
+            .map { $0.trimmingCharacters(in: .whitespaces) }
+        
+        guard components.count == 2,
+              let runner = RunnerName.allCases.first(where: { $0.rawValue.lowercased() == components[0] }),
+              let pace = PaceLevel.allCases.first(where: { $0.rawValue.lowercased() == components[1] }) else {
+            ITBError("Failed to parse challenge message: \(messageString)")
+            return
+        }
+        
+        ITBInfo("Starting Live Activity: \(runner.rawValue) at \(pace.rawValue)")
+        
+        #if canImport(ActivityKit)
+        if #available(iOS 16.2, *) {
+            if let activityId = IterableLiveActivityManager.shared.startRunComparison(against: runner, at: pace) {
+                IterableLiveActivityManager.shared.startMockUpdates(activityId: activityId, updateInterval: 3.0)
+            }
+        }
+        #endif
+        
+        // Dismiss the in-app view
+        animateWhileLeaving(webView.position)
+    }
 }

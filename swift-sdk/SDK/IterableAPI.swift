@@ -282,6 +282,29 @@ import UIKit
         implementation.register(token: token, onSuccess: onSuccess, onFailure: onFailure)
     }
     
+    // MARK: - Live Activity Token Registration
+    
+    /// Register a Live Activity push token with Iterable
+    ///
+    /// - Parameters:
+    ///    - token: The push token for the Live Activity
+    ///    - activityId: The unique identifier for the Live Activity
+    ///    - onSuccess: `OnSuccessHandler` to invoke if registration is successful
+    ///    - onFailure: `OnFailureHandler` to invoke if registration fails
+    @available(iOS 16.1, *)
+    public static func registerLiveActivityToken(
+        _ token: Data,
+        activityId: String,
+        onSuccess: OnSuccessHandler? = nil,
+        onFailure: OnFailureHandler? = nil
+    ) {
+        guard let implementation, implementation.isSDKInitialized() else {
+            onFailure?("SDK not initialized", nil)
+            return
+        }
+        implementation.registerLiveActivityToken(token, activityId: activityId, onSuccess: onSuccess, onFailure: onFailure)
+    }
+    
     @objc(pauseAuthRetries:)
     public static func pauseAuthRetries(_ pauseRetry: Bool) {
         implementation?.authManager.pauseAuthRetries(pauseRetry)
