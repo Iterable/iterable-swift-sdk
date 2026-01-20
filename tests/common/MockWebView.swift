@@ -20,7 +20,12 @@ class MockWebView: WebViewProtocol {
         view.frame.size.height = position.height
         view.center = position.center
     }
-    
+
+    func set(frame: CGRect) {
+        view.frame = frame
+        self.position = ViewPosition(width: frame.width, height: frame.height, center: CGPoint(x: frame.midX, y: frame.midY))
+    }
+
     func set(navigationDelegate _: WKNavigationDelegate?) {}
 
     func set(contentInset: UIEdgeInsets) {
