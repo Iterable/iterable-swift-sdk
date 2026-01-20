@@ -9,11 +9,11 @@ import WebKit
 
 class MockWebView: WebViewProtocol {
     let view: UIView = UIView()
-    
+
     func loadHTMLString(_: String, baseURL _: URL?) -> WKNavigation? {
         nil
     }
-    
+
     func set(position: ViewPosition) {
         self.position = position
         view.frame.size.width = position.width
@@ -21,28 +21,18 @@ class MockWebView: WebViewProtocol {
         view.center = position.center
     }
 
-    func set(frame: CGRect) {
-        view.frame = frame
-        self.position = ViewPosition(width: frame.width, height: frame.height, center: CGPoint(x: frame.midX, y: frame.midY))
-    }
-
     func set(navigationDelegate _: WKNavigationDelegate?) {}
 
-    func set(contentInset: UIEdgeInsets) {
-        self.contentInset = contentInset
-    }
-
     func layoutSubviews() {}
-    
+
     func calculateHeight() -> Pending<CGFloat, IterableError> {
         Fulfill<CGFloat, IterableError>(value: height)
     }
-    
+
     var position: ViewPosition = ViewPosition()
-    var contentInset: UIEdgeInsets = .zero
 
     private var height: CGFloat
-    
+
     init(height: CGFloat) {
         self.height = height
     }

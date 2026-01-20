@@ -224,9 +224,21 @@ class IterableHtmlMessageViewController: UIViewController {
     
     /// Resizes the webview based upon the insetPadding, height etc
     private func resizeWebView(animate: Bool) {
-        let parentPosition = ViewPosition(width: view.bounds.width,
+        // For full position, use screen bounds to ensure edge-to-edge coverage
+        // including behind notch/Dynamic Island and home indicator
+        let parentPosition: ViewPosition
+        if location == .full {
+            let screenBounds = UIScreen.main.bounds
+            // Convert screen center to view's coordinate system
+            let screenCenterInView = view.convert(CGPoint(x: screenBounds.midX, y: screenBounds.midY), from: nil)
+            parentPosition = ViewPosition(width: screenBounds.width,
+                                          height: screenBounds.height,
+                                          center: screenCenterInView)
+        } else {
+            parentPosition = ViewPosition(width: view.bounds.width,
                                           height: view.bounds.height,
                                           center: view.center)
+        }
         let safeAreaInsets = InAppCalculations.safeAreaInsets(for: view)
         IterableHtmlMessageViewController.calculateWebViewPosition(webView: webView,
                                                                    safeAreaInsets: safeAreaInsets,
@@ -235,15 +247,6 @@ class IterableHtmlMessageViewController: UIViewController {
                                                                    paddingRight: CGFloat(parameters.padding.right),
                                                                    location: location)
             .onSuccess { [weak self] position in
-                // Apply safe area insets to scrollView content for full position
-                // This keeps the webView covering the full screen (edge-to-edge background)
-                // while ensuring content is not hidden behind notch or home indicator
-                if self?.location == .full {
-                    self?.webView.set(contentInset: safeAreaInsets)
-                } else {
-                    self?.webView.set(contentInset: .zero)
-                }
-
                 if animate {
                     self?.animateWhileEntering(position)
                 } else {
