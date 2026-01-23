@@ -7,8 +7,25 @@ import Foundation
 /// Basic wrapper for keychain
 /// This should have no dependency on Iterable classes
 class KeychainWrapper {
-    init(serviceName: String = Const.Keychain.serviceName) {
+    init(serviceName: String = KeychainWrapper.isolatedServiceName()) {
         self.serviceName = serviceName
+    }
+
+    /// Generates an isolated service name using the bundle identifier
+    /// This prevents keychain collisions when multiple apps share a keychain access group
+    /// - Parameter baseServiceName: The base service name to use (defaults to Const.Keychain.serviceName)
+    /// - Returns: A service name that includes the bundle identifier for isolation
+    static func isolatedServiceName(baseServiceName: String = Const.Keychain.serviceName) -> String {
+        if let bundleId = Bundle.main.bundleIdentifier {
+            return "\(baseServiceName).\(bundleId)"
+        }
+        return baseServiceName
+    }
+
+    /// Returns the legacy service name without bundle identifier isolation
+    /// Used for migration from older SDK versions
+    static var legacyServiceName: String {
+        return Const.Keychain.serviceName
     }
     
     @discardableResult
