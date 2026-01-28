@@ -837,7 +837,7 @@ import UIKit
         
         implementation.inAppConsume(message: message, location: location)
     }
-    
+
     /// Consumes the notification and removes it from the list of in-app messages
     ///
     /// - Parameters:
