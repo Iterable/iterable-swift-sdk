@@ -4,6 +4,8 @@ All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 ## [Unreleased]
 
+## [6.6.6]
+
 ## [6.6.5]
 ### Fixed
 - Fixed an issue where concurrent API requests failing with JWT-related 401 errors could be dropped instead of retried after a new token was obtained, ensuring all affected calls are executed once authentication succeeds.
