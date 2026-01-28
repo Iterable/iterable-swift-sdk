@@ -5,6 +5,11 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 ## [Unreleased]
 
 ## [6.6.6]
+### Fixed 
+- Fixed more Carthage issues
+
+### Added
+- Made `isIterableDeepLink` method public
 
 ## [6.6.5]
 ### Fixed
