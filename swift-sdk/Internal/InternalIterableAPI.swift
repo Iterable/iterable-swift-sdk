@@ -964,7 +964,30 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
     
     private static func setApiEndpoint(apiEndPointOverride: String?, config: IterableConfig) -> String {
         let apiEndPoint = config.dataRegion
-        return apiEndPointOverride ?? apiEndPoint
+        let endpoint = apiEndPointOverride ?? apiEndPoint
+        
+        // Sanitize and validate endpoint
+        let sanitized = endpoint.trimmingCharacters(in: .whitespacesAndNewlines)
+        
+        // Validate endpoint is a valid URL
+        if let url = URL(string: sanitized) {
+            if url.scheme == nil || url.host == nil {
+                ITBError("Invalid API endpoint - missing scheme or host: '\(sanitized)'")
+            }
+        } else {
+            ITBError("Invalid API endpoint - cannot create URL from: '\(sanitized)'")
+        }
+        
+        // Check for common issues
+        if sanitized != endpoint {
+            ITBError("API endpoint contained whitespace, trimmed from '\(endpoint)' to '\(sanitized)'")
+        }
+        
+        if sanitized.isEmpty {
+            ITBError("API endpoint is empty after sanitization")
+        }
+        
+        return sanitized
     }
     
     init(apiKey: String,
