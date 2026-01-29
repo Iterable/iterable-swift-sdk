@@ -5,6 +5,7 @@
 
 import SwiftUI
 import Combine
+import WebKit
 import IterableSDK
 
 @MainActor
@@ -175,6 +176,24 @@ class InAppMessageTestViewModel: ObservableObject {
         }
     }
     
+    func showLocalFullScreenIAM() {
+        guard let windowScene = UIApplication.shared.connectedScenes
+            .compactMap({ $0 as? UIWindowScene })
+            .first(where: { $0.activationState == .foregroundActive }),
+              let rootVC = windowScene.windows.first(where: { $0.isKeyWindow })?.rootViewController else {
+            return
+        }
+
+        var topVC = rootVC
+        while let presented = topVC.presentedViewController {
+            topVC = presented
+        }
+
+        let pocVC = FullScreenPOCViewController()
+        pocVC.modalPresentationStyle = .overFullScreen
+        topVC.present(pocVC, animated: false)
+    }
+
     func clearMessageQueue() {
         print("🗑️ Clearing message queue...")
         
@@ -318,5 +337,107 @@ extension Notification.Name {
     static let iterableInAppShown = Notification.Name("IterableInAppShown")
     static let iterableInAppClicked = Notification.Name("IterableInAppClicked")
     static let iterableInAppDismissed = Notification.Name("IterableInAppDismissed")
+}
+
+// MARK: - Full Screen IAM Proof of Concept
+
+/// Temporary POC view controller to test full-screen IAM presentation
+/// using .overFullScreen modal style instead of a custom UIWindow.
+class FullScreenPOCViewController: UIViewController, WKNavigationDelegate {
+    private lazy var webView: WKWebView = {
+        let wv = WKWebView(frame: .zero)
+        wv.isOpaque = false
+        wv.backgroundColor = .clear
+        wv.scrollView.bounces = false
+        wv.navigationDelegate = self
+        return wv
+    }()
+
+    override var prefersStatusBarHidden: Bool { true }
+
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        // Set the view background to match the HTML background so
+        // the safe area gaps (notch/status bar) are filled with the same color
+        view.backgroundColor = UIColor(red: 106/255, green: 27/255, blue: 154/255, alpha: 1)
+
+        webView.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(webView)
+        NSLayoutConstraint.activate([
+            webView.topAnchor.constraint(equalTo: view.topAnchor),
+            webView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
+            webView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            webView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+        ])
+
+        webView.loadHTMLString(Self.fullScreenHTML, baseURL: URL(string: ""))
+    }
+
+    // Catch link taps to dismiss
+    func webView(_ webView: WKWebView, decidePolicyFor navigationAction: WKNavigationAction, decisionHandler: @escaping (WKNavigationActionPolicy) -> Void) {
+        if navigationAction.navigationType == .linkActivated {
+            dismiss(animated: false)
+            decisionHandler(.cancel)
+        } else {
+            decisionHandler(.allow)
+        }
+    }
+
+    private static let fullScreenHTML = """
+    <!DOCTYPE html>
+    <html>
+    <head>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+        <style>
+            * { margin: 0; padding: 0; box-sizing: border-box; }
+            html, body {
+                height: 100%;
+                background-color: #6A1B9A;
+                color: white;
+                font-family: -apple-system, sans-serif;
+            }
+            body {
+                display: flex;
+                flex-direction: column;
+                padding-top: env(safe-area-inset-top);
+                padding-right: env(safe-area-inset-right);
+                padding-bottom: env(safe-area-inset-bottom);
+                padding-left: env(safe-area-inset-left);
+            }
+            .content {
+                flex: 1;
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
+                align-items: center;
+                padding: 20px;
+                text-align: center;
+            }
+            h1 { font-size: 28px; margin-bottom: 16px; }
+            p { font-size: 16px; opacity: 0.9; margin-bottom: 16px; line-height: 1.5; }
+            .close-btn {
+                display: inline-block;
+                background: white;
+                color: #6A1B9A;
+                text-decoration: none;
+                padding: 14px 40px;
+                border-radius: 25px;
+                font-size: 18px;
+                font-weight: 600;
+                margin-top: 16px;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="content">
+            <h1>Full Screen IAM POC</h1>
+            <p>This proves .overFullScreen modal presentation works for full-screen in-app messages.</p>
+            <p>The purple background extends behind the safe area (status bar / notch / Dynamic Island), while this text content stays within the safe area.</p>
+            <p>viewport-fit=cover + CSS env(safe-area-inset-*) handles safe area padding in HTML.</p>
+            <a href="iterable://dismiss" class="close-btn">Close</a>
+        </div>
+    </body>
+    </html>
+    """
 }
 
