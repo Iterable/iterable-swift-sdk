@@ -39,7 +39,7 @@ extension WKWebView: WebViewProtocol {
     func set(navigationDelegate: WKNavigationDelegate?) {
         self.navigationDelegate = navigationDelegate
     }
-
+    
     func calculateHeight() -> Pending<CGFloat, IterableError> {
         let fulfill = Fulfill<CGFloat, IterableError>()
         

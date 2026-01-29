@@ -123,6 +123,15 @@ struct InAppMessageTestView: View {
             .disabled(viewModel.isTriggeringCampaign)
 
             ActionButton(
+                title: "Test Local Full-Screen IAM (POC)",
+                backgroundColor: Color(.systemTeal),
+                isLoading: false
+            ) {
+                viewModel.showLocalFullScreenIAM()
+            }
+            .accessibilityIdentifier("test-local-fullscreen-button")
+
+            ActionButton(
                 title: "Send Silent Push (Campaign 14750476)",
                 backgroundColor: Color(.brown),
                 isLoading: viewModel.isTriggeringCampaign
