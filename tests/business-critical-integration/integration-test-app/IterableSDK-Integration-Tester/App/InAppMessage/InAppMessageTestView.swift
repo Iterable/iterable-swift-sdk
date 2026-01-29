@@ -111,7 +111,26 @@ struct InAppMessageTestView: View {
             }
             .accessibilityIdentifier("trigger-testview-in-app-button")
             .disabled(viewModel.isTriggeringCampaign)
-            
+
+            ActionButton(
+                title: "Send Full Screen In-App (SDK-31 Test)",
+                backgroundColor: Color(.systemPurple),
+                isLoading: viewModel.isTriggeringCampaign
+            ) {
+                viewModel.triggerCampaign(16505358)
+            }
+            .accessibilityIdentifier("trigger-fullscreen-in-app-button")
+            .disabled(viewModel.isTriggeringCampaign)
+
+            ActionButton(
+                title: "Test Local Full-Screen IAM (POC)",
+                backgroundColor: Color(.systemTeal),
+                isLoading: false
+            ) {
+                viewModel.showLocalFullScreenIAM()
+            }
+            .accessibilityIdentifier("test-local-fullscreen-button")
+
             ActionButton(
                 title: "Send Silent Push (Campaign 14750476)",
                 backgroundColor: Color(.brown),

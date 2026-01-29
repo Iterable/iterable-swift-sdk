@@ -37,10 +37,11 @@ struct InAppCalculations {
                                                                 location: input.location,
                                                                 safeAreaInsets: input.safeAreaInsets)
             let startAlpha = calculateAnimationStartAlpha(location: input.location)
-            
+
+            let initialBgColor: UIColor = (input.location == .full) ? (input.backgroundColor ?? .clear) : .clear
             let initialParam = AnimationParam(position: startPosition,
                                               alpha: startAlpha,
-                                              bgColor: UIColor.clear)
+                                              bgColor: initialBgColor)
             let finalBgColor = finalViewBackgroundColor(bgColor: input.backgroundColor, isModal: input.isModal)
             let finalParam = AnimationParam(position: input.position,
                                             alpha: 1.0,
@@ -48,7 +49,8 @@ struct InAppCalculations {
             return AnimationDetail(initial: initialParam,
                                    final: finalParam)
         } else if let bgColor = input.backgroundColor {
-            return AnimationDetail(initial: AnimationParam(position: input.position, alpha: 1.0, bgColor: UIColor.clear),
+            let initialBgColor: UIColor = (input.location == .full) ? bgColor : .clear
+            return AnimationDetail(initial: AnimationParam(position: input.position, alpha: 1.0, bgColor: initialBgColor),
                                    final: AnimationParam(position: input.position, alpha: 1.0, bgColor: bgColor))
         } else {
             return nil
@@ -139,7 +141,7 @@ struct InAppCalculations {
                 viewController?.navigationController?.popViewController(animated: true)
             }
         }
-        
+
         return { [weak viewController] in
             viewController?.dismiss(animated: isInboxMessage)
         }
