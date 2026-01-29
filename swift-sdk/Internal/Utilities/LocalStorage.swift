@@ -160,9 +160,6 @@ struct LocalStorage: LocalStorageProtocol {
 
         /// moves `email`, `userId`, and `authToken` from `UserDefaults` to `IterableKeychain`
         moveAuthDataFromUserDefaultsToKeychain()
-
-        /// migrates keychain data from legacy service name to isolated service name
-        migrateKeychainToIsolatedStorage()
     }
 
     func migrateKeychainToIsolatedStorage() {
