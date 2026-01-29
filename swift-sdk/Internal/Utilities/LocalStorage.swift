@@ -7,9 +7,16 @@ import Foundation
 struct LocalStorage: LocalStorageProtocol {
 
     init(userDefaults: UserDefaults = UserDefaults.standard,
-         keychain: IterableKeychain = IterableKeychain()) {
+         keychain: IterableKeychain = LocalStorage.createKeychain()) {
         iterableUserDefaults = IterableUserDefaults(userDefaults: userDefaults)
         self.keychain = keychain
+    }
+
+    /// Creates the keychain with isolated storage and legacy wrapper for migration
+    private static func createKeychain() -> IterableKeychain {
+        let isolatedWrapper = KeychainWrapper() // Uses isolated service name by default
+        let legacyWrapper = KeychainWrapper(serviceName: KeychainWrapper.legacyServiceName)
+        return IterableKeychain(wrapper: isolatedWrapper, legacyWrapper: legacyWrapper)
     }
     
     var userId: String? {
@@ -150,9 +157,13 @@ struct LocalStorage: LocalStorageProtocol {
     
     func upgrade() {
         ITBInfo()
-        
+
         /// moves `email`, `userId`, and `authToken` from `UserDefaults` to `IterableKeychain`
         moveAuthDataFromUserDefaultsToKeychain()
+    }
+
+    func migrateKeychainToIsolatedStorage() {
+        keychain.migrateFromLegacy()
     }
     
     // MARK: Private
