@@ -247,25 +247,29 @@ class IterableHtmlMessageViewController: UIViewController {
         }
 
         // Has a viewport meta tag — append viewport-fit=cover to its content
-        if let range = html.range(of: #"(<meta\s+name\s*=\s*"viewport"\s+content\s*=\s*")"#,
-                                  options: [.regularExpression, .caseInsensitive]),
-           let contentEnd = html.range(of: "\"", options: [], range: range.upperBound..<html.endIndex) {
-            var modified = html
-            modified.insert(contentsOf: ", viewport-fit=cover", at: contentEnd.lowerBound)
-            return modified
+        // Matches both single and double quotes: name="viewport" or name='viewport'
+        if let range = html.range(of: #"(<meta\s+name\s*=\s*["']viewport["']\s+content\s*=\s*)(["'])"#,
+                                  options: [.regularExpression, .caseInsensitive]) {
+            let quoteChar = String(html[html.index(before: range.upperBound)])
+            if let contentEnd = html.range(of: quoteChar, options: [], range: range.upperBound..<html.endIndex) {
+                var modified = html
+                modified.insert(contentsOf: ", viewport-fit=cover", at: contentEnd.lowerBound)
+                return modified
+            }
         }
 
         // Also check content-first ordering: <meta content="..." name="viewport">
-        if let range = html.range(of: #"(<meta\s+content\s*=\s*")"#,
+        if let range = html.range(of: #"(<meta\s+content\s*=\s*)(["'])"#,
                                   options: [.regularExpression, .caseInsensitive]) {
+            let quoteChar = String(html[html.index(before: range.upperBound)])
             let afterQuote = range.upperBound
-            // Verify this meta tag has name="viewport"
+            // Verify this meta tag has name="viewport" or name='viewport'
             if let tagEnd = html.range(of: ">", options: [], range: afterQuote..<html.endIndex),
-               let nameCheck = html.range(of: #"name\s*=\s*"viewport""#,
+               let nameCheck = html.range(of: #"name\s*=\s*["']viewport["']"#,
                                           options: [.regularExpression, .caseInsensitive],
                                           range: afterQuote..<tagEnd.upperBound),
                !nameCheck.isEmpty,
-               let contentEnd = html.range(of: "\"", options: [], range: afterQuote..<html.endIndex) {
+               let contentEnd = html.range(of: quoteChar, options: [], range: afterQuote..<html.endIndex) {
                 var modified = html
                 modified.insert(contentsOf: "viewport-fit=cover, ", at: contentEnd.lowerBound)
                 return modified
