@@ -7,6 +7,8 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 ## [6.6.6]
 ### Fixed 
 - Fixed more Carthage issues
+- Fixed issue that prevented multiple applications using a shared keychain access group.
+- Improves in-app full screen position to display over the entire screen includind the status bar.
 
 ### Added
 - Made `isIterableDeepLink` method public
