@@ -165,7 +165,7 @@ struct LocalStorage: LocalStorageProtocol {
         migrateKeychainToIsolatedStorage()
     }
 
-    private func migrateKeychainToIsolatedStorage() {
+    func migrateKeychainToIsolatedStorage() {
         keychain.migrateFromLegacy()
     }
     
