@@ -139,7 +139,14 @@ struct InAppCalculations {
                 viewController?.navigationController?.popViewController(animated: true)
             }
         }
-        
+
+        // Check if presented via overlay window (full-position IAM)
+        if InAppPresenter.overlayWindow != nil {
+            return {
+                InAppPresenter.dismissOverlayWindow()
+            }
+        }
+
         return { [weak viewController] in
             viewController?.dismiss(animated: isInboxMessage)
         }

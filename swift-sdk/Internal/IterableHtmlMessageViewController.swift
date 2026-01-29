@@ -149,9 +149,25 @@ class IterableHtmlMessageViewController: UIViewController {
         webView.layoutSubviews()
     }
     
+    override func viewWillLayoutSubviews() {
+        super.viewWillLayoutSubviews()
+
+        // For full position, ensure the view covers the entire screen
+        // and set the background color to fill any gaps (e.g., status bar area)
+        if location == .full {
+            if let window = view.window {
+                view.frame = window.bounds
+            }
+            // Set view and window background to IAM's background color
+            if let bgColor = parameters.backgroundColor {
+                view.backgroundColor = bgColor
+                view.window?.backgroundColor = bgColor
+            }
+        }
+    }
+
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
-    
         resizeWebView(animate: false)
     }
     
@@ -224,21 +240,9 @@ class IterableHtmlMessageViewController: UIViewController {
     
     /// Resizes the webview based upon the insetPadding, height etc
     private func resizeWebView(animate: Bool) {
-        // For full position, use screen bounds to ensure edge-to-edge coverage
-        // including behind notch/Dynamic Island and home indicator
-        let parentPosition: ViewPosition
-        if location == .full {
-            let screenBounds = UIScreen.main.bounds
-            // Convert screen center to view's coordinate system
-            let screenCenterInView = view.convert(CGPoint(x: screenBounds.midX, y: screenBounds.midY), from: nil)
-            parentPosition = ViewPosition(width: screenBounds.width,
-                                          height: screenBounds.height,
-                                          center: screenCenterInView)
-        } else {
-            parentPosition = ViewPosition(width: view.bounds.width,
+        let parentPosition = ViewPosition(width: view.bounds.width,
                                           height: view.bounds.height,
-                                          center: view.center)
-        }
+                                          center: CGPoint(x: view.bounds.midX, y: view.bounds.midY))
         let safeAreaInsets = InAppCalculations.safeAreaInsets(for: view)
         IterableHtmlMessageViewController.calculateWebViewPosition(webView: webView,
                                                                    safeAreaInsets: safeAreaInsets,
@@ -328,10 +332,31 @@ class IterableHtmlMessageViewController: UIViewController {
 }
 
 extension IterableHtmlMessageViewController: WKNavigationDelegate {
-    func webView(_: WKWebView, didFinish _: WKNavigation!) {
+    func webView(_ webView: WKWebView, didFinish _: WKNavigation!) {
         ITBInfo()
         resizeWebView(animate: true)
         presenter?.webViewDidFinish()
+
+        // For full position, extract background color from HTML and apply to view/window
+        if location == .full {
+            extractAndApplyBackgroundColor(from: webView)
+        }
+    }
+
+    /// Extracts the background color from the HTML body and applies it to the view and window
+    private func extractAndApplyBackgroundColor(from webView: WKWebView) {
+        let script = "window.getComputedStyle(document.body).backgroundColor"
+        webView.evaluateJavaScript(script) { [weak self] result, error in
+            guard error == nil,
+                  let colorString = result as? String,
+                  let color = UIColor(cssRGBA: colorString) else {
+                return
+            }
+            DispatchQueue.main.async {
+                self?.view.backgroundColor = color
+                self?.view.window?.backgroundColor = color
+            }
+        }
     }
     
     func webView(_: WKWebView, decidePolicyFor navigationAction: WKNavigationAction, decisionHandler: @escaping (WKNavigationActionPolicy) -> Void) {
@@ -417,4 +442,35 @@ extension IterableHtmlMessageViewController: WKNavigationDelegate {
         }
     }
 
+}
+
+// MARK: - UIColor CSS Parsing Extension
+
+private extension UIColor {
+    /// Initialize UIColor from CSS rgb/rgba string like "rgb(128, 100, 200)" or "rgba(128, 100, 200, 1)"
+    convenience init?(cssRGBA: String) {
+        let pattern = #"rgba?\((\d+),\s*(\d+),\s*(\d+)(?:,\s*([\d.]+))?\)"#
+        guard let regex = try? NSRegularExpression(pattern: pattern),
+              let match = regex.firstMatch(in: cssRGBA, range: NSRange(cssRGBA.startIndex..., in: cssRGBA)) else {
+            return nil
+        }
+
+        func extractValue(_ index: Int) -> String? {
+            guard let range = Range(match.range(at: index), in: cssRGBA) else { return nil }
+            return String(cssRGBA[range])
+        }
+
+        guard let rStr = extractValue(1), let r = Double(rStr),
+              let gStr = extractValue(2), let g = Double(gStr),
+              let bStr = extractValue(3), let b = Double(bStr) else {
+            return nil
+        }
+
+        let a = extractValue(4).flatMap { Double($0) } ?? 1.0
+
+        self.init(red: CGFloat(r / 255.0),
+                  green: CGFloat(g / 255.0),
+                  blue: CGFloat(b / 255.0),
+                  alpha: CGFloat(a))
+    }
 }
