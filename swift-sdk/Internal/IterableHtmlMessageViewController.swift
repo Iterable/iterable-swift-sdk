@@ -166,7 +166,11 @@ class IterableHtmlMessageViewController: UIViewController {
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
 
-        resizeWebView(animate: false)
+        // Only resize if webview has finished loading to prevent positioning issues
+        // caused by calculating height before DOM is ready
+        if webViewDidFinishLoading {
+            resizeWebView(animate: false)
+        }
     }
     
     override func viewDidAppear(_ animated: Bool) {
@@ -222,6 +226,7 @@ class IterableHtmlMessageViewController: UIViewController {
     private var location: IterableMessageLocation = .full
     private var linkClicked = false
     private var clickedLink: String?
+    private var webViewDidFinishLoading = false
     
     private lazy var webView = webViewProvider()
     private var eventTracker: MessageViewControllerEventTrackerProtocol? {
@@ -383,6 +388,7 @@ class IterableHtmlMessageViewController: UIViewController {
 extension IterableHtmlMessageViewController: WKNavigationDelegate {
     func webView(_: WKWebView, didFinish _: WKNavigation!) {
         ITBInfo()
+        webViewDidFinishLoading = true
         resizeWebView(animate: true)
         presenter?.webViewDidFinish()
     }
