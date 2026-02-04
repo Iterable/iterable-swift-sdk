@@ -18,11 +18,13 @@ struct ResourceHelper {
     
     private static let spmPackageName = "IterableSDK"
     private static let spmLibraryName = "IterableSDK"
-    private static let cocoaPodsResourceBundleName = "Resources"
+    static let cocoaPodsResourceBundleName = "IterableSDKResources"
+    private static let legacyCocoaPodsResourceBundleName = "Resources"
 
     private static let possibleSubBundleNames = [
         "\(spmPackageName)_\(spmLibraryName)",
-        "\(cocoaPodsResourceBundleName)"
+        "\(cocoaPodsResourceBundleName)",
+        "\(legacyCocoaPodsResourceBundleName)"
     ]
 
     private static func findSubBundle(forBundle bundle: Bundle) -> Bundle? {
