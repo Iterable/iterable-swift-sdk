@@ -207,8 +207,15 @@ public class IterableEmbeddedView: UIView {
     func loadViewFromNib() -> UIView? {
         var nib: UINib
         #if COCOAPODS
-            let bundle = Bundle(path: Bundle(for: IterableEmbeddedView.self).path(forResource: "Resources", ofType: "bundle")!)
-            nib = UINib(nibName: "IterableEmbeddedView", bundle: bundle)
+            if let bundlePath = Bundle.main.path(forResource: ResourceHelper.cocoaPodsResourceBundleName, ofType: "bundle"),
+               let bundle = Bundle(path: bundlePath) {
+                nib = UINib(nibName: "IterableEmbeddedView", bundle: bundle)
+            } else if let bundlePath = Bundle(for: IterableEmbeddedView.self).path(forResource: ResourceHelper.cocoaPodsResourceBundleName, ofType: "bundle"),
+                      let bundle = Bundle(path: bundlePath) {
+                nib = UINib(nibName: "IterableEmbeddedView", bundle: bundle)
+            } else {
+                nib = UINib(nibName: "IterableEmbeddedView", bundle: Bundle.main)
+            }
         #else
             #if SWIFT_PACKAGE
                 nib = UINib(nibName: "IterableEmbeddedView", bundle: Bundle.module)
