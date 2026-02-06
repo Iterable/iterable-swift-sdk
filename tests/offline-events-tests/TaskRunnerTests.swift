@@ -308,6 +308,128 @@ class TaskRunnerTests: XCTestCase {
         wait(for: [expectation1], timeout: 5.0)
     }
     
+    // MARK: - Auto Retry / 401 JWT Tests
+
+    func testRetainTaskOn401WhenAutoRetryEnabled() throws {
+        let jwtErrorData = ["code": "InvalidJwtPayload"].toJsonData()
+        let networkSession = MockNetworkSession(statusCode: 401, data: jwtErrorData)
+
+        let notificationCenter = MockNotificationCenter()
+        let retryExpectation = expectation(description: "retry notification received")
+
+        let reference = notificationCenter.addCallback(forNotification: .iterableTaskFinishedWithRetry) { _ in
+            retryExpectation.fulfill()
+        }
+        XCTAssertNotNil(reference)
+
+        let healthMonitor = HealthMonitor(dataProvider: HealthMonitorDataProvider(maxTasks: 1000,
+                                                                                  persistenceContextProvider: persistenceContextProvider),
+                                          dateProvider: SystemDateProvider(),
+                                          networkSession: networkSession)
+        let taskRunner = IterableTaskRunner(networkSession: networkSession,
+                                            persistenceContextProvider: persistenceContextProvider,
+                                            healthMonitor: healthMonitor,
+                                            notificationCenter: notificationCenter,
+                                            timeInterval: 0.5,
+                                            autoRetry: true)
+        taskRunner.start()
+
+        let scheduler = IterableTaskScheduler(persistenceContextProvider: persistenceContextProvider,
+                                              notificationCenter: notificationCenter,
+                                              healthMonitor: healthMonitor)
+        let _ = try scheduleSampleTask(scheduler: scheduler)
+
+        wait(for: [retryExpectation], timeout: 5.0)
+
+        // Task should be retained in the DB (not deleted)
+        XCTAssertEqual(try persistenceContextProvider.mainQueueContext().findAllTasks().count, 1)
+
+        taskRunner.stop()
+    }
+
+    func testDeleteTaskOn401WhenAutoRetryDisabled() throws {
+        let jwtErrorData = ["code": "InvalidJwtPayload"].toJsonData()
+        let networkSession = MockNetworkSession(statusCode: 401, data: jwtErrorData)
+
+        let noRetryExpectation = expectation(description: "no retry notification received")
+
+        let notificationCenter = MockNotificationCenter()
+        let reference = notificationCenter.addCallback(forNotification: .iterableTaskFinishedWithNoRetry) { _ in
+            noRetryExpectation.fulfill()
+        }
+        XCTAssertNotNil(reference)
+
+        let healthMonitor = HealthMonitor(dataProvider: HealthMonitorDataProvider(maxTasks: 1000,
+                                                                                  persistenceContextProvider: persistenceContextProvider),
+                                          dateProvider: SystemDateProvider(),
+                                          networkSession: networkSession)
+        let taskRunner = IterableTaskRunner(networkSession: networkSession,
+                                            persistenceContextProvider: persistenceContextProvider,
+                                            healthMonitor: healthMonitor,
+                                            notificationCenter: notificationCenter,
+                                            timeInterval: 0.5,
+                                            autoRetry: false)
+        taskRunner.start()
+
+        let scheduler = IterableTaskScheduler(persistenceContextProvider: persistenceContextProvider,
+                                              notificationCenter: notificationCenter,
+                                              healthMonitor: healthMonitor)
+        let _ = try scheduleSampleTask(scheduler: scheduler)
+
+        wait(for: [noRetryExpectation], timeout: 5.0)
+
+        // Task should be deleted (legacy behavior)
+        waitForZeroTasks()
+
+        taskRunner.stop()
+    }
+
+    func testResumeAfterAuthTokenRefreshed() throws {
+        let jwtErrorData = ["code": "InvalidJwtPayload"].toJsonData()
+        let networkSession = MockNetworkSession(statusCode: 401, data: jwtErrorData)
+
+        let notificationCenter = MockNotificationCenter()
+        let retryExpectation = expectation(description: "retry notification received")
+
+        let reference = notificationCenter.addCallback(forNotification: .iterableTaskFinishedWithRetry) { _ in
+            retryExpectation.fulfill()
+        }
+        XCTAssertNotNil(reference)
+
+        let healthMonitor = HealthMonitor(dataProvider: HealthMonitorDataProvider(maxTasks: 1000,
+                                                                                  persistenceContextProvider: persistenceContextProvider),
+                                          dateProvider: SystemDateProvider(),
+                                          networkSession: networkSession)
+        let taskRunner = IterableTaskRunner(networkSession: networkSession,
+                                            persistenceContextProvider: persistenceContextProvider,
+                                            healthMonitor: healthMonitor,
+                                            notificationCenter: notificationCenter,
+                                            timeInterval: 0.5,
+                                            autoRetry: true)
+        taskRunner.start()
+
+        let scheduler = IterableTaskScheduler(persistenceContextProvider: persistenceContextProvider,
+                                              notificationCenter: notificationCenter,
+                                              healthMonitor: healthMonitor)
+        let _ = try scheduleSampleTask(scheduler: scheduler)
+
+        // Wait for the 401 to be processed and runner to pause
+        wait(for: [retryExpectation], timeout: 5.0)
+        XCTAssertEqual(try persistenceContextProvider.mainQueueContext().findAllTasks().count, 1)
+
+        // Now fix the network to return success
+        networkSession.responseCallback = nil
+
+        // Post auth token refreshed notification to resume the runner
+        NotificationCenter.default.post(name: .iterableAuthTokenRefreshed, object: nil)
+
+        // Verify the task is now processed successfully
+        verifyTaskIsExecuted(notificationCenter, withinInterval: 10.0)
+        waitForZeroTasks()
+
+        taskRunner.stop()
+    }
+
     func testCreatedAtInBody() throws {
         let date = Date()
         let createdAtTime = Int(date.timeIntervalSince1970)
