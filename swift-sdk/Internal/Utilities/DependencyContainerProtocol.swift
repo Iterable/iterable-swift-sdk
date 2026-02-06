@@ -106,7 +106,8 @@ extension DependencyContainerProtocol {
                                                        taskScheduler: createTaskScheduler(persistenceContextProvider: persistenceContextProvider,
                                                                                           healthMonitor: healthMonitor!),
                                                        taskRunner: createTaskRunner(persistenceContextProvider: persistenceContextProvider,
-                                                                                    healthMonitor: healthMonitor!),
+                                                                                    healthMonitor: healthMonitor!,
+                                                                                    autoRetry: localStorage.autoRetry),
                                                        notificationCenter: notificationCenter)
             
             
@@ -150,12 +151,14 @@ extension DependencyContainerProtocol {
     }
     
     private func createTaskRunner(persistenceContextProvider: IterablePersistenceContextProvider,
-                                  healthMonitor: HealthMonitor) -> IterableTaskRunner {
+                                  healthMonitor: HealthMonitor,
+                                  autoRetry: Bool = false) -> IterableTaskRunner {
         IterableTaskRunner(networkSession: networkSession,
                            persistenceContextProvider: persistenceContextProvider,
                            healthMonitor: healthMonitor,
                            notificationCenter: notificationCenter,
-                           connectivityManager: NetworkConnectivityManager())
+                           connectivityManager: NetworkConnectivityManager(),
+                           autoRetry: autoRetry)
     }
     
     func createUnknownUserMerge(apiClient: ApiClient, unknownUserManager: UnknownUserManagerProtocol, localStorage: LocalStorageProtocol) -> UnknownUserMergeProtocol {
