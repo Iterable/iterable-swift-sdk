@@ -30,6 +30,8 @@ class MockLocalStorage: LocalStorageProtocol {
     
     var offlineMode: Bool = false
 
+    var autoRetry: Bool = false
+
     var visitorUsageTracked: Bool = true
     
     var visitorConsentTimestamp: Int64?

@@ -836,7 +836,8 @@ class RequestHandlerTests: XCTestCase {
         let remoteConfigurationData = """
         {
             "offlineMode": false,
-            "offlineModeBeta": false
+            "offlineModeBeta": false,
+            "autoRetry": false
         }
         """.data(using: .utf8)!
         var mapper = [String: Data?]()
@@ -869,7 +870,8 @@ class RequestHandlerTests: XCTestCase {
         let remoteConfigurationData = """
         {
             "offlineMode": true,
-            "offlineModeBeta": true
+            "offlineModeBeta": true,
+            "autoRetry": true
         }
         """.data(using: .utf8)!
         var mapper = [String: Data?]()
@@ -987,7 +989,63 @@ class RequestHandlerTests: XCTestCase {
         wait(for: [expectation2], timeout: testExpectationTimeout)
     }
 
-    
+    func testAutoRetryFlagParsedFromRemoteConfiguration() throws {
+        let expectation1 = expectation(description: "getRemoteConfiguration is called")
+        let remoteConfigurationData = """
+        {
+            "offlineMode": false,
+            "autoRetry": true
+        }
+        """.data(using: .utf8)!
+        var mapper = [String: Data?]()
+        mapper["getRemoteConfiguration"] = remoteConfigurationData
+        let networkSession = MockNetworkSession(statusCode: 200, urlPatternDataMapping: mapper)
+        networkSession.requestCallback = { request in
+            if request.url!.absoluteString.contains(Const.Path.getRemoteConfiguration) {
+                expectation1.fulfill()
+            }
+        }
+        let localStorage = MockLocalStorage()
+        localStorage.email = "user@example.com"
+        let internalAPI = InternalIterableAPI.initializeForTesting(networkSession: networkSession, localStorage: localStorage)
+        wait(for: [expectation1], timeout: testExpectationTimeout)
+
+        let autoRetryExpectation = expectation(description: "autoRetry is set")
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+            XCTAssertTrue(localStorage.autoRetry)
+            autoRetryExpectation.fulfill()
+        }
+        wait(for: [autoRetryExpectation], timeout: testExpectationTimeout)
+    }
+
+    func testAutoRetryDefaultsToFalseWhenMissingFromResponse() throws {
+        let expectation1 = expectation(description: "getRemoteConfiguration is called")
+        let remoteConfigurationData = """
+        {
+            "offlineMode": false
+        }
+        """.data(using: .utf8)!
+        var mapper = [String: Data?]()
+        mapper["getRemoteConfiguration"] = remoteConfigurationData
+        let networkSession = MockNetworkSession(statusCode: 200, urlPatternDataMapping: mapper)
+        networkSession.requestCallback = { request in
+            if request.url!.absoluteString.contains(Const.Path.getRemoteConfiguration) {
+                expectation1.fulfill()
+            }
+        }
+        let localStorage = MockLocalStorage()
+        localStorage.email = "user@example.com"
+        let internalAPI = InternalIterableAPI.initializeForTesting(networkSession: networkSession, localStorage: localStorage)
+        wait(for: [expectation1], timeout: testExpectationTimeout)
+
+        let autoRetryExpectation = expectation(description: "autoRetry defaults to false")
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+            XCTAssertFalse(localStorage.autoRetry)
+            autoRetryExpectation.fulfill()
+        }
+        wait(for: [autoRetryExpectation], timeout: testExpectationTimeout)
+    }
+
     private func handleRequestWithSuccessAndFailure(requestGenerator: (RequestHandlerProtocol) -> Pending<SendRequestValue, SendRequestError>,
                                                      path: String,
                                                      bodyDict: [AnyHashable: Any]) throws {
