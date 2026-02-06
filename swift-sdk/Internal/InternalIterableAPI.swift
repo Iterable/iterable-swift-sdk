@@ -1140,10 +1140,13 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
         requestHandler.getRemoteConfiguration().onSuccess { remoteConfiguration in
             self.localStorage.offlineMode = remoteConfiguration.offlineMode
             self.requestHandler.offlineMode = remoteConfiguration.offlineMode
-            ITBInfo("setting offlineMode: \(self.requestHandler.offlineMode)")
+            self.localStorage.autoRetry = remoteConfiguration.autoRetry
+            self.requestHandler.autoRetry = remoteConfiguration.autoRetry
+            ITBInfo("setting offlineMode: \(self.requestHandler.offlineMode), autoRetry: \(self.requestHandler.autoRetry)")
         }.onError { error in
             let offlineMode = self.requestHandler.offlineMode
-            ITBError("Could not get remote configuration: \(error.localizedDescription), using saved value: \(offlineMode)")
+            let autoRetry = self.requestHandler.autoRetry
+            ITBError("Could not get remote configuration: \(error.localizedDescription), using saved values - offlineMode: \(offlineMode), autoRetry: \(autoRetry)")
         }
     }
     

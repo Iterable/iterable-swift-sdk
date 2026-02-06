@@ -82,7 +82,15 @@ struct LocalStorage: LocalStorageProtocol {
             iterableUserDefaults.offlineMode = newValue
         }
     }
-    
+
+    var autoRetry: Bool {
+        get {
+            iterableUserDefaults.autoRetry
+        } set {
+            iterableUserDefaults.autoRetry = newValue
+        }
+    }
+
         var unknownUserEvents: [[AnyHashable: Any]]? {
         get {
             iterableUserDefaults.unknownUserEvents
