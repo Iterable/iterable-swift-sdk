@@ -20,7 +20,8 @@ Pod::Spec.new do |s|
   s.documentation_url = "https://support.iterable.com/hc/en-us/articles/360035018152-Iterable-s-iOS-SDK"
 
   s.pod_target_xcconfig = {
-    'SWIFT_VERSION' => '5.3'
+    'SWIFT_VERSION' => '5.3',
+    'DEFINES_MODULE' => 'YES',
   }
 
   s.swift_version = '5.3'
