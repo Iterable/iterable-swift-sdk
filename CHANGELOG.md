@@ -5,6 +5,10 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 ## [Unreleased]
 
 ## [6.6.7]
+### Fixed
+- Fixed module export for CocoaPods, enabling Obj-C/C++ compatibility
+- Added `extern "C"` guards to umbrella headers (`IterableSDK.h`, `IterableAppExtensions.h`) for C++ compatibility
+- Renamed CocoaPods resource bundle from `Resources` to `IterableSDKResources` to avoid naming collisions with other pods, with automatic fallback to the legacy name
 
 ## [6.6.6]
 ### Fixed 
