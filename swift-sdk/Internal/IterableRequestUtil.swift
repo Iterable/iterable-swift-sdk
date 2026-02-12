@@ -13,6 +13,7 @@ struct IterableRequestUtil {
                                  headers: [String: String]? = nil,
                                  args: [String: String]? = nil) -> URLRequest? {
         guard let url = getUrlComponents(forApiEndPoint: apiEndPoint, path: path, args: args)?.url else {
+            ITBError("Failed to create GET request URL")
             return nil
         }
         
@@ -53,6 +54,7 @@ struct IterableRequestUtil {
                                   args: [String: String]? = nil,
                                   body: Data? = nil) -> URLRequest? {
         guard let url = getUrlComponents(forApiEndPoint: apiEndPoint, path: path, args: args)?.url else {
+            ITBError("Failed to create POST request URL")
             return nil
         }
         
@@ -88,6 +90,7 @@ struct IterableRequestUtil {
         let endPointCombined = pathCombine(path1: apiEndPoint, path2: path)
         
         guard var components = URLComponents(string: "\(endPointCombined)") else {
+            ITBError("Failed to create URLComponents - apiEndPoint: '\(apiEndPoint)', path: '\(path)', combined: '\(endPointCombined)'")
             return nil
         }
         

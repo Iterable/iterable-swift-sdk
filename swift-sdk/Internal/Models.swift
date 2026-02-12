@@ -7,6 +7,7 @@ import Foundation
 
 struct RemoteConfiguration: Codable, Equatable {
     let offlineMode: Bool
+    let enableNetworkLogging: Bool?
 }
 
 struct Criteria: Codable {

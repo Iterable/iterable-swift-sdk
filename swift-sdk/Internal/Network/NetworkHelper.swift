@@ -30,6 +30,7 @@ extension NetworkError: LocalizedError {
 struct NetworkHelper {
     static let maxRetryCount = 5
     static let retryDelaySeconds = 2
+    static var isNetworkLoggingEnabled = false
     
     static func getData(fromUrl url: URL, usingSession networkSession: NetworkSessionProtocol) -> Pending<Data, Error> {
         let fulfill = Fulfill<Data, Error>()
@@ -57,6 +58,11 @@ struct NetworkHelper {
                                usingSession networkSession: NetworkSessionProtocol) -> Pending<T, NetworkError> {
         
         let requestId = IterableUtil.generateUUID()
+        
+        if isNetworkLoggingEnabled {
+            logRequest(request, requestId: requestId)
+        }
+        
         #if NETWORK_DEBUG
         print()
         print("====================================================>")
@@ -94,6 +100,10 @@ struct NetworkHelper {
         }
         
         func handleSuccess(requestId: String, value: T) {
+            if isNetworkLoggingEnabled {
+                logSuccess(requestId: requestId, value: value)
+            }
+
             #if NETWORK_DEBUG
             print("request with id: \(requestId) successfully sent, response:")
             print(value)
@@ -105,6 +115,10 @@ struct NetworkHelper {
             if shouldRetry(error: error, retriesLeft: retriesLeft) {
                 retryRequest(requestId: requestId, request: request, error: error, retriesLeft: retriesLeft)
             } else {
+                if isNetworkLoggingEnabled {
+                    logFailure(requestId: requestId, error: error)
+                }
+
                 #if NETWORK_DEBUG
                 print("request with id: \(requestId) errored")
                 print(error)
@@ -119,6 +133,10 @@ struct NetworkHelper {
         }
         
         func retryRequest(requestId: String, request: URLRequest, error: NetworkError, retriesLeft: Int) {
+            if isNetworkLoggingEnabled {
+                logRetry(requestId: requestId, url: request.url?.absoluteString ?? "", attempt: maxRetryCount - retriesLeft + 1, error: error)
+            }
+
             #if NETWORK_DEBUG
             print("retry attempt: \(maxRetryCount-retriesLeft+1) for url: \(request.url?.absoluteString ?? "")")
             print(error)
@@ -202,5 +220,39 @@ struct NetworkHelper {
         }
         
         return .success(data)
+    }
+    
+    private static func logRequest(_ request: URLRequest, requestId: String) {
+        var message = "\n====================================================>\n"
+        message += "sending request: \(request)\n"
+        message += "requestId: \(requestId)\n"
+        if let headers = request.allHTTPHeaderFields {
+            message += "headers:\n\(headers)\n"
+        }
+        if let body = request.httpBody {
+            if let dict = try? JSONSerialization.jsonObject(with: body, options: []) {
+                message += "request body:\n\(dict)\n"
+            }
+        }
+        message += "====================================================>\n"
+        ITBInfo(message)
+    }
+    
+    private static func logSuccess<T>(requestId: String, value: T) {
+        var message = "request with id: \(requestId) successfully sent, response:\n"
+        message += "\(value)"
+        ITBInfo(message)
+    }
+    
+    private static func logFailure(requestId: String, error: NetworkError) {
+        var message = "request with id: \(requestId) errored\n"
+        message += "\(error)"
+        ITBError(message)
+    }
+    
+    private static func logRetry(requestId: String, url: String, attempt: Int, error: NetworkError) {
+        var message = "retry attempt: \(attempt) for url: \(url)\n"
+        message += "\(error)"
+        ITBInfo(message)
     }
 }
