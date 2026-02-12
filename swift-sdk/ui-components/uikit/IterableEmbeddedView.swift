@@ -207,11 +207,7 @@ public class IterableEmbeddedView: UIView {
     func loadViewFromNib() -> UIView? {
         var nib: UINib
         #if COCOAPODS
-            if let bundlePath = Bundle.main.path(forResource: ResourceHelper.cocoaPodsResourceBundleName, ofType: "bundle"),
-               let bundle = Bundle(path: bundlePath) {
-                nib = UINib(nibName: "IterableEmbeddedView", bundle: bundle)
-            } else if let bundlePath = Bundle(for: IterableEmbeddedView.self).path(forResource: ResourceHelper.cocoaPodsResourceBundleName, ofType: "bundle"),
-                      let bundle = Bundle(path: bundlePath) {
+            if let bundle = Self.findCocoaPodsResourceBundle() {
                 nib = UINib(nibName: "IterableEmbeddedView", bundle: bundle)
             } else {
                 nib = UINib(nibName: "IterableEmbeddedView", bundle: Bundle.main)
@@ -229,7 +225,24 @@ public class IterableEmbeddedView: UIView {
         return view
     }
 
-    
+    private static let cocoaPodsResourceBundleNames = [
+        ResourceHelper.cocoaPodsResourceBundleName,
+        "Resources" // legacy name for cached pod builds
+    ]
+
+    private static func findCocoaPodsResourceBundle() -> Bundle? {
+        let searchBundles = [Bundle.main, Bundle(for: IterableEmbeddedView.self)]
+        for name in cocoaPodsResourceBundleNames {
+            for parent in searchBundles {
+                if let path = parent.path(forResource: name, ofType: "bundle"),
+                   let bundle = Bundle(path: path) {
+                    return bundle
+                }
+            }
+        }
+        return nil
+    }
+
     public func configure(message: IterableEmbeddedMessage, viewType: IterableEmbeddedViewType, config: IterableEmbeddedViewConfig?) {
         
         self.message = message
