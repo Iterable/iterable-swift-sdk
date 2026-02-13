@@ -94,7 +94,12 @@ class HealthMonitor {
         let currentDate = dateProvider.currentDate
         let apiCallRequest = apiCallRequest.addingCreatedAt(currentDate)
         if let urlRequest = apiCallRequest.convertToURLRequest(sentAt: currentDate) {
+            ITBInfo("Attempting to send failed-to-schedule request directly for path: '\(apiCallRequest.getPath())'")
             _ = RequestSender.sendRequest(urlRequest, usingSession: networkSession)
+        } else {
+            let endpoint = apiCallRequest.endpoint
+            let path = apiCallRequest.getPath()
+            ITBError("Failed to convert to URL request in health monitor - endpoint: '\(endpoint)', path: '\(path)'")
         }
         onError()
     }
