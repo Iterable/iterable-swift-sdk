@@ -67,8 +67,16 @@ class AuthManager: IterableAuthManagerProtocol {
     }
     
     private func shouldPauseRetry(_ shouldIgnoreRetryPolicy: Bool) -> Bool {
-        return (!shouldIgnoreRetryPolicy && pauseAuthRetry) ||
-               (retryCount >= authRetryPolicy.maxRetry && !shouldIgnoreRetryPolicy)
+        if pauseAuthRetry {
+            return true
+        }
+        
+        // Scheduled refresh should never bypass retry safety limits.
+        if isInScheduledRefreshCallback {
+            return retryCount >= authRetryPolicy.maxRetry
+        }
+        
+        return retryCount >= authRetryPolicy.maxRetry && !shouldIgnoreRetryPolicy
     }
     
     private func shouldUseLastValidToken(_ shouldIgnoreRetryPolicy: Bool) -> Bool {
@@ -113,6 +121,7 @@ class AuthManager: IterableAuthManagerProtocol {
     private var isLastAuthTokenValid: Bool = false
     private var pauseAuthRetry: Bool = false
     private var isTimerScheduled: Bool = false
+    private var isInScheduledRefreshCallback: Bool = false
     
     private var pendingSuccessCallbacks: [AuthTokenRetrievalHandler] = []
     private let callbackQueue = DispatchQueue(label: "com.iterable.authCallbackQueue")
@@ -205,6 +214,7 @@ class AuthManager: IterableAuthManagerProtocol {
         let timeIntervalToRefresh = TimeInterval(expirationDate) - dateProvider.currentDate.timeIntervalSince1970 - expirationRefreshPeriod
         if timeIntervalToRefresh > 0 {
             scheduleAuthTokenRefreshTimer(interval: timeIntervalToRefresh, isScheduledRefresh: true, successCallback: onSuccess)
+            resetRetryCount()
             return true  // Only return true when we successfully queue a refresh
         }
         return false
@@ -228,14 +238,17 @@ class AuthManager: IterableAuthManagerProtocol {
         addPendingCallback(successCallback)
         
         expirationRefreshTimer = Timer.scheduledTimer(withTimeInterval: interval, repeats: false) { [weak self] _ in
-            self?.isTimerScheduled = false
-            if self?.localStorage.email != nil || self?.localStorage.userId != nil {
-                self?.requestNewAuthToken(hasFailedPriorAuth: false, onSuccess: { [weak self] token in
+            guard let self else { return }
+            self.isTimerScheduled = false
+            if self.localStorage.email != nil || self.localStorage.userId != nil {
+                self.isInScheduledRefreshCallback = isScheduledRefresh
+                self.requestNewAuthToken(hasFailedPriorAuth: false, onSuccess: { [weak self] token in
                     self?.invokePendingCallbacks(with: token)
                 }, shouldIgnoreRetryPolicy: isScheduledRefresh)
+                self.isInScheduledRefreshCallback = false
             } else {
                 ITBDebug("Email or userId is not available. Skipping token refresh")
-                self?.clearPendingCallbacks()
+                self.clearPendingCallbacks()
             }
         }
         
