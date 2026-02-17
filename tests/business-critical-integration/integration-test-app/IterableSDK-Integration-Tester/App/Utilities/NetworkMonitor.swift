@@ -106,7 +106,11 @@ struct NetworkResponse {
 
 class NetworkMonitor: NSObject {
     static let shared = NetworkMonitor()
-    
+
+    /// Additional URLProtocol classes to inject into all sessions alongside NetworkMonitorURLProtocol.
+    /// Set by MockAPIServer to add MockAPIServerURLProtocol.
+    static var additionalProtocolClasses: [AnyClass] = []
+
     private var requests: [NetworkRequest] = []
     private let queue = DispatchQueue(label: "networkmonitor", attributes: .concurrent)
     
@@ -387,12 +391,19 @@ extension URLSessionConfiguration {
     
     private func injectNetworkMonitorProtocol() {
         var protocols = protocolClasses ?? []
-        
+
         // Only add if not already present
         if !protocols.contains(where: { $0 == NetworkMonitorURLProtocol.self }) {
             protocols.insert(NetworkMonitorURLProtocol.self, at: 0)
-            protocolClasses = protocols
-            //print("🔍 Injected NetworkMonitorURLProtocol into URLSessionConfiguration")
         }
+
+        // Append any additional protocol classes (e.g. MockAPIServerURLProtocol)
+        for protocolClass in NetworkMonitor.additionalProtocolClasses {
+            if !protocols.contains(where: { $0 === protocolClass }) {
+                protocols.append(protocolClass)
+            }
+        }
+
+        protocolClasses = protocols
     }
 }
