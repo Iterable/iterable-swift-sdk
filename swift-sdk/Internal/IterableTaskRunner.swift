@@ -330,7 +330,7 @@ class IterableTaskRunner: NSObject {
     private let dateProvider: DateProviderProtocol
     private let connectivityManager: NetworkConnectivityManager
     private var running = false
-    private let autoRetry: Bool
+    var autoRetry: Bool
 
     private let persistenceContext: IterablePersistenceContext
 }

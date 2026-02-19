@@ -24,7 +24,9 @@ class RequestHandler: RequestHandlerProtocol {
     }
 
     var offlineMode: Bool
-    var autoRetry: Bool
+    var autoRetry: Bool {
+        didSet { offlineProcessor?.autoRetry = autoRetry }
+    }
     
     func start() {
         ITBInfo()
