@@ -130,7 +130,7 @@ swift-sdk/
 - **Auth Logic**: `swift-sdk/Internal/AuthManager.swift` (main auth manager), `swift-sdk/Internal/Auth.swift` (auth models)
 - **API Calls**: `swift-sdk/Internal/api-client/ApiClient.swift` (main client), `swift-sdk/Internal/Network/NetworkHelper.swift` (networking)
 - **Models**: `swift-sdk/Core/Models/` (all data structures - CommerceItem, IterableInAppMessage, etc.)
-- **Main Entry**: `swift-sdk/SDK/IterableAPI.swift` (public API), `swift-sdk/Internal/InternalIterableAPI.swift` (core implementation)
+- **Main Entry**: `swift-sdk/SDK/IterableAPI.swift` (public-facing methods), `swift-sdk/Internal/InternalIterableAPI.swift` (core implementation) — note: public API surface lives in `IterableAPI.swift`, implementation details in `ApiClient.swift`
 - **Request Handling**: `swift-sdk/Internal/api-client/Request/` (online/offline processors)
 
 ### 🛠️ Common Task Recipes
