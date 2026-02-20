@@ -8,20 +8,23 @@ class RequestHandler: RequestHandlerProtocol {
     init(onlineProcessor: OnlineRequestProcessor,
          offlineProcessor: OfflineRequestProcessor?,
          healthMonitor: HealthMonitor?,
-         offlineMode: Bool = false) {
+         offlineMode: Bool = false,
+         autoRetry: Bool = false) {
         ITBInfo()
         self.onlineProcessor = onlineProcessor
         self.offlineProcessor = offlineProcessor
         self.healthMonitor = healthMonitor
         self.offlineMode = offlineMode
+        self.autoRetry = autoRetry
         self.healthMonitor?.delegate = self
     }
-    
+
     deinit {
         ITBInfo()
     }
-    
+
     var offlineMode: Bool
+    var autoRetry: Bool
     
     func start() {
         ITBInfo()

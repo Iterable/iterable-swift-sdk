@@ -7,6 +7,18 @@ import Foundation
 
 struct RemoteConfiguration: Codable, Equatable {
     let offlineMode: Bool
+    let autoRetry: Bool
+
+    init(offlineMode: Bool, autoRetry: Bool = false) {
+        self.offlineMode = offlineMode
+        self.autoRetry = autoRetry
+    }
+
+    init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        offlineMode = try container.decode(Bool.self, forKey: .offlineMode)
+        autoRetry = try container.decodeIfPresent(Bool.self, forKey: .autoRetry) ?? false
+    }
 }
 
 struct Criteria: Codable {
