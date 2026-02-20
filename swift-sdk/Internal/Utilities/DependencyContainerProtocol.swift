@@ -24,7 +24,8 @@ protocol DependencyContainerProtocol: RedirectNetworkSessionProvider {
                               authProvider: AuthProvider?,
                               authManager: IterableAuthManagerProtocol,
                               deviceMetadata: DeviceMetadata,
-                              offlineMode: Bool) -> RequestHandlerProtocol
+                              offlineMode: Bool,
+                              autoRetry: Bool) -> RequestHandlerProtocol
     func createHealthMonitorDataProvider(persistenceContextProvider: IterablePersistenceContextProvider) -> HealthMonitorDataProviderProtocol
 }
 
@@ -75,7 +76,8 @@ extension DependencyContainerProtocol {
                               authProvider: AuthProvider?,
                               authManager: IterableAuthManagerProtocol,
                               deviceMetadata: DeviceMetadata,
-                              offlineMode: Bool) -> RequestHandlerProtocol {
+                              offlineMode: Bool,
+                              autoRetry: Bool) -> RequestHandlerProtocol {
         let onlineProcessor = OnlineRequestProcessor(apiKey: apiKey,
                                                      authProvider: authProvider,
                                                      authManager: authManager,
@@ -89,7 +91,8 @@ extension DependencyContainerProtocol {
             return RequestHandler(onlineProcessor: onlineProcessor,
                                   offlineProcessor: nil,
                                   healthMonitor: nil,
-                                  offlineMode: offlineMode)
+                                  offlineMode: offlineMode,
+                                  autoRetry: autoRetry)
         }
         if offlineMode {
             
@@ -114,12 +117,14 @@ extension DependencyContainerProtocol {
             return RequestHandler(onlineProcessor: onlineProcessor,
                                   offlineProcessor: offlineProcessor,
                                   healthMonitor: healthMonitor,
-                                  offlineMode: offlineMode)
+                                  offlineMode: offlineMode,
+                                  autoRetry: autoRetry)
         } else {
             return RequestHandler(onlineProcessor: onlineProcessor,
                                   offlineProcessor: nil,
                                   healthMonitor: nil,
-                                  offlineMode: offlineMode)
+                                  offlineMode: offlineMode,
+                                  autoRetry: autoRetry)
         }
     }
     

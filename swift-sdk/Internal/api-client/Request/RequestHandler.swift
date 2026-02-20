@@ -374,7 +374,7 @@ class RequestHandler: RequestHandlerProtocol {
         }
     }
 
-    private let offlineProcessor: OfflineRequestProcessor?
+    private var offlineProcessor: OfflineRequestProcessor?
     private let healthMonitor: HealthMonitor?
     private let onlineProcessor: OnlineRequestProcessor
 

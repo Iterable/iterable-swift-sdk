@@ -808,13 +808,15 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
     
     lazy var requestHandler: RequestHandlerProtocol = {
         let offlineMode = self.localStorage.offlineMode
+        let autoRetry = self.localStorage.autoRetry
         return dependencyContainer.createRequestHandler(apiKey: apiKey,
                                                         config: config,
                                                         endpoint: apiEndPoint,
                                                         authProvider: self,
                                                         authManager: authManager,
                                                         deviceMetadata: deviceMetadata,
-                                                        offlineMode: offlineMode)
+                                                        offlineMode: offlineMode,
+                                                        autoRetry: autoRetry)
     }()
     
     private var deviceAttributes = [String: String]()
