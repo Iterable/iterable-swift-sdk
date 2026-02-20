@@ -176,6 +176,7 @@ class AuthManager: IterableAuthManagerProtocol {
                 storeAuthToken()
                 onSuccess?(authToken)
             }
+            NotificationCenter.default.post(name: .iterableAuthTokenRefreshed, object: nil)
         } else {
             handleAuthFailure(failedAuthToken: nil, reason: .authTokenNull)
             scheduleAuthTokenRefreshTimer(interval: getNextRetryInterval(), successCallback: onSuccess)

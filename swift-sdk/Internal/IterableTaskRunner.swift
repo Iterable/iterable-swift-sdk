@@ -12,7 +12,8 @@ class IterableTaskRunner: NSObject {
          notificationCenter: NotificationCenterProtocol = NotificationCenter.default,
          timeInterval: TimeInterval = 1.0 * 60,
          connectivityManager: NetworkConnectivityManager = NetworkConnectivityManager(),
-         dateProvider: DateProviderProtocol = SystemDateProvider()) {
+         dateProvider: DateProviderProtocol = SystemDateProvider(),
+         autoRetry: Bool = false) {
         ITBInfo()
         self.networkSession = networkSession
         self.healthMonitor = healthMonitor
@@ -21,7 +22,8 @@ class IterableTaskRunner: NSObject {
         self.dateProvider = dateProvider
         self.connectivityManager = connectivityManager
         self.persistenceContext = persistenceContextProvider.newBackgroundContext()
-        
+        self.autoRetry = autoRetry
+
         super.init()
 
         self.notificationCenter.addObserver(self,
@@ -36,6 +38,10 @@ class IterableTaskRunner: NSObject {
                                        selector: #selector(onAppDidEnterBackground(notification:)),
                                        name: UIApplication.didEnterBackgroundNotification,
                                        object: nil)
+        NotificationCenter.default.addObserver(self,
+                                               selector: #selector(onAuthTokenRefreshed(notification:)),
+                                               name: .iterableAuthTokenRefreshed,
+                                               object: nil)
         self.connectivityManager.connectivityChangedCallback = { [weak self]  in self?.onConnectivityChanged(connected: $0) }
     }
     
@@ -43,6 +49,7 @@ class IterableTaskRunner: NSObject {
         ITBInfo()
         persistenceContext.perform { [weak self] in
             self?.paused = false
+            self?.authPaused = false
             self?.connectivityManager.start()
             self?.run()
         }
@@ -98,10 +105,23 @@ class IterableTaskRunner: NSObject {
             }
         }
     }
-    
+
+    @objc
+    private func onAuthTokenRefreshed(notification _: Notification) {
+        ITBInfo()
+        persistenceContext.perform { [weak self] in
+            guard let self = self, self.authPaused else {
+                return
+            }
+            ITBInfo("Auth token refreshed, resuming task processing")
+            self.authPaused = false
+            self.run()
+        }
+    }
+
     private func run() {
         ITBInfo()
-        guard !paused else {
+        guard !paused, !authPaused else {
             ITBInfo("Cannot run when paused")
             return
         }
@@ -119,12 +139,11 @@ class IterableTaskRunner: NSObject {
     
     private func scheduleNext() {
         ITBInfo()
+        running = false
         guard !paused else {
             ITBInfo("Paused")
             return
         }
-        
-        running = false
 
         workItem?.cancel()
         
@@ -143,7 +162,7 @@ class IterableTaskRunner: NSObject {
 
         /// This is a recursive function.
         /// Check whether we were stopped in the middle of running tasks
-        guard !paused else {
+        guard !paused, !authPaused else {
             ITBInfo("Tasks paused before finishing processTasks()")
             scheduleNext()
             return
@@ -190,7 +209,7 @@ class IterableTaskRunner: NSObject {
 
         switch task.type {
         case .apiCall:
-            let processor = IterableAPICallTaskProcessor(networkSession: networkSession, dateProvider: dateProvider)
+            let processor = IterableAPICallTaskProcessor(networkSession: networkSession, dateProvider: dateProvider, autoRetry: autoRetry)
             return processAPICallTask(processor: processor, task: task)
         }
     }
@@ -261,6 +280,10 @@ class IterableTaskRunner: NSObject {
             case let .failureWithRetry(_, detail: detail):
                 ITBInfo("task: \(task.id) processed with retry")
                 if let failureDetail = detail as? SendRequestError {
+                    if strongSelf.autoRetry && IterableAPICallTaskProcessor.isJWTAuthFailure(sendRequestError: failureDetail) {
+                        ITBInfo("JWT auth failure with autoRetry enabled, pausing task runner")
+                        strongSelf.authPaused = true
+                    }
                     let userInfo = IterableNotificationUtil.sendRequestErrorToUserInfo(failureDetail, taskId: task.id)
                     strongSelf.notificationCenter.post(name: .iterableTaskFinishedWithRetry,
                                                        object: strongSelf,
@@ -299,6 +322,7 @@ class IterableTaskRunner: NSObject {
     
     private var workItem: DispatchWorkItem?
     private var paused = false
+    private var authPaused = false
     private let networkSession: NetworkSessionProtocol
     private let healthMonitor: HealthMonitor
     private let notificationCenter: NotificationCenterProtocol
@@ -306,6 +330,7 @@ class IterableTaskRunner: NSObject {
     private let dateProvider: DateProviderProtocol
     private let connectivityManager: NetworkConnectivityManager
     private var running = false
+    var autoRetry: Bool
 
     private let persistenceContext: IterablePersistenceContext
 }
