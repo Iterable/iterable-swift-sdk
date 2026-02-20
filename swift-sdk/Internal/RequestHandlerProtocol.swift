@@ -7,6 +7,7 @@ import Foundation
 /// `InternalIterableAPI` will delegate all network related calls to this protocol.
 protocol RequestHandlerProtocol: AnyObject {
     var offlineMode: Bool { get set }
+    var autoRetry: Bool { get set }
 
     func start()
     

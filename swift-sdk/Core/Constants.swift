@@ -72,6 +72,7 @@ enum Const {
         static let deviceId = "itbl_device_id"
         static let sdkVersion = "itbl_sdk_version"
         static let offlineMode = "itbl_offline_mode"
+        static let autoRetry = "itbl_auto_retry"
         static let unknownUserEvents = "itbl_unknown_user_events"
         static let unknownUserUpdate = "itbl_unknown_user_update"
         static let criteriaData = "itbl_criteria_data"
