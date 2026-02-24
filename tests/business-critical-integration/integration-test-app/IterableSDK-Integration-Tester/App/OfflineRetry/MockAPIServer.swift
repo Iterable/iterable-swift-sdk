@@ -3,11 +3,6 @@ import Foundation
 final class MockAPIServer {
     static let shared = MockAPIServer()
 
-    // MARK: - Remote Config Overrides (controlled by Remote Config Override panel)
-
-    var overrideOfflineMode: Bool = true
-    var overrideAutoRetry: Bool = true
-
     // MARK: - API Response Mode (controlled by Offline Retry panel)
 
     enum APIResponseMode: String, CaseIterable {
@@ -36,7 +31,7 @@ final class MockAPIServer {
         authHasRefreshed = false
         requestCount = 0
 
-        NetworkMonitor.additionalProtocolClasses = [MockAPIServerURLProtocol.self]
+        NetworkMonitor.registerProtocolClass(MockAPIServerURLProtocol.self)
 
         authObserver = NotificationCenter.default.addObserver(
             forName: Notification.Name("itbl_auth_token_refreshed"),
@@ -56,7 +51,7 @@ final class MockAPIServer {
         authHasRefreshed = false
         requestCount = 0
 
-        NetworkMonitor.additionalProtocolClasses = []
+        NetworkMonitor.unregisterProtocolClass(MockAPIServerURLProtocol.self)
 
         if let observer = authObserver {
             NotificationCenter.default.removeObserver(observer)
@@ -84,21 +79,9 @@ final class MockAPIServer {
 
         let path = url.path
 
-        // Remote config endpoint — always return overridden values
-        if path.contains("mobile/getRemoteConfiguration") {
-            requestCount += 1
-            let json: [String: Any] = [
-                "offlineMode": overrideOfflineMode,
-                "autoRetry": overrideAutoRetry
-            ]
-            let data = (try? JSONSerialization.data(withJSONObject: json)) ?? Data()
-            print("[MOCK SERVER] Remote config → offlineMode: \(overrideOfflineMode), autoRetry: \(overrideAutoRetry)")
-            return MockResponse(
-                statusCode: 200,
-                data: data,
-                headers: ["Content-Type": "application/json"]
-            )
-        }
+        // Only mock POST requests (event tracking, user updates, etc.)
+        // Skip GET requests used during SDK init (getRemoteConfiguration, inApp/getMessages, etc.)
+        guard request.httpMethod == "POST" else { return nil }
 
         // API endpoints — depends on response mode
         guard url.host?.contains("iterable.com") == true else { return nil }

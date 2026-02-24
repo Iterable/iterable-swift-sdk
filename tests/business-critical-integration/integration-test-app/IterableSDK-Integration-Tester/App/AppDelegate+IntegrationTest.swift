@@ -42,6 +42,32 @@ extension AppDelegate {
         print("✅ Loaded server key from test-config.json")
         return serverKey
     }
+
+    static func loadJWTApiKeyFromConfig() -> String? {
+        guard let path = Bundle.main.path(forResource: "test-config", ofType: "json"),
+              let data = try? Data(contentsOf: URL(fileURLWithPath: path)),
+              let json = try? JSONSerialization.jsonObject(with: data) as? [String: Any],
+              let jwtKey = json["jwtApiKey"] as? String,
+              !jwtKey.isEmpty else {
+            print("⚠️ No JWT API key found in test-config.json — will use regular API key for JWT testing")
+            return nil
+        }
+        print("✅ Loaded JWT API key from test-config.json")
+        return jwtKey
+    }
+
+    static func loadJWTSecretFromConfig() -> String? {
+        guard let path = Bundle.main.path(forResource: "test-config", ofType: "json"),
+              let data = try? Data(contentsOf: URL(fileURLWithPath: path)),
+              let json = try? JSONSerialization.jsonObject(with: data) as? [String: Any],
+              let jwtSecret = json["jwtSecret"] as? String,
+              !jwtSecret.isEmpty else {
+            print("⚠️ No JWT secret found in test-config.json")
+            return nil
+        }
+        print("✅ Loaded JWT secret from test-config.json")
+        return jwtSecret
+    }
     
     static func loadProjectIdFromConfig() -> String {
         guard let path = Bundle.main.path(forResource: "test-config", ofType: "json"),
@@ -138,7 +164,7 @@ extension AppDelegate {
         config.authDelegate = authDelegate
         mockAuthDelegate = authDelegate // Strong reference to prevent deallocation
 
-        let apiKey = loadApiKeyFromConfig()
+        let apiKey = loadJWTApiKeyFromConfig() ?? loadApiKeyFromConfig()
         IterableAPI.initialize(apiKey: apiKey, launchOptions: nil, config: config)
 
         print("[SDK INIT] Reinitialized with mock JWT auth delegate")

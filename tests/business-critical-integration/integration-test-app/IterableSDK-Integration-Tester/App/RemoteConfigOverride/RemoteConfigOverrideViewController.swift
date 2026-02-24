@@ -6,6 +6,7 @@ final class RemoteConfigOverrideViewController: UIViewController {
     // MARK: - Properties
 
     private var pollTimer: Timer?
+    private let configManager = ConfigOverrideManager.shared
     private let mockServer = MockAPIServer.shared
 
     // MARK: - UI Components
@@ -27,12 +28,12 @@ final class RemoteConfigOverrideViewController: UIViewController {
     // Mock Server Section
     private let mockServerSectionLabel: UILabel = {
         let label = UILabel()
-        label.text = "Mock Server"
+        label.text = "Mock JWT Server"
         label.font = .systemFont(ofSize: 18, weight: .bold)
         return label
     }()
 
-    private let mockServerToggle = SwitchRowView(title: "Enable Mock Server")
+    private let mockServerToggle = SwitchRowView(title: "Enable Mock JWT Server")
 
     // Remote Config Overrides Section
     private let overridesSectionLabel: UILabel = {
@@ -42,6 +43,7 @@ final class RemoteConfigOverrideViewController: UIViewController {
         return label
     }()
 
+    private let configOverrideToggle = SwitchRowView(title: "Enable Config Overrides")
     private let offlineModeToggle = SwitchRowView(title: "Offline Mode")
     private let autoRetryToggle = SwitchRowView(title: "Auto Retry")
 
@@ -77,11 +79,22 @@ final class RemoteConfigOverrideViewController: UIViewController {
         return label
     }()
 
+    private let goHomeButton: UIButton = {
+        let button = UIButton(type: .system)
+        button.setTitle("Go Back to Home Screen", for: .normal)
+        button.backgroundColor = .systemGray3
+        button.setTitleColor(.white, for: .normal)
+        button.titleLabel?.font = .systemFont(ofSize: 16, weight: .semibold)
+        button.layer.cornerRadius = 8
+        button.heightAnchor.constraint(equalToConstant: 44).isActive = true
+        return button
+    }()
+
     // MARK: - Lifecycle
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        title = "Remote Config Override"
+        title = "Config Overrides"
         view.backgroundColor = .systemBackground
         setupUI()
         setupActions()
@@ -103,7 +116,7 @@ final class RemoteConfigOverrideViewController: UIViewController {
         let mockServerCard = createCard(subviews: [mockServerToggle])
 
         // Overrides card
-        let overridesCard = createCard(subviews: [offlineModeToggle, autoRetryToggle])
+        let overridesCard = createCard(subviews: [configOverrideToggle, offlineModeToggle, autoRetryToggle])
 
         // Current values card
         let currentValuesCard = createCard(subviews: [currentOfflineModeRow, currentAutoRetryRow])
@@ -116,6 +129,7 @@ final class RemoteConfigOverrideViewController: UIViewController {
         contentStack.addArrangedSubview(currentValuesCard)
         contentStack.addArrangedSubview(reinitializeButton)
         contentStack.addArrangedSubview(reinitializeInfoLabel)
+        contentStack.addArrangedSubview(goHomeButton)
 
         NSLayoutConstraint.activate([
             scrollView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
@@ -140,18 +154,27 @@ final class RemoteConfigOverrideViewController: UIViewController {
             } else {
                 self?.mockServer.deactivate()
             }
-            self?.updateOverridesEnabled()
         }
 
         offlineModeToggle.onToggle = { [weak self] isOn in
-            self?.mockServer.overrideOfflineMode = isOn
+            self?.configManager.overrideOfflineMode = isOn
         }
 
         autoRetryToggle.onToggle = { [weak self] isOn in
-            self?.mockServer.overrideAutoRetry = isOn
+            self?.configManager.overrideAutoRetry = isOn
+        }
+
+        configOverrideToggle.onToggle = { [weak self] isOn in
+            if isOn {
+                self?.configManager.enable()
+            } else {
+                self?.configManager.disable()
+            }
+            self?.updateOverridesEnabled()
         }
 
         reinitializeButton.addTarget(self, action: #selector(reinitializeSDK), for: .touchUpInside)
+        goHomeButton.addTarget(self, action: #selector(goHome), for: .touchUpInside)
     }
 
     private func createCard(subviews: [UIView]) -> UIView {
@@ -181,12 +204,13 @@ final class RemoteConfigOverrideViewController: UIViewController {
 
     private func syncUIFromMockServer() {
         mockServerToggle.setOn(mockServer.isActive)
-        offlineModeToggle.setOn(mockServer.overrideOfflineMode)
-        autoRetryToggle.setOn(mockServer.overrideAutoRetry)
+        configOverrideToggle.setOn(configManager.isEnabled)
+        offlineModeToggle.setOn(configManager.overrideOfflineMode)
+        autoRetryToggle.setOn(configManager.overrideAutoRetry)
     }
 
     private func updateOverridesEnabled() {
-        let enabled = mockServer.isActive
+        let enabled = configManager.isEnabled
         offlineModeToggle.isUserInteractionEnabled = enabled
         offlineModeToggle.alpha = enabled ? 1.0 : 0.5
         autoRetryToggle.isUserInteractionEnabled = enabled
@@ -211,16 +235,17 @@ final class RemoteConfigOverrideViewController: UIViewController {
 
     // MARK: - Actions
 
-    @objc private func reinitializeSDK() {
-        AppDelegate.initializeIterableSDK()
+    @objc private func goHome() {
+        navigationController?.popToRootViewController(animated: true)
+    }
 
-        let alert = UIAlertController(
-            title: "SDK Reinitialized",
-            message: "Remote config will be fetched with overridden values. Check Current SDK Values in ~2s.",
-            preferredStyle: .alert
-        )
-        alert.addAction(UIAlertAction(title: "OK", style: .default))
-        present(alert, animated: true)
+    @objc private func reinitializeSDK() {
+        if mockServer.isActive {
+            AppDelegate.reinitializeSDKWithMockJWT()
+        } else {
+            AppDelegate.initializeIterableSDK()
+        }
+        navigationController?.popToRootViewController(animated: true)
     }
 }
 
@@ -267,6 +292,10 @@ private final class SwitchRowView: UIView {
 
     @objc private func toggled() {
         onToggle?(toggle.isOn)
+    }
+
+    var isOn: Bool {
+        toggle.isOn
     }
 
     func setOn(_ on: Bool) {

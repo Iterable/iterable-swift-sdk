@@ -203,7 +203,7 @@ final class HomeViewController: UIViewController, UITextFieldDelegate {
         container.accessibilityIdentifier = "remote-config-override-row"
 
         let titleLabel = UILabel()
-        titleLabel.text = "Remote Config Override"
+        titleLabel.text = "Config Overrides"
         titleLabel.font = .systemFont(ofSize: 16, weight: .medium)
         titleLabel.textColor = .label
         titleLabel.translatesAutoresizingMaskIntoConstraints = false
@@ -282,6 +282,10 @@ final class HomeViewController: UIViewController, UITextFieldDelegate {
         }
         userIdField.text = HomeViewController.generateRandomUserId(length: 6)
 
+        let scrollView = UIScrollView()
+        scrollView.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(scrollView)
+
         let stack = UIStackView(arrangedSubviews: [initializeButton,
                                                    userIdField,
                                                    registerUserIdButton,
@@ -290,21 +294,28 @@ final class HomeViewController: UIViewController, UITextFieldDelegate {
                                                    logoutButton,
                                                    clearLocalDataButton,
                                                    statusView,
-                                                   remoteConfigOverrideRow,
                                                    pushNotificationTestRow,
                                                    inAppMessageTestRow,
                                                    embeddedMessageTestRow,
-                                                   offlineRetryTestRow])
+                                                   offlineRetryTestRow,
+                                                   remoteConfigOverrideRow])
         stack.axis = .vertical
         stack.alignment = .fill
         stack.spacing = 12
         stack.translatesAutoresizingMaskIntoConstraints = false
-        view.addSubview(stack)
+        scrollView.addSubview(stack)
 
         NSLayoutConstraint.activate([
-            stack.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: 20),
-            stack.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor, constant: -20),
-            stack.centerYAnchor.constraint(equalTo: view.centerYAnchor)
+            scrollView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
+            scrollView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            scrollView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            scrollView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
+
+            stack.topAnchor.constraint(equalTo: scrollView.topAnchor, constant: 20),
+            stack.leadingAnchor.constraint(equalTo: scrollView.leadingAnchor, constant: 20),
+            stack.trailingAnchor.constraint(equalTo: scrollView.trailingAnchor, constant: -20),
+            stack.bottomAnchor.constraint(equalTo: scrollView.bottomAnchor, constant: -20),
+            stack.widthAnchor.constraint(equalTo: scrollView.widthAnchor, constant: -40)
         ])
 
         updateButtonStates()
@@ -408,6 +419,7 @@ final class HomeViewController: UIViewController, UITextFieldDelegate {
         updateInAppMessageButtonState()
         updateEmbeddedMessageButtonState()
         updateOfflineRetryButtonState()
+        updateConfigOverrideButtonState()
     }
     
     private func updateRegisterButtonStates() {
@@ -465,6 +477,12 @@ final class HomeViewController: UIViewController, UITextFieldDelegate {
     @objc private func showOfflineRetryTest() {
         let offlineRetryVC = OfflineRetryTestViewController()
         navigationController?.pushViewController(offlineRetryVC, animated: true)
+    }
+
+    private func updateConfigOverrideButtonState() {
+        let isSDKInitialized = IterableSDKStatusView.isSDKInitialized()
+        remoteConfigOverrideRow.isUserInteractionEnabled = isSDKInitialized
+        remoteConfigOverrideRow.alpha = isSDKInitialized ? 1.0 : 0.5
     }
 
     @objc private func showRemoteConfigOverride() {

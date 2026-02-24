@@ -67,17 +67,6 @@ final class OfflineRetryTestViewController: UIViewController {
         return sc
     }()
 
-    private let initJWTButton: UIButton = {
-        let button = UIButton(type: .system)
-        button.setTitle("Initialize SDK with JWT Auth", for: .normal)
-        button.backgroundColor = .systemPurple
-        button.setTitleColor(.white, for: .normal)
-        button.titleLabel?.font = .systemFont(ofSize: 15, weight: .semibold)
-        button.layer.cornerRadius = 8
-        button.heightAnchor.constraint(equalToConstant: 44).isActive = true
-        return button
-    }()
-
     private let mockStatusLabel: UILabel = {
         let label = UILabel()
         label.font = .systemFont(ofSize: 12)
@@ -165,7 +154,7 @@ final class OfflineRetryTestViewController: UIViewController {
 
         // Mock API card
         let mockAPICard = createSectionContainer()
-        let mockAPIStack = UIStackView(arrangedSubviews: [responseModeSegment, initJWTButton, mockStatusLabel])
+        let mockAPIStack = UIStackView(arrangedSubviews: [responseModeSegment, mockStatusLabel])
         mockAPIStack.axis = .vertical
         mockAPIStack.spacing = 10
         mockAPIStack.translatesAutoresizingMaskIntoConstraints = false
@@ -211,7 +200,6 @@ final class OfflineRetryTestViewController: UIViewController {
     private func setupActions() {
         trackOneEventButton.addTarget(self, action: #selector(trackOneEvent), for: .touchUpInside)
         trackThreeEventsButton.addTarget(self, action: #selector(trackThreeEvents), for: .touchUpInside)
-        initJWTButton.addTarget(self, action: #selector(initializeWithJWT), for: .touchUpInside)
         responseModeSegment.addTarget(self, action: #selector(responseModeChanged), for: .valueChanged)
     }
 
@@ -281,23 +269,6 @@ final class OfflineRetryTestViewController: UIViewController {
         mockServer.apiResponseMode = modes[index]
         mockServer.resetAuthState()
         print("[OFFLINE RETRY] API response mode: \(modes[index].rawValue)")
-    }
-
-    @objc private func initializeWithJWT() {
-        guard mockServer.isActive else {
-            let alert = UIAlertController(
-                title: "Mock Server Not Active",
-                message: "Enable the Mock Server in Remote Config Override first.",
-                preferredStyle: .alert
-            )
-            alert.addAction(UIAlertAction(title: "OK", style: .default))
-            present(alert, animated: true)
-            return
-        }
-
-        mockServer.resetAuthState()
-        AppDelegate.reinitializeSDKWithMockJWT()
-        addLogEntry(type: .eventSent, detail: "SDK reinitialized with JWT auth")
     }
 
     @objc private func trackOneEvent() {
