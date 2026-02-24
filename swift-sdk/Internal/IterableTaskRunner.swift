@@ -68,9 +68,10 @@ class IterableTaskRunner: NSObject {
     private func onTaskScheduled(notification: Notification) {
         ITBInfo()
         persistenceContext.perform { [weak self] in
-            if self?.paused == false {
-                self?.run()
-            }
+            guard self?.paused == false else { return }
+            // Allow run() even when authPaused — processTasks() will
+            // selectively execute only tasks that don't require JWT auth.
+            self?.run()
         }
     }
     
@@ -121,19 +122,22 @@ class IterableTaskRunner: NSObject {
 
     private func run() {
         ITBInfo()
-        guard !paused, !authPaused else {
-            ITBInfo("Cannot run when paused")
+        guard !paused else {
+            ITBInfo("Cannot run when network paused")
             return
         }
+        // Note: authPaused is NOT checked here.
+        // processTasks() handles it per-task, allowing unauthenticated
+        // tasks to proceed while auth-required tasks stay queued.
         guard !running else {
             ITBInfo("Already running")
             return
         }
 
         running = true
-        
+
         workItem?.cancel()
-        
+
         processTasks()
     }
     
@@ -142,6 +146,10 @@ class IterableTaskRunner: NSObject {
         running = false
         guard !paused else {
             ITBInfo("Paused")
+            return
+        }
+        guard !authPaused else {
+            ITBInfo("Auth paused — waiting for token refresh")
             return
         }
 
@@ -162,7 +170,7 @@ class IterableTaskRunner: NSObject {
 
         /// This is a recursive function.
         /// Check whether we were stopped in the middle of running tasks
-        guard !paused, !authPaused else {
+        guard !paused else {
             ITBInfo("Tasks paused before finishing processTasks()")
             scheduleNext()
             return
@@ -174,7 +182,21 @@ class IterableTaskRunner: NSObject {
         }
 
         do {
-            if let task = try persistenceContext.nextTask() {
+            let task: IterableTask?
+            if authPaused {
+                // When auth is paused, only execute tasks that don't require JWT.
+                // Auth-required tasks stay in the queue until auth resumes.
+                task = try nextTaskNotRequiringAuth()
+                if task == nil {
+                    ITBInfo("Auth paused and no unauthenticated tasks to process")
+                    running = false
+                    return
+                }
+            } else {
+                task = try persistenceContext.nextTask()
+            }
+
+            if let task = task {
                 execute(task: task).onSuccess { [weak self] executionResult in
                     ITBInfo()
                     guard let strongSelf = self else {
@@ -184,8 +206,16 @@ class IterableTaskRunner: NSObject {
                         switch executionResult {
                         case .success, .failure, .error:
                             strongSelf.processTasks()
-                        case .processing, .retry:
+                        case .processing:
                             strongSelf.scheduleNext()
+                        case .retry:
+                            if strongSelf.authPaused {
+                                // Auth just paused — continue processing to
+                                // drain any unauthenticated tasks in the queue.
+                                strongSelf.processTasks()
+                            } else {
+                                strongSelf.scheduleNext()
+                            }
                         }
                     }
                 }
@@ -296,6 +326,23 @@ class IterableTaskRunner: NSObject {
         return fulfill
     }
     
+    // MARK: - Auth Bypass Helpers
+
+    /// Returns the first task in the queue that does not require JWT authentication.
+    private func nextTaskNotRequiringAuth() throws -> IterableTask? {
+        let allTasks = try persistenceContext.findAllTasks()
+        return allTasks.first { !Self.taskRequiresAuth($0) }
+    }
+
+    /// Determines whether a task requires JWT authentication by inspecting its API path.
+    static func taskRequiresAuth(_ task: IterableTask) -> Bool {
+        guard let data = task.data,
+              let request = try? JSONDecoder().decode(IterableAPICallRequest.self, from: data) else {
+            return true // Default to requiring auth if task data can't be decoded
+        }
+        return Const.Path.requiresJWTAuth(request.getPath())
+    }
+
     deinit {
         ITBInfo()
         notificationCenter.removeObserver(self)
