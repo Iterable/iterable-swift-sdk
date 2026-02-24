@@ -421,7 +421,7 @@ class TaskRunnerTests: XCTestCase {
         networkSession.responseCallback = nil
 
         // Post auth token refreshed notification to resume the runner
-        NotificationCenter.default.post(name: .iterableAuthTokenRefreshed, object: nil)
+        notificationCenter.post(name: .iterableAuthTokenRefreshed, object: nil, userInfo: nil)
 
         // Verify the task is now processed successfully
         verifyTaskIsExecuted(notificationCenter, withinInterval: 10.0)
@@ -479,7 +479,7 @@ class TaskRunnerTests: XCTestCase {
 
         // Fix network and resume via auth token refresh
         networkSession.responseCallback = nil
-        NotificationCenter.default.post(name: .iterableAuthTokenRefreshed, object: nil)
+        notificationCenter.post(name: .iterableAuthTokenRefreshed, object: nil, userInfo: nil)
 
         // All 3 tasks should now process successfully
         let successExpectation = expectation(description: "all tasks processed")
@@ -735,7 +735,7 @@ class TaskRunnerTests: XCTestCase {
         XCTAssertEqual(try persistenceContextProvider.mainQueueContext().findAllTasks().count, 2)
 
         // Now refresh auth — both should process
-        NotificationCenter.default.post(name: .iterableAuthTokenRefreshed, object: nil)
+        notificationCenter.post(name: .iterableAuthTokenRefreshed, object: nil, userInfo: nil)
 
         let successExpectation = expectation(description: "both tasks processed")
         successExpectation.expectedFulfillmentCount = 2
@@ -812,7 +812,7 @@ class TaskRunnerTests: XCTestCase {
         XCTAssertEqual(try persistenceContextProvider.mainQueueContext().findAllTasks().count, 1)
 
         // Now refresh auth — the remaining auth task should process
-        NotificationCenter.default.post(name: .iterableAuthTokenRefreshed, object: nil)
+        notificationCenter.post(name: .iterableAuthTokenRefreshed, object: nil, userInfo: nil)
         verifyTaskIsExecuted(notificationCenter, withinInterval: 10.0)
         waitForZeroTasks()
 
@@ -837,7 +837,7 @@ class TaskRunnerTests: XCTestCase {
         taskRunner.start()
 
         // Post auth refresh with no tasks in DB - should not crash or trigger anything
-        NotificationCenter.default.post(name: .iterableAuthTokenRefreshed, object: nil)
+        notificationCenter.post(name: .iterableAuthTokenRefreshed, object: nil, userInfo: nil)
 
         // Give it a moment to process
         let noOpExpectation = expectation(description: "wait for potential processing")

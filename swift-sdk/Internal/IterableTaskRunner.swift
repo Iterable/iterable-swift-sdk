@@ -38,7 +38,7 @@ class IterableTaskRunner: NSObject {
                                        selector: #selector(onAppDidEnterBackground(notification:)),
                                        name: UIApplication.didEnterBackgroundNotification,
                                        object: nil)
-        NotificationCenter.default.addObserver(self,
+        self.notificationCenter.addObserver(self,
                                                selector: #selector(onAuthTokenRefreshed(notification:)),
                                                name: .iterableAuthTokenRefreshed,
                                                object: nil)
@@ -209,10 +209,16 @@ class IterableTaskRunner: NSObject {
                         case .processing:
                             strongSelf.scheduleNext()
                         case .retry:
-                            if strongSelf.authPaused {
-                                // Auth just paused — continue processing to
-                                // drain any unauthenticated tasks in the queue.
+                            if strongSelf.authPaused && Self.taskRequiresAuth(task) {
+                                // An auth-required task caused the pause.
+                                // Continue processing to drain any unauthenticated
+                                // tasks remaining in the queue.
                                 strongSelf.processTasks()
+                            } else if strongSelf.authPaused {
+                                // An unauthenticated task retried during auth pause
+                                // (e.g., network error). Stop to avoid a tight retry
+                                // loop; processing resumes on auth refresh or new task.
+                                strongSelf.running = false
                             } else {
                                 strongSelf.scheduleNext()
                             }
@@ -328,19 +334,22 @@ class IterableTaskRunner: NSObject {
     
     // MARK: - Auth Bypass Helpers
 
-    /// Returns the first task in the queue that does not require JWT authentication.
+    /// Returns the first task in the queue (by scheduledAt order) that does not require JWT authentication.
     private func nextTaskNotRequiringAuth() throws -> IterableTask? {
         let allTasks = try persistenceContext.findAllTasks()
-        return allTasks.first { !Self.taskRequiresAuth($0) }
+        return allTasks
+            .sorted { $0.scheduledAt < $1.scheduledAt }
+            .first { !Self.taskRequiresAuth($0) }
     }
 
     /// Determines whether a task requires JWT authentication by inspecting its API path.
+    /// Uses `task.name` which is set to the API path at scheduling time.
     static func taskRequiresAuth(_ task: IterableTask) -> Bool {
-        guard let data = task.data,
-              let request = try? JSONDecoder().decode(IterableAPICallRequest.self, from: data) else {
-            return true // Default to requiring auth if task data can't be decoded
+        guard let path = task.name else {
+            ITBInfo("Task \(task.id) has no name/path, defaulting to auth-required")
+            return true
         }
-        return Const.Path.requiresJWTAuth(request.getPath())
+        return Const.Path.requiresJWTAuth(path)
     }
 
     deinit {
