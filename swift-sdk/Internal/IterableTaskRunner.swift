@@ -68,7 +68,7 @@ class IterableTaskRunner: NSObject {
     private func onTaskScheduled(notification: Notification) {
         ITBInfo()
         persistenceContext.perform { [weak self] in
-            if self?.paused == false {
+            if self?.paused == false && self?.authPaused == false {
                 self?.run()
             }
         }
@@ -142,6 +142,10 @@ class IterableTaskRunner: NSObject {
         running = false
         guard !paused else {
             ITBInfo("Paused")
+            return
+        }
+        guard !authPaused else {
+            ITBInfo("Auth paused — waiting for token refresh")
             return
         }
 
