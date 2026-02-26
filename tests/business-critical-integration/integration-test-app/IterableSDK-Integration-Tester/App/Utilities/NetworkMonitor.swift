@@ -106,7 +106,22 @@ struct NetworkResponse {
 
 class NetworkMonitor: NSObject {
     static let shared = NetworkMonitor()
-    
+
+    /// Additional URLProtocol classes to inject into all sessions alongside NetworkMonitorURLProtocol.
+    private(set) static var additionalProtocolClasses: [AnyClass] = []
+
+    static func registerProtocolClass(_ protocolClass: AnyClass) {
+        if !additionalProtocolClasses.contains(where: { $0 === protocolClass }) {
+            additionalProtocolClasses.append(protocolClass)
+            URLProtocol.registerClass(protocolClass)
+        }
+    }
+
+    static func unregisterProtocolClass(_ protocolClass: AnyClass) {
+        additionalProtocolClasses.removeAll { $0 === protocolClass }
+        URLProtocol.unregisterClass(protocolClass)
+    }
+
     private var requests: [NetworkRequest] = []
     private let queue = DispatchQueue(label: "networkmonitor", attributes: .concurrent)
     
@@ -387,12 +402,22 @@ extension URLSessionConfiguration {
     
     private func injectNetworkMonitorProtocol() {
         var protocols = protocolClasses ?? []
-        
+
         // Only add if not already present
         if !protocols.contains(where: { $0 == NetworkMonitorURLProtocol.self }) {
             protocols.insert(NetworkMonitorURLProtocol.self, at: 0)
-            protocolClasses = protocols
-            //print("🔍 Injected NetworkMonitorURLProtocol into URLSessionConfiguration")
         }
+
+        // Insert additional protocol classes right after NetworkMonitorURLProtocol
+        // (before default HTTP handler, so they can intercept requests)
+        var insertionIndex = 1
+        for protocolClass in NetworkMonitor.additionalProtocolClasses {
+            if !protocols.contains(where: { $0 === protocolClass }) {
+                protocols.insert(protocolClass, at: min(insertionIndex, protocols.count))
+                insertionIndex += 1
+            }
+        }
+
+        protocolClasses = protocols
     }
 }

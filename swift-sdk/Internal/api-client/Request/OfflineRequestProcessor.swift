@@ -25,6 +25,11 @@ struct OfflineRequestProcessor: RequestProcessorProtocol {
         notificationListener = NotificationListener(notificationCenter: notificationCenter)
     }
     
+    var autoRetry: Bool {
+        get { taskRunner.autoRetry }
+        set { taskRunner.autoRetry = newValue }
+    }
+
     func start() {
         ITBInfo()
         taskRunner.start()

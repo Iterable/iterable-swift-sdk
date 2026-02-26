@@ -42,6 +42,32 @@ extension AppDelegate {
         print("✅ Loaded server key from test-config.json")
         return serverKey
     }
+
+    static func loadJWTApiKeyFromConfig() -> String? {
+        guard let path = Bundle.main.path(forResource: "test-config", ofType: "json"),
+              let data = try? Data(contentsOf: URL(fileURLWithPath: path)),
+              let json = try? JSONSerialization.jsonObject(with: data) as? [String: Any],
+              let jwtKey = json["jwtApiKey"] as? String,
+              !jwtKey.isEmpty else {
+            print("⚠️ No JWT API key found in test-config.json — will use regular API key for JWT testing")
+            return nil
+        }
+        print("✅ Loaded JWT API key from test-config.json")
+        return jwtKey
+    }
+
+    static func loadJWTSecretFromConfig() -> String? {
+        guard let path = Bundle.main.path(forResource: "test-config", ofType: "json"),
+              let data = try? Data(contentsOf: URL(fileURLWithPath: path)),
+              let json = try? JSONSerialization.jsonObject(with: data) as? [String: Any],
+              let jwtSecret = json["jwtSecret"] as? String,
+              !jwtSecret.isEmpty else {
+            print("⚠️ No JWT secret found in test-config.json")
+            return nil
+        }
+        print("✅ Loaded JWT secret from test-config.json")
+        return jwtSecret
+    }
     
     static func loadProjectIdFromConfig() -> String {
         guard let path = Bundle.main.path(forResource: "test-config", ofType: "json"),
@@ -104,8 +130,53 @@ extension AppDelegate {
         
         print("✅ [SDK INIT] SDK initialized for testing")
         print("✅ [SDK INIT] Initialization complete")
+
+        // Log remote config values after they've been fetched (async)
+        DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {
+            let offlineMode = UserDefaults.standard.bool(forKey: "itbl_offline_mode")
+            let autoRetry = UserDefaults.standard.bool(forKey: "itbl_auto_retry")
+            print("🔄 [SDK INIT] Remote config values - offlineMode: \(offlineMode), autoRetry: \(autoRetry)")
+        }
     }
     
+    // MARK: - Mock JWT Reinitialization
+
+    static var mockAuthDelegate: MockAuthDelegate?
+
+    static func reinitializeSDKWithMockJWT() {
+        print("[SDK INIT] Reinitializing SDK with mock JWT auth delegate...")
+
+        guard let appDelegate = UIApplication.shared.delegate as? AppDelegate else {
+            print("[SDK INIT] Failed to get AppDelegate")
+            return
+        }
+
+        let config = IterableConfig()
+        config.customActionDelegate = appDelegate
+        config.urlDelegate = appDelegate
+        config.inAppDisplayInterval = 1
+        config.autoPushRegistration = false
+        config.allowedProtocols = ["tester", "https", "http"]
+        config.enableEmbeddedMessaging = true
+
+        // Set up mock auth delegate
+        let authDelegate = MockAuthDelegate()
+        config.authDelegate = authDelegate
+        mockAuthDelegate = authDelegate // Strong reference to prevent deallocation
+
+        let apiKey = loadJWTApiKeyFromConfig() ?? loadApiKeyFromConfig()
+        IterableAPI.initialize(apiKey: apiKey, launchOptions: nil, config: config)
+
+        print("[SDK INIT] Reinitialized with mock JWT auth delegate")
+
+        // Log remote config values after fetch
+        DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {
+            let offlineMode = UserDefaults.standard.bool(forKey: "itbl_offline_mode")
+            let autoRetry = UserDefaults.standard.bool(forKey: "itbl_auto_retry")
+            print("[SDK INIT] Remote config values - offlineMode: \(offlineMode), autoRetry: \(autoRetry)")
+        }
+    }
+
     static func registerEmailToIterableSDK(email: String) {
         print("📧 [SDK INIT] Registering email with SDK: \(email)")
         IterableAPI.email = email
