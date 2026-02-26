@@ -170,7 +170,7 @@ class IterableTaskRunner: NSObject {
 
         /// This is a recursive function.
         /// Check whether we were stopped in the middle of running tasks
-        guard !paused else {
+        guard !paused, !authPaused else {
             ITBInfo("Tasks paused before finishing processTasks()")
             scheduleNext()
             return
