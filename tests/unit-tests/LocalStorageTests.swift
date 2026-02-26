@@ -149,6 +149,19 @@ class LocalStorageTests: XCTestCase {
         testLocalStorage(saver: saver, retriever: retriever, value: false)
     }
     
+    func testNetworkLoggingEnabled() {
+        let saver = { (storage: LocalStorageProtocol, value: Bool) -> Void in
+            var localStorage = storage
+            localStorage.networkLoggingEnabled = value
+        }
+        let retriever = { (storage: LocalStorageProtocol) -> Bool? in
+            storage.networkLoggingEnabled
+        }
+        
+        testLocalStorage(saver: saver, retriever: retriever, value: true)
+        testLocalStorage(saver: saver, retriever: retriever, value: false)
+    }
+    
     private func testLocalStorage<T>(saver: (LocalStorageProtocol, T) -> Void,
                                      retriever: (LocalStorageProtocol) -> T?, value: T) where T: Equatable {
         let localStorage = LocalStorage(userDefaults: LocalStorageTests.getTestUserDefaults())

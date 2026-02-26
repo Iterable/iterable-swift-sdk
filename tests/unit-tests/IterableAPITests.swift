@@ -1478,4 +1478,24 @@ class IterableAPITests: XCTestCase {
         XCTAssertEqual(dateFromMilliseconds, testDate)
     }
 
+    func testInitializeWithNetworkLoggingEnabled() {
+        let mockLocalStorage = MockLocalStorage()
+        mockLocalStorage.networkLoggingEnabled = true
+        
+        _ = InternalIterableAPI.initializeForTesting(apiKey: IterableAPITests.apiKey, localStorage: mockLocalStorage)
+        
+        XCTAssertTrue(NetworkHelper.isNetworkLoggingEnabled)
+        
+        // Cleanup
+        NetworkHelper.isNetworkLoggingEnabled = false
+    }
+
+    func testInitializeWithNetworkLoggingDisabled() {
+        let mockLocalStorage = MockLocalStorage()
+        mockLocalStorage.networkLoggingEnabled = false
+        
+        _ = InternalIterableAPI.initializeForTesting(apiKey: IterableAPITests.apiKey, localStorage: mockLocalStorage)
+        
+        XCTAssertFalse(NetworkHelper.isNetworkLoggingEnabled)
+    }
 }
