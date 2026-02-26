@@ -1849,6 +1849,95 @@ class InAppTests: XCTestCase {
         wait(for: [expectation1], timeout: testExpectationTimeout)
     }
 
+    func testRecalledMessagesAreConsumed() {
+        let expectation1 = expectation(description: "messages synced initially")
+        let expectation2 = expectation(description: "messages synced after recall")
+        
+        let mockInAppFetcher = MockInAppFetcher()
+        
+        let config = IterableConfig()
+        let internalApi = InternalIterableAPI.initializeForTesting(
+            config: config,
+            inAppFetcher: mockInAppFetcher
+        )
+        
+        // First, mock some messages on the server
+        let initialPayload = """
+        {"inAppMessages":
+        [
+            {
+                "saveToInbox": true,
+                "content": {"contentType": "html", "inAppDisplaySettings": {"bottom": {"displayOption": "AutoExpand"}, "backgroundAlpha": 0.5, "left": {"percentage": 60}, "right": {"percentage": 60}, "top": {"displayOption": "AutoExpand"}}, "html": "<a href=\\"https://www.site1.com\\">Click Here</a>"},
+                "trigger": {"type": "never"},
+                "messageId": "msg1",
+                "campaignId": 1,
+                "customPayload": {"title": "Message 1", "date": "2018-11-14T14:00:00:00.32Z"}
+            },
+            {
+                "saveToInbox": true,
+                "content": {"contentType": "html", "inAppDisplaySettings": {"bottom": {"displayOption": "AutoExpand"}, "backgroundAlpha": 0.5, "left": {"percentage": 60}, "right": {"percentage": 60}, "top": {"displayOption": "AutoExpand"}}, "html": "<a href=\\"https://www.site2.com\\">Click Here</a>"},
+                "trigger": {"type": "never"},
+                "messageId": "msg2",
+                "campaignId": 2,
+                "customPayload": {"title": "Message 2", "date": "2018-11-14T14:00:00:00.32Z"}
+            }
+        ]
+        }
+        """.toJsonDict()
+        
+        // Initial sync with both messages
+        mockInAppFetcher.mockInAppPayloadFromServer(internalApi: internalApi, initialPayload).onSuccess { [weak internalApi] _ in
+            guard let internalApi = internalApi else {
+                XCTFail("internalApi is nil")
+                return
+            }
+            
+            let messages = internalApi.inAppManager.getMessages()
+            XCTAssertEqual(messages.count, 2, "Should have 2 messages initially")
+            XCTAssertTrue(messages.contains(where: { $0.messageId == "msg1" }), "Should contain msg1")
+            XCTAssertTrue(messages.contains(where: { $0.messageId == "msg2" }), "Should contain msg2")
+            
+            expectation1.fulfill()
+            
+            // Now simulate a recall by removing msg1 from the server response
+            let recallPayload = """
+            {"inAppMessages":
+            [
+                {
+                    "saveToInbox": true,
+                    "content": {"contentType": "html", "inAppDisplaySettings": {"bottom": {"displayOption": "AutoExpand"}, "backgroundAlpha": 0.5, "left": {"percentage": 60}, "right": {"percentage": 60}, "top": {"displayOption": "AutoExpand"}}, "html": "<a href=\\"https://www.site2.com\\">Click Here</a>"},
+                    "trigger": {"type": "never"},
+                    "messageId": "msg2",
+                    "campaignId": 2,
+                    "customPayload": {"title": "Message 2", "date": "2018-11-14T14:00:00:00.32Z"}
+                }
+            ]
+            }
+            """.toJsonDict()
+            
+            // Second sync with msg1 removed (simulating recall)
+            mockInAppFetcher.mockInAppPayloadFromServer(internalApi: internalApi, recallPayload).onSuccess { [weak internalApi] _ in
+                guard let internalApi = internalApi else {
+                    XCTFail("internalApi is nil")
+                    return
+                }
+                
+                let messagesAfterRecall = internalApi.inAppManager.getMessages()
+                XCTAssertEqual(messagesAfterRecall.count, 1, "Should have only 1 valid message after recall")
+                XCTAssertEqual(messagesAfterRecall.first?.messageId, "msg2", "Only msg2 should remain active")
+                
+                // Check that msg1 is still in the internal map but marked as consumed
+                let msg1 = internalApi.inAppManager.getMessage(withId: "msg1")
+                XCTAssertNotNil(msg1, "msg1 should still exist internally")
+                XCTAssertTrue(msg1?.consumed ?? false, "msg1 should be marked as consumed")
+                
+                expectation2.fulfill()
+            }
+        }
+        
+        wait(for: [expectation1, expectation2], timeout: testExpectationTimeout)
+    }
+
 }
 
 extension IterableInAppTrigger {
