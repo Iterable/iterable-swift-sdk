@@ -421,7 +421,7 @@ class TaskRunnerTests: XCTestCase {
         networkSession.responseCallback = nil
 
         // Post auth token refreshed notification to resume the runner
-        NotificationCenter.default.post(name: .iterableAuthTokenRefreshed, object: nil)
+        notificationCenter.post(name: .iterableAuthTokenRefreshed, object: nil, userInfo: nil)
 
         // Verify the task is now processed successfully
         verifyTaskIsExecuted(notificationCenter, withinInterval: 10.0)
@@ -479,7 +479,7 @@ class TaskRunnerTests: XCTestCase {
 
         // Fix network and resume via auth token refresh
         networkSession.responseCallback = nil
-        NotificationCenter.default.post(name: .iterableAuthTokenRefreshed, object: nil)
+        notificationCenter.post(name: .iterableAuthTokenRefreshed, object: nil, userInfo: nil)
 
         // All 3 tasks should now process successfully
         let successExpectation = expectation(description: "all tasks processed")
@@ -640,6 +640,8 @@ class TaskRunnerTests: XCTestCase {
         taskRunner.stop()
     }
 
+    // MARK: - SDK-343 Auth Wait Strategy Tests
+
     func testNewTaskScheduledDuringAuthPauseNotProcessedUntilResume() throws {
         let jwtErrorData = ["code": "InvalidJwtPayload"].toJsonData()
         let networkSession = MockNetworkSession(statusCode: 401, data: jwtErrorData)
@@ -684,7 +686,7 @@ class TaskRunnerTests: XCTestCase {
 
         // Now fix network and resume via auth token refresh
         networkSession.responseCallback = nil
-        NotificationCenter.default.post(name: .iterableAuthTokenRefreshed, object: nil)
+        notificationCenter.post(name: .iterableAuthTokenRefreshed, object: nil, userInfo: nil)
 
         // Both tasks should now process successfully
         let successExpectation = expectation(description: "both tasks processed")
@@ -753,7 +755,7 @@ class TaskRunnerTests: XCTestCase {
 
         // Fix network and resume via single auth token refresh
         networkSession.responseCallback = nil
-        NotificationCenter.default.post(name: .iterableAuthTokenRefreshed, object: nil)
+        notificationCenter.post(name: .iterableAuthTokenRefreshed, object: nil, userInfo: nil)
 
         // All 4 tasks should process successfully
         let successExpectation = expectation(description: "all tasks processed")
@@ -764,6 +766,185 @@ class TaskRunnerTests: XCTestCase {
         XCTAssertNotNil(successRef)
 
         wait(for: [successExpectation], timeout: 15.0)
+        waitForZeroTasks()
+
+        taskRunner.stop()
+    }
+
+    // MARK: - SDK-345 Unauthenticated API Bypass Tests
+
+    func testUnauthenticatedTaskExecutesDuringAuthPause() throws {
+        let jwtErrorData = ["code": "InvalidJwtPayload"].toJsonData()
+        let networkSession = MockNetworkSession(statusCode: 401, data: jwtErrorData)
+
+        let notificationCenter = MockNotificationCenter()
+        let retryExpectation = expectation(description: "retry notification received")
+
+        let reference = notificationCenter.addCallback(forNotification: .iterableTaskFinishedWithRetry) { _ in
+            retryExpectation.fulfill()
+        }
+        XCTAssertNotNil(reference)
+
+        let healthMonitor = HealthMonitor(dataProvider: HealthMonitorDataProvider(maxTasks: 1000,
+                                                                                  persistenceContextProvider: persistenceContextProvider),
+                                          dateProvider: SystemDateProvider(),
+                                          networkSession: networkSession)
+        let taskRunner = IterableTaskRunner(networkSession: networkSession,
+                                            persistenceContextProvider: persistenceContextProvider,
+                                            healthMonitor: healthMonitor,
+                                            notificationCenter: notificationCenter,
+                                            timeInterval: 0.5,
+                                            autoRetry: true)
+        taskRunner.start()
+
+        let scheduler = IterableTaskScheduler(persistenceContextProvider: persistenceContextProvider,
+                                              notificationCenter: notificationCenter,
+                                              healthMonitor: healthMonitor)
+
+        // Schedule an auth-required task to trigger auth pause
+        let _ = try scheduleSampleTask(scheduler: scheduler)
+
+        // Wait for the 401 to pause the runner
+        wait(for: [retryExpectation], timeout: 5.0)
+        notificationCenter.removeCallbacks(withIds: reference.callbackId)
+
+        // Now fix network to return success and schedule an unauthenticated task
+        networkSession.responseCallback = nil
+        let _ = try scheduleUnauthenticatedTask(scheduler: scheduler)
+
+        // The unauthenticated task should execute even though auth is paused
+        verifyTaskIsExecuted(notificationCenter, withinInterval: 10.0)
+
+        // Auth-required task still in DB (1 remaining), unauthenticated task was processed
+        XCTAssertEqual(try persistenceContextProvider.mainQueueContext().findAllTasks().count, 1)
+
+        taskRunner.stop()
+    }
+
+    func testAuthRequiredTaskStaysBlockedWhileUnauthenticatedExecutes() throws {
+        let jwtErrorData = ["code": "InvalidJwtPayload"].toJsonData()
+        let networkSession = MockNetworkSession(statusCode: 401, data: jwtErrorData)
+
+        let notificationCenter = MockNotificationCenter()
+        let retryExpectation = expectation(description: "retry notification received")
+
+        let reference = notificationCenter.addCallback(forNotification: .iterableTaskFinishedWithRetry) { _ in
+            retryExpectation.fulfill()
+        }
+        XCTAssertNotNil(reference)
+
+        let healthMonitor = HealthMonitor(dataProvider: HealthMonitorDataProvider(maxTasks: 1000,
+                                                                                  persistenceContextProvider: persistenceContextProvider),
+                                          dateProvider: SystemDateProvider(),
+                                          networkSession: networkSession)
+        let taskRunner = IterableTaskRunner(networkSession: networkSession,
+                                            persistenceContextProvider: persistenceContextProvider,
+                                            healthMonitor: healthMonitor,
+                                            notificationCenter: notificationCenter,
+                                            timeInterval: 0.5,
+                                            autoRetry: true)
+        taskRunner.start()
+
+        let scheduler = IterableTaskScheduler(persistenceContextProvider: persistenceContextProvider,
+                                              notificationCenter: notificationCenter,
+                                              healthMonitor: healthMonitor)
+
+        // Schedule auth-required task to trigger auth pause
+        let _ = try scheduleSampleTask(scheduler: scheduler)
+
+        wait(for: [retryExpectation], timeout: 5.0)
+        notificationCenter.removeCallbacks(withIds: reference.callbackId)
+
+        // Fix network and schedule another auth-required task
+        networkSession.responseCallback = nil
+        let _ = try scheduleSampleTask(scheduler: scheduler)
+
+        // The second auth-required task should NOT execute while auth is paused
+        verifyNoTaskIsExecuted(notificationCenter, forInterval: 2.0)
+
+        // Both auth-required tasks should still be in DB
+        XCTAssertEqual(try persistenceContextProvider.mainQueueContext().findAllTasks().count, 2)
+
+        // Now refresh auth — both should process
+        notificationCenter.post(name: .iterableAuthTokenRefreshed, object: nil, userInfo: nil)
+
+        let successExpectation = expectation(description: "both tasks processed")
+        successExpectation.expectedFulfillmentCount = 2
+        let successRef = notificationCenter.addCallback(forNotification: .iterableTaskFinishedWithSuccess) { _ in
+            successExpectation.fulfill()
+        }
+        XCTAssertNotNil(successRef)
+
+        wait(for: [successExpectation], timeout: 15.0)
+        waitForZeroTasks()
+
+        taskRunner.stop()
+    }
+
+    func testMixedQueueOnlyUnauthenticatedExecuteDuringAuthPause() throws {
+        let jwtErrorData = ["code": "InvalidJwtPayload"].toJsonData()
+        let networkSession = MockNetworkSession(statusCode: 401, data: jwtErrorData)
+
+        let notificationCenter = MockNotificationCenter()
+
+        let healthMonitor = HealthMonitor(dataProvider: HealthMonitorDataProvider(maxTasks: 1000,
+                                                                                  persistenceContextProvider: persistenceContextProvider),
+                                          dateProvider: SystemDateProvider(),
+                                          networkSession: networkSession)
+
+        // Schedule tasks BEFORE starting runner: 1 auth-required, then 2 unauthenticated
+        let scheduler = IterableTaskScheduler(persistenceContextProvider: persistenceContextProvider,
+                                              notificationCenter: notificationCenter,
+                                              healthMonitor: healthMonitor)
+        let _ = try scheduleSampleTask(scheduler: scheduler)
+        let _ = try scheduleUnauthenticatedTask(scheduler: scheduler)
+        let _ = try scheduleUnauthenticatedTask(scheduler: scheduler)
+
+        // Wait for all 3 tasks to persist
+        let scheduledPredicate = NSPredicate { _, _ in
+            (try? self.persistenceContextProvider.mainQueueContext().findAllTasks().count) == 3
+        }
+        let scheduledExpectation = expectation(for: scheduledPredicate, evaluatedWith: nil)
+        wait(for: [scheduledExpectation], timeout: 5.0)
+
+        let retryExpectation = expectation(description: "retry notification received")
+        let retryRef = notificationCenter.addCallback(forNotification: .iterableTaskFinishedWithRetry) { _ in
+            retryExpectation.fulfill()
+        }
+        XCTAssertNotNil(retryRef)
+
+        let taskRunner = IterableTaskRunner(networkSession: networkSession,
+                                            persistenceContextProvider: persistenceContextProvider,
+                                            healthMonitor: healthMonitor,
+                                            notificationCenter: notificationCenter,
+                                            timeInterval: 0.5,
+                                            autoRetry: true)
+        taskRunner.start()
+
+        // Wait for the auth-required task to fail and pause the runner
+        wait(for: [retryExpectation], timeout: 5.0)
+        notificationCenter.removeCallbacks(withIds: retryRef.callbackId)
+
+        // Fix network so unauthenticated tasks succeed
+        networkSession.responseCallback = nil
+
+        // Wait for the 2 unauthenticated tasks to be processed
+        let unauthSuccessExpectation = expectation(description: "unauthenticated tasks processed")
+        unauthSuccessExpectation.expectedFulfillmentCount = 2
+        let successRef = notificationCenter.addCallback(forNotification: .iterableTaskFinishedWithSuccess) { _ in
+            unauthSuccessExpectation.fulfill()
+        }
+        XCTAssertNotNil(successRef)
+
+        wait(for: [unauthSuccessExpectation], timeout: 10.0)
+        notificationCenter.removeCallbacks(withIds: successRef.callbackId)
+
+        // Only the auth-required task should remain
+        XCTAssertEqual(try persistenceContextProvider.mainQueueContext().findAllTasks().count, 1)
+
+        // Now refresh auth — the remaining auth task should process
+        notificationCenter.post(name: .iterableAuthTokenRefreshed, object: nil, userInfo: nil)
+        verifyTaskIsExecuted(notificationCenter, withinInterval: 10.0)
         waitForZeroTasks()
 
         taskRunner.stop()
@@ -787,7 +968,7 @@ class TaskRunnerTests: XCTestCase {
         taskRunner.start()
 
         // Post auth refresh with no tasks in DB - should not crash or trigger anything
-        NotificationCenter.default.post(name: .iterableAuthTokenRefreshed, object: nil)
+        notificationCenter.post(name: .iterableAuthTokenRefreshed, object: nil, userInfo: nil)
 
         // Give it a moment to process
         let noOpExpectation = expectation(description: "wait for potential processing")
@@ -861,17 +1042,31 @@ class TaskRunnerTests: XCTestCase {
         let apiKey = "zee-api-key"
         let eventName = "CustomEvent1"
         let dataFields = ["var1": "val1", "var2": "val2"]
-        
+
         let requestCreator = RequestCreator(auth: auth, deviceMetadata: deviceMetadata)
         guard case let Result.success(trackEventRequest) = requestCreator.createTrackEventRequest(eventName, dataFields: dataFields) else {
             throw IterableError.general(description: "Could not create trackEvent request")
         }
-        
+
         let apiCallRequest = IterableAPICallRequest(apiKey: apiKey,
                                                     endpoint: Endpoint.api,
                                                     authToken: auth.authToken,
                                                     deviceMetadata: deviceMetadata,
                                                     iterableRequest: trackEventRequest)
+        return scheduler.schedule(apiCallRequest: apiCallRequest)
+    }
+
+    /// Schedules a task with an unauthenticated API path (disableDevice) for bypass testing.
+    private func scheduleUnauthenticatedTask(scheduler: IterableTaskScheduler) throws -> Pending<String, IterableTaskError> {
+        let apiKey = "zee-api-key"
+        let iterableRequest = IterableRequest.post(PostRequest(path: Const.Path.disableDevice,
+                                                               args: nil,
+                                                               body: ["token": "test-token"]))
+        let apiCallRequest = IterableAPICallRequest(apiKey: apiKey,
+                                                    endpoint: Endpoint.api,
+                                                    authToken: nil,
+                                                    deviceMetadata: deviceMetadata,
+                                                    iterableRequest: iterableRequest)
         return scheduler.schedule(apiCallRequest: apiCallRequest)
     }
 
