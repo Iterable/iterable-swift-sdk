@@ -640,6 +640,135 @@ class TaskRunnerTests: XCTestCase {
         taskRunner.stop()
     }
 
+    func testNewTaskScheduledDuringAuthPauseNotProcessedUntilResume() throws {
+        let jwtErrorData = ["code": "InvalidJwtPayload"].toJsonData()
+        let networkSession = MockNetworkSession(statusCode: 401, data: jwtErrorData)
+
+        let notificationCenter = MockNotificationCenter()
+        let retryExpectation = expectation(description: "retry notification received")
+
+        let reference = notificationCenter.addCallback(forNotification: .iterableTaskFinishedWithRetry) { _ in
+            retryExpectation.fulfill()
+        }
+        XCTAssertNotNil(reference)
+
+        let healthMonitor = HealthMonitor(dataProvider: HealthMonitorDataProvider(maxTasks: 1000,
+                                                                                  persistenceContextProvider: persistenceContextProvider),
+                                          dateProvider: SystemDateProvider(),
+                                          networkSession: networkSession)
+        let taskRunner = IterableTaskRunner(networkSession: networkSession,
+                                            persistenceContextProvider: persistenceContextProvider,
+                                            healthMonitor: healthMonitor,
+                                            notificationCenter: notificationCenter,
+                                            timeInterval: 0.5,
+                                            autoRetry: true)
+        taskRunner.start()
+
+        let scheduler = IterableTaskScheduler(persistenceContextProvider: persistenceContextProvider,
+                                              notificationCenter: notificationCenter,
+                                              healthMonitor: healthMonitor)
+        let _ = try scheduleSampleTask(scheduler: scheduler)
+
+        // Wait for the 401 to pause the runner
+        wait(for: [retryExpectation], timeout: 5.0)
+        notificationCenter.removeCallbacks(withIds: reference.callbackId)
+
+        // Now schedule a NEW task while auth is paused
+        let _ = try scheduleSampleTask(scheduler: scheduler)
+
+        // Verify the new task is NOT processed while auth is paused
+        verifyNoTaskIsExecuted(notificationCenter, forInterval: 2.0)
+
+        // Both tasks should be retained in DB
+        XCTAssertEqual(try persistenceContextProvider.mainQueueContext().findAllTasks().count, 2)
+
+        // Now fix network and resume via auth token refresh
+        networkSession.responseCallback = nil
+        NotificationCenter.default.post(name: .iterableAuthTokenRefreshed, object: nil)
+
+        // Both tasks should now process successfully
+        let successExpectation = expectation(description: "both tasks processed")
+        successExpectation.expectedFulfillmentCount = 2
+        let successRef = notificationCenter.addCallback(forNotification: .iterableTaskFinishedWithSuccess) { _ in
+            successExpectation.fulfill()
+        }
+        XCTAssertNotNil(successRef)
+
+        wait(for: [successExpectation], timeout: 15.0)
+        waitForZeroTasks()
+
+        taskRunner.stop()
+    }
+
+    func testMultipleTasksScheduledDuringAuthPauseAllProcessAfterResume() throws {
+        let jwtErrorData = ["code": "InvalidJwtPayload"].toJsonData()
+        let networkSession = MockNetworkSession(statusCode: 401, data: jwtErrorData)
+
+        let notificationCenter = MockNotificationCenter()
+        let retryExpectation = expectation(description: "retry notification received")
+
+        let reference = notificationCenter.addCallback(forNotification: .iterableTaskFinishedWithRetry) { _ in
+            retryExpectation.fulfill()
+        }
+        XCTAssertNotNil(reference)
+
+        let healthMonitor = HealthMonitor(dataProvider: HealthMonitorDataProvider(maxTasks: 1000,
+                                                                                  persistenceContextProvider: persistenceContextProvider),
+                                          dateProvider: SystemDateProvider(),
+                                          networkSession: networkSession)
+        let taskRunner = IterableTaskRunner(networkSession: networkSession,
+                                            persistenceContextProvider: persistenceContextProvider,
+                                            healthMonitor: healthMonitor,
+                                            notificationCenter: notificationCenter,
+                                            timeInterval: 0.5,
+                                            autoRetry: true)
+        taskRunner.start()
+
+        let scheduler = IterableTaskScheduler(persistenceContextProvider: persistenceContextProvider,
+                                              notificationCenter: notificationCenter,
+                                              healthMonitor: healthMonitor)
+
+        // Schedule first task to trigger auth pause
+        let _ = try scheduleSampleTask(scheduler: scheduler)
+
+        // Wait for the 401 to pause the runner
+        wait(for: [retryExpectation], timeout: 5.0)
+        notificationCenter.removeCallbacks(withIds: reference.callbackId)
+
+        // Schedule 3 more tasks while auth is paused
+        try scheduleSampleTasks(scheduler: scheduler, times: 3, scheduledTaskIds: [])
+
+        // Wait for all new tasks to be persisted
+        let scheduledPredicate = NSPredicate { _, _ in
+            (try? self.persistenceContextProvider.mainQueueContext().findAllTasks().count) == 4
+        }
+        let scheduledExpectation = expectation(for: scheduledPredicate, evaluatedWith: nil)
+        wait(for: [scheduledExpectation], timeout: 5.0)
+
+        // Verify no tasks are processed while auth is paused
+        verifyNoTaskIsExecuted(notificationCenter, forInterval: 2.0)
+
+        // All 4 tasks should still be in DB
+        XCTAssertEqual(try persistenceContextProvider.mainQueueContext().findAllTasks().count, 4)
+
+        // Fix network and resume via single auth token refresh
+        networkSession.responseCallback = nil
+        NotificationCenter.default.post(name: .iterableAuthTokenRefreshed, object: nil)
+
+        // All 4 tasks should process successfully
+        let successExpectation = expectation(description: "all tasks processed")
+        successExpectation.expectedFulfillmentCount = 4
+        let successRef = notificationCenter.addCallback(forNotification: .iterableTaskFinishedWithSuccess) { _ in
+            successExpectation.fulfill()
+        }
+        XCTAssertNotNil(successRef)
+
+        wait(for: [successExpectation], timeout: 15.0)
+        waitForZeroTasks()
+
+        taskRunner.stop()
+    }
+
     func testAuthTokenRefreshWithNoPendingTasksIsNoOp() throws {
         let networkSession = MockNetworkSession()
 
