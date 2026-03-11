@@ -13,12 +13,14 @@ class IterableTaskRunner: NSObject {
          timeInterval: TimeInterval = 1.0 * 60,
          connectivityManager: NetworkConnectivityManager = NetworkConnectivityManager(),
          dateProvider: DateProviderProtocol = SystemDateProvider(),
-         autoRetry: Bool = false) {
+         autoRetry: Bool = false,
+         connectivityDebounceInterval: TimeInterval = 3.0) {
         ITBInfo()
         self.networkSession = networkSession
         self.healthMonitor = healthMonitor
         self.notificationCenter = notificationCenter
         self.timeInterval = timeInterval
+        self.connectivityDebounceInterval = connectivityDebounceInterval
         self.dateProvider = dateProvider
         self.connectivityManager = connectivityManager
         self.persistenceContext = persistenceContextProvider.newBackgroundContext()
@@ -57,6 +59,8 @@ class IterableTaskRunner: NSObject {
     
     func stop() {
         ITBInfo()
+        connectivityDebounceWorkItem?.cancel()
+        connectivityDebounceWorkItem = nil
         persistenceContext.perform { [weak self] in
             self?.paused = true
             self?.running = false
@@ -93,14 +97,33 @@ class IterableTaskRunner: NSObject {
 
     private func onConnectivityChanged(connected: Bool) {
         ITBInfo()
-        persistenceContext.perform { [weak self] in
-            if connected {
-                if self?.paused == true {
-                    self?.paused = false
-                    self?.run()
+
+        // Cancel any pending reconnect debounce.
+        connectivityDebounceWorkItem?.cancel()
+        connectivityDebounceWorkItem = nil
+
+        if connected {
+            // Debounce reconnect: wait a short period to confirm connectivity
+            // is stable before resuming task processing. This prevents rapid
+            // pause/resume cycles when the network is flapping.
+            let workItem = DispatchWorkItem { [weak self] in
+                self?.persistenceContext.perform {
+                    guard let self = self, self.paused else { return }
+                    ITBInfo("Connectivity confirmed stable, resuming")
+                    self.paused = false
+                    self.run()
                 }
-            } else {
+            }
+            connectivityDebounceWorkItem = workItem
+            DispatchQueue.global().asyncAfter(
+                deadline: .now() + connectivityDebounceInterval,
+                execute: workItem
+            )
+        } else {
+            // Pause immediately on disconnect — no debounce needed.
+            persistenceContext.perform { [weak self] in
                 if self?.paused == false {
+                    ITBInfo("Network disconnected, pausing")
                     self?.paused = true
                 }
             }
@@ -114,8 +137,16 @@ class IterableTaskRunner: NSObject {
             guard let self = self, self.authPaused else {
                 return
             }
-            ITBInfo("Auth token refreshed, resuming task processing")
+            ITBInfo("Auth token refreshed, clearing auth pause")
             self.authPaused = false
+
+            // Only resume if network is also available.
+            // If paused (no connectivity), run() will be triggered
+            // when connectivity returns via onConnectivityChanged.
+            guard !self.paused else {
+                ITBInfo("Network still unavailable, deferring resume until connectivity returns")
+                return
+            }
             self.run()
         }
     }
@@ -169,8 +200,10 @@ class IterableTaskRunner: NSObject {
         ITBInfo()
 
         /// This is a recursive function.
-        /// Check whether we were stopped in the middle of running tasks
-        guard !paused, !authPaused else {
+        /// Check whether we were stopped in the middle of running tasks.
+        /// Note: authPaused is NOT checked here — the per-task logic below
+        /// handles it by routing to unauthenticated tasks only.
+        guard !paused else {
             ITBInfo("Tasks paused before finishing processTasks()")
             scheduleNext()
             return
@@ -354,6 +387,7 @@ class IterableTaskRunner: NSObject {
 
     deinit {
         ITBInfo()
+        connectivityDebounceWorkItem?.cancel()
         notificationCenter.removeObserver(self)
     }
     
@@ -377,12 +411,14 @@ class IterableTaskRunner: NSObject {
     }
     
     private var workItem: DispatchWorkItem?
+    private var connectivityDebounceWorkItem: DispatchWorkItem?
     private var paused = false
     private var authPaused = false
     private let networkSession: NetworkSessionProtocol
     private let healthMonitor: HealthMonitor
     private let notificationCenter: NotificationCenterProtocol
     private let timeInterval: TimeInterval
+    private let connectivityDebounceInterval: TimeInterval
     private let dateProvider: DateProviderProtocol
     private let connectivityManager: NetworkConnectivityManager
     private var running = false
