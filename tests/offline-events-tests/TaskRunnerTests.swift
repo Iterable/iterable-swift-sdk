@@ -604,8 +604,91 @@ class TaskRunnerTests: XCTestCase {
         taskRunner.stop()
     }
 
-    func test500ErrorDeletesTaskEvenWithAutoRetry() throws {
+    func testRetainTaskOn5xxWithAutoRetry() throws {
         let networkSession = MockNetworkSession(statusCode: 500, json: [:])
+
+        let notificationCenter = MockNotificationCenter()
+        let retryExpectation = expectation(description: "retry notification received")
+
+        let reference = notificationCenter.addCallback(forNotification: .iterableTaskFinishedWithRetry) { _ in
+            retryExpectation.fulfill()
+        }
+        XCTAssertNotNil(reference)
+
+        let healthMonitor = HealthMonitor(dataProvider: HealthMonitorDataProvider(maxTasks: 1000,
+                                                                                  persistenceContextProvider: persistenceContextProvider),
+                                          dateProvider: SystemDateProvider(),
+                                          networkSession: networkSession)
+        let taskRunner = IterableTaskRunner(networkSession: networkSession,
+                                            persistenceContextProvider: persistenceContextProvider,
+                                            healthMonitor: healthMonitor,
+                                            notificationCenter: notificationCenter,
+                                            timeInterval: 0.5,
+                                            autoRetry: true)
+        taskRunner.start()
+
+        let scheduler = IterableTaskScheduler(persistenceContextProvider: persistenceContextProvider,
+                                              notificationCenter: notificationCenter,
+                                              healthMonitor: healthMonitor)
+        let _ = try scheduleSampleTask(scheduler: scheduler)
+
+        wait(for: [retryExpectation], timeout: 15.0)
+
+        // Task should be retained - 5xx is a transient server error
+        XCTAssertEqual(try persistenceContextProvider.mainQueueContext().findAllTasks().count, 1)
+
+        taskRunner.stop()
+    }
+
+    // MARK: - SDK-349 Serial Execution & Deletion Semantics Tests
+
+    func testRetainTaskOn5xxAndProcessAfterRecovery() throws {
+        let networkSession = MockNetworkSession(statusCode: 500, json: [:])
+
+        let notificationCenter = MockNotificationCenter()
+        let retryExpectation = expectation(description: "retry notification received")
+
+        let reference = notificationCenter.addCallback(forNotification: .iterableTaskFinishedWithRetry) { _ in
+            retryExpectation.fulfill()
+        }
+        XCTAssertNotNil(reference)
+
+        let healthMonitor = HealthMonitor(dataProvider: HealthMonitorDataProvider(maxTasks: 1000,
+                                                                                  persistenceContextProvider: persistenceContextProvider),
+                                          dateProvider: SystemDateProvider(),
+                                          networkSession: networkSession)
+        let taskRunner = IterableTaskRunner(networkSession: networkSession,
+                                            persistenceContextProvider: persistenceContextProvider,
+                                            healthMonitor: healthMonitor,
+                                            notificationCenter: notificationCenter,
+                                            timeInterval: 0.5,
+                                            autoRetry: true)
+        taskRunner.start()
+
+        let scheduler = IterableTaskScheduler(persistenceContextProvider: persistenceContextProvider,
+                                              notificationCenter: notificationCenter,
+                                              healthMonitor: healthMonitor)
+        let _ = try scheduleSampleTask(scheduler: scheduler)
+
+        // Wait for the 500 to trigger retry
+        wait(for: [retryExpectation], timeout: 15.0)
+        notificationCenter.removeCallbacks(withIds: reference.callbackId)
+
+        // Task should be retained
+        XCTAssertEqual(try persistenceContextProvider.mainQueueContext().findAllTasks().count, 1)
+
+        // Fix the server — next retry should succeed
+        networkSession.responseCallback = nil
+
+        // Wait for the task to succeed on next cycle
+        verifyTaskIsExecuted(notificationCenter, withinInterval: 10.0)
+        waitForZeroTasks()
+
+        taskRunner.stop()
+    }
+
+    func testDeleteTaskOn4xxClientError() throws {
+        let networkSession = MockNetworkSession(statusCode: 400, json: [:])
 
         let notificationCenter = MockNotificationCenter()
         let noRetryExpectation = expectation(description: "no retry notification received")
@@ -634,7 +717,7 @@ class TaskRunnerTests: XCTestCase {
 
         wait(for: [noRetryExpectation], timeout: 15.0)
 
-        // Task should be deleted - 500 is not a JWT auth failure
+        // 400 is a permanent client error — task should be deleted
         waitForZeroTasks()
 
         taskRunner.stop()

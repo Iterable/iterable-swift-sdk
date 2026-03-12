@@ -143,6 +143,75 @@ class TaskProcessorTests: XCTestCase {
         wait(for: [expectation1], timeout: 15.0)
     }
     
+    // MARK: - SDK-349 Error Classification Tests
+
+    func test5xxErrorIsTransient() throws {
+        let expectation1 = expectation(description: #function)
+        let task = try createSampleTask()!
+
+        let networkSession = MockNetworkSession(statusCode: 500, data: nil, error: nil)
+        let processor = IterableAPICallTaskProcessor(networkSession: networkSession)
+        try processor.process(task: task)
+            .onSuccess { taskResult in
+                switch taskResult {
+                case .failureWithRetry(retryAfter: _, detail: _):
+                    expectation1.fulfill()
+                default:
+                    XCTFail("Expected failureWithRetry for 5xx, got \(taskResult)")
+                }
+            }
+            .onError { _ in XCTFail() }
+
+        try persistenceProvider.mainQueueContext().delete(task: task)
+        try persistenceProvider.mainQueueContext().save()
+        wait(for: [expectation1], timeout: 15.0)
+    }
+
+    func test4xxErrorIsPermanent() throws {
+        let expectation1 = expectation(description: #function)
+        let task = try createSampleTask()!
+
+        let networkSession = MockNetworkSession(statusCode: 400, data: nil, error: nil)
+        let processor = IterableAPICallTaskProcessor(networkSession: networkSession)
+        try processor.process(task: task)
+            .onSuccess { taskResult in
+                switch taskResult {
+                case .failureWithNoRetry(detail: _):
+                    expectation1.fulfill()
+                default:
+                    XCTFail("Expected failureWithNoRetry for 4xx, got \(taskResult)")
+                }
+            }
+            .onError { _ in XCTFail() }
+
+        try persistenceProvider.mainQueueContext().delete(task: task)
+        try persistenceProvider.mainQueueContext().save()
+        wait(for: [expectation1], timeout: 15.0)
+    }
+
+    func testTimeoutErrorIsTransient() throws {
+        let expectation1 = expectation(description: #function)
+        let task = try createSampleTask()!
+
+        let networkError = IterableError.general(description: "The request timed out.")
+        let networkSession = MockNetworkSession(statusCode: 0, data: nil, error: networkError)
+        let processor = IterableAPICallTaskProcessor(networkSession: networkSession)
+        try processor.process(task: task)
+            .onSuccess { taskResult in
+                switch taskResult {
+                case .failureWithRetry(retryAfter: _, detail: _):
+                    expectation1.fulfill()
+                default:
+                    XCTFail("Expected failureWithRetry for timeout, got \(taskResult)")
+                }
+            }
+            .onError { _ in XCTFail() }
+
+        try persistenceProvider.mainQueueContext().delete(task: task)
+        try persistenceProvider.mainQueueContext().save()
+        wait(for: [expectation1], timeout: 15.0)
+    }
+
     func testSentAtInHeader() throws {
         let expectation1 = expectation(description: #function)
         let task = try createSampleTask()!
