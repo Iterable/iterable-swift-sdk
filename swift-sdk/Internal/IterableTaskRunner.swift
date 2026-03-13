@@ -59,9 +59,9 @@ class IterableTaskRunner: NSObject {
     
     func stop() {
         ITBInfo()
-        connectivityDebounceWorkItem?.cancel()
-        connectivityDebounceWorkItem = nil
         persistenceContext.perform { [weak self] in
+            self?.connectivityDebounceWorkItem?.cancel()
+            self?.connectivityDebounceWorkItem = nil
             self?.paused = true
             self?.running = false
             self?.connectivityManager.stop()
@@ -98,33 +98,34 @@ class IterableTaskRunner: NSObject {
     private func onConnectivityChanged(connected: Bool) {
         ITBInfo()
 
-        // Cancel any pending reconnect debounce.
-        connectivityDebounceWorkItem?.cancel()
-        connectivityDebounceWorkItem = nil
+        persistenceContext.perform { [weak self] in
+            guard let self = self else { return }
 
-        if connected {
-            // Debounce reconnect: wait a short period to confirm connectivity
-            // is stable before resuming task processing. This prevents rapid
-            // pause/resume cycles when the network is flapping.
-            let workItem = DispatchWorkItem { [weak self] in
-                self?.persistenceContext.perform {
-                    guard let self = self, self.paused else { return }
-                    ITBInfo("Connectivity confirmed stable, resuming")
-                    self.paused = false
-                    self.run()
+            // Cancel any pending reconnect debounce.
+            self.connectivityDebounceWorkItem?.cancel()
+            self.connectivityDebounceWorkItem = nil
+
+            if connected {
+                // Debounce reconnect: wait a short period to confirm connectivity
+                // is stable before resuming task processing. This prevents rapid
+                // pause/resume cycles when the network is flapping.
+                let workItem = DispatchWorkItem { [weak self] in
+                    self?.persistenceContext.perform {
+                        guard let self = self, self.paused else { return }
+                        ITBInfo("Connectivity confirmed stable, resuming")
+                        self.paused = false
+                        self.run()
+                    }
                 }
-            }
-            connectivityDebounceWorkItem = workItem
-            DispatchQueue.global().asyncAfter(
-                deadline: .now() + connectivityDebounceInterval,
-                execute: workItem
-            )
-        } else {
-            // Pause immediately on disconnect — no debounce needed.
-            persistenceContext.perform { [weak self] in
-                if self?.paused == false {
+                self.connectivityDebounceWorkItem = workItem
+                DispatchQueue.global().asyncAfter(
+                    deadline: .now() + self.connectivityDebounceInterval,
+                    execute: workItem
+                )
+            } else {
+                if !self.paused {
                     ITBInfo("Network disconnected, pausing")
-                    self?.paused = true
+                    self.paused = true
                 }
             }
         }

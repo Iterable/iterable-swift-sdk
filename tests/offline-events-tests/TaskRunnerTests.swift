@@ -1118,6 +1118,7 @@ class TaskRunnerTests: XCTestCase {
 
         // The debounce (2.0s) should have prevented processing during the brief online window
         wait(for: [countExpectation], timeout: 2.0)
+        XCTAssertEqual(processCount, 0, "Task should not have been processed during brief online flap")
 
         // Task should still be in DB since debounced reconnect was cancelled by disconnect
         XCTAssertEqual(try persistenceContextProvider.mainQueueContext().findAllTasks().count, 1)
