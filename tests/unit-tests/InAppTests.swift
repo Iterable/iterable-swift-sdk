@@ -777,6 +777,56 @@ class InAppTests: XCTestCase {
         wait(for: [expectation4], timeout: testExpectationTimeout)
     }
     
+    func testShowBackgroundSyncedMessageOnForegroundWithinCooldown() {
+        let expectation1 = expectation(description: "initial sync completes")
+        let expectation2 = expectation(description: "background sync completes")
+        let expectation3 = expectation(description: "message shown on foreground within cooldown")
+        
+        let payload = TestInAppPayloadGenerator.createPayloadWithUrl(numMessages: 1)
+        
+        let mockInAppFetcher = MockInAppFetcher()
+        let mockDateProvider = MockDateProvider()
+        
+        let mockInAppDisplayer = MockInAppDisplayer()
+        mockInAppDisplayer.onShow.onSuccess { _ in
+            expectation3.fulfill()
+        }
+        
+        let config = IterableConfig()
+        config.inAppDisplayInterval = 1.0
+        
+        let mockApplicationStateProvider = MockApplicationStateProvider(applicationState: .active)
+        let mockNotificationCenter = MockNotificationCenter()
+        
+        let internalApi = InternalIterableAPI.initializeForTesting(
+            config: config,
+            dateProvider: mockDateProvider,
+            inAppFetcher: mockInAppFetcher,
+            inAppDisplayer: mockInAppDisplayer,
+            applicationStateProvider: mockApplicationStateProvider,
+            notificationCenter: mockNotificationCenter
+        )
+        
+        // 1. Initial sync with no messages (sets lastSyncTime)
+        mockInAppFetcher.mockMessagesAvailableFromServer(internalApi: internalApi, messages: []).onSuccess { _ in
+            expectation1.fulfill()
+        }
+        wait(for: [expectation1], timeout: testExpectationTimeout)
+        
+        // 2. App goes to background, new message arrives via background sync
+        mockApplicationStateProvider.applicationState = .background
+        mockInAppFetcher.mockInAppPayloadFromServer(internalApi: internalApi, payload).onSuccess { _ in
+            expectation2.fulfill()
+        }
+        wait(for: [expectation2], timeout: testExpectationTimeout)
+        
+        // 3. App returns to foreground within cooldown (no time advance)
+        mockApplicationStateProvider.applicationState = .active
+        mockNotificationCenter.post(name: UIApplication.didBecomeActiveNotification, object: nil, userInfo: nil)
+        
+        wait(for: [expectation3], timeout: testExpectationTimeout)
+    }
+    
     func testDontShowNewlyArrivedMessageWithinRetryInterval() {
         let expectation1 = expectation(description: "show first message")
         let expectation2 = expectation(description: "don't show second message within interval")

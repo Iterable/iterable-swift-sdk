@@ -234,6 +234,8 @@ class InAppManager: NSObject, IterableInternalInAppManagerProtocol {
             _ = scheduleSync()
         } else {
             ITBInfo("can't sync now, need to wait: \(waitTime)")
+            
+            processExistingMessages()
         }
     }
     
@@ -369,6 +371,15 @@ class InAppManager: NSObject, IterableInternalInAppManagerProtocol {
         }
     }
     
+    private func processExistingMessages() {
+        _ = InAppManager.getAppIsReady(applicationStateProvider: applicationStateProvider, displayer: displayer).map { [weak self] appIsActive in
+            if appIsActive, let messagesMap = self?.messagesMap {
+                self?.processAndShowMessage(messagesMap: messagesMap)
+                self?.persister.persist(messagesMap.values)
+            }
+        }
+    }
+    
     // This method schedules next triggered message after showing a message
     private func scheduleNextInAppMessage() {
         ITBDebug()
@@ -381,14 +392,7 @@ class InAppManager: NSObject, IterableInternalInAppManagerProtocol {
                 self?.scheduleNextInAppMessage()
             }
         } else {
-            _ = InAppManager.getAppIsReady(applicationStateProvider: applicationStateProvider, displayer: displayer).map { [weak self] appIsActive in
-                if appIsActive {
-                    if let messagesMap = self?.messagesMap {
-                        self?.processAndShowMessage(messagesMap: messagesMap)
-                        self?.persister.persist(messagesMap.values)
-                    }
-                }
-            }
+            processExistingMessages()
         }
     }
     
