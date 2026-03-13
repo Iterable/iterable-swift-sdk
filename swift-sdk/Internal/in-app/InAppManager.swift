@@ -233,7 +233,7 @@ class InAppManager: NSObject, IterableInternalInAppManagerProtocol {
         if waitTime <= 0 {
             _ = scheduleSync()
         } else {
-            ITBInfo("can't sync now, need to wait: \(waitTime)")
+            ITBInfo("skipping sync (cooldown: \(waitTime)s), processing existing messages")
             
             processExistingMessages()
         }
