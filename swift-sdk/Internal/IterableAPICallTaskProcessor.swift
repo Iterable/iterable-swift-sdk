@@ -53,12 +53,16 @@ struct IterableAPICallTaskProcessor: IterableTaskProcessor {
 
     private let dateProvider: DateProviderProtocol
     
-    /// Returns true for permanent client errors (4xx) that should NOT be retried.
-    /// Network-level errors (no HTTP status) and server errors (5xx) are transient.
+    /// Returns true for permanent client errors (4xx, excluding 429) that should NOT be retried.
+    /// Network-level errors (no HTTP status), server errors (5xx), and 429 (rate limit) are transient.
     private static func isPermanentFailure(sendRequestError: SendRequestError) -> Bool {
         guard let statusCode = sendRequestError.httpStatusCode else {
             // No HTTP status code → network-level error (timeout, DNS, connection reset).
             // Always transient.
+            return false
+        }
+        // 429 Too Many Requests is transient — the server is asking us to retry later.
+        if statusCode == 429 {
             return false
         }
         return statusCode >= 400 && statusCode < 500

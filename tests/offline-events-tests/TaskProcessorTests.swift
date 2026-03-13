@@ -189,6 +189,28 @@ class TaskProcessorTests: XCTestCase {
         wait(for: [expectation1], timeout: 15.0)
     }
 
+    func test429RateLimitIsTransient() throws {
+        let expectation1 = expectation(description: #function)
+        let task = try createSampleTask()!
+
+        let networkSession = MockNetworkSession(statusCode: 429, data: nil, error: nil)
+        let processor = IterableAPICallTaskProcessor(networkSession: networkSession)
+        try processor.process(task: task)
+            .onSuccess { taskResult in
+                switch taskResult {
+                case .failureWithRetry(retryAfter: _, detail: _):
+                    expectation1.fulfill()
+                default:
+                    XCTFail("Expected failureWithRetry for 429, got \(taskResult)")
+                }
+            }
+            .onError { _ in XCTFail() }
+
+        try persistenceProvider.mainQueueContext().delete(task: task)
+        try persistenceProvider.mainQueueContext().save()
+        wait(for: [expectation1], timeout: 15.0)
+    }
+
     func testTimeoutErrorIsTransient() throws {
         let expectation1 = expectation(description: #function)
         let task = try createSampleTask()!
