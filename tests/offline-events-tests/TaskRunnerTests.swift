@@ -604,8 +604,91 @@ class TaskRunnerTests: XCTestCase {
         taskRunner.stop()
     }
 
-    func test500ErrorDeletesTaskEvenWithAutoRetry() throws {
+    func testRetainTaskOn5xxWithAutoRetry() throws {
         let networkSession = MockNetworkSession(statusCode: 500, json: [:])
+
+        let notificationCenter = MockNotificationCenter()
+        let retryExpectation = expectation(description: "retry notification received")
+
+        let reference = notificationCenter.addCallback(forNotification: .iterableTaskFinishedWithRetry) { _ in
+            retryExpectation.fulfill()
+        }
+        XCTAssertNotNil(reference)
+
+        let healthMonitor = HealthMonitor(dataProvider: HealthMonitorDataProvider(maxTasks: 1000,
+                                                                                  persistenceContextProvider: persistenceContextProvider),
+                                          dateProvider: SystemDateProvider(),
+                                          networkSession: networkSession)
+        let taskRunner = IterableTaskRunner(networkSession: networkSession,
+                                            persistenceContextProvider: persistenceContextProvider,
+                                            healthMonitor: healthMonitor,
+                                            notificationCenter: notificationCenter,
+                                            timeInterval: 0.5,
+                                            autoRetry: true)
+        taskRunner.start()
+
+        let scheduler = IterableTaskScheduler(persistenceContextProvider: persistenceContextProvider,
+                                              notificationCenter: notificationCenter,
+                                              healthMonitor: healthMonitor)
+        let _ = try scheduleSampleTask(scheduler: scheduler)
+
+        wait(for: [retryExpectation], timeout: 15.0)
+
+        // Task should be retained - 5xx is a transient server error
+        XCTAssertEqual(try persistenceContextProvider.mainQueueContext().findAllTasks().count, 1)
+
+        taskRunner.stop()
+    }
+
+    // MARK: - SDK-349 Serial Execution & Deletion Semantics Tests
+
+    func testRetainTaskOn5xxAndProcessAfterRecovery() throws {
+        let networkSession = MockNetworkSession(statusCode: 500, json: [:])
+
+        let notificationCenter = MockNotificationCenter()
+        let retryExpectation = expectation(description: "retry notification received")
+
+        let reference = notificationCenter.addCallback(forNotification: .iterableTaskFinishedWithRetry) { _ in
+            retryExpectation.fulfill()
+        }
+        XCTAssertNotNil(reference)
+
+        let healthMonitor = HealthMonitor(dataProvider: HealthMonitorDataProvider(maxTasks: 1000,
+                                                                                  persistenceContextProvider: persistenceContextProvider),
+                                          dateProvider: SystemDateProvider(),
+                                          networkSession: networkSession)
+        let taskRunner = IterableTaskRunner(networkSession: networkSession,
+                                            persistenceContextProvider: persistenceContextProvider,
+                                            healthMonitor: healthMonitor,
+                                            notificationCenter: notificationCenter,
+                                            timeInterval: 0.5,
+                                            autoRetry: true)
+        taskRunner.start()
+
+        let scheduler = IterableTaskScheduler(persistenceContextProvider: persistenceContextProvider,
+                                              notificationCenter: notificationCenter,
+                                              healthMonitor: healthMonitor)
+        let _ = try scheduleSampleTask(scheduler: scheduler)
+
+        // Wait for the 500 to trigger retry
+        wait(for: [retryExpectation], timeout: 15.0)
+        notificationCenter.removeCallbacks(withIds: reference.callbackId)
+
+        // Task should be retained
+        XCTAssertEqual(try persistenceContextProvider.mainQueueContext().findAllTasks().count, 1)
+
+        // Fix the server — next retry should succeed
+        networkSession.responseCallback = nil
+
+        // Wait for the task to succeed on next cycle
+        verifyTaskIsExecuted(notificationCenter, withinInterval: 10.0)
+        waitForZeroTasks()
+
+        taskRunner.stop()
+    }
+
+    func testDeleteTaskOn4xxClientError() throws {
+        let networkSession = MockNetworkSession(statusCode: 400, json: [:])
 
         let notificationCenter = MockNotificationCenter()
         let noRetryExpectation = expectation(description: "no retry notification received")
@@ -634,7 +717,7 @@ class TaskRunnerTests: XCTestCase {
 
         wait(for: [noRetryExpectation], timeout: 15.0)
 
-        // Task should be deleted - 500 is not a JWT auth failure
+        // 400 is a permanent client error — task should be deleted
         waitForZeroTasks()
 
         taskRunner.stop()
@@ -977,6 +1060,221 @@ class TaskRunnerTests: XCTestCase {
 
         // DB should still be empty
         XCTAssertEqual(try persistenceContextProvider.mainQueueContext().findAllTasks().count, 0)
+
+        taskRunner.stop()
+    }
+
+    // MARK: - SDK-347 Unpause Processing Tests
+
+    /// Creates a NetworkConnectivityManager suitable for testing, using the given
+    /// notification center to simulate online/offline transitions.
+    private func makeTestConnectivityManager(notificationCenter: MockNotificationCenter) -> NetworkConnectivityManager {
+        let mockMonitor = MockNetworkMonitor()
+        let mockChecker = NetworkConnectivityChecker(networkSession: MockNetworkSession())
+        return NetworkConnectivityManager(
+            networkMonitor: mockMonitor,
+            connectivityChecker: mockChecker,
+            notificationCenter: notificationCenter,
+            offlineModePollingInterval: 600,
+            onlineModePollingInterval: 600
+        )
+    }
+
+    func testAuthRefreshDuringNetworkOutageDefersResume() throws {
+        let jwtErrorData = ["code": "InvalidJwtPayload"].toJsonData()
+        let networkSession = MockNetworkSession(statusCode: 401, data: jwtErrorData)
+
+        let notificationCenter = MockNotificationCenter()
+        // Separate notification center for connectivity to control it independently
+        let connectivityNC = MockNotificationCenter()
+        let connectivityManager = makeTestConnectivityManager(notificationCenter: connectivityNC)
+
+        let retryExpectation = expectation(description: "retry notification received")
+        let reference = notificationCenter.addCallback(forNotification: .iterableTaskFinishedWithRetry) { _ in
+            retryExpectation.fulfill()
+        }
+        XCTAssertNotNil(reference)
+
+        let healthMonitor = HealthMonitor(dataProvider: HealthMonitorDataProvider(maxTasks: 1000,
+                                                                                  persistenceContextProvider: persistenceContextProvider),
+                                          dateProvider: SystemDateProvider(),
+                                          networkSession: networkSession)
+        let taskRunner = IterableTaskRunner(networkSession: networkSession,
+                                            persistenceContextProvider: persistenceContextProvider,
+                                            healthMonitor: healthMonitor,
+                                            notificationCenter: notificationCenter,
+                                            timeInterval: 0.5,
+                                            connectivityManager: connectivityManager,
+                                            autoRetry: true,
+                                            connectivityDebounceInterval: 0.5)
+        taskRunner.start()
+
+        let scheduler = IterableTaskScheduler(persistenceContextProvider: persistenceContextProvider,
+                                              notificationCenter: notificationCenter,
+                                              healthMonitor: healthMonitor)
+        let _ = try scheduleSampleTask(scheduler: scheduler)
+
+        // Wait for the 401 to trigger auth pause
+        wait(for: [retryExpectation], timeout: 5.0)
+        notificationCenter.removeCallbacks(withIds: reference.callbackId)
+
+        // Simulate network going offline
+        connectivityNC.post(name: .iterableNetworkOffline, object: nil, userInfo: nil)
+
+        // Allow state transition to settle
+        let settleExpectation = expectation(description: "settle")
+        settleExpectation.isInverted = true
+        wait(for: [settleExpectation], timeout: 1.0)
+
+        // Fix the mock network but post auth refresh while "offline"
+        networkSession.responseCallback = nil
+        notificationCenter.post(name: .iterableAuthTokenRefreshed, object: nil, userInfo: nil)
+
+        // Task should NOT process — network is still down
+        verifyNoTaskIsExecuted(notificationCenter, forInterval: 2.0)
+
+        // Task still in DB
+        XCTAssertEqual(try persistenceContextProvider.mainQueueContext().findAllTasks().count, 1)
+
+        // Bring network back online — task should now resume after debounce
+        connectivityNC.post(name: .iterableNetworkOnline, object: nil, userInfo: nil)
+
+        verifyTaskIsExecuted(notificationCenter, withinInterval: 10.0)
+        waitForZeroTasks()
+
+        taskRunner.stop()
+    }
+
+    func testConnectivityFlapDoesNotCauseRapidProcessing() throws {
+        let networkSession = MockNetworkSession()
+        let notificationCenter = MockNotificationCenter()
+        let connectivityNC = MockNotificationCenter()
+        let connectivityManager = makeTestConnectivityManager(notificationCenter: connectivityNC)
+
+        var processCount = 0
+        let countExpectation = expectation(description: "track processing")
+        countExpectation.isInverted = true
+
+        let healthMonitor = HealthMonitor(dataProvider: HealthMonitorDataProvider(maxTasks: 1000,
+                                                                                  persistenceContextProvider: persistenceContextProvider),
+                                          dateProvider: SystemDateProvider(),
+                                          networkSession: networkSession)
+        let taskRunner = IterableTaskRunner(networkSession: networkSession,
+                                            persistenceContextProvider: persistenceContextProvider,
+                                            healthMonitor: healthMonitor,
+                                            notificationCenter: notificationCenter,
+                                            timeInterval: 0.5,
+                                            connectivityManager: connectivityManager,
+                                            autoRetry: true,
+                                            connectivityDebounceInterval: 2.0)
+        taskRunner.start()
+
+        let scheduler = IterableTaskScheduler(persistenceContextProvider: persistenceContextProvider,
+                                              notificationCenter: notificationCenter,
+                                              healthMonitor: healthMonitor)
+        let _ = try scheduleSampleTask(scheduler: scheduler)
+
+        // Wait for the initial task to process
+        verifyTaskIsExecuted(notificationCenter, withinInterval: 5.0)
+        waitForZeroTasks()
+
+        // Schedule another task
+        let _ = try scheduleSampleTask(scheduler: scheduler)
+
+        // Now simulate rapid network flapping: offline → online → offline → online
+        let successRef = notificationCenter.addCallback(forNotification: .iterableTaskFinishedWithSuccess) { _ in
+            processCount += 1
+        }
+
+        connectivityNC.post(name: .iterableNetworkOffline, object: nil, userInfo: nil)
+
+        // Rapid flap: come back online briefly then go offline again
+        let flapDelay = expectation(description: "flap delay")
+        flapDelay.isInverted = true
+        wait(for: [flapDelay], timeout: 0.3)
+        connectivityNC.post(name: .iterableNetworkOnline, object: nil, userInfo: nil)
+
+        let flapDelay2 = expectation(description: "flap delay 2")
+        flapDelay2.isInverted = true
+        wait(for: [flapDelay2], timeout: 0.3)
+        connectivityNC.post(name: .iterableNetworkOffline, object: nil, userInfo: nil)
+
+        // The debounce (2.0s) should have prevented processing during the brief online window
+        wait(for: [countExpectation], timeout: 2.0)
+        XCTAssertEqual(processCount, 0, "Task should not have been processed during brief online flap")
+
+        // Task should still be in DB since debounced reconnect was cancelled by disconnect
+        XCTAssertEqual(try persistenceContextProvider.mainQueueContext().findAllTasks().count, 1)
+
+        notificationCenter.removeCallbacks(withIds: successRef.callbackId)
+
+        // Now actually come back online for real
+        connectivityNC.post(name: .iterableNetworkOnline, object: nil, userInfo: nil)
+
+        verifyTaskIsExecuted(notificationCenter, withinInterval: 10.0)
+        waitForZeroTasks()
+
+        taskRunner.stop()
+    }
+
+    func testResumeOnlyWhenBothAuthAndNetworkReady() throws {
+        let jwtErrorData = ["code": "InvalidJwtPayload"].toJsonData()
+        let networkSession = MockNetworkSession(statusCode: 401, data: jwtErrorData)
+
+        let notificationCenter = MockNotificationCenter()
+        let connectivityNC = MockNotificationCenter()
+        let connectivityManager = makeTestConnectivityManager(notificationCenter: connectivityNC)
+
+        let retryExpectation = expectation(description: "retry notification received")
+        let reference = notificationCenter.addCallback(forNotification: .iterableTaskFinishedWithRetry) { _ in
+            retryExpectation.fulfill()
+        }
+        XCTAssertNotNil(reference)
+
+        let healthMonitor = HealthMonitor(dataProvider: HealthMonitorDataProvider(maxTasks: 1000,
+                                                                                  persistenceContextProvider: persistenceContextProvider),
+                                          dateProvider: SystemDateProvider(),
+                                          networkSession: networkSession)
+        let taskRunner = IterableTaskRunner(networkSession: networkSession,
+                                            persistenceContextProvider: persistenceContextProvider,
+                                            healthMonitor: healthMonitor,
+                                            notificationCenter: notificationCenter,
+                                            timeInterval: 0.5,
+                                            connectivityManager: connectivityManager,
+                                            autoRetry: true,
+                                            connectivityDebounceInterval: 0.5)
+        taskRunner.start()
+
+        let scheduler = IterableTaskScheduler(persistenceContextProvider: persistenceContextProvider,
+                                              notificationCenter: notificationCenter,
+                                              healthMonitor: healthMonitor)
+        let _ = try scheduleSampleTask(scheduler: scheduler)
+
+        // Wait for 401 to pause
+        wait(for: [retryExpectation], timeout: 5.0)
+        notificationCenter.removeCallbacks(withIds: reference.callbackId)
+
+        // Both auth AND network are now problematic:
+        // authPaused = true (from 401), and network goes offline
+        connectivityNC.post(name: .iterableNetworkOffline, object: nil, userInfo: nil)
+
+        let settleExpectation = expectation(description: "settle")
+        settleExpectation.isInverted = true
+        wait(for: [settleExpectation], timeout: 1.0)
+
+        // Fix network response
+        networkSession.responseCallback = nil
+
+        // Step 1: Network comes back, but auth is still paused → should NOT process auth-required task
+        connectivityNC.post(name: .iterableNetworkOnline, object: nil, userInfo: nil)
+        verifyNoTaskIsExecuted(notificationCenter, forInterval: 3.0)
+        XCTAssertEqual(try persistenceContextProvider.mainQueueContext().findAllTasks().count, 1)
+
+        // Step 2: Auth refreshes → NOW both conditions are met → task should process
+        notificationCenter.post(name: .iterableAuthTokenRefreshed, object: nil, userInfo: nil)
+
+        verifyTaskIsExecuted(notificationCenter, withinInterval: 10.0)
+        waitForZeroTasks()
 
         taskRunner.stop()
     }
