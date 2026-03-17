@@ -238,7 +238,7 @@ final class HomeViewController: UIViewController, UITextFieldDelegate {
         container.accessibilityIdentifier = "offline-retry-test-row"
 
         let titleLabel = UILabel()
-        titleLabel.text = "Offline Retry Testing"
+        titleLabel.text = "JWT Auth Retry Testing"
         titleLabel.font = .systemFont(ofSize: 16, weight: .medium)
         titleLabel.textColor = .label
         titleLabel.translatesAutoresizingMaskIntoConstraints = false

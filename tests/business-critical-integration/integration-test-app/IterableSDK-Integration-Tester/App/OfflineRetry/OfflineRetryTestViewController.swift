@@ -164,7 +164,7 @@ final class OfflineRetryTestViewController: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        title = "Offline Retry Testing"
+        title = "JWT Auth Retry Testing"
         view.backgroundColor = .systemBackground
 
         setupNavigation()
