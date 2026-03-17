@@ -7,7 +7,6 @@ final class RemoteConfigOverrideViewController: UIViewController {
 
     private var pollTimer: Timer?
     private let configManager = ConfigOverrideManager.shared
-    private let mockServer = MockAPIServer.shared
 
     // MARK: - UI Components
 
@@ -24,16 +23,6 @@ final class RemoteConfigOverrideViewController: UIViewController {
         stack.translatesAutoresizingMaskIntoConstraints = false
         return stack
     }()
-
-    // Mock Server Section
-    private let mockServerSectionLabel: UILabel = {
-        let label = UILabel()
-        label.text = "Mock JWT Server"
-        label.font = .systemFont(ofSize: 18, weight: .bold)
-        return label
-    }()
-
-    private let mockServerToggle = SwitchRowView(title: "Enable Mock JWT Server")
 
     // Remote Config Overrides Section
     private let overridesSectionLabel: UILabel = {
@@ -98,7 +87,7 @@ final class RemoteConfigOverrideViewController: UIViewController {
         view.backgroundColor = .systemBackground
         setupUI()
         setupActions()
-        syncUIFromMockServer()
+        syncUIFromState()
         startPolling()
     }
 
@@ -112,17 +101,12 @@ final class RemoteConfigOverrideViewController: UIViewController {
         view.addSubview(scrollView)
         scrollView.addSubview(contentStack)
 
-        // Mock Server card
-        let mockServerCard = createCard(subviews: [mockServerToggle])
-
         // Overrides card
         let overridesCard = createCard(subviews: [configOverrideToggle, offlineModeToggle, autoRetryToggle])
 
         // Current values card
         let currentValuesCard = createCard(subviews: [currentOfflineModeRow, currentAutoRetryRow])
 
-        contentStack.addArrangedSubview(mockServerSectionLabel)
-        contentStack.addArrangedSubview(mockServerCard)
         contentStack.addArrangedSubview(overridesSectionLabel)
         contentStack.addArrangedSubview(overridesCard)
         contentStack.addArrangedSubview(currentValuesSectionLabel)
@@ -148,14 +132,6 @@ final class RemoteConfigOverrideViewController: UIViewController {
     }
 
     private func setupActions() {
-        mockServerToggle.onToggle = { [weak self] isOn in
-            if isOn {
-                self?.mockServer.activate()
-            } else {
-                self?.mockServer.deactivate()
-            }
-        }
-
         offlineModeToggle.onToggle = { [weak self] isOn in
             self?.configManager.overrideOfflineMode = isOn
         }
@@ -202,8 +178,7 @@ final class RemoteConfigOverrideViewController: UIViewController {
 
     // MARK: - State
 
-    private func syncUIFromMockServer() {
-        mockServerToggle.setOn(mockServer.isActive)
+    private func syncUIFromState() {
         configOverrideToggle.setOn(configManager.isEnabled)
         offlineModeToggle.setOn(configManager.overrideOfflineMode)
         autoRetryToggle.setOn(configManager.overrideAutoRetry)
@@ -240,11 +215,7 @@ final class RemoteConfigOverrideViewController: UIViewController {
     }
 
     @objc private func reinitializeSDK() {
-        if mockServer.isActive {
-            AppDelegate.reinitializeSDKWithMockJWT()
-        } else {
-            AppDelegate.initializeIterableSDK()
-        }
+        AppDelegate.initializeIterableSDK()
         navigationController?.popToRootViewController(animated: true)
     }
 }
