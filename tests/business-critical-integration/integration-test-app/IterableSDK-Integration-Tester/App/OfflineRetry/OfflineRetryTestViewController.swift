@@ -160,6 +160,17 @@ final class OfflineRetryTestViewController: UIViewController {
         return table
     }()
 
+    private let goHomeButton: UIButton = {
+        let button = UIButton(type: .system)
+        button.setTitle("Go Back to Home Screen", for: .normal)
+        button.backgroundColor = .systemGray3
+        button.setTitleColor(.white, for: .normal)
+        button.titleLabel?.font = .systemFont(ofSize: 16, weight: .semibold)
+        button.layer.cornerRadius = 8
+        button.heightAnchor.constraint(equalToConstant: 44).isActive = true
+        return button
+    }()
+
     // MARK: - Lifecycle
 
     override func viewDidLoad() {
@@ -239,6 +250,7 @@ final class OfflineRetryTestViewController: UIViewController {
         contentStack.addArrangedSubview(actionsStack)
         contentStack.addArrangedSubview(logSectionLabel)
         contentStack.addArrangedSubview(logTableView)
+        contentStack.addArrangedSubview(goHomeButton)
 
         NSLayoutConstraint.activate([
             scrollView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
@@ -262,6 +274,7 @@ final class OfflineRetryTestViewController: UIViewController {
         trackOneEventButton.addTarget(self, action: #selector(trackOneEvent), for: .touchUpInside)
         trackThreeEventsButton.addTarget(self, action: #selector(trackThreeEvents), for: .touchUpInside)
         responseModeSegment.addTarget(self, action: #selector(responseModeChanged), for: .valueChanged)
+        goHomeButton.addTarget(self, action: #selector(goHome), for: .touchUpInside)
     }
 
     private func createSectionContainer() -> UIView {
@@ -421,6 +434,10 @@ final class OfflineRetryTestViewController: UIViewController {
             addLogEntry(type: .eventSent, detail: "Tracked: offline_retry_batch_\(i)")
         }
         print("[OFFLINE RETRY] Tracked 3 batch events")
+    }
+
+    @objc private func goHome() {
+        navigationController?.popToRootViewController(animated: true)
     }
 
     @objc private func clearLog() {
