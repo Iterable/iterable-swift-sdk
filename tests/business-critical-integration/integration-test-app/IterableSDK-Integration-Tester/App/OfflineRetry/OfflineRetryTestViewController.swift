@@ -6,169 +6,91 @@ final class OfflineRetryTestViewController: UIViewController {
     // MARK: - Properties
 
     private var statusTimer: Timer?
-    private var logEntries: [LogEntry] = []
+    private var logEntries: [String] = []
     private var notificationObservers: [NSObjectProtocol] = []
-    private let mockServer = MockAPIServer.shared
-
-    // MARK: - Models
-
-    private struct LogEntry {
-        let timestamp: Date
-        let type: EntryType
-        let detail: String
-
-        enum EntryType: String {
-            case success = "Success"
-            case retry = "Retry"
-            case noRetry = "No Retry"
-            case authRefresh = "Auth Refreshed"
-            case eventSent = "Event Sent"
-            case setup = "Setup"
-        }
-
-        var color: UIColor {
-            switch type {
-            case .success: return .systemGreen
-            case .retry: return .systemOrange
-            case .noRetry: return .systemRed
-            case .authRefresh: return .systemBlue
-            case .eventSent: return .systemTeal
-            case .setup: return .systemPurple
-            }
-        }
-    }
+    private var jwtExpiry: JwtExpiry = .oneMin
 
     // MARK: - UI Components
 
-    private let scrollView: UIScrollView = {
-        let sv = UIScrollView()
-        sv.translatesAutoresizingMaskIntoConstraints = false
-        return sv
-    }()
-
-    private let contentStack: UIStackView = {
-        let stack = UIStackView()
-        stack.axis = .vertical
-        stack.spacing = 16
-        stack.translatesAutoresizingMaskIntoConstraints = false
-        return stack
-    }()
-
-    // Setup Section
-    private let setupSectionLabel: UILabel = {
-        let label = UILabel()
-        label.text = "1. Setup"
-        label.font = .systemFont(ofSize: 18, weight: .bold)
-        return label
-    }()
-
-    private let setupButton: UIButton = {
-        let button = UIButton(type: .system)
-        button.setTitle("Enable Mock JWT Server & Reinitialize SDK", for: .normal)
-        button.backgroundColor = .systemPurple
-        button.setTitleColor(.white, for: .normal)
-        button.titleLabel?.font = .systemFont(ofSize: 15, weight: .semibold)
-        button.layer.cornerRadius = 8
-        button.heightAnchor.constraint(equalToConstant: 44).isActive = true
-        return button
-    }()
-
-    private let teardownButton: UIButton = {
-        let button = UIButton(type: .system)
-        button.setTitle("Disable Mock Server & Reset", for: .normal)
-        button.backgroundColor = .systemGray3
-        button.setTitleColor(.white, for: .normal)
-        button.titleLabel?.font = .systemFont(ofSize: 14, weight: .medium)
-        button.layer.cornerRadius = 8
-        button.heightAnchor.constraint(equalToConstant: 38).isActive = true
-        return button
-    }()
-
-    private let setupStatusLabel: UILabel = {
-        let label = UILabel()
-        label.font = .systemFont(ofSize: 12)
-        label.textColor = .systemGray
-        label.numberOfLines = 0
-        label.text = "Not configured"
-        return label
-    }()
-
-    // Mock API Response Section
-    private let mockAPISectionLabel: UILabel = {
-        let label = UILabel()
-        label.text = "2. Mock API Response Mode"
-        label.font = .systemFont(ofSize: 18, weight: .bold)
-        return label
-    }()
-
-    private let responseModeSegment: UISegmentedControl = {
-        let items = MockAPIServer.APIResponseMode.allCases.map { $0.rawValue }
-        let sc = UISegmentedControl(items: items)
-        sc.selectedSegmentIndex = 1 // default: jwt401ThenSuccess
+    // Status Bar
+    private let jwtModeSegment: UISegmentedControl = {
+        let sc = UISegmentedControl(items: ["Valid JWT", "Expired JWT"])
+        sc.selectedSegmentIndex = 0
         return sc
     }()
 
-    private let mockStatusLabel: UILabel = {
+    private let authStatusLabel: UILabel = {
         let label = UILabel()
-        label.font = .systemFont(ofSize: 12)
+        label.font = .monospacedSystemFont(ofSize: 11, weight: .regular)
         label.textColor = .systemGray
-        label.numberOfLines = 0
-        label.text = "Mock: inactive"
+        label.text = "Auth: --"
         return label
     }()
 
-    // Test Actions Section
-    private let actionsSectionLabel: UILabel = {
-        let label = UILabel()
-        label.text = "3. Track Events"
-        label.font = .systemFont(ofSize: 18, weight: .bold)
-        return label
-    }()
-
-    private let trackOneEventButton: UIButton = {
+    private let jwtExpiryButton: UIButton = {
         let button = UIButton(type: .system)
-        button.setTitle("Track Test Event", for: .normal)
+        button.setTitle("JWT: 60s", for: .normal)
+        button.titleLabel?.font = .systemFont(ofSize: 12, weight: .medium)
+        return button
+    }()
+
+    private let emailField: UITextField = {
+        let tf = UITextField()
+        tf.placeholder = "Email"
+        tf.borderStyle = .roundedRect
+        tf.font = .systemFont(ofSize: 13)
+        tf.autocapitalizationType = .none
+        tf.keyboardType = .emailAddress
+        return tf
+    }()
+
+    private let loginButton: UIButton = {
+        let button = UIButton(type: .system)
+        button.setTitle("Login", for: .normal)
         button.backgroundColor = .systemBlue
         button.setTitleColor(.white, for: .normal)
-        button.layer.cornerRadius = 8
-        button.heightAnchor.constraint(equalToConstant: 44).isActive = true
+        button.titleLabel?.font = .systemFont(ofSize: 13, weight: .semibold)
+        button.layer.cornerRadius = 6
+        button.contentEdgeInsets = UIEdgeInsets(top: 6, left: 12, bottom: 6, right: 12)
         return button
     }()
 
-    private let trackThreeEventsButton: UIButton = {
+    private let logoutButton: UIButton = {
         let button = UIButton(type: .system)
-        button.setTitle("Track 3 Events", for: .normal)
-        button.backgroundColor = .systemIndigo
+        button.setTitle("Logout", for: .normal)
+        button.backgroundColor = .systemRed
         button.setTitleColor(.white, for: .normal)
-        button.layer.cornerRadius = 8
-        button.heightAnchor.constraint(equalToConstant: 44).isActive = true
+        button.titleLabel?.font = .systemFont(ofSize: 13, weight: .semibold)
+        button.layer.cornerRadius = 6
+        button.contentEdgeInsets = UIEdgeInsets(top: 6, left: 12, bottom: 6, right: 12)
         return button
     }()
 
-    // Event Log Section
-    private let logSectionLabel: UILabel = {
-        let label = UILabel()
-        label.text = "4. Event Log"
-        label.font = .systemFont(ofSize: 18, weight: .bold)
-        return label
+    // Tabs
+    private let tabSegment: UISegmentedControl = {
+        let items = ["Startup", "401 Pause", "Token Expiry", "Net Flap", "Flags", "Free"]
+        let sc = UISegmentedControl(items: items)
+        sc.selectedSegmentIndex = 0
+        sc.setTitleTextAttributes([.font: UIFont.systemFont(ofSize: 10)], for: .normal)
+        return sc
     }()
 
+    // Tab content container
+    private let tabContentView: UIView = {
+        let v = UIView()
+        v.translatesAutoresizingMaskIntoConstraints = false
+        return v
+    }()
+
+    // Log panel
     private let logTableView: UITableView = {
         let table = UITableView()
         table.translatesAutoresizingMaskIntoConstraints = false
         table.register(UITableViewCell.self, forCellReuseIdentifier: "LogCell")
+        table.separatorStyle = .none
+        table.backgroundColor = UIColor(white: 0.96, alpha: 1)
+        table.layer.cornerRadius = 8
         return table
-    }()
-
-    private let goHomeButton: UIButton = {
-        let button = UIButton(type: .system)
-        button.setTitle("Go Back to Home Screen", for: .normal)
-        button.backgroundColor = .systemGray3
-        button.setTitleColor(.white, for: .normal)
-        button.titleLabel?.font = .systemFont(ofSize: 16, weight: .semibold)
-        button.layer.cornerRadius = 8
-        button.heightAnchor.constraint(equalToConstant: 44).isActive = true
-        return button
     }()
 
     // MARK: - Lifecycle
@@ -177,13 +99,15 @@ final class OfflineRetryTestViewController: UIViewController {
         super.viewDidLoad()
         title = "JWT Auth Retry Testing"
         view.backgroundColor = .systemBackground
-
-        setupNavigation()
         setupUI()
         setupActions()
         setupNotificationObservers()
         startPolling()
-        syncUIFromMockServer()
+        showTab(0)
+
+        if let configEmail = AppDelegate.loadTestUserEmailFromConfig() {
+            emailField.text = configEmail
+        }
     }
 
     deinit {
@@ -191,249 +115,383 @@ final class OfflineRetryTestViewController: UIViewController {
         notificationObservers.forEach { NotificationCenter.default.removeObserver($0) }
     }
 
-    // MARK: - Setup
-
-    private func setupNavigation() {
-        navigationItem.rightBarButtonItem = UIBarButtonItem(title: "Clear Log",
-                                                            style: .plain,
-                                                            target: self,
-                                                            action: #selector(clearLog))
-    }
+    // MARK: - UI Setup
 
     private func setupUI() {
-        view.addSubview(scrollView)
-        scrollView.addSubview(contentStack)
-
-        // Setup card
-        let setupCard = createSectionContainer()
-        let setupStack = UIStackView(arrangedSubviews: [setupButton, teardownButton, setupStatusLabel])
-        setupStack.axis = .vertical
-        setupStack.spacing = 8
-        setupStack.translatesAutoresizingMaskIntoConstraints = false
-        setupCard.addSubview(setupStack)
-        NSLayoutConstraint.activate([
-            setupStack.topAnchor.constraint(equalTo: setupCard.topAnchor, constant: 12),
-            setupStack.leadingAnchor.constraint(equalTo: setupCard.leadingAnchor, constant: 16),
-            setupStack.trailingAnchor.constraint(equalTo: setupCard.trailingAnchor, constant: -16),
-            setupStack.bottomAnchor.constraint(equalTo: setupCard.bottomAnchor, constant: -12)
+        // --- Status bar ---
+        let jwtModeRow = UIStackView(arrangedSubviews: [
+            makeLabel("JWT Mode:", bold: true),
+            jwtModeSegment
         ])
+        jwtModeRow.spacing = 8
+        jwtModeRow.alignment = .center
 
-        // Mock API card
-        let mockAPICard = createSectionContainer()
-        let mockAPIStack = UIStackView(arrangedSubviews: [responseModeSegment, mockStatusLabel])
-        mockAPIStack.axis = .vertical
-        mockAPIStack.spacing = 10
-        mockAPIStack.translatesAutoresizingMaskIntoConstraints = false
-        mockAPICard.addSubview(mockAPIStack)
-        NSLayoutConstraint.activate([
-            mockAPIStack.topAnchor.constraint(equalTo: mockAPICard.topAnchor, constant: 12),
-            mockAPIStack.leadingAnchor.constraint(equalTo: mockAPICard.leadingAnchor, constant: 16),
-            mockAPIStack.trailingAnchor.constraint(equalTo: mockAPICard.trailingAnchor, constant: -16),
-            mockAPIStack.bottomAnchor.constraint(equalTo: mockAPICard.bottomAnchor, constant: -12)
+        let authRow = UIStackView(arrangedSubviews: [authStatusLabel, UIView(), jwtExpiryButton])
+        authRow.spacing = 8
+        authRow.alignment = .center
+
+        let emailRow = UIStackView(arrangedSubviews: [emailField, loginButton, logoutButton])
+        emailRow.spacing = 8
+        emailRow.alignment = .center
+        emailField.setContentHuggingPriority(.defaultLow, for: .horizontal)
+
+        let statusStack = UIStackView(arrangedSubviews: [jwtModeRow, authRow, emailRow])
+        statusStack.axis = .vertical
+        statusStack.spacing = 6
+
+        // --- Log header ---
+        let clearButton = UIButton(type: .system)
+        clearButton.setTitle("Clear", for: .normal)
+        clearButton.titleLabel?.font = .systemFont(ofSize: 12)
+        clearButton.addTarget(self, action: #selector(clearLog), for: .touchUpInside)
+
+        let copyButton = UIButton(type: .system)
+        copyButton.setTitle("Copy", for: .normal)
+        copyButton.titleLabel?.font = .systemFont(ofSize: 12)
+        copyButton.addTarget(self, action: #selector(copyLog), for: .touchUpInside)
+
+        let logHeader = UIStackView(arrangedSubviews: [
+            makeLabel("SDK Logs", bold: true),
+            UIView(),
+            copyButton,
+            clearButton
         ])
+        logHeader.spacing = 8
+        logHeader.alignment = .center
 
-        // Actions section
-        let actionsStack = UIStackView(arrangedSubviews: [trackOneEventButton, trackThreeEventsButton])
-        actionsStack.axis = .vertical
-        actionsStack.spacing = 8
+        // --- Main layout ---
+        let mainStack = UIStackView(arrangedSubviews: [
+            statusStack,
+            makeDivider(),
+            tabSegment,
+            tabContentView,
+            makeDivider(),
+            logHeader,
+            logTableView
+        ])
+        mainStack.axis = .vertical
+        mainStack.spacing = 6
+        mainStack.translatesAutoresizingMaskIntoConstraints = false
 
-        // Log section with table
+        view.addSubview(mainStack)
+
         logTableView.dataSource = self
         logTableView.delegate = self
-        logTableView.heightAnchor.constraint(equalToConstant: 300).isActive = true
-
-        contentStack.addArrangedSubview(setupSectionLabel)
-        contentStack.addArrangedSubview(setupCard)
-        contentStack.addArrangedSubview(mockAPISectionLabel)
-        contentStack.addArrangedSubview(mockAPICard)
-        contentStack.addArrangedSubview(actionsSectionLabel)
-        contentStack.addArrangedSubview(actionsStack)
-        contentStack.addArrangedSubview(logSectionLabel)
-        contentStack.addArrangedSubview(logTableView)
-        contentStack.addArrangedSubview(goHomeButton)
 
         NSLayoutConstraint.activate([
-            scrollView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
-            scrollView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
-            scrollView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-            scrollView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
-
-            contentStack.topAnchor.constraint(equalTo: scrollView.topAnchor, constant: 16),
-            contentStack.leadingAnchor.constraint(equalTo: scrollView.leadingAnchor, constant: 20),
-            contentStack.trailingAnchor.constraint(equalTo: scrollView.trailingAnchor, constant: -20),
-            contentStack.bottomAnchor.constraint(equalTo: scrollView.bottomAnchor, constant: -16),
-            contentStack.widthAnchor.constraint(equalTo: scrollView.widthAnchor, constant: -40)
+            mainStack.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 8),
+            mainStack.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 12),
+            mainStack.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -12),
+            mainStack.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -8),
+            tabContentView.heightAnchor.constraint(greaterThanOrEqualToConstant: 200),
+            logTableView.heightAnchor.constraint(equalTo: mainStack.heightAnchor, multiplier: 0.4)
         ])
-
-        updateSetupState()
     }
 
     private func setupActions() {
-        setupButton.addTarget(self, action: #selector(performSetup), for: .touchUpInside)
-        teardownButton.addTarget(self, action: #selector(performTeardown), for: .touchUpInside)
-        trackOneEventButton.addTarget(self, action: #selector(trackOneEvent), for: .touchUpInside)
-        trackThreeEventsButton.addTarget(self, action: #selector(trackThreeEvents), for: .touchUpInside)
-        responseModeSegment.addTarget(self, action: #selector(responseModeChanged), for: .valueChanged)
-        goHomeButton.addTarget(self, action: #selector(goHome), for: .touchUpInside)
+        tabSegment.addTarget(self, action: #selector(tabChanged), for: .valueChanged)
+        jwtModeSegment.addTarget(self, action: #selector(jwtModeChanged), for: .valueChanged)
+        loginButton.addTarget(self, action: #selector(performLogin), for: .touchUpInside)
+        logoutButton.addTarget(self, action: #selector(performLogout), for: .touchUpInside)
+        jwtExpiryButton.showsMenuAsPrimaryAction = true
+        jwtExpiryButton.menu = makeJwtExpiryMenu()
     }
 
-    private func createSectionContainer() -> UIView {
-        let container = UIView()
-        container.backgroundColor = .systemGray6
-        container.layer.cornerRadius = 12
-        container.layer.borderWidth = 1
-        container.layer.borderColor = UIColor.systemGray4.cgColor
-        return container
+    // MARK: - Tabs
+
+    @objc private func tabChanged() {
+        showTab(tabSegment.selectedSegmentIndex)
     }
 
-    private func syncUIFromMockServer() {
-        let modes = MockAPIServer.APIResponseMode.allCases
-        if let index = modes.firstIndex(of: mockServer.apiResponseMode) {
-            responseModeSegment.selectedSegmentIndex = index
+    private func showTab(_ index: Int) {
+        tabContentView.subviews.forEach { $0.removeFromSuperview() }
+
+        let scroll = UIScrollView()
+        scroll.translatesAutoresizingMaskIntoConstraints = false
+        tabContentView.addSubview(scroll)
+
+        let content: UIView
+        switch index {
+        case 0: content = buildTabStartup()
+        case 1: content = buildTab401Pause()
+        case 2: content = buildTabTokenExpiry()
+        case 3: content = buildTabNetworkFlap()
+        case 4: content = buildTabFeatureFlag()
+        case 5: content = buildTabFreeStyle()
+        default: content = UIView()
         }
+
+        content.translatesAutoresizingMaskIntoConstraints = false
+        scroll.addSubview(content)
+
+        NSLayoutConstraint.activate([
+            scroll.topAnchor.constraint(equalTo: tabContentView.topAnchor),
+            scroll.leadingAnchor.constraint(equalTo: tabContentView.leadingAnchor),
+            scroll.trailingAnchor.constraint(equalTo: tabContentView.trailingAnchor),
+            scroll.bottomAnchor.constraint(equalTo: tabContentView.bottomAnchor),
+            content.topAnchor.constraint(equalTo: scroll.topAnchor, constant: 8),
+            content.leadingAnchor.constraint(equalTo: scroll.leadingAnchor),
+            content.trailingAnchor.constraint(equalTo: scroll.trailingAnchor),
+            content.bottomAnchor.constraint(equalTo: scroll.bottomAnchor),
+            content.widthAnchor.constraint(equalTo: scroll.widthAnchor)
+        ])
     }
 
-    // MARK: - Setup / Teardown
+    // MARK: - Tab 1: Startup
 
-    @objc private func performSetup() {
-        addLogEntry(type: .setup, detail: "Setting up mock JWT environment...")
+    private func buildTabStartup() -> UIView {
+        let stack = UIStackView()
+        stack.axis = .vertical
+        stack.spacing = 8
 
-        // Step 1: Activate mock server (registers URLProtocol via swizzling)
-        mockServer.activate()
-        addLogEntry(type: .setup, detail: "Mock JWT server activated")
+        stack.addArrangedSubview(makeSectionHeader("Scenario: Startup with expired JWT"))
+        stack.addArrangedSubview(makeSectionDescription(
+            "Start with expired JWT. Fire multiple parallel offline calls. " +
+            "Expect: single auth refresh, all requests retried after refresh, no drops."
+        ))
 
-        // Step 2: Reinitialize SDK with mock JWT auth delegate
-        // This creates NEW URLSessions that pick up the swizzled protocols
-        AppDelegate.reinitializeSDKWithMockJWT()
-        addLogEntry(type: .setup, detail: "SDK reinitialized with mock JWT auth")
+        let row = makeButtonRow([
+            ("Track + Cart", #selector(fireAll)),
+        ])
+        stack.addArrangedSubview(row)
 
-        // Step 3: Register a test user so events can be tracked
-        IterableAPI.email = "offline-retry-test@test.com"
-        addLogEntry(type: .setup, detail: "Registered test email")
+        stack.addArrangedSubview(makeSectionHint(
+            "Steps:\n" +
+            "1. Login with email\n" +
+            "2. Set JWT Mode to 'Expired JWT'\n" +
+            "3. Press 'Track + Cart' -> logs: 401, queue paused\n" +
+            "4. Switch JWT Mode back to 'Valid JWT'\n" +
+            "5. Wait for SDK to refresh token\n" +
+            "   -> new valid JWT -> queue resumes\n" +
+            "6. Check logs: queued tasks succeed"
+        ))
 
-        updateSetupState()
-
-        // Verify flags after remote config fetch
-        DispatchQueue.main.asyncAfter(deadline: .now() + 2.5) { [weak self] in
-            let offlineMode = UserDefaults.standard.bool(forKey: "itbl_offline_mode")
-            let autoRetry = UserDefaults.standard.bool(forKey: "itbl_auto_retry")
-            self?.addLogEntry(type: .setup, detail: "SDK flags: offlineMode=\(offlineMode), autoRetry=\(autoRetry)")
-            if offlineMode && autoRetry {
-                self?.addLogEntry(type: .setup, detail: "Ready! Track events to test 401 retry flow.")
-            } else {
-                self?.addLogEntry(type: .setup, detail: "Warning: offlineMode or autoRetry not enabled. Enable them from Config Overrides and reinitialize.")
-            }
-        }
+        return stack
     }
 
-    @objc private func performTeardown() {
-        mockServer.deactivate()
-        AppDelegate.mockAuthDelegate = nil
-        AppDelegate.initializeIterableSDK()
-        addLogEntry(type: .setup, detail: "Mock JWT server disabled, SDK reset to normal")
-        updateSetupState()
+    // MARK: - Tab 2: 401 Pause
+
+    private func buildTab401Pause() -> UIView {
+        let stack = UIStackView()
+        stack.axis = .vertical
+        stack.spacing = 8
+
+        stack.addArrangedSubview(makeSectionHeader("Scenario: 401 handling and pause behavior"))
+        stack.addArrangedSubview(makeSectionDescription(
+            "Force expired JWT. Verify offline tasks are retained, processing pauses " +
+            "for JWT-required APIs. Only POST endpoints go through the offline queue."
+        ))
+
+        stack.addArrangedSubview(makeButtonRow([
+            ("Track", #selector(performTrack)),
+            ("Update Cart", #selector(performUpdateCart))
+        ]))
+
+        stack.addArrangedSubview(makeSectionHint(
+            "Steps:\n" +
+            "1. Login with email (Valid JWT mode)\n" +
+            "2. Set JWT Mode to 'Expired JWT'\n" +
+            "3. Press Track -> check logs: 401 received, queue paused\n" +
+            "4. Press Track again -> check logs: task queued\n" +
+            "   but not sent to server while paused\n" +
+            "5. Switch back to 'Valid JWT' -> tasks flush"
+        ))
+
+        return stack
     }
 
-    private func updateSetupState() {
-        let mockActive = mockServer.isActive
-        let hasAuth = AppDelegate.mockAuthDelegate != nil
+    // MARK: - Tab 3: Token Expiry
+
+    private func buildTabTokenExpiry() -> UIView {
+        let stack = UIStackView()
+        stack.axis = .vertical
+        stack.spacing = 8
+
+        stack.addArrangedSubview(makeSectionHeader("Scenario: Token expiry flushes paused queue"))
+        stack.addArrangedSubview(makeSectionDescription(
+            "Pause the queue with an expired JWT, then let the SDK's " +
+            "auth timer request a new valid token. The queue should resume."
+        ))
+
+        stack.addArrangedSubview(makeButtonRow([
+            ("Track", #selector(performTrack)),
+            ("Update Cart", #selector(performUpdateCart))
+        ]))
+
+        stack.addArrangedSubview(makeSectionHint(
+            "Steps:\n" +
+            "1. Set JWT expiry dropdown to '30s'\n" +
+            "2. Login with email (Valid JWT mode)\n" +
+            "3. Set JWT Mode to 'Expired JWT'\n" +
+            "4. Press Track -> gets 401, queue pauses\n" +
+            "5. Set JWT Mode back to 'Valid JWT'\n" +
+            "6. Wait for JWT to expire (~30s, watch Auth status)\n" +
+            "7. Token refreshes -> queue resumes -> tasks flush\n" +
+            "8. Check logs: all tasks succeed"
+        ))
+
+        return stack
+    }
+
+    // MARK: - Tab 4: Network Flap
+
+    private func buildTabNetworkFlap() -> UIView {
+        let stack = UIStackView()
+        stack.axis = .vertical
+        stack.spacing = 8
+
+        stack.addArrangedSubview(makeSectionHeader("Scenario: Network flapping"))
+        stack.addArrangedSubview(makeSectionDescription(
+            "Queue tasks while offline (airplane mode), then restore connectivity. " +
+            "Ensure no data loss, no stuck queue after recovery."
+        ))
+
+        stack.addArrangedSubview(makeButtonRow([
+            ("Track", #selector(performTrack)),
+            ("Update Cart", #selector(performUpdateCart))
+        ]))
+
+        stack.addArrangedSubview(makeSectionHint(
+            "Steps:\n" +
+            "1. Login with email (Valid JWT mode)\n" +
+            "2. Turn on Airplane Mode\n" +
+            "3. Press Track / Update Cart (tasks queue in DB)\n" +
+            "4. Turn off Airplane Mode\n" +
+            "5. Verify all tasks eventually succeed\n" +
+            "6. Try: Airplane On -> queue tasks ->\n" +
+            "   Expired JWT -> Airplane Off ->\n" +
+            "   observe 401 pause -> Valid JWT -> tasks flush"
+        ))
+
+        return stack
+    }
+
+    // MARK: - Tab 5: Feature Flags
+
+    private func buildTabFeatureFlag() -> UIView {
+        let stack = UIStackView()
+        stack.axis = .vertical
+        stack.spacing = 8
+
+        stack.addArrangedSubview(makeSectionHeader("Scenario: Feature flag & backend config"))
+        stack.addArrangedSubview(makeSectionDescription(
+            "Verify legacy behavior with flags off, new behavior with flags on. " +
+            "Flags are set via Config Overrides page and take effect on SDK reinit."
+        ))
+
         let offlineMode = UserDefaults.standard.bool(forKey: "itbl_offline_mode")
         let autoRetry = UserDefaults.standard.bool(forKey: "itbl_auto_retry")
+        let flagsLabel = makeLabel("Current: offlineMode=\(offlineMode), autoRetry=\(autoRetry)", bold: false)
+        flagsLabel.font = .monospacedSystemFont(ofSize: 11, weight: .regular)
+        flagsLabel.textColor = (offlineMode && autoRetry) ? .systemGreen : .systemOrange
+        stack.addArrangedSubview(flagsLabel)
 
-        if mockActive && hasAuth {
-            var status = "Mock JWT: ON | Auth: Mock"
-            if offlineMode && autoRetry {
-                status += " | Flags: OK"
-                setupStatusLabel.textColor = .systemGreen
-            } else {
-                status += " | Flags: offlineMode=\(offlineMode), autoRetry=\(autoRetry)"
-                setupStatusLabel.textColor = .systemOrange
-            }
-            setupStatusLabel.text = status
-            setupButton.backgroundColor = .systemGray4
-            setupButton.setTitle("Re-setup (already configured)", for: .normal)
-            teardownButton.isHidden = false
-        } else {
-            setupStatusLabel.text = "Not configured — tap Setup to begin"
-            setupStatusLabel.textColor = .systemGray
-            setupButton.backgroundColor = .systemPurple
-            setupButton.setTitle("Enable Mock JWT Server & Reinitialize SDK", for: .normal)
-            teardownButton.isHidden = true
-        }
+        stack.addArrangedSubview(makeButtonRow([
+            ("Track", #selector(performTrack)),
+            ("Update Cart", #selector(performUpdateCart))
+        ]))
+
+        stack.addArrangedSubview(makeSectionHint(
+            "Steps (flag OFF):\n" +
+            "1. Go to Config Overrides, uncheck both flags\n" +
+            "2. Reinitialize SDK, login, Track event\n" +
+            "3. Verify: request goes online (no queueing)\n\n" +
+            "Steps (flag ON):\n" +
+            "1. Go to Config Overrides, check both flags\n" +
+            "2. Reinitialize SDK, login\n" +
+            "3. Set 'Expired JWT' mode, Track event\n" +
+            "4. Verify: task queued, 401 pauses, retry fires"
+        ))
+
+        return stack
     }
 
-    // MARK: - Polling
+    // MARK: - Tab 6: Free Style
 
-    private func startPolling() {
-        updateMockStatus()
-        statusTimer = Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true) { [weak self] _ in
-            DispatchQueue.main.async { self?.updateMockStatus() }
-        }
-    }
+    private func buildTabFreeStyle() -> UIView {
+        let stack = UIStackView()
+        stack.axis = .vertical
+        stack.spacing = 8
 
-    private func updateMockStatus() {
-        let active = mockServer.isActive ? "active" : "inactive"
-        let requests = mockServer.requestCount
-        let authRefreshed = mockServer.authHasRefreshed ? "yes" : "no"
-        let tokenCount = AppDelegate.mockAuthDelegate?.tokenRequestCount ?? 0
-        mockStatusLabel.text = "Mock: \(active) | Requests: \(requests) | Auth refreshed: \(authRefreshed) | Tokens: \(tokenCount)"
-    }
+        stack.addArrangedSubview(makeSectionHeader("Free Style"))
+        stack.addArrangedSubview(makeSectionDescription(
+            "All actions available. Try different combinations and observe the logs."
+        ))
 
-    // MARK: - Notification Observers
+        stack.addArrangedSubview(makeButtonRow([
+            ("Track", #selector(performTrack)),
+            ("Update Cart", #selector(performUpdateCart))
+        ]))
 
-    private func setupNotificationObservers() {
-        let notifications: [(String, LogEntry.EntryType)] = [
-            ("itbl_task_finished_with_success", .success),
-            ("itbl_task_finished_with_retry", .retry),
-            ("itbl_task_finished_with_no_retry", .noRetry),
-            ("itbl_auth_token_refreshed", .authRefresh)
-        ]
+        stack.addArrangedSubview(makeButtonRow([
+            ("Track 3 Events", #selector(trackThreeEvents)),
+        ]))
 
-        for (name, type) in notifications {
-            let observer = NotificationCenter.default.addObserver(
-                forName: Notification.Name(rawValue: name),
-                object: nil,
-                queue: .main
-            ) { [weak self] notification in
-                let taskId = (notification.userInfo?["taskId"] as? String) ?? ""
-                let detail = taskId.isEmpty ? type.rawValue : "\(type.rawValue) - \(taskId.prefix(8))..."
-                self?.addLogEntry(type: type, detail: detail)
-            }
-            notificationObservers.append(observer)
-        }
+        let goHome = UIButton(type: .system)
+        goHome.setTitle("Go Back to Home Screen", for: .normal)
+        goHome.backgroundColor = .systemGray3
+        goHome.setTitleColor(.white, for: .normal)
+        goHome.titleLabel?.font = .systemFont(ofSize: 14, weight: .semibold)
+        goHome.layer.cornerRadius = 8
+        goHome.heightAnchor.constraint(equalToConstant: 40).isActive = true
+        goHome.addTarget(self, action: #selector(goHome), for: .touchUpInside)
+        stack.addArrangedSubview(goHome)
+
+        return stack
     }
 
     // MARK: - Actions
 
-    @objc private func responseModeChanged() {
-        let modes = MockAPIServer.APIResponseMode.allCases
-        let index = responseModeSegment.selectedSegmentIndex
-        guard index >= 0, index < modes.count else { return }
-        mockServer.apiResponseMode = modes[index]
-        mockServer.resetAuthState()
-        print("[OFFLINE RETRY] API response mode: \(modes[index].rawValue)")
+    @objc private func jwtModeChanged() {
+        let expired = jwtModeSegment.selectedSegmentIndex == 1
+        AppDelegate.mockAuthDelegate?.forceExpired = expired
+        log(expired ? "JWT Mode: EXPIRED (real API will return 401)" : "JWT Mode: VALID")
     }
 
-    @objc private func trackOneEvent() {
-        let timestamp = Int(Date().timeIntervalSince1970)
+    @objc private func performLogin() {
+        guard let email = emailField.text, !email.isEmpty else {
+            log("Login: email empty")
+            return
+        }
+        AppDelegate.currentTestEmail = email
+        IterableAPI.email = email
+        log("Login: \(email)")
+    }
+
+    @objc private func performLogout() {
+        AppDelegate.currentTestEmail = nil
+        IterableAPI.email = nil
+        log("Logout")
+    }
+
+    @objc private func performTrack() {
         IterableAPI.track(
-            event: "offline_retry_test",
-            dataFields: ["timestamp": timestamp, "source": "integration_tester"]
+            event: "screenView",
+            dataFields: ["screenName": "TestScreen", "timestamp": Int(Date().timeIntervalSince1970)]
         )
-        addLogEntry(type: .eventSent, detail: "Tracked: offline_retry_test")
-        print("[OFFLINE RETRY] Tracked test event at \(timestamp)")
+        log("Track: screenView queued")
+    }
+
+    @objc private func performUpdateCart() {
+        IterableAPI.updateCart(items: [
+            CommerceItem(id: "test-item-1", name: "Test Item", price: 9.99 as NSNumber, quantity: 1)
+        ])
+        log("Update Cart: queued")
+    }
+
+    @objc private func fireAll() {
+        performTrack()
+        performUpdateCart()
     }
 
     @objc private func trackThreeEvents() {
         for i in 1...3 {
-            let timestamp = Int(Date().timeIntervalSince1970)
             IterableAPI.track(
-                event: "offline_retry_batch_\(i)",
-                dataFields: ["timestamp": timestamp, "index": i, "source": "integration_tester"]
+                event: "batch_\(i)",
+                dataFields: ["timestamp": Int(Date().timeIntervalSince1970), "index": i]
             )
-            addLogEntry(type: .eventSent, detail: "Tracked: offline_retry_batch_\(i)")
         }
-        print("[OFFLINE RETRY] Tracked 3 batch events")
+        log("Tracked 3 batch events")
     }
 
     @objc private func goHome() {
@@ -445,12 +503,140 @@ final class OfflineRetryTestViewController: UIViewController {
         logTableView.reloadData()
     }
 
-    // MARK: - Log Management
+    @objc private func copyLog() {
+        UIPasteboard.general.string = logEntries.joined(separator: "\n")
+    }
 
-    private func addLogEntry(type: LogEntry.EntryType, detail: String) {
-        let entry = LogEntry(timestamp: Date(), type: type, detail: detail)
-        logEntries.insert(entry, at: 0)
+    // MARK: - JWT Expiry Menu
+
+    private func makeJwtExpiryMenu() -> UIMenu {
+        UIMenu(title: "JWT Expiry", children: JwtExpiry.allCases.map { expiry in
+            UIAction(title: expiry.rawValue) { [weak self] _ in
+                self?.jwtExpiry = expiry
+                JwtHelper.expiry = expiry
+                self?.jwtExpiryButton.setTitle("JWT: \(expiry.rawValue)", for: .normal)
+            }
+        })
+    }
+
+    // MARK: - Polling
+
+    private func startPolling() {
+        statusTimer = Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true) { [weak self] _ in
+            DispatchQueue.main.async { self?.updateAuthStatus() }
+        }
+    }
+
+    private func updateAuthStatus() {
+        let token = IterableAPI.email != nil ? (AppDelegate.mockAuthDelegate?.tokenRequestCount ?? 0) : 0
+        let remaining = JwtHelper.remainingLabel(token: nil) // TODO: get current token from SDK
+        let expired = jwtModeSegment.selectedSegmentIndex == 1
+        let mode = expired ? "Expired" : "Valid"
+        authStatusLabel.text = "Auth: \(mode) | Tokens: \(token) | \(remaining)"
+    }
+
+    // MARK: - Notification Observers
+
+    private func setupNotificationObservers() {
+        let notifications: [(String, String)] = [
+            ("itbl_task_finished_with_success", "Task SUCCESS"),
+            ("itbl_task_finished_with_retry", "Task RETRY"),
+            ("itbl_task_finished_with_no_retry", "Task NO_RETRY (deleted)"),
+            ("itbl_auth_token_refreshed", "Auth token refreshed")
+        ]
+
+        for (name, label) in notifications {
+            let observer = NotificationCenter.default.addObserver(
+                forName: Notification.Name(rawValue: name),
+                object: nil,
+                queue: .main
+            ) { [weak self] notification in
+                let taskId = (notification.userInfo?["taskId"] as? String).map { " [\(String($0.prefix(8)))]" } ?? ""
+                self?.log("\(label)\(taskId)")
+            }
+            notificationObservers.append(observer)
+        }
+    }
+
+    // MARK: - Logging
+
+    private func log(_ message: String) {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "HH:mm:ss"
+        let line = "\(formatter.string(from: Date())) \(message)"
+        logEntries.insert(line, at: 0)
         logTableView.insertRows(at: [IndexPath(row: 0, section: 0)], with: .top)
+    }
+
+    // MARK: - UI Helpers
+
+    private func makeLabel(_ text: String, bold: Bool) -> UILabel {
+        let label = UILabel()
+        label.text = text
+        label.font = bold ? .systemFont(ofSize: 13, weight: .semibold) : .systemFont(ofSize: 12)
+        return label
+    }
+
+    private func makeDivider() -> UIView {
+        let v = UIView()
+        v.backgroundColor = .separator
+        v.heightAnchor.constraint(equalToConstant: 1).isActive = true
+        return v
+    }
+
+    private func makeSectionHeader(_ text: String) -> UILabel {
+        let label = UILabel()
+        label.text = text
+        label.font = .systemFont(ofSize: 14, weight: .bold)
+        label.numberOfLines = 0
+        return label
+    }
+
+    private func makeSectionDescription(_ text: String) -> UILabel {
+        let label = UILabel()
+        label.text = text
+        label.font = .systemFont(ofSize: 11)
+        label.textColor = .systemGray
+        label.numberOfLines = 0
+        return label
+    }
+
+    private func makeSectionHint(_ text: String) -> UIView {
+        let label = UILabel()
+        label.text = text
+        label.font = .monospacedSystemFont(ofSize: 10, weight: .regular)
+        label.numberOfLines = 0
+
+        let container = UIView()
+        container.backgroundColor = UIColor(red: 0.94, green: 0.96, blue: 1.0, alpha: 1.0)
+        container.layer.cornerRadius = 8
+        label.translatesAutoresizingMaskIntoConstraints = false
+        container.addSubview(label)
+        NSLayoutConstraint.activate([
+            label.topAnchor.constraint(equalTo: container.topAnchor, constant: 8),
+            label.leadingAnchor.constraint(equalTo: container.leadingAnchor, constant: 8),
+            label.trailingAnchor.constraint(equalTo: container.trailingAnchor, constant: -8),
+            label.bottomAnchor.constraint(equalTo: container.bottomAnchor, constant: -8)
+        ])
+        return container
+    }
+
+    private func makeButtonRow(_ buttons: [(String, Selector)]) -> UIStackView {
+        let row = UIStackView()
+        row.spacing = 8
+        row.distribution = .fillEqually
+        for (title, selector) in buttons {
+            let button = UIButton(type: .system)
+            button.setTitle(title, for: .normal)
+            button.backgroundColor = .systemBlue
+            button.setTitleColor(.white, for: .normal)
+            button.titleLabel?.font = .systemFont(ofSize: 13, weight: .medium)
+            button.layer.cornerRadius = 8
+            button.heightAnchor.constraint(equalToConstant: 40).isActive = true
+            button.addTarget(self, action: selector, for: .touchUpInside)
+            row.addArrangedSubview(button)
+        }
+        return row
     }
 }
 
@@ -463,24 +649,16 @@ extension OfflineRetryTestViewController: UITableViewDataSource, UITableViewDele
 
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "LogCell", for: indexPath)
-        let entry = logEntries[indexPath.row]
-
-        let formatter = DateFormatter()
-        formatter.timeStyle = .medium
-
         var config = cell.defaultContentConfiguration()
-        config.text = entry.detail
-        config.textProperties.color = entry.color
-        config.textProperties.font = .systemFont(ofSize: 14, weight: .medium)
-        config.secondaryText = formatter.string(from: entry.timestamp)
-        config.secondaryTextProperties.font = .systemFont(ofSize: 11)
-        config.secondaryTextProperties.color = .systemGray
+        config.text = logEntries[indexPath.row]
+        config.textProperties.font = .monospacedSystemFont(ofSize: 10, weight: .regular)
+        config.textProperties.color = .label
         cell.contentConfiguration = config
-
+        cell.backgroundColor = .clear
         return cell
     }
 
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        50
+        24
     }
 }

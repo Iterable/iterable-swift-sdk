@@ -1,39 +1,63 @@
 import Foundation
 import IterableSDK
 
-/// Mock auth delegate that returns fake JWT tokens for testing the
-/// offline retry flow without requiring a real JWT-enabled API key.
+/// Auth delegate that generates real JWT tokens locally using the project's
+/// JWT secret. Tokens are signed with HMAC-SHA256 and accepted by the real
+/// Iterable API.
+///
+/// Set `forceExpired = true` to generate already-expired tokens, which causes
+/// the real API to return 401 InvalidJwtPayload.
 final class MockAuthDelegate: NSObject, IterableAuthDelegate {
 
+    private let jwtSecret: String
     private(set) var tokenRequestCount = 0
     private(set) var lastFailure: AuthFailure?
 
-    /// Called when a new token is requested — use for UI logging
-    var onTokenRequested: (() -> Void)?
+    /// When true, generates expired JWTs so real API returns 401.
+    var forceExpired: Bool = false
+
+    /// Called when a new token is generated — use for UI logging
+    var onTokenRequested: ((String?) -> Void)?
     /// Called on auth failure — use for UI logging
     var onAuthFailureCallback: ((AuthFailure) -> Void)?
+
+    init(jwtSecret: String) {
+        self.jwtSecret = jwtSecret
+        super.init()
+    }
 
     func onAuthTokenRequested(completion: @escaping AuthTokenRetrievalHandler) {
         tokenRequestCount += 1
         let count = tokenRequestCount
-        print("[MOCK AUTH] Token requested (#\(count)), responding in 0.5s...")
 
-        // Simulate real-world latency
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-            self.onTokenRequested?()
-            completion("mock-jwt-token-\(count)")
-            print("[MOCK AUTH] Provided mock token #\(count)")
+        guard let email = IterableAPI.email ?? AppDelegate.currentTestEmail else {
+            print("[AUTH] Token #\(count): no email set, returning nil")
+            onTokenRequested?(nil)
+            completion(nil)
+            return
         }
+
+        let token = JwtHelper.generateToken(
+            email: email,
+            secret: jwtSecret,
+            expired: forceExpired
+        )
+
+        let expiryLabel = forceExpired ? "EXPIRED" : JwtHelper.expiry.rawValue
+        print("[AUTH] Token #\(count): generated for \(email) (\(expiryLabel))")
+        onTokenRequested?(token)
+        completion(token)
     }
 
     func onAuthFailure(_ authFailure: AuthFailure) {
         lastFailure = authFailure
         onAuthFailureCallback?(authFailure)
-        print("[MOCK AUTH] Auth failure: \(authFailure.failureReason)")
+        print("[AUTH] Failure: \(authFailure.failureReason)")
     }
 
     func reset() {
         tokenRequestCount = 0
         lastFailure = nil
+        forceExpired = false
     }
 }

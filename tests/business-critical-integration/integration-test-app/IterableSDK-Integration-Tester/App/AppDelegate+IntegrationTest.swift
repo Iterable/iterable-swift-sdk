@@ -139,15 +139,21 @@ extension AppDelegate {
         }
     }
     
-    // MARK: - Mock JWT Reinitialization
+    // MARK: - JWT Auth Testing
 
     static var mockAuthDelegate: MockAuthDelegate?
+    static var currentTestEmail: String?
 
     static func reinitializeSDKWithMockJWT() {
-        print("[SDK INIT] Reinitializing SDK with mock JWT auth delegate...")
+        print("[SDK INIT] Reinitializing SDK with JWT auth delegate...")
 
         guard let appDelegate = UIApplication.shared.delegate as? AppDelegate else {
             print("[SDK INIT] Failed to get AppDelegate")
+            return
+        }
+
+        guard let jwtSecret = loadJWTSecretFromConfig(), !jwtSecret.isEmpty else {
+            print("[SDK INIT] No JWT secret in test-config.json — cannot generate tokens")
             return
         }
 
@@ -158,18 +164,18 @@ extension AppDelegate {
         config.autoPushRegistration = false
         config.allowedProtocols = ["tester", "https", "http"]
         config.enableEmbeddedMessaging = true
+        config.expiringAuthTokenRefreshPeriod = 1.0 // refresh 1s before expiry
 
-        // Set up mock auth delegate
-        let authDelegate = MockAuthDelegate()
+        // Set up auth delegate that generates real JWTs locally
+        let authDelegate = MockAuthDelegate(jwtSecret: jwtSecret)
         config.authDelegate = authDelegate
-        mockAuthDelegate = authDelegate // Strong reference to prevent deallocation
+        mockAuthDelegate = authDelegate
 
         let apiKey = loadJWTApiKeyFromConfig() ?? loadApiKeyFromConfig()
         IterableAPI.initialize(apiKey: apiKey, launchOptions: nil, config: config)
 
-        print("[SDK INIT] Reinitialized with mock JWT auth delegate")
+        print("[SDK INIT] Reinitialized with JWT auth (secret: \(jwtSecret.prefix(4))...)")
 
-        // Log remote config values after fetch
         DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {
             let offlineMode = UserDefaults.standard.bool(forKey: "itbl_offline_mode")
             let autoRetry = UserDefaults.standard.bool(forKey: "itbl_auto_retry")
