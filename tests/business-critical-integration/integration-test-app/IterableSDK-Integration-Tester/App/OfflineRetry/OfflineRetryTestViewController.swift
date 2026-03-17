@@ -9,7 +9,6 @@ final class OfflineRetryTestViewController: UIViewController {
     private var logEntries: [LogEntry] = []
     private var notificationObservers: [NSObjectProtocol] = []
     private let mockServer = MockAPIServer.shared
-    private let configManager = ConfigOverrideManager.shared
 
     // MARK: - Models
 
@@ -65,7 +64,7 @@ final class OfflineRetryTestViewController: UIViewController {
 
     private let setupButton: UIButton = {
         let button = UIButton(type: .system)
-        button.setTitle("Enable Mock Server & Reinitialize SDK", for: .normal)
+        button.setTitle("Enable Mock JWT Server & Reinitialize SDK", for: .normal)
         button.backgroundColor = .systemPurple
         button.setTitleColor(.white, for: .normal)
         button.titleLabel?.font = .systemFont(ofSize: 15, weight: .semibold)
@@ -284,30 +283,24 @@ final class OfflineRetryTestViewController: UIViewController {
     // MARK: - Setup / Teardown
 
     @objc private func performSetup() {
-        addLogEntry(type: .setup, detail: "Setting up mock environment...")
+        addLogEntry(type: .setup, detail: "Setting up mock JWT environment...")
 
-        // Step 1: Enable config overrides (offlineMode=true, autoRetry=true)
-        configManager.overrideOfflineMode = true
-        configManager.overrideAutoRetry = true
-        configManager.enable()
-        addLogEntry(type: .setup, detail: "Config overrides ON (offline=true, autoRetry=true)")
-
-        // Step 2: Activate mock server (registers URLProtocol via swizzling)
+        // Step 1: Activate mock server (registers URLProtocol via swizzling)
         mockServer.activate()
-        addLogEntry(type: .setup, detail: "Mock server activated")
+        addLogEntry(type: .setup, detail: "Mock JWT server activated")
 
-        // Step 3: Reinitialize SDK with mock JWT auth delegate
+        // Step 2: Reinitialize SDK with mock JWT auth delegate
         // This creates NEW URLSessions that pick up the swizzled protocols
         AppDelegate.reinitializeSDKWithMockJWT()
         addLogEntry(type: .setup, detail: "SDK reinitialized with mock JWT auth")
 
-        // Step 4: Register a test user so events can be tracked
+        // Step 3: Register a test user so events can be tracked
         IterableAPI.email = "offline-retry-test@test.com"
         addLogEntry(type: .setup, detail: "Registered test email")
 
         updateSetupState()
 
-        // Wait for remote config to be fetched and applied
+        // Verify flags after remote config fetch
         DispatchQueue.main.asyncAfter(deadline: .now() + 2.5) { [weak self] in
             let offlineMode = UserDefaults.standard.bool(forKey: "itbl_offline_mode")
             let autoRetry = UserDefaults.standard.bool(forKey: "itbl_auto_retry")
@@ -315,28 +308,35 @@ final class OfflineRetryTestViewController: UIViewController {
             if offlineMode && autoRetry {
                 self?.addLogEntry(type: .setup, detail: "Ready! Track events to test 401 retry flow.")
             } else {
-                self?.addLogEntry(type: .setup, detail: "Warning: flags not applied. Try tapping Setup again.")
+                self?.addLogEntry(type: .setup, detail: "Warning: offlineMode or autoRetry not enabled. Enable them from Config Overrides and reinitialize.")
             }
         }
     }
 
     @objc private func performTeardown() {
         mockServer.deactivate()
-        configManager.disable()
         AppDelegate.mockAuthDelegate = nil
         AppDelegate.initializeIterableSDK()
-        addLogEntry(type: .setup, detail: "Mock server disabled, SDK reset to normal")
+        addLogEntry(type: .setup, detail: "Mock JWT server disabled, SDK reset to normal")
         updateSetupState()
     }
 
     private func updateSetupState() {
         let mockActive = mockServer.isActive
-        let configActive = configManager.isEnabled
         let hasAuth = AppDelegate.mockAuthDelegate != nil
+        let offlineMode = UserDefaults.standard.bool(forKey: "itbl_offline_mode")
+        let autoRetry = UserDefaults.standard.bool(forKey: "itbl_auto_retry")
 
-        if mockActive && configActive && hasAuth {
-            setupStatusLabel.text = "Mock server: ON | Config overrides: ON | JWT auth: Mock"
-            setupStatusLabel.textColor = .systemGreen
+        if mockActive && hasAuth {
+            var status = "Mock JWT: ON | Auth: Mock"
+            if offlineMode && autoRetry {
+                status += " | Flags: OK"
+                setupStatusLabel.textColor = .systemGreen
+            } else {
+                status += " | Flags: offlineMode=\(offlineMode), autoRetry=\(autoRetry)"
+                setupStatusLabel.textColor = .systemOrange
+            }
+            setupStatusLabel.text = status
             setupButton.backgroundColor = .systemGray4
             setupButton.setTitle("Re-setup (already configured)", for: .normal)
             teardownButton.isHidden = false
@@ -344,7 +344,7 @@ final class OfflineRetryTestViewController: UIViewController {
             setupStatusLabel.text = "Not configured — tap Setup to begin"
             setupStatusLabel.textColor = .systemGray
             setupButton.backgroundColor = .systemPurple
-            setupButton.setTitle("Enable Mock Server & Reinitialize SDK", for: .normal)
+            setupButton.setTitle("Enable Mock JWT Server & Reinitialize SDK", for: .normal)
             teardownButton.isHidden = true
         }
     }
