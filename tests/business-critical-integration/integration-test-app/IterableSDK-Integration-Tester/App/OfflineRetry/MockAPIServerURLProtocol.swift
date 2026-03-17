@@ -21,6 +21,9 @@ final class MockAPIServerURLProtocol: URLProtocol {
         // Only intercept Iterable API requests
         guard let host = request.url?.host, host.contains("iterable.com") else { return false }
 
+        // Only intercept if mock server wants to handle this request
+        guard MockAPIServer.shared.shouldIntercept(request: request) else { return false }
+
         return true
     }
 

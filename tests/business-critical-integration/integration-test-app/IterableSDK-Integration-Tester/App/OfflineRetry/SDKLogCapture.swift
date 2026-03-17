@@ -1,14 +1,59 @@
 import Foundation
 import IterableSDK
 
-/// Notification posted when the SDK emits a log line.
-/// `userInfo["message"]` contains the parsed, friendly log string.
-extension Notification.Name {
-    static let sdkLogCaptured = Notification.Name("SDKLogCaptured")
+// MARK: - LogStore (shared log buffer, mirrors Android LogStore)
+
+/// Shared log store that buffers all logs from app start.
+/// Both SDK internal logs and app-level logs go here.
+final class LogStore {
+    static let shared = LogStore()
+
+    /// All log entries, newest first.
+    private(set) var entries: [String] = []
+
+    /// Posted on main thread whenever a new entry is added.
+    /// `userInfo["entry"]` contains the formatted log string.
+    static let didAddEntry = Notification.Name("LogStoreDidAddEntry")
+
+    private let timeFormatter: DateFormatter = {
+        let f = DateFormatter()
+        f.dateFormat = "HH:mm:ss"
+        return f
+    }()
+
+    private let maxEntries = 500
+
+    private init() {}
+
+    func log(_ message: String) {
+        let line = "\(timeFormatter.string(from: Date())) \(message)"
+        let notify = {
+            self.entries.insert(line, at: 0)
+            if self.entries.count > self.maxEntries {
+                self.entries.removeLast(self.entries.count - self.maxEntries)
+            }
+            NotificationCenter.default.post(
+                name: LogStore.didAddEntry,
+                object: nil,
+                userInfo: ["entry": line]
+            )
+        }
+        if Thread.isMainThread {
+            notify()
+        } else {
+            DispatchQueue.main.async(execute: notify)
+        }
+    }
+
+    func clear() {
+        entries.removeAll()
+    }
 }
 
-/// Custom IterableLogDelegate that captures SDK logs and broadcasts them
-/// via NotificationCenter so the test UI can display them in real-time.
+// MARK: - SDKLogCapture (IterableLogDelegate)
+
+/// Custom IterableLogDelegate that captures SDK logs, parses them into
+/// friendly messages, and routes them to the shared LogStore.
 /// Also prints to console so logs are still visible in Xcode.
 final class SDKLogCapture: NSObject, IterableLogDelegate {
 
@@ -25,14 +70,9 @@ final class SDKLogCapture: NSObject, IterableLogDelegate {
         }
         print("\(marker) \(message)")
 
-        // Parse and broadcast
-        let friendly = parseSdkLog(level: level, message: message)
-        if let friendly = friendly {
-            NotificationCenter.default.post(
-                name: .sdkLogCaptured,
-                object: nil,
-                userInfo: ["message": friendly]
-            )
+        // Parse and store
+        if let friendly = parseSdkLog(level: level, message: message) {
+            LogStore.shared.log(friendly)
         }
     }
 
@@ -40,18 +80,14 @@ final class SDKLogCapture: NSObject, IterableLogDelegate {
 
     private func parseSdkLog(level: LogLevel, message: String) -> String? {
         // Format: "HH:mm:ss.SSSS:0xThread:FileName:methodName:line: actual message"
-        // Extract the file name and the actual message
         let components = message.components(separatedBy: ":")
-        // Need at least: time, thread, file, method, line, message
         guard components.count >= 6 else { return nil }
 
         let fileName = components[2]
-        // Message is everything after the 5th colon
         let msgStartIndex = components.prefix(5).joined(separator: ":").count + 1
         guard msgStartIndex < message.count else { return nil }
         let msg = String(message[message.index(message.startIndex, offsetBy: msgStartIndex)...]).trimmingCharacters(in: .whitespaces)
 
-        // Skip empty messages
         guard !msg.isEmpty else { return nil }
 
         switch fileName {
@@ -70,7 +106,6 @@ final class SDKLogCapture: NSObject, IterableLogDelegate {
         case "NetworkConnectivityManager", "NetworkConnectivityChecker":
             return parseNetworkLog(msg)
         default:
-            // Only show errors from other files
             if level == .error {
                 return "❌ \(fileName): \(msg)"
             }
@@ -177,7 +212,6 @@ final class SDKLogCapture: NSObject, IterableLogDelegate {
     }
 
     private func extractTaskId(_ msg: String) -> String {
-        // Try to extract task ID from messages like "task: ABC12345 succeeded"
         if let range = msg.range(of: "task:?\\s+(\\S+)", options: .regularExpression) {
             let match = String(msg[range])
             let parts = match.components(separatedBy: .whitespaces)

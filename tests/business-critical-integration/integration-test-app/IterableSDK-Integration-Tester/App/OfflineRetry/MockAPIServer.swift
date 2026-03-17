@@ -65,6 +65,20 @@ final class MockAPIServer {
         }
     }
 
+    /// Returns true if this request should be intercepted (not passed through to real network).
+    func shouldIntercept(request: URLRequest) -> Bool {
+        guard isActive, let url = request.url else { return false }
+
+        // GET requests are intercepted (except getRemoteConfiguration)
+        if request.httpMethod == "GET" {
+            return !url.path.contains("getRemoteConfiguration")
+        }
+
+        // POST requests: only intercept in non-normal mode
+        guard url.host?.contains("iterable.com") == true else { return false }
+        return apiResponseMode != .normal
+    }
+
     /// Returns a mock response for the given request, or nil to pass through to real network.
     func mockResponse(for request: URLRequest) -> MockResponse? {
         guard isActive, let url = request.url else { return nil }

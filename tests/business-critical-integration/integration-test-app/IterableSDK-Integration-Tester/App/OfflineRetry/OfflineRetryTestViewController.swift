@@ -6,9 +6,9 @@ final class OfflineRetryTestViewController: UIViewController {
     // MARK: - Properties
 
     private var statusTimer: Timer?
-    private var logEntries: [String] = []
     private var notificationObservers: [NSObjectProtocol] = []
     private var jwtExpiry: JwtExpiry = .oneMin
+    private let logStore = LogStore.shared
 
     // MARK: - UI Components
 
@@ -74,7 +74,8 @@ final class OfflineRetryTestViewController: UIViewController {
         setupNotificationObservers()
         startPolling()
         showTab(0)
-
+        // Load any logs captured before this screen was opened
+        logTableView.reloadData()
     }
 
     deinit {
@@ -140,6 +141,16 @@ final class OfflineRetryTestViewController: UIViewController {
         logHeader.spacing = 8
         logHeader.alignment = .center
 
+        // --- Go Home button ---
+        let goHomeBtn = UIButton(type: .system)
+        goHomeBtn.setTitle("Go Back to Home Screen", for: .normal)
+        goHomeBtn.backgroundColor = .systemGray3
+        goHomeBtn.setTitleColor(.white, for: .normal)
+        goHomeBtn.titleLabel?.font = .systemFont(ofSize: 14, weight: .semibold)
+        goHomeBtn.layer.cornerRadius = 8
+        goHomeBtn.heightAnchor.constraint(equalToConstant: 36).isActive = true
+        goHomeBtn.addTarget(self, action: #selector(goHome), for: .touchUpInside)
+
         // --- Main layout ---
         let mainStack = UIStackView(arrangedSubviews: [
             statusStack,
@@ -148,7 +159,8 @@ final class OfflineRetryTestViewController: UIViewController {
             tabContentView,
             makeDivider(),
             logHeader,
-            logTableView
+            logTableView,
+            goHomeBtn
         ])
         mainStack.axis = .vertical
         mainStack.spacing = 6
@@ -401,16 +413,6 @@ final class OfflineRetryTestViewController: UIViewController {
             ("Track 3 Events", #selector(trackThreeEvents)),
         ]))
 
-        let goHomeButton = UIButton(type: .system)
-        goHomeButton.setTitle("Go Back to Home Screen", for: .normal)
-        goHomeButton.backgroundColor = .systemGray3
-        goHomeButton.setTitleColor(.white, for: .normal)
-        goHomeButton.titleLabel?.font = .systemFont(ofSize: 14, weight: .semibold)
-        goHomeButton.layer.cornerRadius = 8
-        goHomeButton.heightAnchor.constraint(equalToConstant: 40).isActive = true
-        goHomeButton.addTarget(self, action: #selector(goHome), for: .touchUpInside)
-        stack.addArrangedSubview(goHomeButton)
-
         return stack
     }
 
@@ -520,12 +522,12 @@ final class OfflineRetryTestViewController: UIViewController {
     }
 
     @objc private func clearLog() {
-        logEntries.removeAll()
+        logStore.clear()
         logTableView.reloadData()
     }
 
     @objc private func copyLog() {
-        UIPasteboard.general.string = logEntries.joined(separator: "\n")
+        UIPasteboard.general.string = logStore.entries.joined(separator: "\n")
     }
 
     // MARK: - JWT Expiry Menu
@@ -563,7 +565,7 @@ final class OfflineRetryTestViewController: UIViewController {
     // MARK: - Notification Observers
 
     private func setupNotificationObservers() {
-        // SDK lifecycle notifications
+        // SDK lifecycle notifications → route to shared LogStore
         let notifications: [(String, String)] = [
             ("itbl_task_scheduled", "Task SCHEDULED"),
             ("itbl_task_finished_with_success", "Task SUCCESS"),
@@ -578,35 +580,31 @@ final class OfflineRetryTestViewController: UIViewController {
             let observer = NotificationCenter.default.addObserver(
                 forName: Notification.Name(rawValue: name),
                 object: nil,
-                queue: .main
-            ) { [weak self] notification in
+                queue: nil
+            ) { notification in
                 let taskId = (notification.userInfo?["taskId"] as? String).map { " [\(String($0.prefix(8)))]" } ?? ""
-                self?.log("\(label)\(taskId)")
+                LogStore.shared.log("\(label)\(taskId)")
             }
             notificationObservers.append(observer)
         }
 
-        // SDK internal log capture (via SDKLogCapture delegate)
-        let sdkLogObserver = NotificationCenter.default.addObserver(
-            forName: .sdkLogCaptured,
+        // Listen for ANY new log entry added to the shared store → update table
+        // queue: nil → delivers synchronously on posting thread (always main for LogStore)
+        let logObserver = NotificationCenter.default.addObserver(
+            forName: LogStore.didAddEntry,
             object: nil,
-            queue: .main
-        ) { [weak self] notification in
-            if let message = notification.userInfo?["message"] as? String {
-                self?.log(message)
-            }
+            queue: nil
+        ) { [weak self] _ in
+            self?.logTableView.reloadData()
         }
-        notificationObservers.append(sdkLogObserver)
+        notificationObservers.append(logObserver)
     }
 
     // MARK: - Logging
 
+    /// Convenience to log from this view controller's actions
     private func log(_ message: String) {
-        let formatter = DateFormatter()
-        formatter.dateFormat = "HH:mm:ss"
-        let line = "\(formatter.string(from: Date())) \(message)"
-        logEntries.insert(line, at: 0)
-        logTableView.insertRows(at: [IndexPath(row: 0, section: 0)], with: .top)
+        logStore.log(message)
     }
 
     // MARK: - UI Helpers
@@ -704,13 +702,14 @@ final class OfflineRetryTestViewController: UIViewController {
 
 extension OfflineRetryTestViewController: UITableViewDataSource, UITableViewDelegate {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        logEntries.count
+        logStore.entries.count
     }
 
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "LogCell", for: indexPath)
         var config = cell.defaultContentConfiguration()
-        config.text = logEntries[indexPath.row]
+        let entries = logStore.entries
+        config.text = indexPath.row < entries.count ? entries[indexPath.row] : ""
         config.textProperties.font = .monospacedSystemFont(ofSize: 10, weight: .regular)
         config.textProperties.color = .label
         cell.contentConfiguration = config

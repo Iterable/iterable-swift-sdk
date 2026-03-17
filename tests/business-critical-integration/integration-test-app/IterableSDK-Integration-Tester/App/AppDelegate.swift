@@ -26,7 +26,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
         setupNotifications()
         setupTestModeUI()
-        
+
+        // Restore saved config overrides BEFORE SDK init so getRemoteConfiguration is intercepted
+        _ = ConfigOverrideManager.shared
+
         // Start network monitoring
         NetworkMonitor.shared.startMonitoring()
         
