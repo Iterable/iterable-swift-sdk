@@ -1,5 +1,5 @@
 import UIKit
-import IterableSDK
+@testable import IterableSDK
 
 final class OfflineRetryTestViewController: UIViewController {
 
@@ -12,57 +12,27 @@ final class OfflineRetryTestViewController: UIViewController {
 
     // MARK: - UI Components
 
-    // Status Bar
-    private let jwtModeSegment: UISegmentedControl = {
-        let sc = UISegmentedControl(items: ["Valid JWT", "Expired JWT"])
-        sc.selectedSegmentIndex = 0
-        return sc
-    }()
+    // Response mode radio buttons (matches Android)
+    private var radioButtons: [UIButton] = []
+    private var selectedResponseMode: MockAPIServer.APIResponseMode = .normal
 
+    // Auth status
     private let authStatusLabel: UILabel = {
         let label = UILabel()
-        label.font = .monospacedSystemFont(ofSize: 11, weight: .regular)
-        label.textColor = .systemGray
-        label.text = "Auth: --"
+        label.font = .systemFont(ofSize: 15, weight: .regular)
+        label.textColor = .systemGreen
+        label.text = "Valid (--)"
         return label
     }()
 
     private let jwtExpiryButton: UIButton = {
         let button = UIButton(type: .system)
-        button.setTitle("JWT: 60s", for: .normal)
-        button.titleLabel?.font = .systemFont(ofSize: 12, weight: .medium)
-        return button
-    }()
-
-    private let emailField: UITextField = {
-        let tf = UITextField()
-        tf.placeholder = "Email"
-        tf.borderStyle = .roundedRect
-        tf.font = .systemFont(ofSize: 13)
-        tf.autocapitalizationType = .none
-        tf.keyboardType = .emailAddress
-        return tf
-    }()
-
-    private let loginButton: UIButton = {
-        let button = UIButton(type: .system)
-        button.setTitle("Login", for: .normal)
-        button.backgroundColor = .systemBlue
-        button.setTitleColor(.white, for: .normal)
-        button.titleLabel?.font = .systemFont(ofSize: 13, weight: .semibold)
-        button.layer.cornerRadius = 6
-        button.contentEdgeInsets = UIEdgeInsets(top: 6, left: 12, bottom: 6, right: 12)
-        return button
-    }()
-
-    private let logoutButton: UIButton = {
-        let button = UIButton(type: .system)
-        button.setTitle("Logout", for: .normal)
-        button.backgroundColor = .systemRed
-        button.setTitleColor(.white, for: .normal)
-        button.titleLabel?.font = .systemFont(ofSize: 13, weight: .semibold)
-        button.layer.cornerRadius = 6
-        button.contentEdgeInsets = UIEdgeInsets(top: 6, left: 12, bottom: 6, right: 12)
+        button.setTitle("30s", for: .normal)
+        button.titleLabel?.font = .systemFont(ofSize: 14, weight: .medium)
+        button.layer.borderWidth = 1
+        button.layer.borderColor = UIColor.systemGray3.cgColor
+        button.layer.cornerRadius = 14
+        button.contentEdgeInsets = UIEdgeInsets(top: 4, left: 14, bottom: 4, right: 14)
         return button
     }()
 
@@ -105,9 +75,6 @@ final class OfflineRetryTestViewController: UIViewController {
         startPolling()
         showTab(0)
 
-        if let configEmail = AppDelegate.loadTestUserEmailFromConfig() {
-            emailField.text = configEmail
-        }
     }
 
     deinit {
@@ -118,26 +85,34 @@ final class OfflineRetryTestViewController: UIViewController {
     // MARK: - UI Setup
 
     private func setupUI() {
-        // --- Status bar ---
-        let jwtModeRow = UIStackView(arrangedSubviews: [
-            makeLabel("JWT Mode:", bold: true),
-            jwtModeSegment
-        ])
-        jwtModeRow.spacing = 8
-        jwtModeRow.alignment = .center
+        // --- Response mode radio row ---
+        let responseLabel = makeLabel("Response:", bold: true)
 
-        let authRow = UIStackView(arrangedSubviews: [authStatusLabel, UIView(), jwtExpiryButton])
-        authRow.spacing = 8
+        let radioRow = UIStackView()
+        radioRow.spacing = 4
+        radioRow.alignment = .center
+        radioRow.addArrangedSubview(responseLabel)
+
+        for mode in MockAPIServer.APIResponseMode.allCases {
+            let button = makeRadioButton(title: mode.rawValue, tag: radioButtons.count)
+            radioButtons.append(button)
+            radioRow.addArrangedSubview(button)
+        }
+        // Select first radio
+        radioButtons.first?.isSelected = true
+        updateRadioAppearance()
+
+        // --- Auth row ---
+        let authLabel = makeLabel("Auth:", bold: true)
+        let jwtLabel = makeLabel("JWT:", bold: true)
+
+        let authRow = UIStackView(arrangedSubviews: [authLabel, authStatusLabel, UIView(), jwtLabel, jwtExpiryButton])
+        authRow.spacing = 6
         authRow.alignment = .center
 
-        let emailRow = UIStackView(arrangedSubviews: [emailField, loginButton, logoutButton])
-        emailRow.spacing = 8
-        emailRow.alignment = .center
-        emailField.setContentHuggingPriority(.defaultLow, for: .horizontal)
-
-        let statusStack = UIStackView(arrangedSubviews: [jwtModeRow, authRow, emailRow])
+        let statusStack = UIStackView(arrangedSubviews: [radioRow, authRow])
         statusStack.axis = .vertical
-        statusStack.spacing = 6
+        statusStack.spacing = 8
 
         // --- Log header ---
         let clearButton = UIButton(type: .system)
@@ -150,9 +125,15 @@ final class OfflineRetryTestViewController: UIViewController {
         copyButton.titleLabel?.font = .systemFont(ofSize: 12)
         copyButton.addTarget(self, action: #selector(copyLog), for: .touchUpInside)
 
+        let showDbButton = UIButton(type: .system)
+        showDbButton.setTitle("Show DB", for: .normal)
+        showDbButton.titleLabel?.font = .systemFont(ofSize: 12)
+        showDbButton.addTarget(self, action: #selector(showDatabase), for: .touchUpInside)
+
         let logHeader = UIStackView(arrangedSubviews: [
             makeLabel("SDK Logs", bold: true),
             UIView(),
+            showDbButton,
             copyButton,
             clearButton
         ])
@@ -190,9 +171,6 @@ final class OfflineRetryTestViewController: UIViewController {
 
     private func setupActions() {
         tabSegment.addTarget(self, action: #selector(tabChanged), for: .valueChanged)
-        jwtModeSegment.addTarget(self, action: #selector(jwtModeChanged), for: .valueChanged)
-        loginButton.addTarget(self, action: #selector(performLogin), for: .touchUpInside)
-        logoutButton.addTarget(self, action: #selector(performLogout), for: .touchUpInside)
         jwtExpiryButton.showsMenuAsPrimaryAction = true
         jwtExpiryButton.menu = makeJwtExpiryMenu()
     }
@@ -244,7 +222,7 @@ final class OfflineRetryTestViewController: UIViewController {
         stack.axis = .vertical
         stack.spacing = 8
 
-        stack.addArrangedSubview(makeSectionHeader("Scenario: Startup with expired JWT"))
+        stack.addArrangedSubview(makeSectionHeader("Scenario 1: Startup with expired JWT"))
         stack.addArrangedSubview(makeSectionDescription(
             "Start with expired JWT. Fire multiple parallel offline calls. " +
             "Expect: single auth refresh, all requests retried after refresh, no drops."
@@ -257,13 +235,12 @@ final class OfflineRetryTestViewController: UIViewController {
 
         stack.addArrangedSubview(makeSectionHint(
             "Steps:\n" +
-            "1. Login with email\n" +
-            "2. Set JWT Mode to 'Expired JWT'\n" +
-            "3. Press 'Track + Cart' -> logs: 401, queue paused\n" +
-            "4. Switch JWT Mode back to 'Valid JWT'\n" +
-            "5. Wait for SDK to refresh token\n" +
+            "1. Select '401' response mode\n" +
+            "2. Press 'Track + Cart' -> logs: 401, queue paused\n" +
+            "3. Switch response back to 'Normal'\n" +
+            "4. Wait for SDK to refresh token\n" +
             "   -> new valid JWT -> queue resumes\n" +
-            "6. Check logs: queued tasks succeed"
+            "5. Check logs: queued tasks succeed"
         ))
 
         return stack
@@ -276,9 +253,9 @@ final class OfflineRetryTestViewController: UIViewController {
         stack.axis = .vertical
         stack.spacing = 8
 
-        stack.addArrangedSubview(makeSectionHeader("Scenario: 401 handling and pause behavior"))
+        stack.addArrangedSubview(makeSectionHeader("Scenario 2: 401 handling and pause behavior"))
         stack.addArrangedSubview(makeSectionDescription(
-            "Force expired JWT. Verify offline tasks are retained, processing pauses " +
+            "Force 401 responses. Verify offline tasks are retained, processing pauses " +
             "for JWT-required APIs. Only POST endpoints go through the offline queue."
         ))
 
@@ -289,12 +266,11 @@ final class OfflineRetryTestViewController: UIViewController {
 
         stack.addArrangedSubview(makeSectionHint(
             "Steps:\n" +
-            "1. Login with email (Valid JWT mode)\n" +
-            "2. Set JWT Mode to 'Expired JWT'\n" +
-            "3. Press Track -> check logs: 401 received, queue paused\n" +
-            "4. Press Track again -> check logs: task queued\n" +
+            "1. Select '401' response mode\n" +
+            "2. Press Track -> check logs: 401 received, queue paused\n" +
+            "3. Press Track again -> check logs: task queued\n" +
             "   but not sent to server while paused\n" +
-            "5. Switch back to 'Valid JWT' -> tasks flush"
+            "4. Switch back to 'Normal' -> tasks flush"
         ))
 
         return stack
@@ -307,9 +283,9 @@ final class OfflineRetryTestViewController: UIViewController {
         stack.axis = .vertical
         stack.spacing = 8
 
-        stack.addArrangedSubview(makeSectionHeader("Scenario: Token expiry flushes paused queue"))
+        stack.addArrangedSubview(makeSectionHeader("Scenario 3: Token expiry flushes paused queue"))
         stack.addArrangedSubview(makeSectionDescription(
-            "Pause the queue with an expired JWT, then let the SDK's " +
+            "Pause the queue with a 401 response, then let the SDK's " +
             "auth timer request a new valid token. The queue should resume."
         ))
 
@@ -320,14 +296,13 @@ final class OfflineRetryTestViewController: UIViewController {
 
         stack.addArrangedSubview(makeSectionHint(
             "Steps:\n" +
-            "1. Set JWT expiry dropdown to '30s'\n" +
-            "2. Login with email (Valid JWT mode)\n" +
-            "3. Set JWT Mode to 'Expired JWT'\n" +
-            "4. Press Track -> gets 401, queue pauses\n" +
-            "5. Set JWT Mode back to 'Valid JWT'\n" +
-            "6. Wait for JWT to expire (~30s, watch Auth status)\n" +
-            "7. Token refreshes -> queue resumes -> tasks flush\n" +
-            "8. Check logs: all tasks succeed"
+            "1. Set JWT expiry to '30s'\n" +
+            "2. Select '401' response mode\n" +
+            "3. Press Track -> gets 401, queue pauses\n" +
+            "4. Switch response back to 'Normal'\n" +
+            "5. Wait for JWT to expire (~30s, watch Auth status)\n" +
+            "6. Token refreshes -> queue resumes -> tasks flush\n" +
+            "7. Check logs: all tasks succeed"
         ))
 
         return stack
@@ -340,7 +315,7 @@ final class OfflineRetryTestViewController: UIViewController {
         stack.axis = .vertical
         stack.spacing = 8
 
-        stack.addArrangedSubview(makeSectionHeader("Scenario: Network flapping"))
+        stack.addArrangedSubview(makeSectionHeader("Scenario 4: Network flapping"))
         stack.addArrangedSubview(makeSectionDescription(
             "Queue tasks while offline (airplane mode), then restore connectivity. " +
             "Ensure no data loss, no stuck queue after recovery."
@@ -353,14 +328,13 @@ final class OfflineRetryTestViewController: UIViewController {
 
         stack.addArrangedSubview(makeSectionHint(
             "Steps:\n" +
-            "1. Login with email (Valid JWT mode)\n" +
-            "2. Turn on Airplane Mode\n" +
-            "3. Press Track / Update Cart (tasks queue in DB)\n" +
-            "4. Turn off Airplane Mode\n" +
-            "5. Verify all tasks eventually succeed\n" +
-            "6. Try: Airplane On -> queue tasks ->\n" +
-            "   Expired JWT -> Airplane Off ->\n" +
-            "   observe 401 pause -> Valid JWT -> tasks flush"
+            "1. Select 'Conn Err' response mode\n" +
+            "2. Press Track / Update Cart (tasks queue in DB)\n" +
+            "3. Switch back to 'Normal'\n" +
+            "4. Verify all tasks eventually succeed\n" +
+            "5. Try: 'Conn Err' -> queue tasks ->\n" +
+            "   switch to '401' -> then 'Normal' ->\n" +
+            "   observe 401 pause -> auth refresh -> tasks flush"
         ))
 
         return stack
@@ -373,7 +347,7 @@ final class OfflineRetryTestViewController: UIViewController {
         stack.axis = .vertical
         stack.spacing = 8
 
-        stack.addArrangedSubview(makeSectionHeader("Scenario: Feature flag & backend config"))
+        stack.addArrangedSubview(makeSectionHeader("Scenario 5: Feature flag & backend config"))
         stack.addArrangedSubview(makeSectionDescription(
             "Verify legacy behavior with flags off, new behavior with flags on. " +
             "Flags are set via Config Overrides page and take effect on SDK reinit."
@@ -394,12 +368,12 @@ final class OfflineRetryTestViewController: UIViewController {
         stack.addArrangedSubview(makeSectionHint(
             "Steps (flag OFF):\n" +
             "1. Go to Config Overrides, uncheck both flags\n" +
-            "2. Reinitialize SDK, login, Track event\n" +
+            "2. Reinitialize SDK, Track event\n" +
             "3. Verify: request goes online (no queueing)\n\n" +
             "Steps (flag ON):\n" +
             "1. Go to Config Overrides, check both flags\n" +
-            "2. Reinitialize SDK, login\n" +
-            "3. Set 'Expired JWT' mode, Track event\n" +
+            "2. Reinitialize SDK\n" +
+            "3. Select '401' response mode, Track event\n" +
             "4. Verify: task queued, 401 pauses, retry fires"
         ))
 
@@ -413,7 +387,7 @@ final class OfflineRetryTestViewController: UIViewController {
         stack.axis = .vertical
         stack.spacing = 8
 
-        stack.addArrangedSubview(makeSectionHeader("Free Style"))
+        stack.addArrangedSubview(makeSectionHeader("Scenario 6: Free Style"))
         stack.addArrangedSubview(makeSectionDescription(
             "All actions available. Try different combinations and observe the logs."
         ))
@@ -427,41 +401,88 @@ final class OfflineRetryTestViewController: UIViewController {
             ("Track 3 Events", #selector(trackThreeEvents)),
         ]))
 
-        let goHome = UIButton(type: .system)
-        goHome.setTitle("Go Back to Home Screen", for: .normal)
-        goHome.backgroundColor = .systemGray3
-        goHome.setTitleColor(.white, for: .normal)
-        goHome.titleLabel?.font = .systemFont(ofSize: 14, weight: .semibold)
-        goHome.layer.cornerRadius = 8
-        goHome.heightAnchor.constraint(equalToConstant: 40).isActive = true
-        goHome.addTarget(self, action: #selector(goHome), for: .touchUpInside)
-        stack.addArrangedSubview(goHome)
+        let goHomeButton = UIButton(type: .system)
+        goHomeButton.setTitle("Go Back to Home Screen", for: .normal)
+        goHomeButton.backgroundColor = .systemGray3
+        goHomeButton.setTitleColor(.white, for: .normal)
+        goHomeButton.titleLabel?.font = .systemFont(ofSize: 14, weight: .semibold)
+        goHomeButton.layer.cornerRadius = 8
+        goHomeButton.heightAnchor.constraint(equalToConstant: 40).isActive = true
+        goHomeButton.addTarget(self, action: #selector(goHome), for: .touchUpInside)
+        stack.addArrangedSubview(goHomeButton)
 
         return stack
     }
 
     // MARK: - Actions
 
-    @objc private func jwtModeChanged() {
-        let expired = jwtModeSegment.selectedSegmentIndex == 1
-        AppDelegate.mockAuthDelegate?.forceExpired = expired
-        log(expired ? "JWT Mode: EXPIRED (real API will return 401)" : "JWT Mode: VALID")
+    @objc private func radioTapped(_ sender: UIButton) {
+        let modes = MockAPIServer.APIResponseMode.allCases
+        guard sender.tag < modes.count else { return }
+
+        radioButtons.forEach { $0.isSelected = false }
+        sender.isSelected = true
+        updateRadioAppearance()
+
+        let mode = modes[sender.tag]
+        selectedResponseMode = mode
+        MockAPIServer.shared.apiResponseMode = mode
+
+        if mode == .normal {
+            MockAPIServer.shared.deactivate()
+            log("Response: Normal (real API)")
+        } else {
+            MockAPIServer.shared.activate()
+            log("Response: \(mode.rawValue) (mock)")
+        }
     }
 
-    @objc private func performLogin() {
-        guard let email = emailField.text, !email.isEmpty else {
-            log("Login: email empty")
+    @objc private func showDatabase() {
+        guard let container = PersistentContainer.shared else {
+            log("DB: CoreData not initialized (offline mode may be off)")
             return
         }
-        AppDelegate.currentTestEmail = email
-        IterableAPI.email = email
-        log("Login: \(email)")
+
+        let context = container.newBackgroundContext()
+        context.perform { [weak self] in
+            do {
+                let request = IterableTaskManagedObject.fetchRequest()
+                request.sortDescriptors = [NSSortDescriptor(key: "createdAt", ascending: false)]
+                let tasks = try context.fetch(request)
+
+                var lines: [String] = []
+                lines.append("=== Offline Task DB (\(tasks.count) tasks) ===")
+                for task in tasks {
+                    let id = (task.id ?? "?").prefix(8)
+                    let name = task.name ?? "?"
+                    let attempts = task.attempts
+                    let failed = task.failed
+                    let processing = task.processing
+                    let created = task.createdAt.map { self?.shortDate($0) ?? "?" } ?? "?"
+                    lines.append("[\(id)] \(name) | att:\(attempts) fail:\(failed) proc:\(processing) | \(created)")
+                }
+                if tasks.isEmpty {
+                    lines.append("(empty — no pending tasks)")
+                }
+                lines.append("=================================")
+
+                DispatchQueue.main.async {
+                    for line in lines {
+                        self?.log(line)
+                    }
+                }
+            } catch {
+                DispatchQueue.main.async {
+                    self?.log("DB Error: \(error.localizedDescription)")
+                }
+            }
+        }
     }
 
-    @objc private func performLogout() {
-        AppDelegate.currentTestEmail = nil
-        IterableAPI.email = nil
-        log("Logout")
+    private func shortDate(_ date: Date) -> String {
+        let f = DateFormatter()
+        f.dateFormat = "HH:mm:ss"
+        return f.string(from: date)
     }
 
     @objc private func performTrack() {
@@ -514,7 +535,7 @@ final class OfflineRetryTestViewController: UIViewController {
             UIAction(title: expiry.rawValue) { [weak self] _ in
                 self?.jwtExpiry = expiry
                 JwtHelper.expiry = expiry
-                self?.jwtExpiryButton.setTitle("JWT: \(expiry.rawValue)", for: .normal)
+                self?.jwtExpiryButton.setTitle(expiry.rawValue, for: .normal)
             }
         })
     }
@@ -528,11 +549,15 @@ final class OfflineRetryTestViewController: UIViewController {
     }
 
     private func updateAuthStatus() {
-        let token = IterableAPI.email != nil ? (AppDelegate.mockAuthDelegate?.tokenRequestCount ?? 0) : 0
+        // Try to read the current auth token from the SDK's keychain
         let remaining = JwtHelper.remainingLabel(token: nil) // TODO: get current token from SDK
-        let expired = jwtModeSegment.selectedSegmentIndex == 1
-        let mode = expired ? "Expired" : "Valid"
-        authStatusLabel.text = "Auth: \(mode) | Tokens: \(token) | \(remaining)"
+        if remaining == "Expired" || remaining == "No Token" {
+            authStatusLabel.text = remaining
+            authStatusLabel.textColor = .systemRed
+        } else {
+            authStatusLabel.text = "Valid (\(remaining))"
+            authStatusLabel.textColor = .systemGreen
+        }
     }
 
     // MARK: - Notification Observers
@@ -619,6 +644,25 @@ final class OfflineRetryTestViewController: UIViewController {
             label.bottomAnchor.constraint(equalTo: container.bottomAnchor, constant: -8)
         ])
         return container
+    }
+
+    private func makeRadioButton(title: String, tag: Int) -> UIButton {
+        let button = UIButton(type: .custom)
+        button.tag = tag
+        button.setImage(UIImage(systemName: "circle"), for: .normal)
+        button.setImage(UIImage(systemName: "circle.inset.filled"), for: .selected)
+        button.tintColor = .systemPurple
+        button.setTitle(" \(title)", for: .normal)
+        button.setTitleColor(.label, for: .normal)
+        button.titleLabel?.font = .systemFont(ofSize: 13)
+        button.addTarget(self, action: #selector(radioTapped(_:)), for: .touchUpInside)
+        return button
+    }
+
+    private func updateRadioAppearance() {
+        for button in radioButtons {
+            button.tintColor = button.isSelected ? .systemPurple : .systemGray3
+        }
     }
 
     private func makeButtonRow(_ buttons: [(String, Selector)]) -> UIStackView {

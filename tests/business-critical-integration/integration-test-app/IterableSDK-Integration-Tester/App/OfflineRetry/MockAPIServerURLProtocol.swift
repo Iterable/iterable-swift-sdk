@@ -21,9 +21,6 @@ final class MockAPIServerURLProtocol: URLProtocol {
         // Only intercept Iterable API requests
         guard let host = request.url?.host, host.contains("iterable.com") else { return false }
 
-        // Only intercept if we have a mock response for this request
-        guard MockAPIServer.shared.mockResponse(for: request) != nil else { return false }
-
         return true
     }
 
@@ -39,6 +36,12 @@ final class MockAPIServerURLProtocol: URLProtocol {
         guard let mockResponse = MockAPIServer.shared.mockResponse(for: request),
               let url = request.url else {
             client?.urlProtocol(self, didFailWithError: URLError(.unknown))
+            return
+        }
+
+        // Connection error — deliver NSError directly
+        if let error = mockResponse.error {
+            client?.urlProtocol(self, didFailWithError: error)
             return
         }
 

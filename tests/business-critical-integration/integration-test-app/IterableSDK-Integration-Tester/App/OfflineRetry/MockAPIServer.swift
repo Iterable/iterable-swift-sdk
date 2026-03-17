@@ -3,21 +3,20 @@ import Foundation
 final class MockAPIServer {
     static let shared = MockAPIServer()
 
-    // MARK: - API Response Mode (controlled by Offline Retry panel)
+    // MARK: - API Response Mode (controlled by JWT Auth Retry panel)
 
     enum APIResponseMode: String, CaseIterable {
-        case passThrough = "Pass Through"
-        case jwt401ThenSuccess = "401 > Success"
-        case alwaysJwt401 = "Always 401"
-        case alwaysSuccess = "Always 200"
+        case normal = "Normal"
+        case jwt401 = "401"
+        case server500 = "500"
+        case connectionError = "Conn Err"
     }
 
-    var apiResponseMode: APIResponseMode = .jwt401ThenSuccess
+    var apiResponseMode: APIResponseMode = .normal
 
     // MARK: - State
 
     private(set) var isActive: Bool = false
-    private(set) var authHasRefreshed: Bool = false
     private(set) var requestCount: Int = 0
     private var authObserver: NSObjectProtocol?
 
@@ -28,19 +27,9 @@ final class MockAPIServer {
     func activate() {
         guard !isActive else { return }
         isActive = true
-        authHasRefreshed = false
         requestCount = 0
 
         NetworkMonitor.registerProtocolClass(MockAPIServerURLProtocol.self)
-
-        authObserver = NotificationCenter.default.addObserver(
-            forName: Notification.Name("itbl_auth_token_refreshed"),
-            object: nil,
-            queue: .main
-        ) { [weak self] _ in
-            self?.authHasRefreshed = true
-            print("[MOCK SERVER] Auth token refreshed — switching to success responses")
-        }
 
         print("[MOCK SERVER] Activated")
     }
@@ -48,7 +37,6 @@ final class MockAPIServer {
     func deactivate() {
         guard isActive else { return }
         isActive = false
-        authHasRefreshed = false
         requestCount = 0
 
         NetworkMonitor.unregisterProtocolClass(MockAPIServerURLProtocol.self)
@@ -61,16 +49,20 @@ final class MockAPIServer {
         print("[MOCK SERVER] Deactivated")
     }
 
-    func resetAuthState() {
-        authHasRefreshed = false
-    }
-
     // MARK: - Mock Response Generation
 
     struct MockResponse {
         let statusCode: Int
         let data: Data
         let headers: [String: String]
+        let error: Error? // non-nil for connection errors
+
+        init(statusCode: Int, data: Data, headers: [String: String], error: Error? = nil) {
+            self.statusCode = statusCode
+            self.data = data
+            self.headers = headers
+            self.error = error
+        }
     }
 
     /// Returns a mock response for the given request, or nil to pass through to real network.
@@ -92,25 +84,20 @@ final class MockAPIServer {
         // API endpoints — depends on response mode
         guard url.host?.contains("iterable.com") == true else { return nil }
 
+        requestCount += 1
+
         switch apiResponseMode {
-        case .passThrough:
+        case .normal:
             return nil
 
-        case .jwt401ThenSuccess:
-            requestCount += 1
-            if authHasRefreshed {
-                return successResponse(for: path)
-            } else {
-                return jwt401Response()
-            }
-
-        case .alwaysJwt401:
-            requestCount += 1
+        case .jwt401:
             return jwt401Response()
 
-        case .alwaysSuccess:
-            requestCount += 1
-            return successResponse(for: path)
+        case .server500:
+            return server500Response(for: path)
+
+        case .connectionError:
+            return connectionErrorResponse()
         }
     }
 
@@ -130,17 +117,32 @@ final class MockAPIServer {
         )
     }
 
-    private func successResponse(for path: String) -> MockResponse {
+    private func server500Response(for path: String) -> MockResponse {
         let json: [String: Any] = [
-            "msg": "success",
-            "code": "Success"
+            "code": "InternalServerError",
+            "msg": "Internal server error"
         ]
         let data = (try? JSONSerialization.data(withJSONObject: json)) ?? Data()
-        print("[MOCK SERVER] Returning 200 success for \(path)")
+        print("[MOCK SERVER] Returning 500 for \(path)")
         return MockResponse(
-            statusCode: 200,
+            statusCode: 500,
             data: data,
             headers: ["Content-Type": "application/json"]
+        )
+    }
+
+    private func connectionErrorResponse() -> MockResponse {
+        let error = NSError(
+            domain: NSURLErrorDomain,
+            code: NSURLErrorNotConnectedToInternet,
+            userInfo: [NSLocalizedDescriptionKey: "Mock: not connected to the Internet"]
+        )
+        print("[MOCK SERVER] Returning connection error")
+        return MockResponse(
+            statusCode: 0,
+            data: Data(),
+            headers: [:],
+            error: error
         )
     }
 
