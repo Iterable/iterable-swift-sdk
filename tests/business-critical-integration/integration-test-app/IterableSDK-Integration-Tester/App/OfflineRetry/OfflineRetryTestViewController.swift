@@ -563,11 +563,15 @@ final class OfflineRetryTestViewController: UIViewController {
     // MARK: - Notification Observers
 
     private func setupNotificationObservers() {
+        // SDK lifecycle notifications
         let notifications: [(String, String)] = [
+            ("itbl_task_scheduled", "Task SCHEDULED"),
             ("itbl_task_finished_with_success", "Task SUCCESS"),
             ("itbl_task_finished_with_retry", "Task RETRY"),
             ("itbl_task_finished_with_no_retry", "Task NO_RETRY (deleted)"),
-            ("itbl_auth_token_refreshed", "Auth token refreshed")
+            ("itbl_network_offline", "Network OFFLINE"),
+            ("itbl_network_online", "Network ONLINE"),
+            ("itbl_auth_token_refreshed", "Auth token REFRESHED")
         ]
 
         for (name, label) in notifications {
@@ -581,6 +585,18 @@ final class OfflineRetryTestViewController: UIViewController {
             }
             notificationObservers.append(observer)
         }
+
+        // SDK internal log capture (via SDKLogCapture delegate)
+        let sdkLogObserver = NotificationCenter.default.addObserver(
+            forName: .sdkLogCaptured,
+            object: nil,
+            queue: .main
+        ) { [weak self] notification in
+            if let message = notification.userInfo?["message"] as? String {
+                self?.log(message)
+            }
+        }
+        notificationObservers.append(sdkLogObserver)
     }
 
     // MARK: - Logging

@@ -114,7 +114,8 @@ extension AppDelegate {
         config.autoPushRegistration = false  // Disable automatic push registration for testing control
         config.allowedProtocols = ["tester", "https", "http"]  // Allow custom tester:// and https:// deep link schemes
         config.enableEmbeddedMessaging = true
-        
+        config.logDelegate = SDKLogCapture.shared
+
         print("✅ [SDK INIT] Config created with delegates:")
         print("   - URL delegate: \(String(describing: config.urlDelegate))")
         print("   - Custom action delegate: \(String(describing: config.customActionDelegate))")
@@ -165,6 +166,7 @@ extension AppDelegate {
         config.allowedProtocols = ["tester", "https", "http"]
         config.enableEmbeddedMessaging = true
         config.expiringAuthTokenRefreshPeriod = 1.0 // refresh 1s before expiry
+        config.logDelegate = SDKLogCapture.shared
 
         // Set up auth delegate that generates real JWTs locally
         let authDelegate = MockAuthDelegate(jwtSecret: jwtSecret)
