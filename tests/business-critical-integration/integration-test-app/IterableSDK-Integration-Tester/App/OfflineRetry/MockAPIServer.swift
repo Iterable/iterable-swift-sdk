@@ -79,9 +79,15 @@ final class MockAPIServer {
 
         let path = url.path
 
-        // Only mock POST requests (event tracking, user updates, etc.)
-        // Skip GET requests used during SDK init (getRemoteConfiguration, inApp/getMessages, etc.)
-        guard request.httpMethod == "POST" else { return nil }
+        // GET requests (getMessages, etc.) get a generic empty success
+        // so they don't hit the real API with fake JWT tokens.
+        // getRemoteConfiguration is handled separately by ConfigOverrideURLProtocol.
+        if request.httpMethod == "GET" {
+            if path.contains("getRemoteConfiguration") {
+                return nil // let ConfigOverrideURLProtocol handle it
+            }
+            return emptySuccessResponse(for: path)
+        }
 
         // API endpoints — depends on response mode
         guard url.host?.contains("iterable.com") == true else { return nil }
@@ -131,6 +137,16 @@ final class MockAPIServer {
         ]
         let data = (try? JSONSerialization.data(withJSONObject: json)) ?? Data()
         print("[MOCK SERVER] Returning 200 success for \(path)")
+        return MockResponse(
+            statusCode: 200,
+            data: data,
+            headers: ["Content-Type": "application/json"]
+        )
+    }
+
+    private func emptySuccessResponse(for path: String) -> MockResponse {
+        let data = (try? JSONSerialization.data(withJSONObject: [String: Any]())) ?? Data()
+        print("[MOCK SERVER] Returning 200 empty for GET \(path)")
         return MockResponse(
             statusCode: 200,
             data: data,
