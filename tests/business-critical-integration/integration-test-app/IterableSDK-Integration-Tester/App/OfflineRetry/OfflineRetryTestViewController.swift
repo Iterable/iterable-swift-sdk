@@ -9,6 +9,7 @@ final class OfflineRetryTestViewController: UIViewController {
     private var logEntries: [LogEntry] = []
     private var notificationObservers: [NSObjectProtocol] = []
     private let mockServer = MockAPIServer.shared
+    private let configManager = ConfigOverrideManager.shared
 
     // MARK: - Models
 
@@ -23,6 +24,7 @@ final class OfflineRetryTestViewController: UIViewController {
             case noRetry = "No Retry"
             case authRefresh = "Auth Refreshed"
             case eventSent = "Event Sent"
+            case setup = "Setup"
         }
 
         var color: UIColor {
@@ -32,6 +34,7 @@ final class OfflineRetryTestViewController: UIViewController {
             case .noRetry: return .systemRed
             case .authRefresh: return .systemBlue
             case .eventSent: return .systemTeal
+            case .setup: return .systemPurple
             }
         }
     }
@@ -52,10 +55,49 @@ final class OfflineRetryTestViewController: UIViewController {
         return stack
     }()
 
+    // Setup Section
+    private let setupSectionLabel: UILabel = {
+        let label = UILabel()
+        label.text = "1. Setup"
+        label.font = .systemFont(ofSize: 18, weight: .bold)
+        return label
+    }()
+
+    private let setupButton: UIButton = {
+        let button = UIButton(type: .system)
+        button.setTitle("Enable Mock Server & Reinitialize SDK", for: .normal)
+        button.backgroundColor = .systemPurple
+        button.setTitleColor(.white, for: .normal)
+        button.titleLabel?.font = .systemFont(ofSize: 15, weight: .semibold)
+        button.layer.cornerRadius = 8
+        button.heightAnchor.constraint(equalToConstant: 44).isActive = true
+        return button
+    }()
+
+    private let teardownButton: UIButton = {
+        let button = UIButton(type: .system)
+        button.setTitle("Disable Mock Server & Reset", for: .normal)
+        button.backgroundColor = .systemGray3
+        button.setTitleColor(.white, for: .normal)
+        button.titleLabel?.font = .systemFont(ofSize: 14, weight: .medium)
+        button.layer.cornerRadius = 8
+        button.heightAnchor.constraint(equalToConstant: 38).isActive = true
+        return button
+    }()
+
+    private let setupStatusLabel: UILabel = {
+        let label = UILabel()
+        label.font = .systemFont(ofSize: 12)
+        label.textColor = .systemGray
+        label.numberOfLines = 0
+        label.text = "Not configured"
+        return label
+    }()
+
     // Mock API Response Section
     private let mockAPISectionLabel: UILabel = {
         let label = UILabel()
-        label.text = "Mock API Response"
+        label.text = "2. Mock API Response Mode"
         label.font = .systemFont(ofSize: 18, weight: .bold)
         return label
     }()
@@ -79,7 +121,7 @@ final class OfflineRetryTestViewController: UIViewController {
     // Test Actions Section
     private let actionsSectionLabel: UILabel = {
         let label = UILabel()
-        label.text = "Test Actions"
+        label.text = "3. Track Events"
         label.font = .systemFont(ofSize: 18, weight: .bold)
         return label
     }()
@@ -107,7 +149,7 @@ final class OfflineRetryTestViewController: UIViewController {
     // Event Log Section
     private let logSectionLabel: UILabel = {
         let label = UILabel()
-        label.text = "Event Log"
+        label.text = "4. Event Log"
         label.font = .systemFont(ofSize: 18, weight: .bold)
         return label
     }()
@@ -152,6 +194,20 @@ final class OfflineRetryTestViewController: UIViewController {
         view.addSubview(scrollView)
         scrollView.addSubview(contentStack)
 
+        // Setup card
+        let setupCard = createSectionContainer()
+        let setupStack = UIStackView(arrangedSubviews: [setupButton, teardownButton, setupStatusLabel])
+        setupStack.axis = .vertical
+        setupStack.spacing = 8
+        setupStack.translatesAutoresizingMaskIntoConstraints = false
+        setupCard.addSubview(setupStack)
+        NSLayoutConstraint.activate([
+            setupStack.topAnchor.constraint(equalTo: setupCard.topAnchor, constant: 12),
+            setupStack.leadingAnchor.constraint(equalTo: setupCard.leadingAnchor, constant: 16),
+            setupStack.trailingAnchor.constraint(equalTo: setupCard.trailingAnchor, constant: -16),
+            setupStack.bottomAnchor.constraint(equalTo: setupCard.bottomAnchor, constant: -12)
+        ])
+
         // Mock API card
         let mockAPICard = createSectionContainer()
         let mockAPIStack = UIStackView(arrangedSubviews: [responseModeSegment, mockStatusLabel])
@@ -176,6 +232,8 @@ final class OfflineRetryTestViewController: UIViewController {
         logTableView.delegate = self
         logTableView.heightAnchor.constraint(equalToConstant: 300).isActive = true
 
+        contentStack.addArrangedSubview(setupSectionLabel)
+        contentStack.addArrangedSubview(setupCard)
         contentStack.addArrangedSubview(mockAPISectionLabel)
         contentStack.addArrangedSubview(mockAPICard)
         contentStack.addArrangedSubview(actionsSectionLabel)
@@ -195,9 +253,13 @@ final class OfflineRetryTestViewController: UIViewController {
             contentStack.bottomAnchor.constraint(equalTo: scrollView.bottomAnchor, constant: -16),
             contentStack.widthAnchor.constraint(equalTo: scrollView.widthAnchor, constant: -40)
         ])
+
+        updateSetupState()
     }
 
     private func setupActions() {
+        setupButton.addTarget(self, action: #selector(performSetup), for: .touchUpInside)
+        teardownButton.addTarget(self, action: #selector(performTeardown), for: .touchUpInside)
         trackOneEventButton.addTarget(self, action: #selector(trackOneEvent), for: .touchUpInside)
         trackThreeEventsButton.addTarget(self, action: #selector(trackThreeEvents), for: .touchUpInside)
         responseModeSegment.addTarget(self, action: #selector(responseModeChanged), for: .valueChanged)
@@ -216,6 +278,74 @@ final class OfflineRetryTestViewController: UIViewController {
         let modes = MockAPIServer.APIResponseMode.allCases
         if let index = modes.firstIndex(of: mockServer.apiResponseMode) {
             responseModeSegment.selectedSegmentIndex = index
+        }
+    }
+
+    // MARK: - Setup / Teardown
+
+    @objc private func performSetup() {
+        addLogEntry(type: .setup, detail: "Setting up mock environment...")
+
+        // Step 1: Enable config overrides (offlineMode=true, autoRetry=true)
+        configManager.overrideOfflineMode = true
+        configManager.overrideAutoRetry = true
+        configManager.enable()
+        addLogEntry(type: .setup, detail: "Config overrides ON (offline=true, autoRetry=true)")
+
+        // Step 2: Activate mock server (registers URLProtocol via swizzling)
+        mockServer.activate()
+        addLogEntry(type: .setup, detail: "Mock server activated")
+
+        // Step 3: Reinitialize SDK with mock JWT auth delegate
+        // This creates NEW URLSessions that pick up the swizzled protocols
+        AppDelegate.reinitializeSDKWithMockJWT()
+        addLogEntry(type: .setup, detail: "SDK reinitialized with mock JWT auth")
+
+        // Step 4: Register a test user so events can be tracked
+        IterableAPI.email = "offline-retry-test@test.com"
+        addLogEntry(type: .setup, detail: "Registered test email")
+
+        updateSetupState()
+
+        // Wait for remote config to be fetched and applied
+        DispatchQueue.main.asyncAfter(deadline: .now() + 2.5) { [weak self] in
+            let offlineMode = UserDefaults.standard.bool(forKey: "itbl_offline_mode")
+            let autoRetry = UserDefaults.standard.bool(forKey: "itbl_auto_retry")
+            self?.addLogEntry(type: .setup, detail: "SDK flags: offlineMode=\(offlineMode), autoRetry=\(autoRetry)")
+            if offlineMode && autoRetry {
+                self?.addLogEntry(type: .setup, detail: "Ready! Track events to test 401 retry flow.")
+            } else {
+                self?.addLogEntry(type: .setup, detail: "Warning: flags not applied. Try tapping Setup again.")
+            }
+        }
+    }
+
+    @objc private func performTeardown() {
+        mockServer.deactivate()
+        configManager.disable()
+        AppDelegate.mockAuthDelegate = nil
+        AppDelegate.initializeIterableSDK()
+        addLogEntry(type: .setup, detail: "Mock server disabled, SDK reset to normal")
+        updateSetupState()
+    }
+
+    private func updateSetupState() {
+        let mockActive = mockServer.isActive
+        let configActive = configManager.isEnabled
+        let hasAuth = AppDelegate.mockAuthDelegate != nil
+
+        if mockActive && configActive && hasAuth {
+            setupStatusLabel.text = "Mock server: ON | Config overrides: ON | JWT auth: Mock"
+            setupStatusLabel.textColor = .systemGreen
+            setupButton.backgroundColor = .systemGray4
+            setupButton.setTitle("Re-setup (already configured)", for: .normal)
+            teardownButton.isHidden = false
+        } else {
+            setupStatusLabel.text = "Not configured — tap Setup to begin"
+            setupStatusLabel.textColor = .systemGray
+            setupButton.backgroundColor = .systemPurple
+            setupButton.setTitle("Enable Mock Server & Reinitialize SDK", for: .normal)
+            teardownButton.isHidden = true
         }
     }
 
