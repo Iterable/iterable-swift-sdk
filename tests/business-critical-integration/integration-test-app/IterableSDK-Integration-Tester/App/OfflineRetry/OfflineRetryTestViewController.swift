@@ -717,12 +717,32 @@ final class OfflineRetryTestViewController: UIViewController {
             token = IterableAPI.authToken
         }
         let remaining = JwtHelper.remainingLabel(token: token)
-        if remaining == "Expired" || remaining == "No Token" {
-            authStatusLabel.text = remaining
+
+        // Use SDK's auth validity state instead of just JWT expiry
+        let sdkState = IterableAPI.lastAuthTokenState
+        switch sdkState {
+        case .valid:
+            if remaining == "Expired" || remaining == "No Token" {
+                authStatusLabel.text = remaining
+                authStatusLabel.textColor = .systemRed
+            } else {
+                authStatusLabel.text = "Valid (\(remaining))"
+                authStatusLabel.textColor = .systemGreen
+            }
+        case .invalid:
+            authStatusLabel.text = "Invalid (\(remaining))"
             authStatusLabel.textColor = .systemRed
-        } else {
-            authStatusLabel.text = "Valid (\(remaining))"
-            authStatusLabel.textColor = .systemGreen
+        case .unknown:
+            if remaining == "Expired" || remaining == "No Token" {
+                authStatusLabel.text = remaining
+                authStatusLabel.textColor = .systemRed
+            } else {
+                authStatusLabel.text = "Unknown (\(remaining))"
+                authStatusLabel.textColor = .systemOrange
+            }
+        @unknown default:
+            authStatusLabel.text = remaining
+            authStatusLabel.textColor = .systemGray
         }
     }
 

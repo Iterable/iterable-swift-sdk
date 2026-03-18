@@ -22,7 +22,8 @@ struct OfflineRequestProcessor: RequestProcessorProtocol {
         self.deviceMetadata = deviceMetadata
         self.taskScheduler = taskScheduler
         self.taskRunner = taskRunner
-        notificationListener = NotificationListener(notificationCenter: notificationCenter)
+        notificationListener = NotificationListener(notificationCenter: notificationCenter,
+                                                      authManager: authManager)
     }
     
     var autoRetry: Bool {
@@ -423,9 +424,11 @@ struct OfflineRequestProcessor: RequestProcessorProtocol {
     }
 
     private class NotificationListener: NSObject {
-        init(notificationCenter: NotificationCenterProtocol) {
+        init(notificationCenter: NotificationCenterProtocol,
+             authManager: IterableAuthManagerProtocol? = nil) {
             ITBInfo("OfflineRequestProcessor.NotificationListener.init()")
             self.notificationCenter = notificationCenter
+            self.authManager = authManager
             super.init()
             self.notificationCenter.addObserver(self,
                                                 selector: #selector(onTaskFinishedWithSuccess(notification:)),
@@ -433,6 +436,9 @@ struct OfflineRequestProcessor: RequestProcessorProtocol {
             self.notificationCenter.addObserver(self,
                                                 selector: #selector(onTaskFinishedWithNoRetry(notification:)),
                                                 name: .iterableTaskFinishedWithNoRetry, object: nil)
+            self.notificationCenter.addObserver(self,
+                                                selector: #selector(onTaskFinishedWithRetry(notification:)),
+                                                name: .iterableTaskFinishedWithRetry, object: nil)
         }
         
         deinit {
@@ -462,6 +468,18 @@ struct OfflineRequestProcessor: RequestProcessorProtocol {
                 rejectTask(error: taskSendRequestError)
             } else {
                 ITBError("Could not find taskId for notification")
+            }
+        }
+
+        @objc
+        private func onTaskFinishedWithRetry(notification: Notification) {
+            ITBInfo()
+            if let taskSendRequestError = IterableNotificationUtil.notificationToTaskSendRequestError(notification) {
+                let error = taskSendRequestError.sendRequestError
+                if error.httpStatusCode == 401, RequestProcessorUtil.matchesJWTErrorCode(error.iterableCode) {
+                    ITBInfo("JWT auth failure in offline task, invalidating auth token state")
+                    authManager?.setIsLastAuthTokenValid(false)
+                }
             }
         }
         
@@ -501,6 +519,7 @@ struct OfflineRequestProcessor: RequestProcessorProtocol {
         }
 
         private let notificationCenter: NotificationCenterProtocol
+        private weak var authManager: IterableAuthManagerProtocol?
         private var pendingTasksMap = [String: Fulfill<SendRequestValue, SendRequestError>]()
         private var pendingTasksQueue = DispatchQueue(label: "pendingTasks")
     }
