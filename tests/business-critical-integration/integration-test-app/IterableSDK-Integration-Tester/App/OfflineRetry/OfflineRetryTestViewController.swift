@@ -397,15 +397,16 @@ final class OfflineRetryTestViewController: UIViewController {
 
         stack.addArrangedSubview(makeSectionHint(
             "Steps:\n" +
-            "1. Set JWT dropdown to 30s\n" +
-            "2. Login with email (Normal mode)\n" +
-            "3. Set Response Mode to 401\n" +
-            "4. Press Track → gets 401, queue pauses\n" +
-            "5. Show DB: task is PENDING\n" +
-            "6. Set Response Mode back to Normal\n" +
-            "7. Wait for JWT to expire (~30s, watch Auth status)\n" +
-            "8. Token refreshes → queue resumes → tasks flush\n" +
-            "9. Show DB: queue should be empty"
+            "1. Make sure autoRetry, offlineMode enabled\n" +
+            "2. Set JWT dropdown to 30s\n" +
+            "3. Login with email (Normal mode)\n" +
+            "4. Set Response Mode to 401\n" +
+            "5. Press Track → gets 401, queue pauses\n" +
+            "6. Show DB: task is PENDING\n" +
+            "7. Set Response Mode back to Normal\n" +
+            "8. Wait for JWT to expire (~30s, watch Auth status)\n" +
+            "9. Token refreshes → queue resumes → tasks flush\n" +
+            "10. Show DB: queue should be empty"
         ))
 
         return stack
@@ -436,13 +437,14 @@ final class OfflineRetryTestViewController: UIViewController {
 
         stack.addArrangedSubview(makeSectionHint(
             "Steps:\n" +
-            "1. Login with email (Normal mode)\n" +
-            "2. Press 'Go Offline'\n" +
-            "3. Press Track / Update Cart (tasks queue in DB)\n" +
-            "4. Show DB: tasks are PENDING\n" +
-            "5. Press 'Go Online'\n" +
-            "6. Verify all tasks eventually succeed\n" +
-            "7. Try: Go Offline → queue tasks → 401 mode →\n" +
+            "1. Make sure autoRetry, offlineMode enabled\n" +
+            "2. Login with email (Normal mode)\n" +
+            "3. Press 'Go Offline'\n" +
+            "4. Press Track / Update Cart (tasks queue in DB)\n" +
+            "5. Show DB: tasks are PENDING\n" +
+            "6. Press 'Go Online'\n" +
+            "7. Verify all tasks eventually succeed\n" +
+            "8. Try: Go Offline → queue tasks → 401 mode →\n" +
             "   Go Online → observe 401 pause → Normal mode"
         ))
 
@@ -475,12 +477,12 @@ final class OfflineRetryTestViewController: UIViewController {
         ]))
 
         stack.addArrangedSubview(makeSectionHint(
-            "Steps (flag OFF):\n" +
-            "1. Uncheck both flags, restart app\n" +
+            "Steps (legacy behavior):\n" +
+            "1. Uncheck both switches in Config Override Panel\n" +
             "2. Login, Track event\n" +
             "3. Verify: request goes online (no queueing)\n\n" +
-            "Steps (flag ON):\n" +
-            "1. Check both flags, restart app\n" +
+            "Steps (new behavior):\n" +
+            "1. Check both switches in Config Override Panel\n" +
             "2. Login, set 401 mode, Track event\n" +
             "3. Verify: task queued, 401 pauses, retry fires"
         ))
