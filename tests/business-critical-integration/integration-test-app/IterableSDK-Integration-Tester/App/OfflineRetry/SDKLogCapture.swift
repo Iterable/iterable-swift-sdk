@@ -54,13 +54,14 @@ final class LogStore {
 
 /// Custom IterableLogDelegate that captures SDK logs, parses them into
 /// friendly messages, and routes them to the shared LogStore.
-/// Also prints to console so logs are still visible in Xcode.
+/// Matches the Android network tester's log filtering — only shows
+/// actionable events, not internal init/constructor noise.
 final class SDKLogCapture: NSObject, IterableLogDelegate {
 
     static let shared = SDKLogCapture()
 
     func log(level: LogLevel, message: String) {
-        // Still print to console
+        // Still print to console for Xcode debugging
         let marker: String
         switch level {
         case .error: marker = "❤️"
@@ -70,7 +71,7 @@ final class SDKLogCapture: NSObject, IterableLogDelegate {
         }
         print("\(marker) \(message)")
 
-        // Parse and store
+        // Parse and store (only meaningful events)
         if let friendly = parseSdkLog(level: level, message: message) {
             LogStore.shared.log(friendly)
         }
@@ -80,11 +81,13 @@ final class SDKLogCapture: NSObject, IterableLogDelegate {
 
     private func parseSdkLog(level: LogLevel, message: String) -> String? {
         // Format: "HH:mm:ss.SSSS:0xThread:FileName:methodName:line: actual message"
+        // Splitting by ":" gives: [HH, mm, ss.SSSS, 0xThread, FileName, method, line, message...]
+        // The timestamp HH:mm:ss.SSSS contributes 3 components, so fileName is at index 4.
         let components = message.components(separatedBy: ":")
-        guard components.count >= 6 else { return nil }
+        guard components.count >= 8 else { return nil }
 
-        let fileName = components[2]
-        let msgStartIndex = components.prefix(5).joined(separator: ":").count + 1
+        let fileName = components[4]
+        let msgStartIndex = components.prefix(7).joined(separator: ":").count + 1
         guard msgStartIndex < message.count else { return nil }
         let msg = String(message[message.index(message.startIndex, offsetBy: msgStartIndex)...]).trimmingCharacters(in: .whitespaces)
 
@@ -105,13 +108,24 @@ final class SDKLogCapture: NSObject, IterableLogDelegate {
             return parseSchedulerLog(msg)
         case "NetworkConnectivityManager", "NetworkConnectivityChecker":
             return parseNetworkLog(msg)
+        case "NetworkMonitor":
+            return parseNetworkMonitorLog(msg)
+        case "IterableEmbeddedManager":
+            return nil // suppress — internal detail, noisy on init without email
+        case "RequestCreator":
+            return nil // suppress — transient "email nil" errors during reinit
+        case "OfflineRequestProcessor":
+            return nil // suppress — "could not find fulfill" is expected for tasks from previous sessions
         default:
+            // Only surface errors from unknown files — suppress all info/debug noise
             if level == .error {
                 return "❌ \(fileName): \(msg)"
             }
             return nil
         }
     }
+
+    // MARK: - Per-file parsers (only return non-nil for actionable events)
 
     private func parseTaskRunnerLog(_ msg: String) -> String? {
         if msg.contains("JWT auth failure") {
@@ -132,14 +146,29 @@ final class SDKLogCapture: NSObject, IterableLogDelegate {
             let id = extractTaskId(msg)
             return "❌ Task \(id) deleted (no retry)"
         }
-        if msg.contains("processed with retry") || msg.contains("retry") {
+        if msg.contains("processed with retry") {
             let id = extractTaskId(msg)
             return "🔄 Task \(id) will retry"
         }
-        if msg.contains("paused") {
-            return "⏸️ TaskRunner: \(msg)"
+        if msg.contains("No tasks to execute") {
+            return nil // suppress — not actionable
         }
-        return "🔧 TaskRunner: \(msg)"
+        if msg.contains("Already running") {
+            return nil // suppress — internal detail
+        }
+        if msg.contains("Executing") {
+            // "Executing taskId: XXX, name: events/track"
+            if let nameRange = msg.range(of: "name: ") {
+                let endpoint = String(msg[nameRange.upperBound...])
+                let id = extractTaskId(msg)
+                return "🔧 Executing \(endpoint) [\(id)]"
+            }
+        }
+        if msg.contains("deleting task") {
+            return nil // suppress — covered by "succeeded" / "deleted"
+        }
+        // Suppress all other TaskRunner noise (line numbers, init, etc.)
+        return nil
     }
 
     private func parseAuthLog(_ msg: String) -> String? {
@@ -149,19 +178,44 @@ final class SDKLogCapture: NSObject, IterableLogDelegate {
         if msg.contains("requestNewAuthToken") {
             return "🔄 Auth: requesting new token"
         }
-        if msg.contains("auth failure") || msg.contains("onAuthFailure") {
-            return "❌ Auth: failure — \(msg)"
+        if msg.contains("AUTH_TOKEN_NULL") || msg.contains("auth failure") || msg.contains("onAuthFailure") {
+            return "❌ Auth: \(msg)"
         }
-        if msg.contains("Scheduling") {
-            return "🔄 Auth: \(msg)"
+        if msg.contains("Scheduling auth token refresh timer") {
+            // Extract the time: "Scheduling auth token refresh timer for 58993ms ..."
+            if let msRange = msg.range(of: "for \\d+ms", options: .regularExpression) {
+                let duration = String(msg[msRange])
+                return "🔧 Auth: \(duration) until refresh"
+            }
+            return "🔧 Auth: scheduling refresh"
         }
-        if msg.contains("Expiring") || msg.contains("expir") {
-            return "⏰ Auth: \(msg)"
+        if msg.contains("Auth token refresh timer fired") {
+            return "🔧 Auth: refresh timer fired"
+        }
+        if msg.contains("app foregrounded") || msg.contains("App switched to foreground") {
+            return "🔄 Auth: app foregrounded, checking token"
+        }
+        if msg.contains("app backgrounded") || msg.contains("App switched to background") {
+            return "💤 Auth: app backgrounded"
+        }
+        if msg.contains("scheduleAuthTokenRefresh blocked") {
+            return nil // suppress — internal detail
+        }
+        if msg.contains("pauseAuthRetry") {
+            return nil // suppress — internal detail
+        }
+        // Suppress init logs (contain parameter lists)
+        if msg.contains("expirationRefreshPeriod") || msg.contains("localStorage") {
+            return nil
         }
         return nil
     }
 
     private func parseRequestLog(_ msg: String) -> String? {
+        // Suppress expected transient errors during init
+        if msg.contains("UnknownEmailError") || msg.contains("No user exists") {
+            return nil
+        }
         if msg.contains("401") || msg.contains("InvalidJwt") {
             return "📤 Request: 401 JWT error"
         }
@@ -179,7 +233,7 @@ final class SDKLogCapture: NSObject, IterableLogDelegate {
             return "❌ Processor: permanent failure"
         }
         if msg.contains("JWT") || msg.contains("401") {
-            return "🔑 Processor: \(msg)"
+            return "🔑 Processor: JWT auth issue"
         }
         return nil
     }
@@ -211,8 +265,20 @@ final class SDKLogCapture: NSObject, IterableLogDelegate {
         return nil
     }
 
+    private func parseNetworkMonitorLog(_ msg: String) -> String? {
+        // Only show connectivity changes, not verbose path details
+        if msg.contains("satisfied") && !msg.contains("unsatisfied") {
+            return "🌐 Network: online"
+        }
+        if msg.contains("unsatisfied") {
+            return "📡 Network: offline"
+        }
+        return nil
+    }
+
     private func extractTaskId(_ msg: String) -> String {
-        if let range = msg.range(of: "task:?\\s+(\\S+)", options: .regularExpression) {
+        // Match patterns like "taskId: XXXX" or "task: XXXX" or "task XXXX"
+        if let range = msg.range(of: "(?:taskId|task):?\\s+([A-F0-9-]+)", options: .regularExpression) {
             let match = String(msg[range])
             let parts = match.components(separatedBy: .whitespaces)
             if let id = parts.last {

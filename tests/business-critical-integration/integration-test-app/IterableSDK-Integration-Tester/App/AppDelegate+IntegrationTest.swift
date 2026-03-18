@@ -95,6 +95,7 @@ extension AppDelegate {
     }
         
     static func initializeIterableSDK() {
+        LogStore.shared.log("🔧 SDK initializing...")
         print("🚀 [SDK INIT] Starting SDK initialization...")
         
         guard let appDelegate = UIApplication.shared.delegate as? AppDelegate else {
@@ -131,12 +132,14 @@ extension AppDelegate {
         
         print("✅ [SDK INIT] SDK initialized for testing")
         print("✅ [SDK INIT] Initialization complete")
+        LogStore.shared.log("✅ SDK initialized")
 
         // Log remote config values after they've been fetched (async)
         DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {
             let offlineMode = UserDefaults.standard.bool(forKey: "itbl_offline_mode")
             let autoRetry = UserDefaults.standard.bool(forKey: "itbl_auto_retry")
             print("🔄 [SDK INIT] Remote config values - offlineMode: \(offlineMode), autoRetry: \(autoRetry)")
+            LogStore.shared.log("⚙️ Config: offlineMode=\(offlineMode), autoRetry=\(autoRetry)")
         }
     }
     
@@ -145,7 +148,16 @@ extension AppDelegate {
     static var mockAuthDelegate: MockAuthDelegate?
     static var currentTestEmail: String?
 
-    static func reinitializeSDKWithMockJWT() {
+    /// Initialize SDK with JWT auth but no email — user will login separately.
+    static func reinitializeSDKWithJWTOnly() {
+        reinitializeSDKWithMockJWT(email: nil)
+    }
+
+    static func reinitializeSDKWithMockJWT(email: String?) {
+        // Set email so the auth delegate can generate a JWT when SDK requests one.
+        currentTestEmail = email
+
+        LogStore.shared.log("🔧 SDK reinitializing with JWT auth...")
         print("[SDK INIT] Reinitializing SDK with JWT auth delegate...")
 
         guard let appDelegate = UIApplication.shared.delegate as? AppDelegate else {
@@ -174,9 +186,23 @@ extension AppDelegate {
         mockAuthDelegate = authDelegate
 
         let apiKey = loadJWTApiKeyFromConfig() ?? loadApiKeyFromConfig()
+
+        // Activate mock server BEFORE init to intercept GET requests (getInAppMessages,
+        // embedded-messaging) so they don't hit the real API with test emails.
+        MockAPIServer.shared.activate()
+
         IterableAPI.initialize(apiKey: apiKey, launchOptions: nil, config: config)
 
+        // Only set email if provided — otherwise user will login separately
+        if let email = email {
+            // Force a clean login: clear any stale email first so setEmail
+            // doesn't early-return when the same email is already persisted.
+            IterableAPI.email = nil
+            IterableAPI.email = email
+        }
+
         print("[SDK INIT] Reinitialized with JWT auth (secret: \(jwtSecret.prefix(4))...)")
+        LogStore.shared.log("✅ SDK initialized with JWT auth")
 
         DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {
             let offlineMode = UserDefaults.standard.bool(forKey: "itbl_offline_mode")
@@ -188,6 +214,7 @@ extension AppDelegate {
     static func registerEmailToIterableSDK(email: String) {
         print("📧 [SDK INIT] Registering email with SDK: \(email)")
         IterableAPI.email = email
+        LogStore.shared.log("📧 Email set: \(email)")
         print("✅ [SDK INIT] Test user email configured: \(email)")
         print("🔍 [SDK INIT] IterableAPI.email is now: \(IterableAPI.email ?? "nil")")
     }

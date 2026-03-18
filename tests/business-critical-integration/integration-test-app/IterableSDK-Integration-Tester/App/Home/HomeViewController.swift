@@ -469,9 +469,9 @@ final class HomeViewController: UIViewController, UITextFieldDelegate {
     }
 
     private func updateOfflineRetryButtonState() {
-        let isSDKInitialized = IterableSDKStatusView.isSDKInitialized()
-        offlineRetryTestRow.isUserInteractionEnabled = isSDKInitialized
-        offlineRetryTestRow.alpha = isSDKInitialized ? 1.0 : 0.5
+        // Always enabled — JWT retry screen has its own Initialize button
+        offlineRetryTestRow.isUserInteractionEnabled = true
+        offlineRetryTestRow.alpha = 1.0
     }
 
     @objc private func showOfflineRetryTest() {
@@ -480,9 +480,9 @@ final class HomeViewController: UIViewController, UITextFieldDelegate {
     }
 
     private func updateConfigOverrideButtonState() {
-        let isSDKInitialized = IterableSDKStatusView.isSDKInitialized()
-        remoteConfigOverrideRow.isUserInteractionEnabled = isSDKInitialized
-        remoteConfigOverrideRow.alpha = isSDKInitialized ? 1.0 : 0.5
+        // Always enabled — config overrides work independently of SDK init
+        remoteConfigOverrideRow.isUserInteractionEnabled = true
+        remoteConfigOverrideRow.alpha = 1.0
     }
 
     @objc private func showRemoteConfigOverride() {

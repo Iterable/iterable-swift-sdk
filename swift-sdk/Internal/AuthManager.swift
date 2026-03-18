@@ -129,6 +129,9 @@ class AuthManager: IterableAuthManagerProtocol {
     
     func setIsLastAuthTokenValid(_ isValid: Bool) {
         isLastAuthTokenValid = isValid
+        if isValid {
+            NotificationCenter.default.post(name: .iterableAuthTokenRefreshed, object: nil)
+        }
     }
     
     func getNextRetryInterval() -> Double {

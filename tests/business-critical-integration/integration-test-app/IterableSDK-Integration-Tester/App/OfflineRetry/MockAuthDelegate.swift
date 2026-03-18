@@ -12,6 +12,8 @@ final class MockAuthDelegate: NSObject, IterableAuthDelegate {
     private let jwtSecret: String
     private(set) var tokenRequestCount = 0
     private(set) var lastFailure: AuthFailure?
+    /// The most recently generated token — use for UI countdown display
+    private(set) var lastGeneratedToken: String?
 
     /// When true, generates expired JWTs so real API returns 401.
     var forceExpired: Bool = false
@@ -32,6 +34,7 @@ final class MockAuthDelegate: NSObject, IterableAuthDelegate {
 
         guard let email = IterableAPI.email ?? AppDelegate.currentTestEmail else {
             print("[AUTH] Token #\(count): no email set, returning nil")
+            LogStore.shared.log("🔑 Auth: no email, returning nil")
             onTokenRequested?(nil)
             completion(nil)
             return
@@ -43,16 +46,29 @@ final class MockAuthDelegate: NSObject, IterableAuthDelegate {
             expired: forceExpired
         )
 
+        lastGeneratedToken = token
+
         let expiryLabel = forceExpired ? "EXPIRED" : JwtHelper.expiry.rawValue
         print("[AUTH] Token #\(count): generated for \(email) (\(expiryLabel))")
-        onTokenRequested?(token)
+        LogStore.shared.log("🔑 Auth: JWT generated for \(email) (\(expiryLabel))")
+        onTokenRequested?(token) // callback only — don't double-log
         completion(token)
     }
 
     func onAuthFailure(_ authFailure: AuthFailure) {
         lastFailure = authFailure
         onAuthFailureCallback?(authFailure)
-        print("[AUTH] Failure: \(authFailure.failureReason)")
+
+        // If no email is set yet, auth failures are expected (pre-login state).
+        // Don't log them as errors — matches Android behavior where null token
+        // before login is handled gracefully.
+        let hasEmail = (IterableAPI.email ?? AppDelegate.currentTestEmail) != nil
+        if hasEmail {
+            print("[AUTH] Failure: \(authFailure.failureReason)")
+            LogStore.shared.log("❌ Auth failure: \(authFailure.failureReason)")
+        } else {
+            print("[AUTH] Failure (no email set, expected): \(authFailure.failureReason)")
+        }
     }
 
     func reset() {

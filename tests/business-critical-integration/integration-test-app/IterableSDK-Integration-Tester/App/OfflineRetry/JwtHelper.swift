@@ -18,7 +18,7 @@ enum JwtExpiry: String, CaseIterable {
 }
 
 struct JwtHelper {
-    static var expiry: JwtExpiry = .oneMin
+    static var expiry: JwtExpiry = .thirtySec
 
     /// Generates a signed JWT for the given email using HMAC-SHA256.
     /// Returns nil if the secret is empty.
