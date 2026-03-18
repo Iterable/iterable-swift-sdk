@@ -245,6 +245,9 @@ final class SDKLogCapture: NSObject, IterableLogDelegate {
         if msg.contains("Cannot complete") {
             return "⚠️ \(msg)"
         }
+        if msg.contains("setting offlineMode") {
+            return "⚙️ \(msg)"
+        }
         return nil
     }
 

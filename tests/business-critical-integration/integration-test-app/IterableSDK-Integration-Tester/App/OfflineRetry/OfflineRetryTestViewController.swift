@@ -108,10 +108,15 @@ final class OfflineRetryTestViewController: UIViewController {
         setupNotificationObservers()
         startPolling()
         showTab(0)
+    }
+
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
 
         log("📱 JWT Auth Retry screen opened")
 
-        // Auto-initialize SDK with JWT auth on screen open (matches Android App.onCreate)
+        // Re-initialize SDK with JWT auth every time screen appears
+        // (e.g. returning from Config Override Panel picks up new settings)
         AppDelegate.reinitializeSDKWithJWTOnly()
         log("Initialized SDK with JWT auth")
 
@@ -323,13 +328,14 @@ final class OfflineRetryTestViewController: UIViewController {
 
         stack.addArrangedSubview(makeSectionHint(
             "Steps:\n" +
-            "1. Login with email\n" +
-            "2. Set Response Mode to 401\n" +
-            "3. Press 'Fire All' → logs: 401, queue paused\n" +
-            "4. Switch Response Mode to Normal\n" +
-            "5. Press 'Sync Embedded' → online call triggers\n" +
+            "1. Make sure autoRetry, offlineMode enabled\n" +
+            "2. Login with email\n" +
+            "3. Set Response Mode to 401\n" +
+            "4. Press 'Fire All' → logs: 401, queue paused\n" +
+            "5. Switch Response Mode to Normal\n" +
+            "6. Press 'Sync Embedded' → online call triggers\n" +
             "   new valid JWT → queue resumes\n" +
-            "6. Check logs: queued tasks succeed"
+            "7. Check logs: queued tasks succeed"
         ))
 
         return stack
@@ -357,11 +363,12 @@ final class OfflineRetryTestViewController: UIViewController {
 
         stack.addArrangedSubview(makeSectionHint(
             "Steps:\n" +
-            "1. Login with email (Normal mode)\n" +
-            "2. Set Response Mode to 401\n" +
-            "3. Press Track → check logs: 401 received, queue paused\n" +
-            "4. Show DB: task retained (PENDING)\n" +
-            "5. Press Track again → check logs: no new request sent\n" +
+            "1. Make sure autoRetry, offlineMode enabled\n" +
+            "2. Login with email (Normal mode)\n" +
+            "3. Set Response Mode to 401\n" +
+            "4. Press Track → check logs: 401 received, queue paused\n" +
+            "5. Show DB: task retained (PENDING)\n" +
+            "6. Press Track again → check logs: no new request sent\n" +
             "   (task queued in DB but not sent to server while paused)"
         ))
 

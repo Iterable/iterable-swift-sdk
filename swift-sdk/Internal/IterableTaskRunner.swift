@@ -135,11 +135,12 @@ class IterableTaskRunner: NSObject {
     private func onAuthTokenRefreshed(notification _: Notification) {
         ITBInfo()
         persistenceContext.perform { [weak self] in
-            guard let self = self, self.authPaused else {
-                return
+            guard let self = self else { return }
+
+            if self.authPaused {
+                ITBInfo("Auth token refreshed, clearing auth pause")
+                self.authPaused = false
             }
-            ITBInfo("Auth token refreshed, clearing auth pause")
-            self.authPaused = false
 
             // Only resume if network is also available.
             // If paused (no connectivity), run() will be triggered

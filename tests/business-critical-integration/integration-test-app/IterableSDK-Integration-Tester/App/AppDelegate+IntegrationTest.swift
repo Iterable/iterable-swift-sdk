@@ -95,6 +95,7 @@ extension AppDelegate {
     }
         
     static func initializeIterableSDK() {
+        lastInitMode = .standard
         LogStore.shared.log("🔧 SDK initializing...")
         print("🚀 [SDK INIT] Starting SDK initialization...")
         
@@ -143,6 +144,25 @@ extension AppDelegate {
         }
     }
     
+    // MARK: - SDK Init Mode Tracking
+
+    enum SDKInitMode {
+        case standard
+        case jwt
+    }
+
+    static var lastInitMode: SDKInitMode = .standard
+
+    /// Reinitialize the SDK using the same mode it was last initialized with.
+    static func reinitializeSDKWithCurrentMode() {
+        switch lastInitMode {
+        case .standard:
+            initializeIterableSDK()
+        case .jwt:
+            reinitializeSDKWithJWTOnly()
+        }
+    }
+
     // MARK: - JWT Auth Testing
 
     static var mockAuthDelegate: MockAuthDelegate?
@@ -154,6 +174,7 @@ extension AppDelegate {
     }
 
     static func reinitializeSDKWithMockJWT(email: String?) {
+        lastInitMode = .jwt
         // Set email so the auth delegate can generate a JWT when SDK requests one.
         currentTestEmail = email
 

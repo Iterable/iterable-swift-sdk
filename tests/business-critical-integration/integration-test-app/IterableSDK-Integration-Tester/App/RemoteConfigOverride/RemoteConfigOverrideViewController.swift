@@ -111,8 +111,6 @@ final class RemoteConfigOverrideViewController: UIViewController {
         contentStack.addArrangedSubview(overridesCard)
         contentStack.addArrangedSubview(currentValuesSectionLabel)
         contentStack.addArrangedSubview(currentValuesCard)
-        contentStack.addArrangedSubview(reinitializeButton)
-        contentStack.addArrangedSubview(reinitializeInfoLabel)
         contentStack.addArrangedSubview(goHomeButton)
 
         NSLayoutConstraint.activate([
@@ -134,10 +132,12 @@ final class RemoteConfigOverrideViewController: UIViewController {
     private func setupActions() {
         offlineModeToggle.onToggle = { [weak self] isOn in
             self?.configManager.overrideOfflineMode = isOn
+            AppDelegate.reinitializeSDKWithCurrentMode()
         }
 
         autoRetryToggle.onToggle = { [weak self] isOn in
             self?.configManager.overrideAutoRetry = isOn
+            AppDelegate.reinitializeSDKWithCurrentMode()
         }
 
         configOverrideToggle.onToggle = { [weak self] isOn in
@@ -147,6 +147,7 @@ final class RemoteConfigOverrideViewController: UIViewController {
                 self?.configManager.disable()
             }
             self?.updateOverridesEnabled()
+            AppDelegate.reinitializeSDKWithCurrentMode()
         }
 
         reinitializeButton.addTarget(self, action: #selector(reinitializeSDK), for: .touchUpInside)
@@ -215,7 +216,7 @@ final class RemoteConfigOverrideViewController: UIViewController {
     }
 
     @objc private func reinitializeSDK() {
-        AppDelegate.initializeIterableSDK()
+        AppDelegate.reinitializeSDKWithCurrentMode()
         navigationController?.popToRootViewController(animated: true)
     }
 }
