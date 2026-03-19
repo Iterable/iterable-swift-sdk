@@ -261,7 +261,6 @@ class InAppManager: NSObject, IterableInternalInAppManagerProtocol {
             processAndShowMessage(messagesMap: mergeMessagesResult.messagesMap)
         } else {
             messagesMap = mergeMessagesResult.messagesMap
-            processExistingMessages()
         }
         
         // track in-app delivery
