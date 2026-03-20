@@ -129,8 +129,11 @@ class AuthManager: IterableAuthManagerProtocol {
     
     func setIsLastAuthTokenValid(_ isValid: Bool) {
         if isValid {
+            let wasNotValid = lastAuthTokenState != .valid
             lastAuthTokenState = .valid
-            NotificationCenter.default.post(name: .iterableAuthTokenRefreshed, object: nil)
+            if wasNotValid {
+                NotificationCenter.default.post(name: .iterableAuthTokenRefreshed, object: nil)
+            }
         } else {
             // Only transition to .invalid from .valid.
             // When state is .unknown (token just refreshed, awaiting validation),
