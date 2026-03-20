@@ -58,9 +58,7 @@ enum Const {
         static let getEmbeddedMessages = "embedded-messaging/messages"
         static let embeddedMessageReceived = "embedded-messaging/events/received"
         static let embeddedMessageClick = "embedded-messaging/events/click"
-        static let embeddedMessageDismiss = "embedded-messaging/events/dismiss"
-        static let embeddedMessageImpression = "embedded-messaging/events/impression"
-        static let trackEmbeddedSession = "embedded-messaging/events/session"
+static let trackEmbeddedSession = "embedded-messaging/events/session"
 
         /// API paths that do not require JWT authentication.
         /// These can be executed even when the task runner is auth-paused.

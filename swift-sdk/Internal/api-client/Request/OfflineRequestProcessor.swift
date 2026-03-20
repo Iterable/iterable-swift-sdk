@@ -318,34 +318,6 @@ struct OfflineRequestProcessor: RequestProcessorProtocol {
     }
     
     @discardableResult
-    func track(embeddedMessageDismiss message: IterableEmbeddedMessage,
-               onSuccess: OnSuccessHandler? = nil,
-               onFailure: OnFailureHandler? = nil) -> Pending<SendRequestValue, SendRequestError> {
-        let requestGenerator = { (requestCreator: RequestCreator) in
-            requestCreator.createEmbeddedMessageDismissRequest(message)
-        }
-        
-        return sendIterableRequest(requestGenerator: requestGenerator,
-                                   successHandler: onSuccess,
-                                   failureHandler: onFailure,
-                                   identifier: #function)
-    }
-    
-    @discardableResult
-    func track(embeddedMessageImpression message: IterableEmbeddedMessage,
-               onSuccess: OnSuccessHandler?,
-               onFailure: OnFailureHandler?) -> Pending<SendRequestValue, SendRequestError> {
-        let requestGenerator = { (requestCreator: RequestCreator) in
-            requestCreator.createEmbeddedMessageImpressionRequest(message)
-        }
-        
-        return sendIterableRequest(requestGenerator: requestGenerator,
-                                   successHandler: onSuccess,
-                                   failureHandler: onFailure,
-                                   identifier: #function)
-    }
-    
-    @discardableResult
     func track(embeddedSession: IterableEmbeddedSession,
                onSuccess: OnSuccessHandler?,
                onFailure: OnFailureHandler?) -> Pending<SendRequestValue, SendRequestError> {
