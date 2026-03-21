@@ -116,6 +116,45 @@ class TaskProcessorTests: XCTestCase {
         wait(for: [expectation1], timeout: 15.0)
     }
 
+    func testNetworkUnavailableWithNSErrors() throws {
+        let errorCodes = [
+            NSURLErrorNotConnectedToInternet, // -1009
+            NSURLErrorNetworkConnectionLost,  // -1005
+            NSURLErrorTimedOut,               // -1001
+            NSURLErrorCannotConnectToHost,    // -1004
+            NSURLErrorDNSLookupFailed,        // -1006
+            NSURLErrorDataNotAllowed,         // -1020
+            NSURLErrorInternationalRoamingOff // -1018
+        ]
+        
+        for errorCode in errorCodes {
+            let expectation = self.expectation(description: "network error \(errorCode)")
+            let task = try createSampleTask()!
+            
+            let nsError = NSError(domain: NSURLErrorDomain, code: errorCode, userInfo: [NSLocalizedDescriptionKey: "Network error"])
+            let networkSession = MockNetworkSession(statusCode: 0, data: nil, error: nsError)
+            
+            let processor = IterableAPICallTaskProcessor(networkSession: networkSession)
+            try processor.process(task: task)
+                .onSuccess { taskResult in
+                    switch taskResult {
+                    case .failureWithRetry(retryAfter: _, detail: _):
+                        expectation.fulfill()
+                    default:
+                        XCTFail("expected failureWithRetry for error code \(errorCode)")
+                    }
+                }
+                .onError { _ in
+                    XCTFail("Not expecting onError for task processing logic")
+                }
+            
+            try persistenceProvider.mainQueueContext().delete(task: task)
+            try persistenceProvider.mainQueueContext().save()
+            
+            wait(for: [expectation], timeout: 2.0)
+        }
+    }
+
     func testUnrecoverableError() throws {
         let expectation1 = expectation(description: #function)
         let task = try createSampleTask()!

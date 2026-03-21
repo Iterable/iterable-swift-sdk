@@ -53,6 +53,15 @@ extension IterableRequest: Codable {
         }
     }
     
+    func getPath() -> String {
+        switch self {
+        case .get(let request):
+            return request.path
+        case .post(let request):
+            return request.path
+        }
+    }
+    
     private static let requestTypeGet = "get"
     private static let requestTypePost = "post"
 }

@@ -82,6 +82,7 @@ enum Const {
         static let visitorConsentTimestamp = "itbl_visitor_consent_timestamp"
         static let isNotificationsEnabled = "itbl_isNotificationsEnabled"
         static let hasStoredNotificationSetting = "itbl_hasStoredNotificationSetting"
+        static let networkLoggingEnabled = "itbl_network_logging_enabled"
 
         static let attributionInfoExpiration = 24
     }
