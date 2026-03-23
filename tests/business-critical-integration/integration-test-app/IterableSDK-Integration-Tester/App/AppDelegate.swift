@@ -255,24 +255,32 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         }
     }
     
+    private func topMostViewController() -> UIViewController? {
+        guard var topVC = window?.rootViewController else { return nil }
+        while let presented = topVC.presentedViewController {
+            topVC = presented
+        }
+        return topVC
+    }
+
     @objc private func showNetworkMonitor() {
-        guard let rootViewController = window?.rootViewController else { return }
-        
+        guard let topVC = topMostViewController() else { return }
+
         let networkMonitorVC = NetworkMonitorViewController()
         let navController = UINavigationController(rootViewController: networkMonitorVC)
         navController.modalPresentationStyle = .fullScreen
-        
-        rootViewController.present(navController, animated: true)
+
+        topVC.present(navController, animated: true)
     }
-    
+
     @objc private func showBackendStatus() {
-        guard let rootViewController = window?.rootViewController else { return }
-        
+        guard let topVC = topMostViewController() else { return }
+
         let backendStatusVC = BackendStatusViewController()
         let navController = UINavigationController(rootViewController: backendStatusVC)
         navController.modalPresentationStyle = .fullScreen
-        
-        rootViewController.present(navController, animated: true)
+
+        topVC.present(navController, animated: true)
     }
     
     private func showAlert(with title: String, and message: String) {

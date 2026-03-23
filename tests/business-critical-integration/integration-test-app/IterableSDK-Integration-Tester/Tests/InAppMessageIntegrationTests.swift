@@ -44,7 +44,18 @@ class InAppMessageIntegrationTests: IntegrationTestBase {
         XCTAssertTrue(inAppMessageRow.waitForExistence(timeout: standardTimeout), "In-app message row should exist")
         inAppMessageRow.tap()
         //screenshotCapture.captureScreenshot(named: "01-inapp-display-test-started")
-        
+
+        // Clear any existing messages before triggering the test campaign
+        // This prevents stale messages from previous runs from interfering
+        let initialClearButton = app.buttons["clear-messages-button"]
+        if initialClearButton.waitForExistence(timeout: 5.0) {
+            initialClearButton.tap()
+            if app.alerts["Success"].waitForExistence(timeout: 5.0) {
+                app.alerts["Success"].buttons["OK"].tap()
+            }
+            sleep(1)
+        }
+
         // Step 1: Trigger InApp display campaign (14751067)
         var triggerTestViewButton = app.buttons["trigger-in-app-button"]
         XCTAssertTrue(triggerTestViewButton.waitForExistence(timeout: standardTimeout), "Trigger InApp display button should exist")
