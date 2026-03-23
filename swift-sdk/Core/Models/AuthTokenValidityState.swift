@@ -1,5 +1,5 @@
 //
-//  Copyright © 2025 Iterable. All rights reserved.
+//  Copyright © 2026 Iterable. All rights reserved.
 //
 
 import Foundation
