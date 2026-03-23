@@ -1178,15 +1178,22 @@ class TaskRunnerTests: XCTestCase {
         verifyTaskIsExecuted(notificationCenter, withinInterval: 5.0)
         waitForZeroTasks()
 
-        // Schedule another task
-        let _ = try scheduleSampleTask(scheduler: scheduler)
-
         // Now simulate rapid network flapping: offline → online → offline → online
         let successRef = notificationCenter.addCallback(forNotification: .iterableTaskFinishedWithSuccess) { _ in
             processCount += 1
         }
 
+        // Go offline BEFORE scheduling the task so that onTaskScheduled sees paused=true
+        // and the task stays queued for the flap test
         connectivityNC.post(name: .iterableNetworkOffline, object: nil, userInfo: nil)
+
+        // Wait for offline to take effect on persistence context queue
+        let offlineDelay0 = expectation(description: "offline settle")
+        offlineDelay0.isInverted = true
+        wait(for: [offlineDelay0], timeout: 0.5)
+
+        // Schedule task while offline — it stays in the queue
+        let _ = try scheduleSampleTask(scheduler: scheduler)
 
         // Rapid flap: come back online briefly then go offline again
         let flapDelay = expectation(description: "flap delay")
