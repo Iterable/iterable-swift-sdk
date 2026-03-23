@@ -255,32 +255,31 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         }
     }
     
-    private func topMostViewController() -> UIViewController? {
-        guard var topVC = window?.rootViewController else { return nil }
-        while let presented = topVC.presentedViewController {
-            topVC = presented
+    private func presentFromRoot(_ viewControllerToPresent: UIViewController) {
+        guard let rootVC = window?.rootViewController else { return }
+        // If something is already presented, dismiss it first (no animation)
+        // so we always present cleanly from the root navigation controller.
+        if let presented = rootVC.presentedViewController {
+            presented.dismiss(animated: false) {
+                rootVC.present(viewControllerToPresent, animated: true)
+            }
+        } else {
+            rootVC.present(viewControllerToPresent, animated: true)
         }
-        return topVC
     }
 
     @objc private func showNetworkMonitor() {
-        guard let topVC = topMostViewController() else { return }
-
         let networkMonitorVC = NetworkMonitorViewController()
         let navController = UINavigationController(rootViewController: networkMonitorVC)
         navController.modalPresentationStyle = .fullScreen
-
-        topVC.present(navController, animated: true)
+        presentFromRoot(navController)
     }
 
     @objc private func showBackendStatus() {
-        guard let topVC = topMostViewController() else { return }
-
         let backendStatusVC = BackendStatusViewController()
         let navController = UINavigationController(rootViewController: backendStatusVC)
         navController.modalPresentationStyle = .fullScreen
-
-        topVC.present(navController, animated: true)
+        presentFromRoot(navController)
     }
     
     private func showAlert(with title: String, and message: String) {
