@@ -299,8 +299,23 @@ class InAppMessageIntegrationTests: IntegrationTestBase {
         XCTAssertEqual(inAppEnabledValue.label, "✓ Enabled", "In-app messages should be enabled")
         //screenshotCapture.captureScreenshot(named: "03-inapp-reenabled")
         
-        // Verify message now appears
+        // Explicitly re-check for messages after re-enabling; on CI the scheduleSync()
+        // triggered by the toggle alone can be too slow vs the 30s timeout.
+        checkMessagesButton.tap()
+        
+        // Verify message now appears — retry loop mirrors the pattern used earlier
         let secondWebView = app.descendants(matching: .webView).element(boundBy: 0)
+        var secondRetryCount = 0
+        while !secondWebView.exists && secondRetryCount < maxRetries {
+            if checkMessagesButton.isEnabled {
+                print("🔄 Retry \(secondRetryCount + 1)/\(maxRetries): Tapping check-messages-button (post-re-enable)...")
+                checkMessagesButton.tap()
+                secondRetryCount += 1
+                sleep(2)
+            } else {
+                sleep(1)
+            }
+        }
         XCTAssertTrue(
             secondWebView.waitForExistence(timeout: standardTimeout),
             "In-app message should appear"

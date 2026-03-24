@@ -74,6 +74,9 @@ class IntegrationTestBase: XCTestCase {
         // First check environment variable
         let ciEnv = ProcessInfo.processInfo.environment["CI"]
         let envCI = ciEnv == "1" || ciEnv == "true"
+        // If CI is explicitly disabled via env var, respect that over the bundled config
+        // (allows CI=0 ./scripts/run-tests.sh to force local mode locally)
+        let envExplicitlyDisabled = ciEnv == "0" || ciEnv == "false"
         
         // Then check config file (updated by script)
         var configCI = false
@@ -113,7 +116,7 @@ class IntegrationTestBase: XCTestCase {
         print("🔍 [TEST] Config CI: \(configCI)")
         
         // Use either detection method
-        let isCI = envCI || configCI
+        let isCI = envExplicitlyDisabled ? false : (envCI || configCI)
         
         if isCI {
             print("🤖 [TEST] CI ENVIRONMENT DETECTED")
