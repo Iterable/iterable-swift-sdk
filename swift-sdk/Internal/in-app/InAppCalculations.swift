@@ -127,8 +127,9 @@ struct InAppCalculations {
             let halfWebViewHeight = position.height / 2
             position.center.y = halfWebViewHeight
         case .bottom:
+            position.height = position.height + safeAreaInsets.bottom
             let halfWebViewHeight = position.height / 2
-            position.center.y = parentPosition.height - halfWebViewHeight - safeAreaInsets.bottom
+            position.center.y = parentPosition.height - halfWebViewHeight
         default: break
         }
         

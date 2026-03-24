@@ -142,6 +142,16 @@ struct InAppMessageTestView: View {
             .disabled(viewModel.isTriggeringCampaign)
 
             ActionButton(
+                title: "Send Top Position In-App (SDK-92 Test)",
+                backgroundColor: Color(.systemBlue).opacity(0.7),
+                isLoading: viewModel.isTriggeringCampaign
+            ) {
+                viewModel.triggerCampaign(17408654)
+            }
+            .accessibilityIdentifier("trigger-top-position-in-app-button")
+            .disabled(viewModel.isTriggeringCampaign)
+
+            ActionButton(
                 title: "Send Silent Push (Campaign 14750476)",
                 backgroundColor: Color(.brown),
                 isLoading: viewModel.isTriggeringCampaign

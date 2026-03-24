@@ -63,11 +63,17 @@ class IterableHtmlMessageViewControllerTests: XCTestCase {
     }
     
     func testWebViewBottomPositioningWithSafeAreaInsets() {
+        // Bottom position extends into the safe area (matching how top extends behind the status bar).
+        // height = 200 + 30 (safeAreaBottom) = 230, centerY = 400 - 115 = 285
+        let inAppHeight: CGFloat = 200
+        let safeAreaBottom: CGFloat = 30
+        let calculatedHeight = inAppHeight + safeAreaBottom
+        let calculatedCenterY = 400 - calculatedHeight / 2
         checkPositioning(parentPosition: ViewPosition(width: 1234, height: 400, center: CGPoint(x: 617.0, y: 200.0)),
-                         safeAreaInsets: UIEdgeInsets(top: 25, left: 0, bottom: 30, right: 0),
-                         inAppHeight: 200,
+                         safeAreaInsets: UIEdgeInsets(top: 25, left: 0, bottom: safeAreaBottom, right: 0),
+                         inAppHeight: inAppHeight,
                          messageLocation: .bottom,
-                         expectedWebViewPosition: ViewPosition(width: 1234, height: 200, center: CGPoint(x: 617.0, y: 270.0)))
+                         expectedWebViewPosition: ViewPosition(width: 1234, height: calculatedHeight, center: CGPoint(x: 617.0, y: calculatedCenterY)))
     }
     
     func testTopAnimation() {
