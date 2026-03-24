@@ -596,6 +596,10 @@ class IntegrationTestBase: XCTestCase {
     /// Dismisses all visible in-app messages by repeatedly tapping dismiss links.
     /// The SDK may auto-show queued messages after each dismiss; this drains them all.
     func dismissAllInAppMessages(timeout: TimeInterval = 30.0) {
+        // Brief pause to let any in-flight dismiss animation (0.67s) complete before
+        // we start querying the accessibility tree, avoiding a stale-element race.
+        sleep(1)
+        
         let webView = app.descendants(matching: .webView).element(boundBy: 0)
         let startTime = Date()
         
