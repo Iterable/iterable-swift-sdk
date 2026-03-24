@@ -166,20 +166,20 @@ final class HomeViewController: UIViewController, UITextFieldDelegate {
         container.layer.borderColor = UIColor.systemGray4.cgColor
         container.isUserInteractionEnabled = true
         container.accessibilityIdentifier = "embedded-message-test-row"
-        
+
         let titleLabel = UILabel()
         titleLabel.text = "Embedded Message Integration Testing"
         titleLabel.font = .systemFont(ofSize: 16, weight: .medium)
         titleLabel.textColor = .label
         titleLabel.translatesAutoresizingMaskIntoConstraints = false
-        
+
         let chevronImageView = UIImageView(image: UIImage(systemName: "chevron.right"))
         chevronImageView.tintColor = .systemGray3
         chevronImageView.translatesAutoresizingMaskIntoConstraints = false
-        
+
         container.addSubview(titleLabel)
         container.addSubview(chevronImageView)
-        
+
         NSLayoutConstraint.activate([
             container.heightAnchor.constraint(equalToConstant: 50),
             titleLabel.leadingAnchor.constraint(equalTo: container.leadingAnchor, constant: 16),
@@ -189,11 +189,79 @@ final class HomeViewController: UIViewController, UITextFieldDelegate {
             chevronImageView.widthAnchor.constraint(equalToConstant: 12),
             chevronImageView.heightAnchor.constraint(equalToConstant: 20)
         ])
-        
+
         return container
     }()
 
+    private let remoteConfigOverrideRow: UIView = {
+        let container = UIView()
+        container.backgroundColor = .systemGray6
+        container.layer.cornerRadius = 8
+        container.layer.borderWidth = 1
+        container.layer.borderColor = UIColor.systemGray4.cgColor
+        container.isUserInteractionEnabled = true
+        container.accessibilityIdentifier = "remote-config-override-row"
 
+        let titleLabel = UILabel()
+        titleLabel.text = "Config Overrides"
+        titleLabel.font = .systemFont(ofSize: 16, weight: .medium)
+        titleLabel.textColor = .label
+        titleLabel.translatesAutoresizingMaskIntoConstraints = false
+
+        let chevronImageView = UIImageView(image: UIImage(systemName: "chevron.right"))
+        chevronImageView.tintColor = .systemGray3
+        chevronImageView.translatesAutoresizingMaskIntoConstraints = false
+
+        container.addSubview(titleLabel)
+        container.addSubview(chevronImageView)
+
+        NSLayoutConstraint.activate([
+            container.heightAnchor.constraint(equalToConstant: 50),
+            titleLabel.leadingAnchor.constraint(equalTo: container.leadingAnchor, constant: 16),
+            titleLabel.centerYAnchor.constraint(equalTo: container.centerYAnchor),
+            chevronImageView.trailingAnchor.constraint(equalTo: container.trailingAnchor, constant: -16),
+            chevronImageView.centerYAnchor.constraint(equalTo: container.centerYAnchor),
+            chevronImageView.widthAnchor.constraint(equalToConstant: 12),
+            chevronImageView.heightAnchor.constraint(equalToConstant: 20)
+        ])
+
+        return container
+    }()
+
+    private let offlineRetryTestRow: UIView = {
+        let container = UIView()
+        container.backgroundColor = .systemGray6
+        container.layer.cornerRadius = 8
+        container.layer.borderWidth = 1
+        container.layer.borderColor = UIColor.systemGray4.cgColor
+        container.isUserInteractionEnabled = true
+        container.accessibilityIdentifier = "offline-retry-test-row"
+
+        let titleLabel = UILabel()
+        titleLabel.text = "JWT Auth Retry Testing"
+        titleLabel.font = .systemFont(ofSize: 16, weight: .medium)
+        titleLabel.textColor = .label
+        titleLabel.translatesAutoresizingMaskIntoConstraints = false
+
+        let chevronImageView = UIImageView(image: UIImage(systemName: "chevron.right"))
+        chevronImageView.tintColor = .systemGray3
+        chevronImageView.translatesAutoresizingMaskIntoConstraints = false
+
+        container.addSubview(titleLabel)
+        container.addSubview(chevronImageView)
+
+        NSLayoutConstraint.activate([
+            container.heightAnchor.constraint(equalToConstant: 50),
+            titleLabel.leadingAnchor.constraint(equalTo: container.leadingAnchor, constant: 16),
+            titleLabel.centerYAnchor.constraint(equalTo: container.centerYAnchor),
+            chevronImageView.trailingAnchor.constraint(equalTo: container.trailingAnchor, constant: -16),
+            chevronImageView.centerYAnchor.constraint(equalTo: container.centerYAnchor),
+            chevronImageView.widthAnchor.constraint(equalToConstant: 12),
+            chevronImageView.heightAnchor.constraint(equalToConstant: 20)
+        ])
+
+        return container
+    }()
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -214,6 +282,10 @@ final class HomeViewController: UIViewController, UITextFieldDelegate {
         }
         userIdField.text = HomeViewController.generateRandomUserId(length: 6)
 
+        let scrollView = UIScrollView()
+        scrollView.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(scrollView)
+
         let stack = UIStackView(arrangedSubviews: [initializeButton,
                                                    userIdField,
                                                    registerUserIdButton,
@@ -224,17 +296,26 @@ final class HomeViewController: UIViewController, UITextFieldDelegate {
                                                    statusView,
                                                    pushNotificationTestRow,
                                                    inAppMessageTestRow,
-                                                   embeddedMessageTestRow])
+                                                   embeddedMessageTestRow,
+                                                   offlineRetryTestRow,
+                                                   remoteConfigOverrideRow])
         stack.axis = .vertical
         stack.alignment = .fill
         stack.spacing = 12
         stack.translatesAutoresizingMaskIntoConstraints = false
-        view.addSubview(stack)
+        scrollView.addSubview(stack)
 
         NSLayoutConstraint.activate([
-            stack.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: 20),
-            stack.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor, constant: -20),
-            stack.centerYAnchor.constraint(equalTo: view.centerYAnchor)
+            scrollView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
+            scrollView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            scrollView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            scrollView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
+
+            stack.topAnchor.constraint(equalTo: scrollView.topAnchor, constant: 20),
+            stack.leadingAnchor.constraint(equalTo: scrollView.leadingAnchor, constant: 20),
+            stack.trailingAnchor.constraint(equalTo: scrollView.trailingAnchor, constant: -20),
+            stack.bottomAnchor.constraint(equalTo: scrollView.bottomAnchor, constant: -20),
+            stack.widthAnchor.constraint(equalTo: scrollView.widthAnchor, constant: -40)
         ])
 
         updateButtonStates()
@@ -269,6 +350,12 @@ final class HomeViewController: UIViewController, UITextFieldDelegate {
         
         let embeddedTapGesture = UITapGestureRecognizer(target: self, action: #selector(showEmbeddedMessageTest))
         embeddedMessageTestRow.addGestureRecognizer(embeddedTapGesture)
+
+        let offlineRetryTapGesture = UITapGestureRecognizer(target: self, action: #selector(showOfflineRetryTest))
+        offlineRetryTestRow.addGestureRecognizer(offlineRetryTapGesture)
+
+        let remoteConfigTapGesture = UITapGestureRecognizer(target: self, action: #selector(showRemoteConfigOverride))
+        remoteConfigOverrideRow.addGestureRecognizer(remoteConfigTapGesture)
     }
 
     @objc private func registerEmail() {
@@ -331,6 +418,8 @@ final class HomeViewController: UIViewController, UITextFieldDelegate {
         updatePushNotificationButtonState()
         updateInAppMessageButtonState()
         updateEmbeddedMessageButtonState()
+        updateOfflineRetryButtonState()
+        updateConfigOverrideButtonState()
     }
     
     private func updateRegisterButtonStates() {
@@ -377,6 +466,28 @@ final class HomeViewController: UIViewController, UITextFieldDelegate {
     @objc private func showEmbeddedMessageTest() {
         let embeddedVC = EmbeddedMessageTestHostingController()
         navigationController?.pushViewController(embeddedVC, animated: true)
+    }
+
+    private func updateOfflineRetryButtonState() {
+        // Always enabled — JWT retry screen has its own Initialize button
+        offlineRetryTestRow.isUserInteractionEnabled = true
+        offlineRetryTestRow.alpha = 1.0
+    }
+
+    @objc private func showOfflineRetryTest() {
+        let offlineRetryVC = OfflineRetryTestViewController()
+        navigationController?.pushViewController(offlineRetryVC, animated: true)
+    }
+
+    private func updateConfigOverrideButtonState() {
+        // Always enabled — config overrides work independently of SDK init
+        remoteConfigOverrideRow.isUserInteractionEnabled = true
+        remoteConfigOverrideRow.alpha = 1.0
+    }
+
+    @objc private func showRemoteConfigOverride() {
+        let remoteConfigVC = RemoteConfigOverrideViewController()
+        navigationController?.pushViewController(remoteConfigVC, animated: true)
     }
 }
 

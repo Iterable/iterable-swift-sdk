@@ -7,6 +7,7 @@ import Foundation
 /// `InternalIterableAPI` will delegate all network related calls to this protocol.
 protocol RequestHandlerProtocol: AnyObject {
     var offlineMode: Bool { get set }
+    var autoRetry: Bool { get set }
 
     func start()
     
@@ -149,17 +150,6 @@ protocol RequestHandlerProtocol: AnyObject {
                clickedUrl: String,
                onSuccess: OnSuccessHandler?,
                onFailure: OnFailureHandler?) -> Pending<SendRequestValue, SendRequestError>
-    
-    @discardableResult
-    func track(embeddedMessageDismiss message: IterableEmbeddedMessage,
-               onSuccess: OnSuccessHandler?,
-               onFailure: OnFailureHandler?) -> Pending<SendRequestValue, SendRequestError>
-    
-    @discardableResult
-    func track(embeddedMessageImpression message: IterableEmbeddedMessage,
-               onSuccess: OnSuccessHandler?,
-               onFailure: OnFailureHandler?) -> Pending<SendRequestValue, SendRequestError>
-    
     
     @discardableResult
     func track(embeddedSession: IterableEmbeddedSession,

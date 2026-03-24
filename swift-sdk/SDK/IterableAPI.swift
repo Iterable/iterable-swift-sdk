@@ -33,6 +33,13 @@ import UIKit
             implementation?.authToken
         }
     }
+
+    /// The current validity state of the auth token as determined by the SDK
+    public static var lastAuthTokenState: AuthTokenValidityState {
+        get {
+            implementation?.lastAuthTokenState ?? .unknown
+        }
+    }
     
     /// The `userInfo` dictionary which came with last push
     public static var lastPushPayload: [AnyHashable: Any]? {

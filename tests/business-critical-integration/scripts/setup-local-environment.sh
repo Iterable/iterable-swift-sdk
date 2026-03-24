@@ -3,7 +3,7 @@
 # Business Critical Integration Tests - Local Environment Setup
 # This script configures your local macOS environment for running integration tests
 #
-# Usage: ./setup-local-environment.sh [PROJECT_ID] [SERVER_API_KEY] [MOBILE_API_KEY]
+# Usage: ./setup-local-environment.sh [PROJECT_ID] [SERVER_API_KEY] [MOBILE_API_KEY] [JWT_API_KEY] [JWT_SECRET]
 # If parameters are provided, the script will skip interactive prompts
 
 set -e
@@ -25,6 +25,8 @@ LOCAL_CONFIG_FILE="$CONFIG_DIR/test-config.json"
 PARAM_PROJECT_ID="$1"
 PARAM_SERVER_KEY="$2"
 PARAM_MOBILE_KEY="$3"
+PARAM_JWT_API_KEY="$4"
+PARAM_JWT_SECRET="$5"
 
 # Check if all parameters were provided and not empty
 if [[ -n "$PARAM_PROJECT_ID" && -n "$PARAM_SERVER_KEY" && -n "$PARAM_MOBILE_KEY" ]]; then
@@ -183,10 +185,15 @@ configure_api_keys() {
         DATE_PREFIX=$(date +"%Y-%m-%d")
         TEST_USER_EMAIL="${DATE_PREFIX}-integration-test-user@test.com"
         echo_info "Running in non-interactive mode with provided parameters"
+        JWT_API_KEY="${PARAM_JWT_API_KEY:-}"
+        JWT_SECRET="${PARAM_JWT_SECRET:-}"
         echo_info "Using provided parameters:"
         echo_info "Project ID: $PROJECT_ID"
         echo_info "Server API Key: ${SERVER_KEY:0:8}***"
         echo_info "Mobile API Key: ${MOBILE_KEY:0:8}***"
+        if [[ -n "$JWT_API_KEY" ]]; then
+            echo_info "JWT API Key: ${JWT_API_KEY:0:8}***"
+        fi
     else
         # Check if config already exists
         if [[ -f "$LOCAL_CONFIG_FILE" ]]; then
@@ -259,6 +266,8 @@ configure_api_keys() {
 {
   "mobileApiKey": "$MOBILE_KEY",
   "serverApiKey": "$SERVER_KEY",
+  "jwtApiKey": "${JWT_API_KEY:-}",
+  "jwtSecret": "${JWT_SECRET:-}",
   "projectId": "$PROJECT_ID",
   "testUserEmail": "$TEST_USER_EMAIL",
   "baseUrl": "https://api.iterable.com",
@@ -358,18 +367,21 @@ create_test_user() {
 
 
 show_usage() {
-    echo "Usage: $0 [PROJECT_ID] [SERVER_API_KEY] [MOBILE_API_KEY]"
+    echo "Usage: $0 [PROJECT_ID] [SERVER_API_KEY] [MOBILE_API_KEY] [JWT_API_KEY] [JWT_SECRET]"
     echo "       $0 --help"
     echo
     echo "Parameters:"
     echo "  PROJECT_ID      Your Iterable project identifier"
     echo "  SERVER_API_KEY  Server-side API key for user management"
     echo "  MOBILE_API_KEY  Mobile API key for SDK testing"
+    echo "  JWT_API_KEY     (optional) JWT-enabled API key for auth testing"
+    echo "  JWT_SECRET      (optional) JWT secret for signing tokens"
     echo
     echo "Examples:"
-    echo "  $0                                    # Interactive mode"
-    echo "  $0 12345 server_key mobile_key       # Non-interactive mode"
-    echo "  $0 --help                            # Show this help"
+    echo "  $0                                              # Interactive mode"
+    echo "  $0 12345 server_key mobile_key                 # Non-interactive mode"
+    echo "  $0 12345 server_key mobile_key jwt_key secret  # With JWT keys"
+    echo "  $0 --help                                      # Show this help"
 }
 
 main() {

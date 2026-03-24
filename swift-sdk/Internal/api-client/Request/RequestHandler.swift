@@ -8,20 +8,25 @@ class RequestHandler: RequestHandlerProtocol {
     init(onlineProcessor: OnlineRequestProcessor,
          offlineProcessor: OfflineRequestProcessor?,
          healthMonitor: HealthMonitor?,
-         offlineMode: Bool = false) {
+         offlineMode: Bool = false,
+         autoRetry: Bool = false) {
         ITBInfo()
         self.onlineProcessor = onlineProcessor
         self.offlineProcessor = offlineProcessor
         self.healthMonitor = healthMonitor
         self.offlineMode = offlineMode
+        self.autoRetry = autoRetry
         self.healthMonitor?.delegate = self
     }
-    
+
     deinit {
         ITBInfo()
     }
-    
+
     var offlineMode: Bool
+    var autoRetry: Bool {
+        didSet { offlineProcessor?.autoRetry = autoRetry }
+    }
     
     func start() {
         ITBInfo()
@@ -325,28 +330,6 @@ class RequestHandler: RequestHandlerProtocol {
     }
     
     @discardableResult
-    func track(embeddedMessageDismiss message: IterableEmbeddedMessage,
-               onSuccess: OnSuccessHandler?,
-               onFailure: OnFailureHandler?) -> Pending<SendRequestValue, SendRequestError> {
-        sendUsingRequestProcessor { processor in
-            processor.track(embeddedMessageDismiss: message,
-                            onSuccess: onSuccess,
-                            onFailure: onFailure)
-        }
-    }
-    
-    @discardableResult
-    func track(embeddedMessageImpression message: IterableEmbeddedMessage,
-               onSuccess: OnSuccessHandler?,
-               onFailure: OnFailureHandler?) -> Pending<SendRequestValue, SendRequestError> {
-        sendUsingRequestProcessor { processor in
-            processor.track(embeddedMessageImpression: message,
-                            onSuccess: onSuccess,
-                            onFailure: onFailure)
-        }
-    }
-    
-    @discardableResult
     func track(embeddedSession: IterableEmbeddedSession,
                onSuccess: OnSuccessHandler?,
                onFailure: OnFailureHandler?) -> Pending<SendRequestValue, SendRequestError> {
@@ -369,7 +352,7 @@ class RequestHandler: RequestHandlerProtocol {
         }
     }
 
-    private let offlineProcessor: OfflineRequestProcessor?
+    private var offlineProcessor: OfflineRequestProcessor?
     private let healthMonitor: HealthMonitor?
     private let onlineProcessor: OnlineRequestProcessor
 
