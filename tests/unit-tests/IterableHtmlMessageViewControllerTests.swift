@@ -214,6 +214,183 @@ class IterableHtmlMessageViewControllerTests: XCTestCase {
         viewController.webView(webView, decidePolicyFor: testAction, decisionHandler: testAction.decisionHandler)
         wait(for: [expectation1], timeout: testExpectationTimeout)
     }
+
+    // MARK: - injectViewportFitCover Tests
+
+    func testViewportFitCover_alreadyPresent_returnsUnchanged() {
+        let html = #"<html><head><meta name="viewport" content="width=device-width, viewport-fit=cover"></head><body></body></html>"#
+        let result = IterableHtmlMessageViewController.injectViewportFitCover(html: html)
+        XCTAssertEqual(result, html)
+    }
+
+    func testViewportFitCover_alreadyPresent_caseInsensitive() {
+        let html = #"<html><head><meta name="viewport" content="width=device-width, Viewport-Fit=Cover"></head><body></body></html>"#
+        let result = IterableHtmlMessageViewController.injectViewportFitCover(html: html)
+        XCTAssertEqual(result, html)
+    }
+
+    func testViewportFitCover_nameFirstViewportMeta_appendsToContent() {
+        let html = #"<html><head><meta name="viewport" content="width=device-width, initial-scale=1.0"></head><body></body></html>"#
+        let result = IterableHtmlMessageViewController.injectViewportFitCover(html: html)
+        XCTAssertTrue(result.contains("width=device-width, initial-scale=1.0, viewport-fit=cover"))
+        // Ensure the rest of the HTML is preserved
+        XCTAssertTrue(result.contains("<body></body></html>"))
+    }
+
+    func testViewportFitCover_contentFirstViewportMeta_prependsToContent() {
+        let html = #"<html><head><meta content="width=device-width" name="viewport"></head><body></body></html>"#
+        let result = IterableHtmlMessageViewController.injectViewportFitCover(html: html)
+        XCTAssertTrue(result.contains("viewport-fit=cover"))
+        XCTAssertTrue(result.contains(#"name="viewport""#))
+    }
+
+    func testViewportFitCover_noViewportMeta_hasHead_insertsBeforeHeadClose() {
+        let html = "<html><head><title>Test</title></head><body></body></html>"
+        let result = IterableHtmlMessageViewController.injectViewportFitCover(html: html)
+        XCTAssertTrue(result.contains(#"<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">"#))
+        // The new meta tag should appear before </head>
+        let metaRange = result.range(of: "viewport-fit=cover")!
+        let headCloseRange = result.range(of: "</head>")!
+        XCTAssertTrue(metaRange.lowerBound < headCloseRange.lowerBound)
+    }
+
+    func testViewportFitCover_noHeadTag_prependsMetaTag() {
+        let html = "<body><p>Hello</p></body>"
+        let result = IterableHtmlMessageViewController.injectViewportFitCover(html: html)
+        XCTAssertTrue(result.hasPrefix(#"<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">"#))
+        XCTAssertTrue(result.contains("<body><p>Hello</p></body>"))
+    }
+
+    func testViewportFitCover_emptyString_prependsMetaTag() {
+        let result = IterableHtmlMessageViewController.injectViewportFitCover(html: "")
+        XCTAssertTrue(result.contains("viewport-fit=cover"))
+    }
+
+    func testViewportFitCover_preservesExistingViewportAttributes() {
+        let html = #"<html><head><meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0"></head><body></body></html>"#
+        let result = IterableHtmlMessageViewController.injectViewportFitCover(html: html)
+        // All original attributes should still be present
+        XCTAssertTrue(result.contains("width=device-width"))
+        XCTAssertTrue(result.contains("initial-scale=1.0"))
+        XCTAssertTrue(result.contains("maximum-scale=1.0"))
+        XCTAssertTrue(result.contains("viewport-fit=cover"))
+    }
+
+    func testViewportFitCover_doesNotDoubleInject() {
+        let html = #"<html><head><meta name="viewport" content="width=device-width"></head><body></body></html>"#
+        let firstPass = IterableHtmlMessageViewController.injectViewportFitCover(html: html)
+        let secondPass = IterableHtmlMessageViewController.injectViewportFitCover(html: firstPass)
+        // Second pass should return unchanged since viewport-fit=cover already present
+        XCTAssertEqual(firstPass, secondPass)
+    }
+
+    func testViewportFitCover_nonViewportMetaContentFirst_doesNotModify() {
+        // A <meta content="..." name="description"> tag should NOT be modified
+        let html = #"<html><head><meta content="A description" name="description"></head><body></body></html>"#
+        let result = IterableHtmlMessageViewController.injectViewportFitCover(html: html)
+        // Should fall through to the "insert before </head>" path, not modify the description meta
+        XCTAssertTrue(result.contains(#"<meta content="A description" name="description">"#))
+        XCTAssertTrue(result.contains(#"<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">"#))
+    }
+
+    // MARK: - calculateAnimationDetail Full-Position Background Color Tests
+
+    func testFullAnimationDetail_withBgColor_shouldAnimate_usesActualBgColor() {
+        let bgColor = UIColor.red
+        let position = ViewPosition(width: 200, height: 100, center: CGPoint(x: 100, y: 50))
+        let input = InAppCalculations.AnimationInput(
+            position: position,
+            isModal: true,
+            shouldAnimate: true,
+            location: .full,
+            safeAreaInsets: .zero,
+            backgroundColor: bgColor
+        )
+        let detail = InAppCalculations.calculateAnimationDetail(animationInput: input)
+        XCTAssertNotNil(detail)
+        XCTAssertEqual(detail!.initial.bgColor, bgColor)
+    }
+
+    func testFullAnimationDetail_noBgColor_shouldAnimate_usesClear() {
+        let position = ViewPosition(width: 200, height: 100, center: CGPoint(x: 100, y: 50))
+        let input = InAppCalculations.AnimationInput(
+            position: position,
+            isModal: true,
+            shouldAnimate: true,
+            location: .full,
+            safeAreaInsets: .zero,
+            backgroundColor: nil
+        )
+        let detail = InAppCalculations.calculateAnimationDetail(animationInput: input)
+        XCTAssertNotNil(detail)
+        XCTAssertEqual(detail!.initial.bgColor, .clear)
+    }
+
+    func testFullAnimationDetail_withBgColor_noAnimate_usesActualBgColor() {
+        let bgColor = UIColor.blue
+        let position = ViewPosition(width: 200, height: 100, center: CGPoint(x: 100, y: 50))
+        let input = InAppCalculations.AnimationInput(
+            position: position,
+            isModal: true,
+            shouldAnimate: false,
+            location: .full,
+            safeAreaInsets: .zero,
+            backgroundColor: bgColor
+        )
+        let detail = InAppCalculations.calculateAnimationDetail(animationInput: input)
+        XCTAssertNotNil(detail)
+        XCTAssertEqual(detail!.initial.bgColor, bgColor)
+        XCTAssertEqual(detail!.final.bgColor, bgColor)
+    }
+
+    func testCenterAnimationDetail_withBgColor_shouldAnimate_usesClear() {
+        let bgColor = UIColor.green
+        let position = ViewPosition(width: 200, height: 100, center: CGPoint(x: 100, y: 50))
+        let input = InAppCalculations.AnimationInput(
+            position: position,
+            isModal: true,
+            shouldAnimate: true,
+            location: .center,
+            safeAreaInsets: .zero,
+            backgroundColor: bgColor
+        )
+        let detail = InAppCalculations.calculateAnimationDetail(animationInput: input)
+        XCTAssertNotNil(detail)
+        XCTAssertEqual(detail!.initial.bgColor, .clear)
+    }
+
+    func testCenterAnimationDetail_withBgColor_noAnimate_usesClear() {
+        let bgColor = UIColor.green
+        let position = ViewPosition(width: 200, height: 100, center: CGPoint(x: 100, y: 50))
+        let input = InAppCalculations.AnimationInput(
+            position: position,
+            isModal: true,
+            shouldAnimate: false,
+            location: .center,
+            safeAreaInsets: .zero,
+            backgroundColor: bgColor
+        )
+        let detail = InAppCalculations.calculateAnimationDetail(animationInput: input)
+        XCTAssertNotNil(detail)
+        XCTAssertEqual(detail!.initial.bgColor, .clear)
+        XCTAssertEqual(detail!.final.bgColor, bgColor)
+    }
+
+    func testTopAnimationDetail_withBgColor_shouldAnimate_usesClear() {
+        let bgColor = UIColor.purple
+        let position = ViewPosition(width: 200, height: 100, center: CGPoint(x: 100, y: 50))
+        let input = InAppCalculations.AnimationInput(
+            position: position,
+            isModal: true,
+            shouldAnimate: true,
+            location: .top,
+            safeAreaInsets: .zero,
+            backgroundColor: bgColor
+        )
+        let detail = InAppCalculations.calculateAnimationDetail(animationInput: input)
+        XCTAssertNotNil(detail)
+        XCTAssertEqual(detail!.initial.bgColor, .clear)
+    }
 }
 
 final class FakeNavigationAction: WKNavigationAction {

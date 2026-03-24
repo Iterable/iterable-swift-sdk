@@ -42,9 +42,14 @@ protocol LocalStorageProtocol {
     func save(attributionInfo: IterableAttributionInfo?, withExpiration expiration: Date?)
     
     func upgrade()
+
+    func migrateKeychainToIsolatedStorage()
 }
 
 extension LocalStorageProtocol {
     func upgrade() {
+    }
+
+    func migrateKeychainToIsolatedStorage() {
     }
 }

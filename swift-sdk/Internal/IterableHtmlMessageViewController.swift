@@ -125,12 +125,26 @@ class IterableHtmlMessageViewController: UIViewController {
         
         location = parameters.location
 
-        view.backgroundColor = InAppCalculations.initialViewBackgroundColor(isModal: parameters.isModal)
+        if parameters.location == .full, let bgColor = parameters.backgroundColor {
+            view.backgroundColor = bgColor
+        } else {
+            view.backgroundColor = InAppCalculations.initialViewBackgroundColor(isModal: parameters.isModal)
+        }
         
         webView.set(position: ViewPosition(width: view.frame.width, height: view.frame.height, center: view.center))
-        webView.loadHTMLString(parameters.html, baseURL: URL(string: ""))
+
+        if location == .full {
+            // Prevent the scroll view from automatically adjusting content insets for the safe area,
+            // so the HTML content can extend behind the status bar / Dynamic Island / home indicator.
+            if let wkWebView = webView.view as? WKWebView {
+                wkWebView.scrollView.contentInsetAdjustmentBehavior = .never
+            }
+        }
+
+        let html = (location == .full) ? Self.injectViewportFitCover(html: parameters.html) : parameters.html
+        webView.loadHTMLString(html, baseURL: URL(string: ""))
         webView.set(navigationDelegate: self)
-        
+
         view.addSubview(webView.view)
     }
     
@@ -151,7 +165,7 @@ class IterableHtmlMessageViewController: UIViewController {
     
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
-    
+
         resizeWebView(animate: false)
     }
     
@@ -220,6 +234,58 @@ class IterableHtmlMessageViewController: UIViewController {
         webView.isOpaque = false
         webView.backgroundColor = UIColor.clear
         return webView as WebViewProtocol
+    }
+
+    /// Injects `viewport-fit=cover` into the HTML viewport meta tag so the webview
+    /// content extends behind the safe area (status bar / Dynamic Island / home indicator).
+    /// If a viewport meta tag exists, appends `viewport-fit=cover` to it.
+    /// If no viewport meta tag exists, inserts one into `<head>`.
+    static func injectViewportFitCover(html: String) -> String {
+        // Already has viewport-fit=cover — no change needed
+        if html.range(of: "viewport-fit=cover", options: .caseInsensitive) != nil {
+            return html
+        }
+
+        // Has a viewport meta tag — append viewport-fit=cover to its content
+        // Matches both single and double quotes: name="viewport" or name='viewport'
+        if let range = html.range(of: #"(<meta\s+name\s*=\s*["']viewport["']\s+content\s*=\s*)(["'])"#,
+                                  options: [.regularExpression, .caseInsensitive]) {
+            let quoteChar = String(html[html.index(before: range.upperBound)])
+            if let contentEnd = html.range(of: quoteChar, options: [], range: range.upperBound..<html.endIndex) {
+                var modified = html
+                modified.insert(contentsOf: ", viewport-fit=cover", at: contentEnd.lowerBound)
+                return modified
+            }
+        }
+
+        // Also check content-first ordering: <meta content="..." name="viewport">
+        if let range = html.range(of: #"(<meta\s+content\s*=\s*)(["'])"#,
+                                  options: [.regularExpression, .caseInsensitive]) {
+            let quoteChar = String(html[html.index(before: range.upperBound)])
+            let afterQuote = range.upperBound
+            // Verify this meta tag has name="viewport" or name='viewport'
+            if let tagEnd = html.range(of: ">", options: [], range: afterQuote..<html.endIndex),
+               let nameCheck = html.range(of: #"name\s*=\s*["']viewport["']"#,
+                                          options: [.regularExpression, .caseInsensitive],
+                                          range: afterQuote..<tagEnd.upperBound),
+               !nameCheck.isEmpty,
+               let contentEnd = html.range(of: quoteChar, options: [], range: afterQuote..<html.endIndex) {
+                var modified = html
+                modified.insert(contentsOf: "viewport-fit=cover, ", at: contentEnd.lowerBound)
+                return modified
+            }
+        }
+
+        // No viewport meta tag — insert one into <head>
+        if let headClose = html.range(of: "</head>", options: .caseInsensitive) {
+            var modified = html
+            modified.insert(contentsOf: #"<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">"#  + "\n",
+                            at: headClose.lowerBound)
+            return modified
+        }
+
+        // No <head> tag — prepend a viewport meta tag
+        return #"<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">"# + "\n" + html
     }
     
     /// Resizes the webview based upon the insetPadding, height etc

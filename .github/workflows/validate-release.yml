@@ -1,0 +1,68 @@
+name: Validate Release PR
+
+on:
+  pull_request:
+    types: [labeled, opened, synchronize, edited]
+
+permissions:
+  contents: read
+  pull-requests: read
+
+jobs:
+  validate:
+    if: >-
+      (github.event.action == 'labeled' && github.event.label.name == 'release') ||
+      (github.event.action != 'labeled' && contains(github.event.pull_request.labels.*.name, 'release'))
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Validate Release PR
+        env:
+          PR_BODY: ${{ github.event.pull_request.body }}
+        run: |
+          errors=()
+
+          # --- Extract version from source of truth ---
+          version=$(grep -oP 's\.version\s*=\s*"\K[^"]+' Iterable-iOS-SDK.podspec)
+          if [ -z "$version" ]; then
+            echo "::error::Could not extract version from Iterable-iOS-SDK.podspec"
+            exit 1
+          fi
+          echo "Detected version: $version"
+
+          # --- Check: Docs PR linked ---
+          if ! echo "$PR_BODY" | grep -qiP "github\.com/Iterable/iterable-docs/pull/\d+"; then
+            errors+=("No docs PR link found in the PR description. Add a link to the iterable-docs PR (e.g. https://github.com/Iterable/iterable-docs/pull/123).")
+          fi
+
+          # --- Check: CHANGELOG entry ---
+          if ! grep -qF "## [$version]" CHANGELOG.md; then
+            errors+=("CHANGELOG.md is missing an entry for version [$version].")
+          fi
+
+          # --- Check: Version consistency ---
+          podspec_sdk=$(grep -oP "s\.version\s*=\s*\"\K[^\"]+" Iterable-iOS-SDK.podspec)
+          podspec_ext=$(grep -oP "s\.version\s*=\s*\"\K[^\"]+" Iterable-iOS-AppExtensions.podspec)
+          swift_ver=$(grep -oP 'static let sdkVersion\s*=\s*"\K[^"]+' swift-sdk/SDK/IterableAPI.swift)
+
+          if [ "$podspec_sdk" != "$version" ]; then
+            errors+=("Iterable-iOS-SDK.podspec s.version is '$podspec_sdk', expected '$version'.")
+          fi
+          if [ "$podspec_ext" != "$version" ]; then
+            errors+=("Iterable-iOS-AppExtensions.podspec s.version is '$podspec_ext', expected '$version'.")
+          fi
+          if [ "$swift_ver" != "$version" ]; then
+            errors+=("IterableAPI.swift sdkVersion is '$swift_ver', expected '$version'.")
+          fi
+
+          # --- Report ---
+          if [ ${#errors[@]} -gt 0 ]; then
+            echo "::error::Release validation failed with ${#errors[@]} issue(s):"
+            for err in "${errors[@]}"; do
+              echo "::error::  - $err"
+            done
+            exit 1
+          fi
+
+          echo "All release validations passed for version $version."

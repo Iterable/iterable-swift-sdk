@@ -4,6 +4,21 @@ All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 ## [Unreleased]
 
+## [6.6.7]
+### Fixed
+- Fixed module export for CocoaPods, enabling Obj-C/C++ compatibility
+- Added `extern "C"` guards to umbrella headers (`IterableSDK.h`, `IterableAppExtensions.h`) for C++ compatibility
+- Renamed CocoaPods resource bundle from `Resources` to `IterableSDKResources` to avoid naming collisions with other pods, with automatic fallback to the legacy name
+
+## [6.6.6]
+### Fixed 
+- Fixed more Carthage issues
+- Fixed issue that prevented multiple applications using a shared keychain access group.
+- Improves in-app full screen position to display over the entire screen includind the status bar.
+
+### Added
+- Made `isIterableDeepLink` method public
+
 ## [6.6.5]
 ### Fixed
 - Fixed an issue where concurrent API requests failing with JWT-related 401 errors could be dropped instead of retried after a new token was obtained, ensuring all affected calls are executed once authentication succeeds.

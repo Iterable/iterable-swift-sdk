@@ -1,7 +1,7 @@
 Pod::Spec.new do |s|
   s.name         = "Iterable-iOS-SDK"
   s.module_name  = "IterableSDK"
-  s.version      = "6.6.5"
+  s.version      = "6.6.7"
   s.summary      = "Iterable's official SDK for iOS"
 
   s.description  = <<-DESC
@@ -20,12 +20,13 @@ Pod::Spec.new do |s|
   s.documentation_url = "https://support.iterable.com/hc/en-us/articles/360035018152-Iterable-s-iOS-SDK"
 
   s.pod_target_xcconfig = {
-    'SWIFT_VERSION' => '5.3'
+    'SWIFT_VERSION' => '5.3',
+    'DEFINES_MODULE' => 'YES',
   }
 
   s.swift_version = '5.3'
 
-  s.resource_bundles = {'Resources' => 'swift-sdk/Resources/**/*.{storyboard,xib,xcassets,xcdatamodeld}' }
+  s.resource_bundles = {'IterableSDKResources' => 'swift-sdk/Resources/**/*.{storyboard,xib,xcassets,xcdatamodeld}' }
 
   s.header_dir = 'IterableSDK'
 end
