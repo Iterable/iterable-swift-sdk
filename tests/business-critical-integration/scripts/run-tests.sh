@@ -366,7 +366,8 @@ prepare_test_environment() {
     export SCREENSHOTS_DIR="$SCREENSHOTS_DIR"
     
     # Detect CI environment and set appropriate variables
-    if [[ -n "$CI" ]] || [[ -n "$GITHUB_ACTIONS" ]] || [[ -n "$JENKINS_URL" ]] || [[ -n "$BUILDKITE" ]]; then
+    # Check for CI=1 specifically (not just non-empty) so CI=0 can force local mode locally
+    if [[ "$CI" == "1" ]] || [[ -n "$GITHUB_ACTIONS" ]] || [[ -n "$JENKINS_URL" ]] || [[ -n "$BUILDKITE" ]]; then
         export CI="1"
         echo_info "🤖 CI Environment detected - enabling mock push notifications"
         # Update config.json with CI mode only when CI is detected

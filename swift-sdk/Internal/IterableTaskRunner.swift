@@ -12,16 +12,20 @@ class IterableTaskRunner: NSObject {
          notificationCenter: NotificationCenterProtocol = NotificationCenter.default,
          timeInterval: TimeInterval = 1.0 * 60,
          connectivityManager: NetworkConnectivityManager = NetworkConnectivityManager(),
-         dateProvider: DateProviderProtocol = SystemDateProvider()) {
+         dateProvider: DateProviderProtocol = SystemDateProvider(),
+         autoRetry: Bool = false,
+         connectivityDebounceInterval: TimeInterval = 3.0) {
         ITBInfo()
         self.networkSession = networkSession
         self.healthMonitor = healthMonitor
         self.notificationCenter = notificationCenter
         self.timeInterval = timeInterval
+        self.connectivityDebounceInterval = connectivityDebounceInterval
         self.dateProvider = dateProvider
         self.connectivityManager = connectivityManager
         self.persistenceContext = persistenceContextProvider.newBackgroundContext()
-        
+        self.autoRetry = autoRetry
+
         super.init()
 
         self.notificationCenter.addObserver(self,
@@ -36,6 +40,10 @@ class IterableTaskRunner: NSObject {
                                        selector: #selector(onAppDidEnterBackground(notification:)),
                                        name: UIApplication.didEnterBackgroundNotification,
                                        object: nil)
+        self.notificationCenter.addObserver(self,
+                                               selector: #selector(onAuthTokenRefreshed(notification:)),
+                                               name: .iterableAuthTokenRefreshed,
+                                               object: nil)
         self.connectivityManager.connectivityChangedCallback = { [weak self]  in self?.onConnectivityChanged(connected: $0) }
     }
     
@@ -43,6 +51,7 @@ class IterableTaskRunner: NSObject {
         ITBInfo()
         persistenceContext.perform { [weak self] in
             self?.paused = false
+            self?.authPaused = false
             self?.connectivityManager.start()
             self?.run()
         }
@@ -51,6 +60,8 @@ class IterableTaskRunner: NSObject {
     func stop() {
         ITBInfo()
         persistenceContext.perform { [weak self] in
+            self?.connectivityDebounceWorkItem?.cancel()
+            self?.connectivityDebounceWorkItem = nil
             self?.paused = true
             self?.running = false
             self?.connectivityManager.stop()
@@ -61,9 +72,10 @@ class IterableTaskRunner: NSObject {
     private func onTaskScheduled(notification: Notification) {
         ITBInfo()
         persistenceContext.perform { [weak self] in
-            if self?.paused == false {
-                self?.run()
-            }
+            guard self?.paused == false else { return }
+            // Allow run() even when authPaused — processTasks() will
+            // selectively execute only tasks that don't require JWT auth.
+            self?.run()
         }
     }
     
@@ -85,46 +97,94 @@ class IterableTaskRunner: NSObject {
 
     private func onConnectivityChanged(connected: Bool) {
         ITBInfo()
+
         persistenceContext.perform { [weak self] in
+            guard let self = self else { return }
+
+            // Cancel any pending reconnect debounce.
+            self.connectivityDebounceWorkItem?.cancel()
+            self.connectivityDebounceWorkItem = nil
+
             if connected {
-                if self?.paused == true {
-                    self?.paused = false
-                    self?.run()
+                // Debounce reconnect: wait a short period to confirm connectivity
+                // is stable before resuming task processing. This prevents rapid
+                // pause/resume cycles when the network is flapping.
+                let workItem = DispatchWorkItem { [weak self] in
+                    self?.persistenceContext.perform {
+                        guard let self = self, self.paused else { return }
+                        ITBInfo("Connectivity confirmed stable, resuming")
+                        self.paused = false
+                        self.run()
+                    }
                 }
+                self.connectivityDebounceWorkItem = workItem
+                DispatchQueue.global().asyncAfter(
+                    deadline: .now() + self.connectivityDebounceInterval,
+                    execute: workItem
+                )
             } else {
-                if self?.paused == false {
-                    self?.paused = true
+                if !self.paused {
+                    ITBInfo("Network disconnected, pausing")
+                    self.paused = true
                 }
             }
         }
     }
-    
+
+    @objc
+    private func onAuthTokenRefreshed(notification _: Notification) {
+        ITBInfo()
+        persistenceContext.perform { [weak self] in
+            guard let self = self else { return }
+
+            if self.authPaused {
+                ITBInfo("Auth token refreshed, clearing auth pause")
+                self.authPaused = false
+            }
+
+            // Only resume if network is also available.
+            // If paused (no connectivity), run() will be triggered
+            // when connectivity returns via onConnectivityChanged.
+            guard !self.paused else {
+                ITBInfo("Network still unavailable, deferring resume until connectivity returns")
+                return
+            }
+            self.run()
+        }
+    }
+
     private func run() {
         ITBInfo()
         guard !paused else {
-            ITBInfo("Cannot run when paused")
+            ITBInfo("Cannot run when network paused")
             return
         }
+        // Note: authPaused is NOT checked here.
+        // processTasks() handles it per-task, allowing unauthenticated
+        // tasks to proceed while auth-required tasks stay queued.
         guard !running else {
             ITBInfo("Already running")
             return
         }
 
         running = true
-        
+
         workItem?.cancel()
-        
+
         processTasks()
     }
     
     private func scheduleNext() {
         ITBInfo()
+        running = false
         guard !paused else {
             ITBInfo("Paused")
             return
         }
-        
-        running = false
+        guard !authPaused else {
+            ITBInfo("Auth paused — waiting for token refresh")
+            return
+        }
 
         workItem?.cancel()
         
@@ -142,7 +202,9 @@ class IterableTaskRunner: NSObject {
         ITBInfo()
 
         /// This is a recursive function.
-        /// Check whether we were stopped in the middle of running tasks
+        /// Check whether we were stopped in the middle of running tasks.
+        /// Note: authPaused is NOT checked here — the per-task logic below
+        /// handles it by routing to unauthenticated tasks only.
         guard !paused else {
             ITBInfo("Tasks paused before finishing processTasks()")
             scheduleNext()
@@ -155,7 +217,21 @@ class IterableTaskRunner: NSObject {
         }
 
         do {
-            if let task = try persistenceContext.nextTask() {
+            let task: IterableTask?
+            if authPaused {
+                // When auth is paused, only execute tasks that don't require JWT.
+                // Auth-required tasks stay in the queue until auth resumes.
+                task = try nextTaskNotRequiringAuth()
+                if task == nil {
+                    ITBInfo("Auth paused and no unauthenticated tasks to process")
+                    running = false
+                    return
+                }
+            } else {
+                task = try persistenceContext.nextTask()
+            }
+
+            if let task = task {
                 execute(task: task).onSuccess { [weak self] executionResult in
                     ITBInfo()
                     guard let strongSelf = self else {
@@ -165,8 +241,22 @@ class IterableTaskRunner: NSObject {
                         switch executionResult {
                         case .success, .failure, .error:
                             strongSelf.processTasks()
-                        case .processing, .retry:
+                        case .processing:
                             strongSelf.scheduleNext()
+                        case .retry:
+                            if strongSelf.authPaused && Self.taskRequiresAuth(task) {
+                                // An auth-required task caused the pause.
+                                // Continue processing to drain any unauthenticated
+                                // tasks remaining in the queue.
+                                strongSelf.processTasks()
+                            } else if strongSelf.authPaused {
+                                // An unauthenticated task retried during auth pause
+                                // (e.g., network error). Stop to avoid a tight retry
+                                // loop; processing resumes on auth refresh or new task.
+                                strongSelf.running = false
+                            } else {
+                                strongSelf.scheduleNext()
+                            }
                         }
                     }
                 }
@@ -190,7 +280,7 @@ class IterableTaskRunner: NSObject {
 
         switch task.type {
         case .apiCall:
-            let processor = IterableAPICallTaskProcessor(networkSession: networkSession, dateProvider: dateProvider)
+            let processor = IterableAPICallTaskProcessor(networkSession: networkSession, dateProvider: dateProvider, autoRetry: autoRetry)
             return processAPICallTask(processor: processor, task: task)
         }
     }
@@ -261,6 +351,10 @@ class IterableTaskRunner: NSObject {
             case let .failureWithRetry(_, detail: detail):
                 ITBInfo("task: \(task.id) processed with retry")
                 if let failureDetail = detail as? SendRequestError {
+                    if strongSelf.autoRetry && IterableAPICallTaskProcessor.isJWTAuthFailure(sendRequestError: failureDetail) {
+                        ITBInfo("JWT auth failure with autoRetry enabled, pausing task runner")
+                        strongSelf.authPaused = true
+                    }
                     let userInfo = IterableNotificationUtil.sendRequestErrorToUserInfo(failureDetail, taskId: task.id)
                     strongSelf.notificationCenter.post(name: .iterableTaskFinishedWithRetry,
                                                        object: strongSelf,
@@ -273,8 +367,29 @@ class IterableTaskRunner: NSObject {
         return fulfill
     }
     
+    // MARK: - Auth Bypass Helpers
+
+    /// Returns the first task in the queue (by scheduledAt order) that does not require JWT authentication.
+    private func nextTaskNotRequiringAuth() throws -> IterableTask? {
+        let allTasks = try persistenceContext.findAllTasks()
+        return allTasks
+            .sorted { $0.scheduledAt < $1.scheduledAt }
+            .first { !Self.taskRequiresAuth($0) }
+    }
+
+    /// Determines whether a task requires JWT authentication by inspecting its API path.
+    /// Uses `task.name` which is set to the API path at scheduling time.
+    static func taskRequiresAuth(_ task: IterableTask) -> Bool {
+        guard let path = task.name else {
+            ITBInfo("Task \(task.id) has no name/path, defaulting to auth-required")
+            return true
+        }
+        return Const.Path.requiresJWTAuth(path)
+    }
+
     deinit {
         ITBInfo()
+        connectivityDebounceWorkItem?.cancel()
         notificationCenter.removeObserver(self)
     }
     
@@ -298,14 +413,18 @@ class IterableTaskRunner: NSObject {
     }
     
     private var workItem: DispatchWorkItem?
+    private var connectivityDebounceWorkItem: DispatchWorkItem?
     private var paused = false
+    private var authPaused = false
     private let networkSession: NetworkSessionProtocol
     private let healthMonitor: HealthMonitor
     private let notificationCenter: NotificationCenterProtocol
     private let timeInterval: TimeInterval
+    private let connectivityDebounceInterval: TimeInterval
     private let dateProvider: DateProviderProtocol
     private let connectivityManager: NetworkConnectivityManager
     private var running = false
+    var autoRetry: Bool
 
     private let persistenceContext: IterablePersistenceContext
 }

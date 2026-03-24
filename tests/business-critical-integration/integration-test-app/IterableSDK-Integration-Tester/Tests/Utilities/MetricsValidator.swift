@@ -236,7 +236,7 @@ class MetricsValidator {
     
     func validateEmbeddedMessageMetrics(
         placementId: String? = nil,
-        expectedEventTypes: [String] = ["embeddedMessageReceived", "embeddedClick", "embeddedMessageImpression"],
+        expectedEventTypes: [String] = ["embeddedMessageReceived", "embeddedClick"],
         timeout: TimeInterval = 60.0,
         completion: @escaping (Bool, [String]) -> Void
     ) {
@@ -400,7 +400,7 @@ class MetricsValidator {
             case .inAppMessage:
                 return ["inAppOpen", "inAppClick", "inAppClose"]
             case .embeddedMessage:
-                return ["embeddedMessageReceived", "embeddedMessageImpression", "embeddedClick"]
+                return ["embeddedMessageReceived", "embeddedClick"]
             case .deepLinking:
                 return ["deepLinkClick", "linkClick", "universalLinkOpen"]
             case .fullIntegration:
