@@ -177,8 +177,8 @@ class InAppMessageIntegrationTests: IntegrationTestBase {
                 checkMessagesButton.tap()
                 retryCount += 1
                 
-                // Give time for network request to complete before checking again
-                sleep(2)
+                // Give more time for CI network latency on campaign delivery
+                sleep(4)
             } else {
                 print("⏸️ Button not enabled, waiting...")
                 sleep(1)
