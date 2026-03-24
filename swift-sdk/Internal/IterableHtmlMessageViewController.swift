@@ -133,7 +133,7 @@ class IterableHtmlMessageViewController: UIViewController {
         
         webView.set(position: ViewPosition(width: view.frame.width, height: view.frame.height, center: view.center))
 
-        if location == .full {
+        if location == .full || location == .top || location == .bottom {
             // Prevent the scroll view from automatically adjusting content insets for the safe area,
             // so the HTML content can extend behind the status bar / Dynamic Island / home indicator.
             if let wkWebView = webView.view as? WKWebView {
@@ -141,7 +141,7 @@ class IterableHtmlMessageViewController: UIViewController {
             }
         }
 
-        let html = (location == .full) ? Self.injectViewportFitCover(html: parameters.html) : parameters.html
+        let html = (location == .full || location == .top || location == .bottom) ? Self.injectViewportFitCover(html: parameters.html) : parameters.html
         webView.loadHTMLString(html, baseURL: URL(string: ""))
         webView.set(navigationDelegate: self)
 
