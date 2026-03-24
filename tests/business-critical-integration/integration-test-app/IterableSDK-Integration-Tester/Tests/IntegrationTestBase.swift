@@ -593,6 +593,30 @@ class IntegrationTestBase: XCTestCase {
         screenshotCapture.captureScreenshot(named: "deep-link-handled")
     }
     
+    /// Dismisses all visible in-app messages by repeatedly tapping dismiss links.
+    /// The SDK may auto-show queued messages after each dismiss; this drains them all.
+    func dismissAllInAppMessages(timeout: TimeInterval = 30.0) {
+        let webView = app.descendants(matching: .webView).element(boundBy: 0)
+        let startTime = Date()
+        
+        while webView.exists && Date().timeIntervalSince(startTime) < timeout {
+            // Try tapping known dismiss links
+            for linkText in ["Dismiss", "Close", "Show Test View"] {
+                let link = app.links[linkText]
+                if link.exists && link.isHittable {
+                    print("🗑️ Dismissing stale in-app via '\(linkText)' link")
+                    link.tap()
+                    sleep(2)
+                    break
+                }
+            }
+            // If no link found, wait for message to load or timeout
+            if webView.exists {
+                sleep(1)
+            }
+        }
+    }
+    
     // MARK: - WebView Helpers
     
     /// Waits for a link inside a WKWebView to become accessible via XCUITest
