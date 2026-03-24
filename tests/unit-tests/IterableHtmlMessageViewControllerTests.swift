@@ -395,32 +395,29 @@ class IterableHtmlMessageViewControllerTests: XCTestCase {
     func testWebViewFinishLoadingFlagBehavior() {
         // This test verifies that the webViewDidFinishLoading flag prevents premature positioning
         // SDK-92: Fix intermittent positioning issues caused by calculating position before DOM is ready
-        
+
         let html = "<html><body>Bottom Position Test</body></html>"
-        let padding = Padding(top: 0, left: 0, bottom: 10, right: 0)
-        let metadata = IterableInAppMessageMetadata(message: IterableInAppMessage.createFromJSON(inAppTestJson)!,
-                                                     location: .inApp)
-        
+        let padding = Padding(top: .percent(value: 0), left: 0, bottom: .percent(value: 10), right: 0)
+
         let params = IterableHtmlMessageViewController.Parameters(html: html,
                                                                    padding: padding,
-                                                                   messageMetadata: metadata,
                                                                    isModal: true)
-        
+
         let viewController = IterableHtmlMessageViewController.create(parameters: params,
                                                                       eventTracker: MockMessageViewControllerEventTracker(),
                                                                       onClickCallback: nil)
-        
+
         // Load view to trigger viewDidLoad
         _ = viewController.view
-        
+
         // The webViewDidFinishLoading flag should be false initially
         let mirror = Mirror(reflecting: viewController)
         let webViewDidFinishLoading = mirror.children.first(where: { $0.label == "webViewDidFinishLoading" })?.value as? Bool
         XCTAssertEqual(webViewDidFinishLoading, false, "webViewDidFinishLoading should be false before didFinish is called")
-        
+
         // Simulate webview finishing load
         viewController.webView(WKWebView(), didFinish: nil)
-        
+
         // Now the flag should be true
         let mirrorAfter = Mirror(reflecting: viewController)
         let webViewDidFinishLoadingAfter = mirrorAfter.children.first(where: { $0.label == "webViewDidFinishLoading" })?.value as? Bool
