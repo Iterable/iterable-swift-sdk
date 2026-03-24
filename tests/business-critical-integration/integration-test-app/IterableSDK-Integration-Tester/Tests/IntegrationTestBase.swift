@@ -401,7 +401,12 @@ class IntegrationTestBase: XCTestCase {
         // NOW register the email AFTER SDK is initialized
         let registerEmailButton = app.buttons["register-email-button"]
         XCTAssertTrue(registerEmailButton.waitForExistence(timeout: standardTimeout))
-        registerEmailButton.tap()
+        // On CI the button can be just off-screen; coordinate tap bypasses scroll-to-visible
+        if registerEmailButton.isHittable {
+            registerEmailButton.tap()
+        } else {
+            registerEmailButton.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.5)).tap()
+        }
         
         sleep(1)
         

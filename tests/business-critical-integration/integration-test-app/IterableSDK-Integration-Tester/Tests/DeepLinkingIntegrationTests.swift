@@ -88,7 +88,7 @@ class DeepLinkingIntegrationTests: IntegrationTestBase {
         // Verify the UpdateViewController is displayed (not just an alert)
         // This validates that SDK followed exactly ONE redirect (not multiple)
         let updateHeader = app.staticTexts["update-view-header"]
-        XCTAssertTrue(updateHeader.waitForExistence(timeout: 15.0), "Update screen should be displayed")
+        XCTAssertTrue(updateHeader.waitForExistence(timeout: standardTimeout), "Update screen should be displayed")
         XCTAssertEqual(updateHeader.label, "👋 Hi!", "Update screen should show 'Hi!' header")
         
         // Verify the path label shows the correct unwrapped URL
@@ -205,7 +205,7 @@ class DeepLinkingIntegrationTests: IntegrationTestBase {
         // The UpdateViewController should show /update/hi (first redirect)
         // NOT any final destination if there were multiple hops
         let updateHeader = app.staticTexts["update-view-header"]
-        XCTAssertTrue(updateHeader.waitForExistence(timeout: 15.0), 
+        XCTAssertTrue(updateHeader.waitForExistence(timeout: standardTimeout), 
                       "Update screen should be displayed after single redirect")
         
         // CRITICAL VALIDATION: Verify the path shows first redirect destination
