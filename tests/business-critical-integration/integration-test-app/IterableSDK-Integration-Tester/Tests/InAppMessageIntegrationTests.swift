@@ -159,6 +159,14 @@ class InAppMessageIntegrationTests: IntegrationTestBase {
             app.alerts["Success"].buttons["OK"].tap()
         }
         
+        // Wait for Iterable backend to process the campaign trigger before fetching messages.
+        // CI environments have higher latency between triggering a campaign and the message
+        // being available via getMessages API.
+        if isRunningInCI {
+            print("⏳ [CI] Waiting for backend to process campaign trigger...")
+            sleep(5)
+        }
+        
         // Tap "Check for Messages" to fetch and show the in-app
         XCTAssertTrue(checkMessagesButton.waitForExistence(timeout: standardTimeout), "Check for Messages button should exist")
         checkMessagesButton.tap()
