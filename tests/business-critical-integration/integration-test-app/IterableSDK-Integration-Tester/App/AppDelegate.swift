@@ -173,10 +173,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     // MARK: - Notifications
     
     func application(_ applicatiTon: UIApplication, didRegisterForRemoteNotificationsWithDeviceToken deviceToken: Data) {
-        // SDK-397: CI simulators occasionally fail to reset push permissions between test runs,
-        // causing "Simulator device failed to complete the requested operation" errors.
-        // Token registration is best-effort here; integration tests should not hard-depend on
-        // a valid APNs token being present in the CI environment.
         print("Received device token: \(deviceToken.map { String(format: "%02.2hhx", $0) }.joined())")
         AppDelegate.registerDeviceToken(deviceToken)
     }
