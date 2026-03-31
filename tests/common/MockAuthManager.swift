@@ -54,6 +54,10 @@ class MockAuthManager: IterableAuthManagerProtocol {
     func setIsLastAuthTokenValid(_ isValid: Bool) {
         isLastAuthTokenValid = isValid
     }
+
+    func getLastAuthTokenState() -> AuthTokenValidityState {
+        return isLastAuthTokenValid ? .valid : .invalid
+    }
     
     func getNextRetryInterval() -> Double {
         getNextRetryIntervalCalled = true

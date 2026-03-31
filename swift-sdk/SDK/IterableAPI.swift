@@ -7,7 +7,7 @@ import UIKit
 
 @objcMembers public final class IterableAPI: NSObject {
     /// The current SDK version
-    public static let sdkVersion = "6.6.7"
+    public static let sdkVersion = "6.7.0"
     
     /// The email of the logged in user that this IterableAPI is using
     public static var email: String? {
@@ -31,6 +31,13 @@ import UIKit
     public static var authToken: String? {
         get {
             implementation?.authToken
+        }
+    }
+
+    /// The current validity state of the auth token as determined by the SDK
+    public static var lastAuthTokenState: AuthTokenValidityState {
+        get {
+            implementation?.lastAuthTokenState ?? .unknown
         }
     }
     

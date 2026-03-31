@@ -187,6 +187,7 @@
 		8AAA8BC32D07310600DF8220 /* IterableInboxViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8AAA8BA52D07310600DF8220 /* IterableInboxViewController.swift */; };
 		8AAA8BC42D07310600DF8220 /* IterableAppIntegration.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8AAA8B992D07310600DF8220 /* IterableAppIntegration.swift */; };
 		8AAA8BCD2D07310600DF8220 /* RetryPolicy.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8AAA8B252D07310600DF8220 /* RetryPolicy.swift */; };
+		9313470310D6B94EBF01743D /* AuthTokenValidityState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 54D3BD1417B5702B16498AFF /* AuthTokenValidityState.swift */; };
 		8AAA8BD32D07310600DF8220 /* IterableEmbeddedManagerProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8AAA8B282D07310600DF8220 /* IterableEmbeddedManagerProtocol.swift */; };
 		8AAA8BD52D07310600DF8220 /* AuthFailure.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8AAA8B2D2D07310600DF8220 /* AuthFailure.swift */; };
 		8AAA8BD62D07310600DF8220 /* AuthFailureReason.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8AAA8B2E2D07310600DF8220 /* AuthFailureReason.swift */; };
@@ -644,6 +645,7 @@
 		8AAA8B232D07310600DF8220 /* IterableInAppMessage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IterableInAppMessage.swift; sourceTree = "<group>"; };
 		8AAA8B242D07310600DF8220 /* IterablePushNotificationMetadata.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IterablePushNotificationMetadata.swift; sourceTree = "<group>"; };
 		8AAA8B252D07310600DF8220 /* RetryPolicy.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RetryPolicy.swift; sourceTree = "<group>"; };
+		54D3BD1417B5702B16498AFF /* AuthTokenValidityState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthTokenValidityState.swift; sourceTree = "<group>"; };
 		8AAA8B272D07310600DF8220 /* IterableAuthManagerProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IterableAuthManagerProtocol.swift; sourceTree = "<group>"; };
 		8AAA8B282D07310600DF8220 /* IterableEmbeddedManagerProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IterableEmbeddedManagerProtocol.swift; sourceTree = "<group>"; };
 		8AAA8B292D07310600DF8220 /* IterableEmbeddedUpdateDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IterableEmbeddedUpdateDelegate.swift; sourceTree = "<group>"; };
@@ -1049,6 +1051,7 @@
 				8AAA8B222D07310600DF8220 /* IterableEmbeddedMessage.swift */,
 				8AAA8B232D07310600DF8220 /* IterableInAppMessage.swift */,
 				8AAA8B242D07310600DF8220 /* IterablePushNotificationMetadata.swift */,
+				54D3BD1417B5702B16498AFF /* AuthTokenValidityState.swift */,
 				8AAA8B252D07310600DF8220 /* RetryPolicy.swift */,
 			);
 			path = Models;
@@ -2212,6 +2215,7 @@
 				8AAA8BC32D07310600DF8220 /* IterableInboxViewController.swift in Sources */,
 				8AAA8BC42D07310600DF8220 /* IterableAppIntegration.swift in Sources */,
 				8AAA8BCD2D07310600DF8220 /* RetryPolicy.swift in Sources */,
+				9313470310D6B94EBF01743D /* AuthTokenValidityState.swift in Sources */,
 				8AAA8BD32D07310600DF8220 /* IterableEmbeddedManagerProtocol.swift in Sources */,
 				8AAA8BD52D07310600DF8220 /* AuthFailure.swift in Sources */,
 				8AAA8BD62D07310600DF8220 /* AuthFailureReason.swift in Sources */,

@@ -63,11 +63,17 @@ class IterableHtmlMessageViewControllerTests: XCTestCase {
     }
     
     func testWebViewBottomPositioningWithSafeAreaInsets() {
+        // Bottom position extends into the safe area (matching how top extends behind the status bar).
+        // height = 200 + 30 (safeAreaBottom) = 230, centerY = 400 - 115 = 285
+        let inAppHeight: CGFloat = 200
+        let safeAreaBottom: CGFloat = 30
+        let calculatedHeight = inAppHeight + safeAreaBottom
+        let calculatedCenterY = 400 - calculatedHeight / 2
         checkPositioning(parentPosition: ViewPosition(width: 1234, height: 400, center: CGPoint(x: 617.0, y: 200.0)),
-                         safeAreaInsets: UIEdgeInsets(top: 25, left: 0, bottom: 30, right: 0),
-                         inAppHeight: 200,
+                         safeAreaInsets: UIEdgeInsets(top: 25, left: 0, bottom: safeAreaBottom, right: 0),
+                         inAppHeight: inAppHeight,
                          messageLocation: .bottom,
-                         expectedWebViewPosition: ViewPosition(width: 1234, height: 200, center: CGPoint(x: 617.0, y: 270.0)))
+                         expectedWebViewPosition: ViewPosition(width: 1234, height: calculatedHeight, center: CGPoint(x: 617.0, y: calculatedCenterY)))
     }
     
     func testTopAnimation() {
@@ -390,6 +396,38 @@ class IterableHtmlMessageViewControllerTests: XCTestCase {
         let detail = InAppCalculations.calculateAnimationDetail(animationInput: input)
         XCTAssertNotNil(detail)
         XCTAssertEqual(detail!.initial.bgColor, .clear)
+    }
+    
+    func testWebViewFinishLoadingFlagBehavior() {
+        // This test verifies that the webViewDidFinishLoading flag prevents premature positioning
+        // SDK-92: Fix intermittent positioning issues caused by calculating position before DOM is ready
+
+        let html = "<html><body>Bottom Position Test</body></html>"
+        let padding = Padding(top: .percent(value: 0), left: 0, bottom: .percent(value: 10), right: 0)
+
+        let params = IterableHtmlMessageViewController.Parameters(html: html,
+                                                                   padding: padding,
+                                                                   isModal: true)
+
+        let viewController = IterableHtmlMessageViewController.create(parameters: params,
+                                                                      eventTracker: MockMessageViewControllerEventTracker(),
+                                                                      onClickCallback: nil)
+
+        // Load view to trigger viewDidLoad
+        _ = viewController.view
+
+        // The webViewDidFinishLoading flag should be false initially
+        let mirror = Mirror(reflecting: viewController)
+        let webViewDidFinishLoading = mirror.children.first(where: { $0.label == "webViewDidFinishLoading" })?.value as? Bool
+        XCTAssertEqual(webViewDidFinishLoading, false, "webViewDidFinishLoading should be false before didFinish is called")
+
+        // Simulate webview finishing load
+        viewController.webView(WKWebView(), didFinish: nil)
+
+        // Now the flag should be true
+        let mirrorAfter = Mirror(reflecting: viewController)
+        let webViewDidFinishLoadingAfter = mirrorAfter.children.first(where: { $0.label == "webViewDidFinishLoading" })?.value as? Bool
+        XCTAssertEqual(webViewDidFinishLoadingAfter, true, "webViewDidFinishLoading should be true after didFinish is called")
     }
 }
 

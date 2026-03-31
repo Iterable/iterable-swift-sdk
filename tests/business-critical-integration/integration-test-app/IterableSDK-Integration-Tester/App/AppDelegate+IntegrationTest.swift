@@ -42,6 +42,32 @@ extension AppDelegate {
         print("✅ Loaded server key from test-config.json")
         return serverKey
     }
+
+    static func loadJWTApiKeyFromConfig() -> String? {
+        guard let path = Bundle.main.path(forResource: "test-config", ofType: "json"),
+              let data = try? Data(contentsOf: URL(fileURLWithPath: path)),
+              let json = try? JSONSerialization.jsonObject(with: data) as? [String: Any],
+              let jwtKey = json["jwtApiKey"] as? String,
+              !jwtKey.isEmpty else {
+            print("⚠️ No JWT API key found in test-config.json — will use regular API key for JWT testing")
+            return nil
+        }
+        print("✅ Loaded JWT API key from test-config.json")
+        return jwtKey
+    }
+
+    static func loadJWTSecretFromConfig() -> String? {
+        guard let path = Bundle.main.path(forResource: "test-config", ofType: "json"),
+              let data = try? Data(contentsOf: URL(fileURLWithPath: path)),
+              let json = try? JSONSerialization.jsonObject(with: data) as? [String: Any],
+              let jwtSecret = json["jwtSecret"] as? String,
+              !jwtSecret.isEmpty else {
+            print("⚠️ No JWT secret found in test-config.json")
+            return nil
+        }
+        print("✅ Loaded JWT secret from test-config.json")
+        return jwtSecret
+    }
     
     static func loadProjectIdFromConfig() -> String {
         guard let path = Bundle.main.path(forResource: "test-config", ofType: "json"),
@@ -69,6 +95,8 @@ extension AppDelegate {
     }
         
     static func initializeIterableSDK() {
+        lastInitMode = .standard
+        LogStore.shared.log("🔧 SDK initializing...")
         print("🚀 [SDK INIT] Starting SDK initialization...")
         
         guard let appDelegate = UIApplication.shared.delegate as? AppDelegate else {
@@ -88,7 +116,8 @@ extension AppDelegate {
         config.autoPushRegistration = false  // Disable automatic push registration for testing control
         config.allowedProtocols = ["tester", "https", "http"]  // Allow custom tester:// and https:// deep link schemes
         config.enableEmbeddedMessaging = true
-        
+        config.logDelegate = SDKLogCapture.shared
+
         print("✅ [SDK INIT] Config created with delegates:")
         print("   - URL delegate: \(String(describing: config.urlDelegate))")
         print("   - Custom action delegate: \(String(describing: config.customActionDelegate))")
@@ -104,11 +133,109 @@ extension AppDelegate {
         
         print("✅ [SDK INIT] SDK initialized for testing")
         print("✅ [SDK INIT] Initialization complete")
+        LogStore.shared.log("✅ SDK initialized")
+
+        // Log remote config values after they've been fetched (async)
+        DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {
+            let offlineMode = UserDefaults.standard.bool(forKey: "itbl_offline_mode")
+            let autoRetry = UserDefaults.standard.bool(forKey: "itbl_auto_retry")
+            print("🔄 [SDK INIT] Remote config values - offlineMode: \(offlineMode), autoRetry: \(autoRetry)")
+            LogStore.shared.log("⚙️ Config: offlineMode=\(offlineMode), autoRetry=\(autoRetry)")
+        }
     }
     
+    // MARK: - SDK Init Mode Tracking
+
+    enum SDKInitMode {
+        case standard
+        case jwt
+    }
+
+    static var lastInitMode: SDKInitMode = .standard
+
+    /// Reinitialize the SDK using the same mode it was last initialized with.
+    static func reinitializeSDKWithCurrentMode() {
+        switch lastInitMode {
+        case .standard:
+            initializeIterableSDK()
+        case .jwt:
+            reinitializeSDKWithJWTOnly()
+        }
+    }
+
+    // MARK: - JWT Auth Testing
+
+    static var mockAuthDelegate: MockAuthDelegate?
+    static var currentTestEmail: String?
+
+    /// Initialize SDK with JWT auth but no email — user will login separately.
+    static func reinitializeSDKWithJWTOnly() {
+        reinitializeSDKWithMockJWT(email: nil)
+    }
+
+    static func reinitializeSDKWithMockJWT(email: String?) {
+        lastInitMode = .jwt
+        // Set email so the auth delegate can generate a JWT when SDK requests one.
+        currentTestEmail = email
+
+        LogStore.shared.log("🔧 SDK reinitializing with JWT auth...")
+        print("[SDK INIT] Reinitializing SDK with JWT auth delegate...")
+
+        guard let appDelegate = UIApplication.shared.delegate as? AppDelegate else {
+            print("[SDK INIT] Failed to get AppDelegate")
+            return
+        }
+
+        guard let jwtSecret = loadJWTSecretFromConfig(), !jwtSecret.isEmpty else {
+            print("[SDK INIT] No JWT secret in test-config.json — cannot generate tokens")
+            return
+        }
+
+        let config = IterableConfig()
+        config.customActionDelegate = appDelegate
+        config.urlDelegate = appDelegate
+        config.inAppDisplayInterval = 1
+        config.autoPushRegistration = false
+        config.allowedProtocols = ["tester", "https", "http"]
+        config.enableEmbeddedMessaging = true
+        config.expiringAuthTokenRefreshPeriod = 1.0 // refresh 1s before expiry
+        config.logDelegate = SDKLogCapture.shared
+
+        // Set up auth delegate that generates real JWTs locally
+        let authDelegate = MockAuthDelegate(jwtSecret: jwtSecret)
+        config.authDelegate = authDelegate
+        mockAuthDelegate = authDelegate
+
+        let apiKey = loadJWTApiKeyFromConfig() ?? loadApiKeyFromConfig()
+
+        // Activate mock server BEFORE init to intercept GET requests (getInAppMessages,
+        // embedded-messaging) so they don't hit the real API with test emails.
+        MockAPIServer.shared.activate()
+
+        IterableAPI.initialize(apiKey: apiKey, launchOptions: nil, config: config)
+
+        // Only set email if provided — otherwise user will login separately
+        if let email = email {
+            // Force a clean login: clear any stale email first so setEmail
+            // doesn't early-return when the same email is already persisted.
+            IterableAPI.email = nil
+            IterableAPI.email = email
+        }
+
+        print("[SDK INIT] Reinitialized with JWT auth (secret: \(jwtSecret.prefix(4))...)")
+        LogStore.shared.log("✅ SDK initialized with JWT auth")
+
+        DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {
+            let offlineMode = UserDefaults.standard.bool(forKey: "itbl_offline_mode")
+            let autoRetry = UserDefaults.standard.bool(forKey: "itbl_auto_retry")
+            print("[SDK INIT] Remote config values - offlineMode: \(offlineMode), autoRetry: \(autoRetry)")
+        }
+    }
+
     static func registerEmailToIterableSDK(email: String) {
         print("📧 [SDK INIT] Registering email with SDK: \(email)")
         IterableAPI.email = email
+        LogStore.shared.log("📧 Email set: \(email)")
         print("✅ [SDK INIT] Test user email configured: \(email)")
         print("🔍 [SDK INIT] IterableAPI.email is now: \(IterableAPI.email ?? "nil")")
     }

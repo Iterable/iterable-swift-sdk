@@ -24,9 +24,14 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         window?.rootViewController = root
         window?.makeKeyAndVisible()
 
+        LogStore.shared.log("🚀 App started")
+
         setupNotifications()
         setupTestModeUI()
-        
+
+        // Restore saved config overrides BEFORE SDK init so getRemoteConfiguration is intercepted
+        _ = ConfigOverrideManager.shared
+
         // Start network monitoring
         NetworkMonitor.shared.startMonitoring()
         
@@ -250,24 +255,31 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         }
     }
     
+    private func presentFromRoot(_ viewControllerToPresent: UIViewController) {
+        guard let rootVC = window?.rootViewController else { return }
+        // If something is already presented, dismiss it first (no animation)
+        // so we always present cleanly from the root navigation controller.
+        if let presented = rootVC.presentedViewController {
+            presented.dismiss(animated: false) {
+                rootVC.present(viewControllerToPresent, animated: true)
+            }
+        } else {
+            rootVC.present(viewControllerToPresent, animated: true)
+        }
+    }
+
     @objc private func showNetworkMonitor() {
-        guard let rootViewController = window?.rootViewController else { return }
-        
         let networkMonitorVC = NetworkMonitorViewController()
         let navController = UINavigationController(rootViewController: networkMonitorVC)
         navController.modalPresentationStyle = .fullScreen
-        
-        rootViewController.present(navController, animated: true)
+        presentFromRoot(navController)
     }
-    
+
     @objc private func showBackendStatus() {
-        guard let rootViewController = window?.rootViewController else { return }
-        
         let backendStatusVC = BackendStatusViewController()
         let navController = UINavigationController(rootViewController: backendStatusVC)
         navController.modalPresentationStyle = .fullScreen
-        
-        rootViewController.present(navController, animated: true)
+        presentFromRoot(navController)
     }
     
     private func showAlert(with title: String, and message: String) {

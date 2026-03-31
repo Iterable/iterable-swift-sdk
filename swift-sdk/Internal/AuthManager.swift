@@ -72,7 +72,7 @@ class AuthManager: IterableAuthManagerProtocol {
     }
     
     private func shouldUseLastValidToken(_ shouldIgnoreRetryPolicy: Bool) -> Bool {
-        return isLastAuthTokenValid && !shouldIgnoreRetryPolicy
+        return lastAuthTokenState == .valid && !shouldIgnoreRetryPolicy
     }
     
     func setNewToken(_ newToken: String) {
@@ -97,7 +97,7 @@ class AuthManager: IterableAuthManagerProtocol {
             localStorage.unknownUserUpdate = nil
         }
 
-        isLastAuthTokenValid = false
+        lastAuthTokenState = .unknown
     }
     
     // MARK: - Private/Internal
@@ -110,7 +110,7 @@ class AuthManager: IterableAuthManagerProtocol {
     
     private var authRetryPolicy: RetryPolicy
     private var retryCount: Int = 0
-    private var isLastAuthTokenValid: Bool = false
+    private var lastAuthTokenState: AuthTokenValidityState = .unknown
     private var pauseAuthRetry: Bool = false
     private var isTimerScheduled: Bool = false
     
@@ -128,7 +128,24 @@ class AuthManager: IterableAuthManagerProtocol {
     }
     
     func setIsLastAuthTokenValid(_ isValid: Bool) {
-        isLastAuthTokenValid = isValid
+        if isValid {
+            let wasNotValid = lastAuthTokenState != .valid
+            lastAuthTokenState = .valid
+            if wasNotValid {
+                NotificationCenter.default.post(name: .iterableAuthTokenRefreshed, object: nil)
+            }
+        } else {
+            // Only transition to .invalid from .valid.
+            // When state is .unknown (token just refreshed, awaiting validation),
+            // keep it as .unknown — the next successful request will set .valid.
+            if lastAuthTokenState == .valid {
+                lastAuthTokenState = .invalid
+            }
+        }
+    }
+
+    func getLastAuthTokenState() -> AuthTokenValidityState {
+        return lastAuthTokenState
     }
     
     func getNextRetryInterval() -> Double {
@@ -158,14 +175,19 @@ class AuthManager: IterableAuthManagerProtocol {
     
     private func onAuthTokenReceived(retrievedAuthToken: String?, onSuccess: AuthTokenRetrievalHandler? = nil) {
         ITBInfo()
-        
+
         pendingAuth = false
-        
+
         // Set the new token first
         authToken = retrievedAuthToken
         storeAuthToken()
-        
+
         if retrievedAuthToken != nil {
+            // Only transition to .unknown from .invalid (auth recovery).
+            // When state is .valid (normal scheduled refresh), keep it .valid.
+            if lastAuthTokenState == .invalid {
+                lastAuthTokenState = .unknown
+            }
             let isRefreshQueued = queueAuthTokenExpirationRefresh(retrievedAuthToken, onSuccess: onSuccess)
             if !isRefreshQueued {
                 onSuccess?(authToken)
@@ -176,6 +198,7 @@ class AuthManager: IterableAuthManagerProtocol {
                 storeAuthToken()
                 onSuccess?(authToken)
             }
+            NotificationCenter.default.post(name: .iterableAuthTokenRefreshed, object: nil)
         } else {
             handleAuthFailure(failedAuthToken: nil, reason: .authTokenNull)
             scheduleAuthTokenRefreshTimer(interval: getNextRetryInterval(), successCallback: onSuccess)

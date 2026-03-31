@@ -286,26 +286,6 @@ struct OnlineRequestProcessor: RequestProcessorProtocol {
     }
     
     @discardableResult
-    func track(embeddedMessageDismiss message: IterableEmbeddedMessage,
-               onSuccess: OnSuccessHandler? = nil,
-               onFailure: OnFailureHandler? = nil) -> Pending<SendRequestValue, SendRequestError> {
-        sendRequest(requestProvider: { apiClient.track(embeddedMessageDismiss: message) },
-                    successHandler: onSuccess,
-                    failureHandler: onFailure,
-                    requestIdentifier: "trackEmbeddedMessageDismiss")
-    }
-    
-    @discardableResult
-    func track(embeddedMessageImpression message: IterableEmbeddedMessage,
-               onSuccess: OnSuccessHandler?,
-               onFailure: OnFailureHandler?) -> Pending<SendRequestValue, SendRequestError> {
-        sendRequest(requestProvider: { apiClient.track(embeddedMessageImpression: message) },
-                    successHandler: onSuccess,
-                    failureHandler: onFailure,
-                    requestIdentifier: "trackEmbeddedMessageImpression")
-    }
-    
-    @discardableResult
     func track(embeddedSession: IterableEmbeddedSession,
                onSuccess: OnSuccessHandler? = nil,
                onFailure: OnFailureHandler? = nil) -> Pending<SendRequestValue, SendRequestError> {

@@ -60,8 +60,11 @@ class DeepLinkingIntegrationTests: IntegrationTestBase {
         
         XCTAssertTrue(safari.wait(for: .runningForeground, timeout: 15.0),
                       "Browser links (/u/ pattern) should open Safari, not app")
-        XCTAssertFalse(app.state == .runningForeground,
-                       "App should not be in foreground for /u/ links")
+        // Use predicate wait so CI state-transition races don't produce a false positive
+        let appNotForeground = NSPredicate(format: "state != 4")
+        let bgExpectation = XCTNSPredicateExpectation(predicate: appNotForeground, object: app)
+        let result = XCTWaiter.wait(for: [bgExpectation], timeout: 5.0)
+        XCTAssertEqual(result, .completed, "App should not be in foreground for /u/ links")
         
         print("✅ Browser link test completed - Safari opened correctly")
     }
@@ -83,12 +86,13 @@ class DeepLinkingIntegrationTests: IntegrationTestBase {
         openLinkFromRemindersApp(url: testURL)
         
         // Wait for app to process the deep link and navigate to update screen
-        sleep(5)
+        // Extra sleep for CI: Universal Link → SDK network unwrap → navigate takes ~10-15s
+        sleep(10)
         
         // Verify the UpdateViewController is displayed (not just an alert)
         // This validates that SDK followed exactly ONE redirect (not multiple)
         let updateHeader = app.staticTexts["update-view-header"]
-        XCTAssertTrue(updateHeader.waitForExistence(timeout: 15.0), "Update screen should be displayed")
+        XCTAssertTrue(updateHeader.waitForExistence(timeout: standardTimeout), "Update screen should be displayed")
         XCTAssertEqual(updateHeader.label, "👋 Hi!", "Update screen should show 'Hi!' header")
         
         // Verify the path label shows the correct unwrapped URL
@@ -199,13 +203,14 @@ class DeepLinkingIntegrationTests: IntegrationTestBase {
         openLinkFromRemindersApp(url: testURL)
         
         // Wait for app to process the deep link
-        sleep(5)
+        // Extra sleep for CI: Universal Link → SDK network unwrap → navigate takes ~10-15s
+        sleep(10)
         
         // Verify we got the FIRST redirect destination, not any subsequent ones
         // The UpdateViewController should show /update/hi (first redirect)
         // NOT any final destination if there were multiple hops
         let updateHeader = app.staticTexts["update-view-header"]
-        XCTAssertTrue(updateHeader.waitForExistence(timeout: 15.0), 
+        XCTAssertTrue(updateHeader.waitForExistence(timeout: standardTimeout), 
                       "Update screen should be displayed after single redirect")
         
         // CRITICAL VALIDATION: Verify the path shows first redirect destination
