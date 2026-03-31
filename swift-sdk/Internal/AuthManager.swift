@@ -97,9 +97,17 @@ class AuthManager: IterableAuthManagerProtocol {
             localStorage.unknownUserUpdate = nil
         }
 
+        let oldState = lastAuthTokenState
         lastAuthTokenState = .unknown
+        if lastAuthTokenState != oldState {
+            NotificationCenter.default.post(
+                name: .iterableAuthTokenStateChanged,
+                object: nil,
+                userInfo: ["state": lastAuthTokenState.rawValue]
+            )
+        }
     }
-    
+
     // MARK: - Private/Internal
     
     private var authToken: String?
@@ -128,10 +136,10 @@ class AuthManager: IterableAuthManagerProtocol {
     }
     
     func setIsLastAuthTokenValid(_ isValid: Bool) {
+        let oldState = lastAuthTokenState
         if isValid {
-            let wasNotValid = lastAuthTokenState != .valid
             lastAuthTokenState = .valid
-            if wasNotValid {
+            if oldState != .valid {
                 NotificationCenter.default.post(name: .iterableAuthTokenRefreshed, object: nil)
             }
         } else {
@@ -141,6 +149,13 @@ class AuthManager: IterableAuthManagerProtocol {
             if lastAuthTokenState == .valid {
                 lastAuthTokenState = .invalid
             }
+        }
+        if lastAuthTokenState != oldState {
+            NotificationCenter.default.post(
+                name: .iterableAuthTokenStateChanged,
+                object: nil,
+                userInfo: ["state": lastAuthTokenState.rawValue]
+            )
         }
     }
 
@@ -187,6 +202,11 @@ class AuthManager: IterableAuthManagerProtocol {
             // When state is .valid (normal scheduled refresh), keep it .valid.
             if lastAuthTokenState == .invalid {
                 lastAuthTokenState = .unknown
+                NotificationCenter.default.post(
+                    name: .iterableAuthTokenStateChanged,
+                    object: nil,
+                    userInfo: ["state": lastAuthTokenState.rawValue]
+                )
             }
             let isRefreshQueued = queueAuthTokenExpirationRefresh(retrievedAuthToken, onSuccess: onSuccess)
             if !isRefreshQueued {

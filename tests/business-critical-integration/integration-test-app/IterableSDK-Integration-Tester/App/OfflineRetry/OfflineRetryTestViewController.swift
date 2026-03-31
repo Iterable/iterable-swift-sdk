@@ -9,6 +9,7 @@ final class OfflineRetryTestViewController: UIViewController {
     private var notificationObservers: [NSObjectProtocol] = []
     private var jwtExpiry: JwtExpiry = .thirtySec
     private let logStore = LogStore.shared
+    private var lastAuthTokenStateRaw: Int = 0 // 0=unknown, 1=valid, 2=invalid
 
     // MARK: - UI Components
 
@@ -718,10 +719,10 @@ final class OfflineRetryTestViewController: UIViewController {
         }
         let remaining = JwtHelper.remainingLabel(token: token)
 
-        // Use SDK's auth validity state instead of just JWT expiry
-        let sdkState = IterableAPI.lastAuthTokenState
-        switch sdkState {
-        case .valid:
+        // Use cached auth token state from SDK notification
+        // 0=unknown, 1=valid, 2=invalid
+        switch lastAuthTokenStateRaw {
+        case 1: // valid
             if remaining == "Expired" || remaining == "No Token" {
                 authStatusLabel.text = remaining
                 authStatusLabel.textColor = .systemRed
@@ -729,10 +730,10 @@ final class OfflineRetryTestViewController: UIViewController {
                 authStatusLabel.text = "Valid (\(remaining))"
                 authStatusLabel.textColor = .systemGreen
             }
-        case .invalid:
+        case 2: // invalid
             authStatusLabel.text = "Invalid (\(remaining))"
             authStatusLabel.textColor = .systemRed
-        case .unknown:
+        default: // unknown
             if remaining == "Expired" || remaining == "No Token" {
                 authStatusLabel.text = remaining
                 authStatusLabel.textColor = .systemRed
@@ -740,9 +741,6 @@ final class OfflineRetryTestViewController: UIViewController {
                 authStatusLabel.text = "Unknown (\(remaining))"
                 authStatusLabel.textColor = .systemOrange
             }
-        @unknown default:
-            authStatusLabel.text = remaining
-            authStatusLabel.textColor = .systemGray
         }
     }
 
@@ -771,6 +769,19 @@ final class OfflineRetryTestViewController: UIViewController {
             }
             notificationObservers.append(observer)
         }
+
+        // Track auth token state changes from the SDK
+        let authStateObserver = NotificationCenter.default.addObserver(
+            forName: Notification.Name(rawValue: "itbl_auth_token_state_changed"),
+            object: nil,
+            queue: .main
+        ) { [weak self] notification in
+            if let rawState = notification.userInfo?["state"] as? Int {
+                self?.lastAuthTokenStateRaw = rawState
+                self?.updateAuthStatus()
+            }
+        }
+        notificationObservers.append(authStateObserver)
 
         // Listen for ANY new log entry added to the shared store
         let logObserver = NotificationCenter.default.addObserver(
