@@ -6,6 +6,18 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [6.7.0]
 
+### Added
+- Added `IterableAPI.lastAuthTokenState` property to expose JWT auth token validity as an `AuthTokenValidityState` enum (`.unknown`, `.valid`, `.invalid`).
+- Auto-retry for JWT 401 failures during offline event processing — the SDK now pauses, refreshes the token, and retries the failed task automatically.
+
+### Fixed
+- Fixed in-app messages not displaying during sync cooldown periods when using `inAppDisplayDelegate`.
+- Improved offline retry logic to distinguish transient failures (5xx, network errors, 429) from permanent client errors (4xx).
+- Added network connectivity debounce (3-second window) to prevent rapid pause/resume cycles in the offline task runner.
+
+### Removed
+- Removed deprecated `trackEmbeddedDismiss` and `trackEmbeddedImpression` methods and their underlying API endpoints.
+
 ## [6.6.7]
 ### Fixed
 - Fixed module export for CocoaPods, enabling Obj-C/C++ compatibility
