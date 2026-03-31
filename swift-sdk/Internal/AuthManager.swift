@@ -159,10 +159,6 @@ class AuthManager: IterableAuthManagerProtocol {
         }
     }
 
-    func getLastAuthTokenState() -> AuthTokenValidityState {
-        return lastAuthTokenState
-    }
-    
     func getNextRetryInterval() -> Double {
         var nextRetryInterval = Double(authRetryPolicy.retryInterval)
         if authRetryPolicy.retryBackoff == .exponential {
