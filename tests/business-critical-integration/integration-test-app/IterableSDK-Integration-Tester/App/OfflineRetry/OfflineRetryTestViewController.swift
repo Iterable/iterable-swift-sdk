@@ -9,7 +9,7 @@ final class OfflineRetryTestViewController: UIViewController {
     private var notificationObservers: [NSObjectProtocol] = []
     private var jwtExpiry: JwtExpiry = .thirtySec
     private let logStore = LogStore.shared
-    private var lastAuthTokenStateRaw: Int = 0 // 0=unknown, 1=valid, 2=invalid
+    private var lastAuthTokenState: AuthTokenValidityState = .unknown
 
     // MARK: - UI Components
 
@@ -720,9 +720,8 @@ final class OfflineRetryTestViewController: UIViewController {
         let remaining = JwtHelper.remainingLabel(token: token)
 
         // Use cached auth token state from SDK notification
-        // 0=unknown, 1=valid, 2=invalid
-        switch lastAuthTokenStateRaw {
-        case 1: // valid
+        switch lastAuthTokenState {
+        case .valid:
             if remaining == "Expired" || remaining == "No Token" {
                 authStatusLabel.text = remaining
                 authStatusLabel.textColor = .systemRed
@@ -730,10 +729,10 @@ final class OfflineRetryTestViewController: UIViewController {
                 authStatusLabel.text = "Valid (\(remaining))"
                 authStatusLabel.textColor = .systemGreen
             }
-        case 2: // invalid
+        case .invalid:
             authStatusLabel.text = "Invalid (\(remaining))"
             authStatusLabel.textColor = .systemRed
-        default: // unknown
+        case .unknown:
             if remaining == "Expired" || remaining == "No Token" {
                 authStatusLabel.text = remaining
                 authStatusLabel.textColor = .systemRed
@@ -772,12 +771,13 @@ final class OfflineRetryTestViewController: UIViewController {
 
         // Track auth token state changes from the SDK
         let authStateObserver = NotificationCenter.default.addObserver(
-            forName: Notification.Name(rawValue: "itbl_auth_token_state_changed"),
+            forName: .iterableAuthTokenStateChanged,
             object: nil,
             queue: .main
         ) { [weak self] notification in
-            if let rawState = notification.userInfo?["state"] as? Int {
-                self?.lastAuthTokenStateRaw = rawState
+            if let rawState = notification.userInfo?["state"] as? Int,
+               let state = AuthTokenValidityState(rawValue: rawState) {
+                self?.lastAuthTokenState = state
                 self?.updateAuthStatus()
             }
         }

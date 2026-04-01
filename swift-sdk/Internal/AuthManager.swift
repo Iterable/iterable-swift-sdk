@@ -97,15 +97,7 @@ class AuthManager: IterableAuthManagerProtocol {
             localStorage.unknownUserUpdate = nil
         }
 
-        let oldState = lastAuthTokenState
         lastAuthTokenState = .unknown
-        if lastAuthTokenState != oldState {
-            NotificationCenter.default.post(
-                name: .iterableAuthTokenStateChanged,
-                object: nil,
-                userInfo: ["state": lastAuthTokenState.rawValue]
-            )
-        }
     }
 
     // MARK: - Private/Internal
@@ -118,7 +110,16 @@ class AuthManager: IterableAuthManagerProtocol {
     
     private var authRetryPolicy: RetryPolicy
     private var retryCount: Int = 0
-    private var lastAuthTokenState: AuthTokenValidityState = .unknown
+    private var lastAuthTokenState: AuthTokenValidityState = .unknown {
+        didSet {
+            guard lastAuthTokenState != oldValue else { return }
+            NotificationCenter.default.post(
+                name: .iterableAuthTokenStateChanged,
+                object: nil,
+                userInfo: ["state": lastAuthTokenState.rawValue]
+            )
+        }
+    }
     private var pauseAuthRetry: Bool = false
     private var isTimerScheduled: Bool = false
     
@@ -136,10 +137,10 @@ class AuthManager: IterableAuthManagerProtocol {
     }
     
     func setIsLastAuthTokenValid(_ isValid: Bool) {
-        let oldState = lastAuthTokenState
         if isValid {
+            let wasNotValid = lastAuthTokenState != .valid
             lastAuthTokenState = .valid
-            if oldState != .valid {
+            if wasNotValid {
                 NotificationCenter.default.post(name: .iterableAuthTokenRefreshed, object: nil)
             }
         } else {
@@ -149,13 +150,6 @@ class AuthManager: IterableAuthManagerProtocol {
             if lastAuthTokenState == .valid {
                 lastAuthTokenState = .invalid
             }
-        }
-        if lastAuthTokenState != oldState {
-            NotificationCenter.default.post(
-                name: .iterableAuthTokenStateChanged,
-                object: nil,
-                userInfo: ["state": lastAuthTokenState.rawValue]
-            )
         }
     }
 
@@ -198,11 +192,6 @@ class AuthManager: IterableAuthManagerProtocol {
             // When state is .valid (normal scheduled refresh), keep it .valid.
             if lastAuthTokenState == .invalid {
                 lastAuthTokenState = .unknown
-                NotificationCenter.default.post(
-                    name: .iterableAuthTokenStateChanged,
-                    object: nil,
-                    userInfo: ["state": lastAuthTokenState.rawValue]
-                )
             }
             let isRefreshQueued = queueAuthTokenExpirationRefresh(retrievedAuthToken, onSuccess: onSuccess)
             if !isRefreshQueued {
