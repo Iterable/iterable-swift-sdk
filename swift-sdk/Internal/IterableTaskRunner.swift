@@ -424,13 +424,13 @@ class IterableTaskRunner: NSObject {
     private let dateProvider: DateProviderProtocol
     private let connectivityManager: NetworkConnectivityManager
     private var running = false
+    private(set) var autoRetry: Bool
+
     func setAutoRetry(_ value: Bool) {
         persistenceContext.perform { [weak self] in
             self?.autoRetry = value
         }
     }
-
-    private(set) var autoRetry: Bool
 
     private let persistenceContext: IterablePersistenceContext
 }
