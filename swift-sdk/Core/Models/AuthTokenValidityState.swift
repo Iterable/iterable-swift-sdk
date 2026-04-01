@@ -4,7 +4,7 @@
 
 import Foundation
 
-@objc public enum AuthTokenValidityState: Int {
+@objc enum AuthTokenValidityState: Int {
     case unknown = 0
     case valid = 1
     case invalid = 2
