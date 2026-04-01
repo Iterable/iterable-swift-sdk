@@ -39,6 +39,7 @@ class DeepLinkingIntegrationTests: IntegrationTestBase {
     // MARK: - Browser Link Tests
     
     func testABrowserLinksOpenSafari() throws {
+        try XCTSkipIf(isRunningInCI, "Universal Link tests require AASA and real Safari — skipped on CI")
         print("🧪 Testing non-app links open in Safari (not app)")
         print("🎯 Links with /u/ pattern or non-AASA paths should open Safari")
         
@@ -72,7 +73,8 @@ class DeepLinkingIntegrationTests: IntegrationTestBase {
     
     // MARK: - External Source Tests
     
-    func testBDeepLinkFromRemindersApp() {
+    func testBDeepLinkFromRemindersApp() throws {
+        try XCTSkipIf(isRunningInCI, "Universal Link tests require AASA and real Safari — skipped on CI")
         print("🧪 Testing deep link from Reminders app with Jena's test link")
         
         // Jena's test URL - wrapped link that should unwrap to https://tsetester.com/update/hi
@@ -186,7 +188,8 @@ class DeepLinkingIntegrationTests: IntegrationTestBase {
         print("✅ Validated: IterableCustomActionDelegate invoked and handled custom action")
     }
     
-    func testDSingleRedirectPolicy() {
+    func testDSingleRedirectPolicy() throws {
+        try XCTSkipIf(isRunningInCI, "Universal Link tests require AASA and real Safari — skipped on CI")
         print("🧪 Testing SDK follows exactly one redirect (GreenFi bug fix validation)")
         print("🎯 This test validates that SDK stops at first redirect, not following multiple hops")
         print("📚 HOW IT WORKS: SDK's RedirectNetworkSession.willPerformHTTPRedirection returns nil")
