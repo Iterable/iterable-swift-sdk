@@ -28,7 +28,7 @@ struct OfflineRequestProcessor: RequestProcessorProtocol {
     
     var autoRetry: Bool {
         get { taskRunner.autoRetry }
-        set { taskRunner.autoRetry = newValue }
+        set { taskRunner.setAutoRetry(newValue) }
     }
 
     func start() {
