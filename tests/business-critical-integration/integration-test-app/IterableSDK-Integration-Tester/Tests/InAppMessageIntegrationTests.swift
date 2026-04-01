@@ -159,6 +159,14 @@ class InAppMessageIntegrationTests: IntegrationTestBase {
             app.alerts["Success"].buttons["OK"].tap()
         }
         
+        // Wait for Iterable backend to process the campaign trigger before fetching messages.
+        // CI environments have higher latency between triggering a campaign and the message
+        // being available via getMessages API.
+        if isRunningInCI {
+            print("⏳ [CI] Waiting for backend to process campaign trigger...")
+            sleep(5)
+        }
+        
         // Tap "Check for Messages" to fetch and show the in-app
         XCTAssertTrue(checkMessagesButton.waitForExistence(timeout: standardTimeout), "Check for Messages button should exist")
         checkMessagesButton.tap()
@@ -299,8 +307,24 @@ class InAppMessageIntegrationTests: IntegrationTestBase {
         XCTAssertEqual(inAppEnabledValue.label, "✓ Enabled", "In-app messages should be enabled")
         //screenshotCapture.captureScreenshot(named: "03-inapp-reenabled")
         
-        // Explicitly re-check for messages after re-enabling; on CI the scheduleSync()
-        // triggered by the toggle alone can be too slow vs the 30s timeout.
+        // Trigger a fresh campaign now that in-app is re-enabled.
+        // The previous campaign triggered while disabled was likely discarded by the SDK.
+        if app.buttons["trigger-in-app-button"].waitForExistence(timeout: standardTimeout) {
+            app.buttons["trigger-in-app-button"].tap()
+        }
+        
+        // Handle success alert
+        if app.alerts["Success"].waitForExistence(timeout: standardTimeout) {
+            app.alerts["Success"].buttons["OK"].tap()
+        }
+        
+        // Wait for backend to process the campaign trigger (CI needs more time)
+        if isRunningInCI {
+            print("⏳ [CI] Waiting for backend to process campaign trigger...")
+            sleep(5)
+        }
+        
+        // Check for messages
         checkMessagesButton.tap()
         
         // Verify message now appears — retry loop mirrors the pattern used earlier
