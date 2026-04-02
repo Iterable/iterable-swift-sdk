@@ -9,6 +9,7 @@ final class OfflineRetryTestViewController: UIViewController {
     private var notificationObservers: [NSObjectProtocol] = []
     private var jwtExpiry: JwtExpiry = .thirtySec
     private let logStore = LogStore.shared
+    private var lastAuthTokenState: AuthTokenValidityState = .unknown
 
     // MARK: - UI Components
 
@@ -718,9 +719,8 @@ final class OfflineRetryTestViewController: UIViewController {
         }
         let remaining = JwtHelper.remainingLabel(token: token)
 
-        // Use SDK's auth validity state instead of just JWT expiry
-        let sdkState = IterableAPI.lastAuthTokenState
-        switch sdkState {
+        // Use cached auth token state from SDK notification
+        switch lastAuthTokenState {
         case .valid:
             if remaining == "Expired" || remaining == "No Token" {
                 authStatusLabel.text = remaining
@@ -740,9 +740,6 @@ final class OfflineRetryTestViewController: UIViewController {
                 authStatusLabel.text = "Unknown (\(remaining))"
                 authStatusLabel.textColor = .systemOrange
             }
-        @unknown default:
-            authStatusLabel.text = remaining
-            authStatusLabel.textColor = .systemGray
         }
     }
 
@@ -771,6 +768,20 @@ final class OfflineRetryTestViewController: UIViewController {
             }
             notificationObservers.append(observer)
         }
+
+        // Track auth token state changes from the SDK
+        let authStateObserver = NotificationCenter.default.addObserver(
+            forName: .iterableAuthTokenStateChanged,
+            object: nil,
+            queue: .main
+        ) { [weak self] notification in
+            if let rawState = notification.userInfo?["state"] as? Int,
+               let state = AuthTokenValidityState(rawValue: rawState) {
+                self?.lastAuthTokenState = state
+                self?.updateAuthStatus()
+            }
+        }
+        notificationObservers.append(authStateObserver)
 
         // Listen for ANY new log entry added to the shared store
         let logObserver = NotificationCenter.default.addObserver(

@@ -14,6 +14,5 @@ import Foundation
     func handleAuthFailure(failedAuthToken: String?, reason: AuthFailureReason)
     func pauseAuthRetries(_ pauseAuthRetry: Bool)
     func setIsLastAuthTokenValid(_ isValid: Bool)
-    func getLastAuthTokenState() -> AuthTokenValidityState
     func getNextRetryInterval() -> Double
 }

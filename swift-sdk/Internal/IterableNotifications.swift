@@ -20,6 +20,7 @@ extension Notification.Name {
     static let iterableNetworkOffline = Notification.Name(rawValue: "itbl_network_offline")
     static let iterableNetworkOnline = Notification.Name(rawValue: "itbl_network_online")
     static let iterableAuthTokenRefreshed = Notification.Name(rawValue: "itbl_auth_token_refreshed")
+    static let iterableAuthTokenStateChanged = Notification.Name(rawValue: "itbl_auth_token_state_changed")
 }
 
 struct TaskSendRequestValue {

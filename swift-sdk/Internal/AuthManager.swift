@@ -99,7 +99,7 @@ class AuthManager: IterableAuthManagerProtocol {
 
         lastAuthTokenState = .unknown
     }
-    
+
     // MARK: - Private/Internal
     
     private var authToken: String?
@@ -110,7 +110,16 @@ class AuthManager: IterableAuthManagerProtocol {
     
     private var authRetryPolicy: RetryPolicy
     private var retryCount: Int = 0
-    private var lastAuthTokenState: AuthTokenValidityState = .unknown
+    private var lastAuthTokenState: AuthTokenValidityState = .unknown {
+        didSet {
+            guard lastAuthTokenState != oldValue else { return }
+            NotificationCenter.default.post(
+                name: .iterableAuthTokenStateChanged,
+                object: nil,
+                userInfo: ["state": lastAuthTokenState.rawValue]
+            )
+        }
+    }
     private var pauseAuthRetry: Bool = false
     private var isTimerScheduled: Bool = false
     
@@ -144,10 +153,6 @@ class AuthManager: IterableAuthManagerProtocol {
         }
     }
 
-    func getLastAuthTokenState() -> AuthTokenValidityState {
-        return lastAuthTokenState
-    }
-    
     func getNextRetryInterval() -> Double {
         var nextRetryInterval = Double(authRetryPolicy.retryInterval)
         if authRetryPolicy.retryBackoff == .exponential {

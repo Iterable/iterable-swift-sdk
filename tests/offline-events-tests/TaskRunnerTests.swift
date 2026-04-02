@@ -1286,6 +1286,51 @@ class TaskRunnerTests: XCTestCase {
         taskRunner.stop()
     }
 
+    func testSetAutoRetryEnablesRetryBehaviorMidRun() throws {
+        let jwtErrorData = ["code": "InvalidJwtPayload"].toJsonData()
+        let networkSession = MockNetworkSession(statusCode: 401, data: jwtErrorData)
+
+        let notificationCenter = MockNotificationCenter()
+        let retryExpectation = expectation(description: "retry notification received")
+
+        let reference = notificationCenter.addCallback(forNotification: .iterableTaskFinishedWithRetry) { _ in
+            retryExpectation.fulfill()
+        }
+        XCTAssertNotNil(reference)
+
+        let healthMonitor = HealthMonitor(dataProvider: HealthMonitorDataProvider(maxTasks: 1000,
+                                                                                  persistenceContextProvider: persistenceContextProvider),
+                                          dateProvider: SystemDateProvider(),
+                                          networkSession: networkSession)
+        let taskRunner = IterableTaskRunner(networkSession: networkSession,
+                                            persistenceContextProvider: persistenceContextProvider,
+                                            healthMonitor: healthMonitor,
+                                            notificationCenter: notificationCenter,
+                                            timeInterval: 0.5,
+                                            autoRetry: false)
+        taskRunner.start()
+
+        // Flip autoRetry on at runtime via the thread-safe setter
+        taskRunner.setAutoRetry(true)
+
+        // Give the persistence context time to process the setter
+        let settleExpectation = expectation(description: "settle")
+        settleExpectation.isInverted = true
+        wait(for: [settleExpectation], timeout: 0.5)
+
+        let scheduler = IterableTaskScheduler(persistenceContextProvider: persistenceContextProvider,
+                                              notificationCenter: notificationCenter,
+                                              healthMonitor: healthMonitor)
+        let _ = try scheduleSampleTask(scheduler: scheduler)
+
+        wait(for: [retryExpectation], timeout: 5.0)
+
+        // Task should be retained (autoRetry behavior), not deleted
+        XCTAssertEqual(try persistenceContextProvider.mainQueueContext().findAllTasks().count, 1)
+
+        taskRunner.stop()
+    }
+
     func testCreatedAtInBody() throws {
         let date = Date()
         let createdAtTime = Int(date.timeIntervalSince1970)
