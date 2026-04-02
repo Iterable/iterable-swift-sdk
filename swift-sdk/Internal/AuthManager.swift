@@ -41,15 +41,8 @@ class AuthManager: IterableAuthManagerProtocol {
                              onSuccess: AuthTokenRetrievalHandler? = nil,
                              shouldIgnoreRetryPolicy: Bool) {
         ITBInfo()
-
-        if shouldPauseRetry(shouldIgnoreRetryPolicy) {
-            // Auth retries exhausted or paused — notify caller so upstream
-            // Pending/Fulfill chains are not left unresolved.
-            onSuccess?(nil)
-            return
-        }
-
-        if pendingAuth || hasFailedAuth(hasFailedPriorAuth) {
+        
+        if shouldPauseRetry(shouldIgnoreRetryPolicy) || pendingAuth || hasFailedAuth(hasFailedPriorAuth) {
             return
         }
         
@@ -255,10 +248,7 @@ class AuthManager: IterableAuthManagerProtocol {
         }
         
         if shouldSkipTokenRefresh(isScheduledRefresh: isScheduledRefresh) {
-            // Auth retries paused or timer already scheduled — invoke the
-            // callback with nil so callers (e.g. RequestProcessorUtil) can
-            // resolve their Pending/Fulfill instead of hanging indefinitely.
-            successCallback?(nil)
+            // we only stop schedule token refresh if it is called from retry (in case of failure). The normal auth token refresh schedule would work
             return
         }
         

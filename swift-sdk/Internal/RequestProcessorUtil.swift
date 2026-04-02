@@ -25,15 +25,8 @@ struct RequestProcessorUtil {
                     authManager?.setIsLastAuthTokenValid(false)
                     let retryInterval = authManager?.getNextRetryInterval() ?? 1
                     DispatchQueue.main.async {
-                        authManager?.scheduleAuthTokenRefreshTimer(interval: retryInterval, isScheduledRefresh: false, successCallback: { token in
-                            if token != nil {
-                                attemptSend()
-                            } else {
-                                // Auth retries exhausted — resolve the Fulfill so
-                                // upstream callers (e.g. initialize callback) are
-                                // not left waiting indefinitely.
-                                reportFailure(result: result, error: error, failureHandler: onFailure, identifier: identifier)
-                            }
+                        authManager?.scheduleAuthTokenRefreshTimer(interval: retryInterval, isScheduledRefresh: false, successCallback: { _ in
+                            attemptSend()
                         })
                     }
                 } else if error.httpStatusCode == 401, error.iterableCode == JsonValue.Code.badApiKey {
