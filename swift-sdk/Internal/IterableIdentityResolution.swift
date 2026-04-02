@@ -9,10 +9,10 @@
 import Foundation
 @objc public class IterableIdentityResolution: NSObject {
 
-    /// userId or email of the signed-in user
+    /// When true, replays locally saved visitor data to the known user profile on identification.
     public var replayOnVisitorToKnown: Bool?
 
-    /// the authToken which caused the failure
+    /// When true, merges the unknown user profile with the known user profile on identification.
     public let mergeOnUnknownUserToKnown: Bool?
 
     public init(replayOnVisitorToKnown: Bool?,
