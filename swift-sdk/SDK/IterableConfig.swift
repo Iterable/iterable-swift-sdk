@@ -182,7 +182,7 @@ public class IterableConfig: NSObject {
     public var dataRegion: String = IterableDataRegion.US
     
     /// When set to `true`, IterableSDK will track all events when users are not logged into the application.
-    public var enableUnknownUserActivation = true
+    public var enableUnknownUserActivation = false
     
     /// Enables fetching of unknown user criteria on foreground when set to `true`
     /// By default, the SDK will fetch unknown user criteria on foreground.
