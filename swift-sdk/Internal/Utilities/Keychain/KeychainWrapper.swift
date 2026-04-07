@@ -49,18 +49,27 @@ class KeychainWrapper {
     }
     
     func data(forKey key: String) -> Data? {
+        guard !key.isEmpty else { return nil }
+
         var keychainQueryDictionary = setupKeychainQueryDictionary(forKey: key)
-        
+
         // Limit search results to one
         keychainQueryDictionary[SecMatchLimit] = SecMatchLimitOne
-        
+
         // Specify we want Data/CFData returned
         keychainQueryDictionary[SecReturnData] = CFBooleanTrue
-        
+
         // Search
         var result: AnyObject?
-        let status = SecItemCopyMatching(keychainQueryDictionary as CFDictionary, &result)
-        
+        let status: OSStatus
+        do {
+            status = SecItemCopyMatching(keychainQueryDictionary as CFDictionary, &result)
+        }
+
+        guard status == noErr || status == errSecItemNotFound else {
+            return nil
+        }
+
         return status == noErr ? result as? Data : nil
     }
     
