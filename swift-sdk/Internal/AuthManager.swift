@@ -293,8 +293,8 @@ class AuthManager: IterableAuthManagerProtocol {
     }
 
     private func clearPendingCallbacks() {
-        callbackQueue.async { [weak self] in
-            self?.pendingSuccessCallbacks.removeAll()
+        callbackQueue.sync {
+            pendingSuccessCallbacks.removeAll()
         }
     }
     
