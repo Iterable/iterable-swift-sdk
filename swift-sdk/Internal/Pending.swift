@@ -24,49 +24,72 @@ extension IterableError: LocalizedError {
 public class Pending<Value, Failure> where Failure: Error {
     fileprivate var successCallbacks = [(Value) -> Void]()
     fileprivate var errorCallbacks = [(Failure) -> Void]()
-    
+    private let lock = NSLock()
+
     public func onCompletion(receiveValue: @escaping ((Value) -> Void), receiveError: ( (Failure) -> Void)? = nil) {
+        lock.lock()
         successCallbacks.append(receiveValue)
-        
+
         // if a successful result already exists (from constructor), report it
         if case let Result.success(value)? = result {
-            successCallbacks.forEach { $0(value) }
+            let callbacks = successCallbacks
+            lock.unlock()
+            callbacks.forEach { $0(value) }
+        } else {
+            lock.unlock()
         }
-        
+
         if let receiveError = receiveError {
+            lock.lock()
             errorCallbacks.append(receiveError)
-            
+
             // if a failed result already exists (from constructor), report it
             if case let Result.failure(error)? = result {
-                errorCallbacks.forEach { $0(error) }
+                let callbacks = errorCallbacks
+                lock.unlock()
+                callbacks.forEach { $0(error) }
+            } else {
+                lock.unlock()
             }
         }
     }
-    
+
     @discardableResult public func onSuccess(block: @escaping ((Value) -> Void)) -> Pending<Value, Failure> {
+        lock.lock()
         successCallbacks.append(block)
-        
+
         // if a successful result already exists (from constructor), report it
         if case let Result.success(value)? = result {
-            successCallbacks.forEach { $0(value) }
+            let callbacks = successCallbacks
+            lock.unlock()
+            callbacks.forEach { $0(value) }
+        } else {
+            lock.unlock()
         }
-        
+
         return self
     }
-    
+
     @discardableResult public func onError(block: @escaping ((Failure) -> Void)) -> Pending<Value, Failure> {
+        lock.lock()
         errorCallbacks.append(block)
-        
+
         // if a failed result already exists (from constructor), report it
         if case let Result.failure(error)? = result {
-            errorCallbacks.forEach { $0(error) }
+            let callbacks = errorCallbacks
+            lock.unlock()
+            callbacks.forEach { $0(error) }
+        } else {
+            lock.unlock()
         }
-        
+
         return self
     }
-    
+
     public func isResolved() -> Bool {
-        result != nil
+        lock.lock()
+        defer { lock.unlock() }
+        return result != nil
     }
     
     public func wait() {
@@ -85,14 +108,19 @@ public class Pending<Value, Failure> where Failure: Error {
         // Observe whenever a result is assigned, and report it
         didSet { result.map(report) }
     }
-    
+
     // Report success or error based on result
     private func report(result: Result<Value, Failure>) {
+        lock.lock()
+        let successCbs = successCallbacks
+        let errorCbs = errorCallbacks
+        lock.unlock()
+
         switch result {
         case let .success(value):
-            successCallbacks.forEach { $0(value) }
+            successCbs.forEach { $0(value) }
         case let .failure(error):
-            errorCallbacks.forEach { $0(error) }
+            errorCbs.forEach { $0(error) }
         }
     }
 }
