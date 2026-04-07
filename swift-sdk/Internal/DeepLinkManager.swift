@@ -94,7 +94,7 @@ class DeepLinkManager: NSObject {
             return false
         }
         
-        return regex.firstMatch(in: urlString, options: [], range: NSMakeRange(0, urlString.count)) != nil
+        return regex.firstMatch(in: urlString, options: [], range: NSMakeRange(0, (urlString as NSString).length)) != nil
     }
     
     private lazy var redirectUrlSession: NetworkSessionProtocol = {
