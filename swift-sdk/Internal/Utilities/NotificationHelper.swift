@@ -85,15 +85,13 @@ private extension IterablePushNotificationMetadata {
         guard isValidCampaignId(itblElement[Keys.campaignId.rawValue]) else {
             return nil
         }
-        
-        guard let templateId = itblElement[Keys.templateId.rawValue] as? NSNumber else {
-            return nil
-        }
-        
+
+        let templateId = itblElement[Keys.templateId.rawValue] as? NSNumber ?? NSNumber(value: 0)
+
         guard let messageId = itblElement[Keys.messageId.rawValue] as? String else {
             return nil
         }
-        
+
         let campaignId = itblElement[Keys.campaignId.rawValue] as? NSNumber ?? NSNumber(value: 0)
         
         return IterablePushNotificationMetadata(campaignId: campaignId,
