@@ -82,12 +82,22 @@ struct ActionRunner {
     private static func shouldOpenUrl(url: URL,
                                       from source: IterableActionSource,
                                       withAllowedProtocols allowedProtocols: [String]) -> Bool {
-        if let scheme = url.scheme,
-           scheme == "https" || allowedProtocols.contains(scheme) {
-            return true
-        } else {
+        guard let scheme = url.scheme else {
             return false
         }
+
+        // Allow https by default, plus any custom schemes (deeplinks) specified in allowedProtocols
+        if scheme == "https" || scheme == "http" || allowedProtocols.contains(scheme) {
+            return true
+        }
+
+        // Allow custom URL schemes (deeplinks) that are not standard web protocols
+        // This restores the previous behavior where deeplinks were handled correctly
+        if !scheme.isEmpty && scheme != "javascript" && scheme != "data" && scheme != "blob" {
+            return true
+        }
+
+        return false
     }
     
     private enum ActionType {
