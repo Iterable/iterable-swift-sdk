@@ -75,8 +75,8 @@ class NetworkConnectivityManager: NSObject {
 
     private func updateStatus() {
         ITBInfo()
-        connectivityChecker.checkConnectivity().onSuccess { connected in
-            self.online = connected
+        connectivityChecker.checkConnectivity().onSuccess { [weak self] connected in
+            self?.online = connected
         }
     }
     
