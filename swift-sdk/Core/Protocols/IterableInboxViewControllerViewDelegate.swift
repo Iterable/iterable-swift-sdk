@@ -3,6 +3,7 @@
 //
 
 import Foundation
+import UIKit
 
 /// Use this protocol to override the default inbox display behavior.
 /// Please note that almost properties are `optional` which means that you don't have to
@@ -54,4 +55,11 @@ import Foundation
     /// - parameter cell: The table view cell to render
     /// - parameter message: IterableInAppMessage
     @objc optional func renderAdditionalFields(forCell cell: IterableInboxCell, withMessage message: IterableInAppMessage)
+
+    /// Called when an inbox message is tapped/clicked by the user.
+    /// Use this to perform custom analytics, logging, or any side effects when a message is selected.
+    /// This is called before the message is displayed.
+    /// - parameter message: The IterableInAppMessage that was clicked
+    /// - parameter inboxViewController: The inbox view controller where the click occurred
+    @objc optional func didClickInboxMessage(_ message: IterableInAppMessage, inboxViewController: UIViewController)
 }

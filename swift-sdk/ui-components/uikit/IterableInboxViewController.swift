@@ -4,6 +4,19 @@
 
 import UIKit
 
+/// Delegate protocol for receiving inbox message interaction events.
+/// Implement this delegate to be notified when a user taps on an inbox message.
+@objc public protocol IterableInboxMessageClickDelegate: AnyObject {
+    /// Called when a user taps on an inbox message.
+    /// - Parameters:
+    ///   - viewController: The inbox view controller where the tap occurred
+    ///   - message: The in-app message that was tapped
+    ///   - indexPath: The index path of the tapped row
+    @objc func inboxViewController(_ viewController: IterableInboxViewController,
+                                   didSelectMessage message: IterableInAppMessage,
+                                   at indexPath: IndexPath)
+}
+
 @IBDesignable
 @objcMembers
 open class IterableInboxViewController: UITableViewController {
@@ -102,6 +115,10 @@ open class IterableInboxViewController: UITableViewController {
         }
     }
     
+    /// Set this delegate to be notified when a user taps on an inbox message.
+    /// The delegate method is called before the message is displayed.
+    public weak var messageClickDelegate: IterableInboxMessageClickDelegate?
+
     /// You can override these insertion/deletion animations for custom ones
     public var insertionAnimation = UITableView.RowAnimation.automatic
     public var deletionAnimation = UITableView.RowAnimation.automatic
@@ -222,9 +239,12 @@ open class IterableInboxViewController: UITableViewController {
         if isModal {
             tableView.deselectRow(at: indexPath, animated: true)
         }
-        
+
         let message = viewModel.message(atIndexPath: indexPath)
-        
+
+        // Notify delegates that the user clicked an inbox message
+        messageClickDelegate?.inboxViewController(self, didSelectMessage: message.iterableMessage, at: indexPath)
+
         if let viewController = viewModel.createInboxMessageViewController(for: message, isModal: isModal) {
             viewModel.showingMessage(message, isModal: isModal)
             
