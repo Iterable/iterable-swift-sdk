@@ -132,6 +132,22 @@ swift-sdk/
 - **Models**: `swift-sdk/Core/Models/` (all data structures - CommerceItem, IterableInAppMessage, etc.)
 - **Main Entry**: `swift-sdk/SDK/IterableAPI.swift` (public-facing methods), `swift-sdk/Internal/InternalIterableAPI.swift` (core implementation) — note: public API surface lives in `IterableAPI.swift`, implementation details in `ApiClient.swift`
 - **Request Handling**: `swift-sdk/Internal/api-client/Request/` (online/offline processors)
+- **In-App Messaging**: `swift-sdk/Internal/in-app/InAppManager.swift` (coordinator), `InAppDisplayer.swift` (presenter), `InAppPresenter.swift` (timing), `InAppFetcher` in `InAppInternal.swift`
+- **Inbox UI**: `swift-sdk/ui-components/uikit/IterableInboxViewController.swift`, `InboxViewControllerViewModel.swift`
+- **Network Monitor**: `swift-sdk/Internal/Network/NetworkMonitor.swift` (NWPathMonitor wrapper)
+- **CoreData**: `swift-sdk/Internal/IterableCoreDataPersistence.swift` (PersistentContainer, contexts)
+- **Dependency Injection**: `swift-sdk/Internal/Utilities/DependencyContainerProtocol.swift` (factory protocol), `DependencyContainer.swift` (production impl)
+- **Notification Extension**: `notification-extension/ITBNotificationServiceExtension.swift` (rich push)
+- **Config**: `swift-sdk/SDK/IterableConfig.swift` (all configuration properties)
+
+### Request Pipeline
+Requests flow: `IterableAPI` (static) -> `InternalIterableAPI` -> `RequestHandler` -> `OnlineRequestProcessor` or `OfflineRequestProcessor` -> `ApiClient` -> `RequestCreator` -> `NetworkHelper`
+
+### Threading
+- InAppManager uses 4 serial queues: UpdateQueue, ScheduleQueue, CallbackQueue, SyncQueue
+- CoreData background contexts are created via PersistentContainer.newBackgroundContext()
+- NWPathMonitor runs on its own DispatchQueue
+- Public API calls are expected on the main thread
 
 ### 🛠️ Common Task Recipes
 
