@@ -24,68 +24,81 @@ extension IterableError: LocalizedError {
 public class Pending<Value, Failure> where Failure: Error {
     fileprivate var successCallbacks = [(Value) -> Void]()
     fileprivate var errorCallbacks = [(Failure) -> Void]()
-    
+    fileprivate let lock = NSRecursiveLock()
+
     public func onCompletion(receiveValue: @escaping ((Value) -> Void), receiveError: ( (Failure) -> Void)? = nil) {
+        lock.lock()
+        defer { lock.unlock() }
+
         successCallbacks.append(receiveValue)
-        
+
         // if a successful result already exists (from constructor), report it
         if case let Result.success(value)? = result {
             successCallbacks.forEach { $0(value) }
         }
-        
+
         if let receiveError = receiveError {
             errorCallbacks.append(receiveError)
-            
+
             // if a failed result already exists (from constructor), report it
             if case let Result.failure(error)? = result {
                 errorCallbacks.forEach { $0(error) }
             }
         }
     }
-    
+
     @discardableResult public func onSuccess(block: @escaping ((Value) -> Void)) -> Pending<Value, Failure> {
+        lock.lock()
+        defer { lock.unlock() }
+
         successCallbacks.append(block)
-        
+
         // if a successful result already exists (from constructor), report it
         if case let Result.success(value)? = result {
             successCallbacks.forEach { $0(value) }
         }
-        
+
         return self
     }
-    
+
     @discardableResult public func onError(block: @escaping ((Failure) -> Void)) -> Pending<Value, Failure> {
+        lock.lock()
+        defer { lock.unlock() }
+
         errorCallbacks.append(block)
-        
+
         // if a failed result already exists (from constructor), report it
         if case let Result.failure(error)? = result {
             errorCallbacks.forEach { $0(error) }
         }
-        
+
         return self
     }
-    
+
     public func isResolved() -> Bool {
-        result != nil
+        lock.lock()
+        defer { lock.unlock() }
+
+        return result != nil
     }
-    
+
     public func wait() {
         ITBDebug()
         guard !isResolved() else {
             ITBDebug("isResolved")
             return
         }
-        
+
         ITBDebug("waiting....")
         Thread.sleep(forTimeInterval: 0.1)
         wait()
     }
-    
+
     fileprivate var result: Result<Value, Failure>? {
         // Observe whenever a result is assigned, and report it
         didSet { result.map(report) }
     }
-    
+
     // Report success or error based on result
     private func report(result: Result<Value, Failure>) {
         switch result {
@@ -216,10 +229,16 @@ public class Fulfill<Value, Failure>: Pending<Value, Failure> where Failure: Err
     }
     
     public func resolve(with value: Value) {
+        lock.lock()
+        defer { lock.unlock() }
+
         result = .success(value)
     }
-    
+
     public func reject(with error: Failure) {
+        lock.lock()
+        defer { lock.unlock() }
+
         result = .failure(error)
     }
 }
