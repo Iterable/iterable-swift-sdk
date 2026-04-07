@@ -42,17 +42,31 @@ extension WKWebView: WebViewProtocol {
     
     func calculateHeight() -> Pending<CGFloat, IterableError> {
         let fulfill = Fulfill<CGFloat, IterableError>()
-        
-        evaluateJavaScript("document.body.offsetHeight", completionHandler: { height, _ in
-            guard let floatHeight = height as? CGFloat, floatHeight >= 20 else {
+
+        // First measurement
+        evaluateJavaScript("document.body.offsetHeight", completionHandler: { [weak self] firstHeight, _ in
+            guard let floatHeight = firstHeight as? CGFloat, floatHeight >= 20 else {
                 ITBError("unable to get height")
                 fulfill.reject(with: IterableError.general(description: "unable to get height"))
                 return
             }
-            
-            fulfill.resolve(with: floatHeight)
+
+            // Wait briefly for the DOM to stabilize, then re-measure.
+            // This prevents the auto-dismiss freeze that occurs when the initial height
+            // measurement is taken before the DOM has fully laid out, leading to incorrect
+            // positioning and an unresponsive dismiss gesture.
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                self?.evaluateJavaScript("document.body.offsetHeight", completionHandler: { secondHeight, _ in
+                    if let stableHeight = secondHeight as? CGFloat, stableHeight >= 20 {
+                        fulfill.resolve(with: stableHeight)
+                    } else {
+                        // Fall back to first measurement if second fails
+                        fulfill.resolve(with: floatHeight)
+                    }
+                })
+            }
         })
-        
+
         return fulfill
     }
 }
