@@ -1,5 +1,13 @@
 //
+//  DependencyContainerProtocol.swift
 //  Copyright © 2023 Iterable. All rights reserved.
+//
+//  This file is included in the Xcode project, CocoaPods podspec (via the
+//  swift-sdk/**/*.swift glob), and Swift Package Manager (via the swift-sdk path target).
+//  If you encounter a "missing file" build error, verify that:
+//  1. The file exists at swift-sdk/Internal/Utilities/DependencyContainerProtocol.swift
+//  2. It is referenced in swift-sdk.xcodeproj/project.pbxproj
+//  3. Your CocoaPods cache is up to date (run `pod cache clean --all && pod install`)
 //
 
 import Foundation
