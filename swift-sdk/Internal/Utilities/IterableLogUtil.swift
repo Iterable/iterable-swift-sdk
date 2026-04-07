@@ -49,9 +49,13 @@ struct IterableLogUtil {
         }
     }
     
-    private static func formatDate(date: Date) -> String {
+    private static let dateFormatter: DateFormatter = {
         let formatter = DateFormatter()
         formatter.dateFormat = "HH:mm:ss.SSSS"
-        return formatter.string(from: date)
+        return formatter
+    }()
+
+    private static func formatDate(date: Date) -> String {
+        return dateFormatter.string(from: date)
     }
 }
