@@ -124,7 +124,7 @@ class AuthManager: IterableAuthManagerProtocol {
     private var isTimerScheduled: Bool = false
     
     private var pendingSuccessCallbacks: [AuthTokenRetrievalHandler] = []
-    private let callbackQueue = DispatchQueue(label: "com.iterable.authCallbackQueue")
+    private let callbackQueue = DispatchQueue(label: "com.iterable.authCallbackQueue", qos: .userInitiated)
     
     private weak var delegate: IterableAuthDelegate?
     private let expirationRefreshPeriod: TimeInterval
@@ -278,11 +278,11 @@ class AuthManager: IterableAuthManagerProtocol {
     
     private func addPendingCallback(_ callback: AuthTokenRetrievalHandler?) {
         guard let callback = callback else { return }
-        callbackQueue.sync {
-            pendingSuccessCallbacks.append(callback)
+        callbackQueue.async { [weak self] in
+            self?.pendingSuccessCallbacks.append(callback)
         }
     }
-    
+
     private func invokePendingCallbacks(with token: String?) {
         let callbacks = callbackQueue.sync { () -> [AuthTokenRetrievalHandler] in
             let current = pendingSuccessCallbacks
@@ -291,10 +291,10 @@ class AuthManager: IterableAuthManagerProtocol {
         }
         callbacks.forEach { $0(token) }
     }
-    
+
     private func clearPendingCallbacks() {
-        callbackQueue.sync {
-            pendingSuccessCallbacks.removeAll()
+        callbackQueue.async { [weak self] in
+            self?.pendingSuccessCallbacks.removeAll()
         }
     }
     
