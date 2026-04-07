@@ -49,7 +49,7 @@ extension DependencyContainerProtocol {
                      applicationStateProvider: applicationStateProvider,
                      notificationCenter: notificationCenter,
                      dateProvider: dateProvider,
-                     moveToForegroundSyncInterval: config.inAppDisplayInterval)
+                     moveToForegroundSyncInterval: config.inAppSyncInterval)
     }
     
     func createAuthManager(config: IterableConfig) -> IterableAuthManagerProtocol {

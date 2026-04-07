@@ -162,6 +162,12 @@ public class IterableConfig: NSObject {
     
     /// How many seconds to wait before showing the next in-app, if there are more than one present
     public var inAppDisplayInterval: Double = 30.0
+
+    /// The minimum interval (in seconds) between in-app message sync requests when the app
+    /// returns to the foreground. This prevents excessive network calls if the user rapidly
+    /// switches between apps. Set to 0 to sync on every foreground event.
+    /// Defaults to 60 seconds.
+    public var inAppSyncInterval: Double = 60.0
     
     /// the number of seconds before expiration of the current auth token to get a new auth token
     /// will only apply if token-based authentication is enabled, and the current auth token has
