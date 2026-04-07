@@ -5,6 +5,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 ## [Unreleased]
 
 ## [6.7.1]
+### Fixed
 - Fixed the `enableUnknownUserActivation` default value to `false`
 
 ## [6.7.0]
