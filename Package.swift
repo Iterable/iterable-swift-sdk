@@ -3,7 +3,7 @@
 import PackageDescription
 
 let package = Package(
-    name: "IterableSDK",
+    name: "iterable-swift-sdk",
     platforms: [.iOS(.v10)],
     products: [
         // The external product of our package is an importable
