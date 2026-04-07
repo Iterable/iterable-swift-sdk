@@ -703,6 +703,11 @@ import UIKit
     ///     - unsubscribedMessageTypeIds: List of message types to unsubscribe from
     ///
     /// - Remark: passing in an empty array will clear subscription list, passing in `nil` will not modify the list
+    ///
+    /// The `onSuccess` and `onFailure` callbacks are fully supported and will be invoked
+    /// when the subscription update request completes. These callbacks are passed through
+    /// the entire request pipeline (InternalIterableAPI -> RequestHandler -> OnlineRequestProcessor)
+    /// and will fire with the server response or error respectively.
     @objc(updateSubscriptions:unsubscribedChannelIds:unsubscribedMessageTypeIds:subscribedMessageTypeIds:campaignId:templateId:onSuccess:onFailure:)
     public static func updateSubscriptions(_ emailListIds: [NSNumber]?,
                                            unsubscribedChannelIds: [NSNumber]?,
