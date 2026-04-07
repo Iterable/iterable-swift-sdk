@@ -71,28 +71,30 @@ public protocol ITBNotificationServiceExtensionDelegate {
                 self?.attachmentRetrievalFinished = true
                 return
             }
-            
-            let attachmentId = UUID().uuidString + ITBNotificationServiceExtension.getAttachmentIdSuffix(response: response,
-                                                                                                         responseUrl: responseUrl)
+
+            var suffix = ITBNotificationServiceExtension.getAttachmentIdSuffix(response: response,
+                                                                                responseUrl: responseUrl)
+
+            // Ensure the suffix includes a file extension so iOS can infer the attachment type.
+            // Without a recognized extension, UNNotificationAttachment will fail to load the image.
+            if !suffix.contains(".") {
+                let mimeType = response.mimeType ?? ""
+                let extensionMap = ["image/jpeg": ".jpg", "image/png": ".png", "image/gif": ".gif"]
+                suffix += extensionMap[mimeType] ?? ".jpg"
+            }
+
+            let attachmentId = UUID().uuidString + suffix
             let tempFileUrl = FileManager.default.temporaryDirectory.appendingPathComponent(attachmentId)
-            
-            var attachment: UNNotificationAttachment?
-            
+
             do {
                 try FileManager.default.moveItem(at: location, to: tempFileUrl)
-                attachment = try UNNotificationAttachment(identifier: attachmentId, url: tempFileUrl, options: nil)
+                let attachment = try UNNotificationAttachment(identifier: attachmentId, url: tempFileUrl, options: nil)
+                strongSelf.bestAttemptContent?.attachments.append(attachment)
             } catch {
-                self?.attachmentRetrievalFinished = true
-                return
+                // Fall through to mark retrieval as finished even on failure
             }
-            
-            if let attachment = attachment, let content = strongSelf.bestAttemptContent, let handler = strongSelf.contentHandler {
-                content.attachments.append(attachment)
-                handler(content)
-            } else {
-                self?.attachmentRetrievalFinished = true
-                return
-            }
+
+            strongSelf.attachmentRetrievalFinished = true
         }
     }
     
