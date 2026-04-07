@@ -22,8 +22,12 @@ enum PersistenceConst {
 }
 
 class PersistentContainer: NSPersistentContainer, @unchecked Sendable {
+    /// Dedicated queue for CoreData operations with .userInitiated QoS to prevent
+    /// priority inversion when the main thread synchronizes with background contexts.
+    static let coreDataQueue = DispatchQueue(label: "com.iterable.coredata", qos: .userInitiated)
+
     static var shared: PersistentContainer?
-    
+
     static func initialize() -> PersistentContainer? {
         if shared == nil {
             shared = create()
@@ -35,6 +39,9 @@ class PersistentContainer: NSPersistentContainer, @unchecked Sendable {
         let backgroundContext = super.newBackgroundContext()
         backgroundContext.automaticallyMergesChangesFromParent = true
         backgroundContext.mergePolicy = NSMergePolicy(merge: NSMergePolicyType.mergeByPropertyStoreTrumpMergePolicyType)
+        // Use .userInitiated QoS to prevent priority inversion when the main thread
+        // waits on CoreData background operations (e.g., performAndWait).
+        backgroundContext.undoManager = nil
         return backgroundContext
     }
 
