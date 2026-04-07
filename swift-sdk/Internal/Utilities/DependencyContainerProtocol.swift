@@ -16,7 +16,7 @@ protocol DependencyContainerProtocol: RedirectNetworkSessionProvider {
     var notificationCenter: NotificationCenterProtocol { get }
     var apnsTypeChecker: APNSTypeCheckerProtocol { get }
     
-    func createInAppFetcher(apiClient: ApiClientProtocol, authManager: IterableAuthManagerProtocol?) -> InAppFetcherProtocol
+    func createInAppFetcher(apiClient: ApiClientProtocol, authManager: IterableAuthManagerProtocol?, authProvider: AuthProvider?) -> InAppFetcherProtocol
     func createPersistenceContextProvider() -> IterablePersistenceContextProvider?
     func createRequestHandler(apiKey: String,
                               config: IterableConfig,
@@ -34,10 +34,11 @@ extension DependencyContainerProtocol {
                             apiClient: ApiClientProtocol,
                             requestHandler: RequestHandlerProtocol,
                             deviceMetadata: DeviceMetadata,
-                            authManager: IterableAuthManagerProtocol?) -> IterableInternalInAppManagerProtocol {
+                            authManager: IterableAuthManagerProtocol?,
+                            authProvider: AuthProvider?) -> IterableInternalInAppManagerProtocol {
         InAppManager(requestHandler: requestHandler,
                      deviceMetadata: deviceMetadata,
-                     fetcher: createInAppFetcher(apiClient: apiClient, authManager: authManager),
+                     fetcher: createInAppFetcher(apiClient: apiClient, authManager: authManager, authProvider: authProvider),
                      displayer: inAppDisplayer,
                      persister: inAppPersister,
                      inAppDelegate: config.inAppDelegate,

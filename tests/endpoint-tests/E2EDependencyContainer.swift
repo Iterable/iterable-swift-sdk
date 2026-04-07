@@ -19,8 +19,8 @@ class E2EDependencyContainer: DependencyContainerProtocol {
     let notificationCenter: NotificationCenterProtocol
     let apnsTypeChecker: APNSTypeCheckerProtocol
 
-    func createInAppFetcher(apiClient: ApiClientProtocol, authManager: IterableAuthManagerProtocol?) -> InAppFetcherProtocol {
-        InAppFetcher(apiClient: apiClient, authManager: authManager)
+    func createInAppFetcher(apiClient: ApiClientProtocol, authManager: IterableAuthManagerProtocol?, authProvider: AuthProvider?) -> InAppFetcherProtocol {
+        InAppFetcher(apiClient: apiClient, authManager: authManager, authProvider: authProvider)
     }
     
     init(dateProvider: DateProviderProtocol = SystemDateProvider(),

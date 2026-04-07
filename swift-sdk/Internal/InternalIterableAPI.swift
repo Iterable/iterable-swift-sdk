@@ -88,7 +88,8 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
                                                     apiClient: self.apiClient,
                                                     requestHandler: self.requestHandler,
                                                     deviceMetadata: deviceMetadata,
-                                                    authManager: self.authManager)
+                                                    authManager: self.authManager,
+                                                    authProvider: self)
     }()
     
     lazy var authManager: IterableAuthManagerProtocol = {

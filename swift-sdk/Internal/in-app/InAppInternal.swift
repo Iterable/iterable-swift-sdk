@@ -26,34 +26,41 @@ struct IterableInAppMessageMetadata {
 }
 
 class InAppFetcher: InAppFetcherProtocol {
-    init(apiClient: ApiClientProtocol, authManager: IterableAuthManagerProtocol?) {
+    init(apiClient: ApiClientProtocol, authManager: IterableAuthManagerProtocol?, authProvider: AuthProvider?) {
         ITBInfo()
         self.apiClient = apiClient
         self.authManager = authManager
+        self.authProvider = authProvider
     }
-    
+
     deinit {
         ITBInfo()
     }
-    
+
     func fetch() -> Pending<[IterableInAppMessage], Error> {
         ITBInfo()
-        
+
         guard let apiClient = apiClient else {
             ITBError("Invalid state: expected ApiClient")
             return Fulfill(error: IterableError.general(description: "Invalid state: expected InternalApi"))
         }
-        
+
+        if let authProvider = authProvider, case .none = authProvider.auth.emailOrUserId {
+            ITBInfo("Skipping in-app message fetch — no user identity (email/userId) set")
+            return Fulfill<[IterableInAppMessage], Error>(value: [])
+        }
+
         return InAppHelper.getInAppMessagesFromServer(apiClient: apiClient,
                                                       authManager: authManager,
                                                       number: numMessages).mapFailure { $0 }
     }
-    
+
     // MARK: - Private/Internal
-    
+
     private weak var apiClient: ApiClientProtocol?
     private let authManager: IterableAuthManagerProtocol?
-    
+    private weak var authProvider: AuthProvider?
+
     private let numMessages = 100
 }
 

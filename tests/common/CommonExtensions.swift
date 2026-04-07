@@ -121,7 +121,7 @@ class MockDependencyContainer: DependencyContainerProtocol {
         ITBInfo()
     }
     
-    func createInAppFetcher(apiClient _: ApiClientProtocol, authManager _: IterableAuthManagerProtocol?) -> InAppFetcherProtocol {
+    func createInAppFetcher(apiClient _: ApiClientProtocol, authManager _: IterableAuthManagerProtocol?, authProvider _: AuthProvider?) -> InAppFetcherProtocol {
         inAppFetcher
     }
     
