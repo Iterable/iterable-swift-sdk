@@ -90,7 +90,7 @@ public struct IterableAPIMobileFrameworkInfo: Codable {
 /// The delegate for getting the authentication token
 @objc public protocol IterableAuthDelegate: AnyObject {
     @objc func onAuthTokenRequested(completion: @escaping AuthTokenRetrievalHandler)
-    @objc func onAuthFailure(_ authFailure: AuthFailure)
+    @objc optional func onAuthFailure(_ authFailure: AuthFailure)
 }
 
 /// The delegate for getting the UserId once unknown user session tracked
