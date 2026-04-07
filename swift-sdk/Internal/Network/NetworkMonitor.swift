@@ -32,9 +32,9 @@ class NetworkMonitor: NetworkMonitorProtocol {
     func start() {
         ITBInfo()
         let networkMonitor = NWPathMonitor()
-        networkMonitor.pathUpdateHandler = { path in
+        networkMonitor.pathUpdateHandler = { [weak self] path in
             ITBInfo("networkMonitor.pathUpdateHandler, path: \(path.debugDescription), status: \(path.status)")
-            self.statusUpdatedCallback?()
+            self?.statusUpdatedCallback?()
         }
 
         networkMonitor.start(queue: queue)
@@ -47,6 +47,6 @@ class NetworkMonitor: NetworkMonitorProtocol {
         networkMonitor = nil
     }
     
-    private weak var networkMonitor: NWPathMonitor?
+    private var networkMonitor: NWPathMonitor?
     private let queue = DispatchQueue(label: "NetworkMonitor")
 }
