@@ -241,7 +241,14 @@ class InAppManager: NSObject, IterableInternalInAppManagerProtocol {
     
     private func synchronize(appIsReady: Bool) -> Pending<Bool, Error> {
         ITBInfo()
-        
+
+        // Skip fetching in-app messages when no user identity (email or userId) is set.
+        // Making API calls without a user identity returns empty results and wastes bandwidth.
+        guard IterableAPI.email != nil || IterableAPI.userId != nil else {
+            ITBInfo("Skipping in-app sync: no email or userId set")
+            return Fulfill<Bool, Error>(value: true)
+        }
+
         return fetcher.fetch()
             .map { [weak self] in
                 self?.mergeMessages($0) ?? MergeMessagesResult(inboxChanged: false, messagesMap: [:], deliveredMessages: [])
