@@ -247,8 +247,8 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
 
     }
 
-    func logoutUser() {
-        logoutPreviousUser()
+    func logoutUser(withOnSuccess onSuccess: OnSuccessHandler? = nil, onFailure: OnFailureHandler? = nil) {
+        logoutPreviousUser(withOnSuccess: onSuccess, onFailure: onFailure)
     }
     
     func attemptAndProcessMerge(merge: Bool, replay: Bool, destinationUser: String?, isEmail: Bool, failureHandler: OnFailureHandler? = nil) {
@@ -844,13 +844,13 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
         IterableUtil.isNotNullOrEmpty(string: localStorage.userIdUnknownUser)
     }
     
-    private func logoutPreviousUser() {
+    private func logoutPreviousUser(withOnSuccess onSuccess: OnSuccessHandler? = nil, onFailure: OnFailureHandler? = nil) {
         ITBInfo()
-        
+
         guard isSDKInitialized() else { return }
-        
+
         if config.autoPushRegistration {
-            disableDeviceForCurrentUser()
+            disableDeviceForCurrentUser(withOnSuccess: onSuccess, onFailure: onFailure)
         }
         
         _email = nil
