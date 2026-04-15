@@ -4,6 +4,14 @@ final class MockAPIServer {
     static let shared = MockAPIServer()
 
     // MARK: - API Response Mode (controlled by JWT Auth Retry panel)
+    //
+    // Matches Android MockServer.ResponseMode + the UI-only CONN_ERROR:
+    // - .normal          → proxy to real Iterable API (see MockAPIServerURLProtocol)
+    // - .jwt401          → proxy to real Iterable API with Authorization swapped
+    //                      to an expired JWT; real backend returns real 401
+    // - .server500       → local synthesized 500 (can't force 500 from prod)
+    // - .connectionError → local synthesized connection error (iOS equivalent of
+    //                      Android's DEAD_PORT trick)
 
     enum APIResponseMode: String, CaseIterable {
         case normal = "Normal"
@@ -13,6 +21,10 @@ final class MockAPIServer {
     }
 
     var apiResponseMode: APIResponseMode = .normal
+
+    /// JWT signing secret used by MockAPIServerURLProtocol when forging the
+    /// expired token for `.jwt401`. Populated by AppDelegate during SDK re-init.
+    var jwtSecret: String?
 
     // MARK: - State
 
@@ -79,80 +91,30 @@ final class MockAPIServer {
         return true
     }
 
-    /// Returns a mock response for the given request, or nil to pass through.
-    /// Matches Android behavior: same response mode applies to ALL requests
-    /// (GET and POST) uniformly. Only getRemoteConfiguration is exempt.
+    /// Returns a locally-synthesized mock response for `.server500` / `.connectionError`.
+    /// For `.normal` / `.jwt401` the request is proxied to the real Iterable API by
+    /// MockAPIServerURLProtocol; this method returns nil in those cases.
     func mockResponse(for request: URLRequest) -> MockResponse? {
         guard isActive, let url = request.url else { return nil }
 
-        let path = url.path
-
-        // getRemoteConfiguration handled by ConfigOverrideURLProtocol
-        if path.contains("getRemoteConfiguration") {
-            return nil
-        }
-
-        // Non-Iterable requests pass through
+        if url.path.contains("getRemoteConfiguration") { return nil }
         guard url.host?.contains("iterable.com") == true else { return nil }
 
         requestCount += 1
 
-        let endpoint = path.split(separator: "/").last.map(String.init) ?? path
+        let endpoint = url.path.split(separator: "/").last.map(String.init) ?? url.path
 
-        // Same response mode for GET and POST — matches Android MockServer.serve()
         switch apiResponseMode {
-        case .normal:
-            return successResponse(for: path)
-
-        case .jwt401:
-            return jwt401Response(endpoint: endpoint)
-
+        case .normal, .jwt401:
+            return nil // handled by proxy
         case .server500:
             return server500Response(endpoint: endpoint)
-
         case .connectionError:
             return connectionErrorResponse()
         }
     }
 
-    // MARK: - Response Helpers (matching Android response bodies)
-
-    private func successResponse(for path: String) -> MockResponse {
-        // Return endpoint-specific valid JSON for Decodable types,
-        // generic success for everything else (matching Android).
-        let json: [String: Any]
-        if path.contains("embedded-messaging/messages") {
-            json = ["placements": []]
-        } else if path.contains("getMessages") {
-            json = ["inAppMessages": []]
-        } else {
-            json = ["msg": "Success", "code": "Success", "successCount": 1]
-        }
-        let data = (try? JSONSerialization.data(withJSONObject: json)) ?? Data()
-        let endpoint = path.split(separator: "/").last.map(String.init) ?? path
-        print("[MOCK SERVER] 200 \(endpoint)")
-        LogStore.shared.log("📤 \(endpoint) → 200 ✅")
-        return MockResponse(
-            statusCode: 200,
-            data: data,
-            headers: ["Content-Type": "application/json", "Connection": "close"]
-        )
-    }
-
-    private func jwt401Response(endpoint: String) -> MockResponse {
-        let json: [String: Any] = [
-            "code": "InvalidJwtPayload",
-            "msg": "JWT token is expired"
-        ]
-        let data = (try? JSONSerialization.data(withJSONObject: json)) ?? Data()
-        print("[MOCK SERVER] 401 \(endpoint)")
-        LogStore.shared.log("📤 \(endpoint) → 401 ❌")
-        return MockResponse(
-            statusCode: 401,
-            data: data,
-            headers: ["Content-Type": "application/json", "Connection": "close"]
-        )
-    }
+    // MARK: - Response Helpers
 
     private func server500Response(endpoint: String) -> MockResponse {
         let json: [String: Any] = [
@@ -161,7 +123,7 @@ final class MockAPIServer {
         ]
         let data = (try? JSONSerialization.data(withJSONObject: json)) ?? Data()
         print("[MOCK SERVER] 500 \(endpoint)")
-        LogStore.shared.log("📤 \(endpoint) → 500 ❌")
+        LogStore.shared.log("📤 \(endpoint) → 500 ❌ (mocked)")
         return MockResponse(
             statusCode: 500,
             data: data,
