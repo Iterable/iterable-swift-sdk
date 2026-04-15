@@ -283,8 +283,8 @@ The **JWT Auth Retry** screen (inside the integration tester app) exercises the 
 
 | Mode       | Destination                               | Notes                                                                          |
 |------------|-------------------------------------------|--------------------------------------------------------------------------------|
-| `Normal`   | Real `https://api.iterable.com`           | Proxied with the SDK's real JWT. Use this to validate retry against prod-shape responses. |
-| `401`      | Real `https://api.iterable.com`           | Proxied with the `Authorization` header swapped to an **expired** JWT. Real backend returns a real `401 InvalidJwtPayload`. |
+| `Normal`   | Real `https://api.iterable.com` (direct)  | URLProtocol opts out — the SDK talks to Iterable directly, no proxy. Use this to validate retry against prod-shape responses. |
+| `401`      | Real `https://api.iterable.com` (proxied) | Intercepted and re-issued with the `Authorization` header swapped to an **expired** JWT. Real backend returns a real `401 InvalidJwtPayload`. |
 | `500`      | Local synthesis inside `MockAPIServer`    | No real traffic — you can't force prod to 500.                                 |
 | `Conn Err` | Local synthesis inside `MockAPIServer`    | Emits `NSURLErrorNotConnectedToInternet`. Equivalent to Android's `DEAD_PORT` trick. |
 

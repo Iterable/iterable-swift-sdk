@@ -47,7 +47,7 @@ final class OfflineRetryTestViewController: UIViewController {
         let label = UILabel()
         label.font = .systemFont(ofSize: 10, weight: .regular)
         label.textColor = .systemGray
-        label.text = "→ real backend"
+        label.text = "→ real backend (direct)"
         return label
     }()
 
@@ -586,7 +586,7 @@ final class OfflineRetryTestViewController: UIViewController {
 
         let destination: String
         switch mode {
-        case .normal:          destination = "→ real backend"
+        case .normal:          destination = "→ real backend (direct)"
         case .jwt401:          destination = "→ real backend (expired JWT)"
         case .server500:       destination = "→ local mock"
         case .connectionError: destination = "→ local mock"
