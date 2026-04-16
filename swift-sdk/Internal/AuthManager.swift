@@ -43,6 +43,7 @@ class AuthManager: IterableAuthManagerProtocol {
         ITBInfo()
         
         if shouldPauseRetry(shouldIgnoreRetryPolicy) || pendingAuth || hasFailedAuth(hasFailedPriorAuth) {
+            onSuccess?(nil)
             return
         }
         
@@ -250,22 +251,27 @@ class AuthManager: IterableAuthManagerProtocol {
         }
         
         if shouldSkipTokenRefresh(isScheduledRefresh: isScheduledRefresh) {
-            // we only stop schedule token refresh if it is called from retry (in case of failure). The normal auth token refresh schedule would work
+            onRetryExhausted?()
             return
         }
         
-        // Add the initial callback to pending list
+        // Add the initial callbacks to pending lists
         addPendingCallback(successCallback)
+        addPendingExhaustionCallback(onRetryExhausted)
         
         expirationRefreshTimer = Timer.scheduledTimer(withTimeInterval: interval, repeats: false) { [weak self] _ in
             self?.isTimerScheduled = false
             if self?.localStorage.email != nil || self?.localStorage.userId != nil {
                 self?.requestNewAuthToken(hasFailedPriorAuth: false, onSuccess: { [weak self] token in
-                    self?.invokePendingCallbacks(with: token)
+                    if token != nil {
+                        self?.invokePendingCallbacks(with: token)
+                    } else {
+                        self?.invokePendingExhaustionCallbacks()
+                    }
                 }, shouldIgnoreRetryPolicy: isScheduledRefresh)
             } else {
                 ITBDebug("Email or userId is not available. Skipping token refresh")
-                self?.clearPendingCallbacks()
+                self?.invokePendingExhaustionCallbacks()
             }
         }
         
