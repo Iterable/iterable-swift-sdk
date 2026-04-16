@@ -124,6 +124,7 @@ class AuthManager: IterableAuthManagerProtocol {
     private var isTimerScheduled: Bool = false
     
     private var pendingSuccessCallbacks: [AuthTokenRetrievalHandler] = []
+    private var pendingExhaustionCallbacks: [() -> Void] = []
     private let callbackQueue = DispatchQueue(label: "com.iterable.authCallbackQueue")
     
     private weak var delegate: IterableAuthDelegate?
@@ -238,12 +239,13 @@ class AuthManager: IterableAuthManagerProtocol {
         return false
     }
     
-    func scheduleAuthTokenRefreshTimer(interval: TimeInterval, isScheduledRefresh: Bool = false, successCallback: AuthTokenRetrievalHandler? = nil) {
+    func scheduleAuthTokenRefreshTimer(interval: TimeInterval, isScheduledRefresh: Bool = false, successCallback: AuthTokenRetrievalHandler? = nil, onRetryExhausted: (() -> Void)? = nil) {
         ITBInfo()
         
         // If timer is already scheduled, queue the callback for later invocation
         if isTimerScheduled && !isScheduledRefresh {
             addPendingCallback(successCallback)
+            addPendingExhaustionCallback(onRetryExhausted)
             return
         }
         
@@ -287,14 +289,33 @@ class AuthManager: IterableAuthManagerProtocol {
         let callbacks = callbackQueue.sync { () -> [AuthTokenRetrievalHandler] in
             let current = pendingSuccessCallbacks
             pendingSuccessCallbacks.removeAll()
+            pendingExhaustionCallbacks.removeAll()
             return current
         }
         callbacks.forEach { $0(token) }
     }
     
+    private func addPendingExhaustionCallback(_ callback: (() -> Void)?) {
+        guard let callback = callback else { return }
+        callbackQueue.sync {
+            pendingExhaustionCallbacks.append(callback)
+        }
+    }
+    
+    private func invokePendingExhaustionCallbacks() {
+        let callbacks = callbackQueue.sync { () -> [() -> Void] in
+            let current = pendingExhaustionCallbacks
+            pendingExhaustionCallbacks.removeAll()
+            pendingSuccessCallbacks.removeAll()
+            return current
+        }
+        callbacks.forEach { $0() }
+    }
+    
     private func clearPendingCallbacks() {
         callbackQueue.sync {
             pendingSuccessCallbacks.removeAll()
+            pendingExhaustionCallbacks.removeAll()
         }
     }
     
