@@ -39,11 +39,14 @@ class MockAuthManager: IterableAuthManagerProtocol {
         }
     }
     
-    func scheduleAuthTokenRefreshTimer(interval: TimeInterval, isScheduledRefresh: Bool, successCallback: IterableSDK.AuthTokenRetrievalHandler?) {
+    func scheduleAuthTokenRefreshTimer(interval: TimeInterval, isScheduledRefresh: Bool, successCallback: IterableSDK.AuthTokenRetrievalHandler?, onRetryExhausted: (() -> Void)?) {
         requestNewAuthToken(hasFailedPriorAuth: false, onSuccess: { newToken in
-            guard let newToken else { return }
-            self.setNewToken(newToken)
-            successCallback?(newToken)
+            if let newToken {
+                self.setNewToken(newToken)
+                successCallback?(newToken)
+            } else {
+                onRetryExhausted?()
+            }
         }, shouldIgnoreRetryPolicy: true)
     }
     
