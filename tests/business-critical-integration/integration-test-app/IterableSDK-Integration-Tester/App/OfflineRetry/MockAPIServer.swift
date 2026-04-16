@@ -5,10 +5,11 @@ final class MockAPIServer {
 
     // MARK: - API Response Mode (controlled by JWT Auth Retry panel)
     //
-    // Matches Android MockServer.ResponseMode + the UI-only CONN_ERROR:
-    // - .normal          → proxy to real Iterable API (see MockAPIServerURLProtocol)
-    // - .jwt401          → proxy to real Iterable API with Authorization swapped
-    //                      to an expired JWT; real backend returns real 401
+    // - .normal          → NOT intercepted; SDK talks to api.iterable.com directly
+    //                      (MockAPIServerURLProtocol.canInit returns false)
+    // - .jwt401          → intercepted and proxied to api.iterable.com with the
+    //                      Authorization header swapped to an expired JWT; real
+    //                      backend returns a real 401 InvalidJwtPayload
     // - .server500       → local synthesized 500 (can't force 500 from prod)
     // - .connectionError → local synthesized connection error (iOS equivalent of
     //                      Android's DEAD_PORT trick)
