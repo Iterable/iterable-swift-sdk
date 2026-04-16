@@ -42,8 +42,12 @@ class AuthManager: IterableAuthManagerProtocol {
                              shouldIgnoreRetryPolicy: Bool) {
         ITBInfo()
         
-        if shouldPauseRetry(shouldIgnoreRetryPolicy) || pendingAuth || hasFailedAuth(hasFailedPriorAuth) {
+        if shouldPauseRetry(shouldIgnoreRetryPolicy) {
             onSuccess?(nil)
+            return
+        }
+
+        if pendingAuth || hasFailedAuth(hasFailedPriorAuth) {
             return
         }
         
