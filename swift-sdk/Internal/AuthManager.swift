@@ -196,6 +196,18 @@ class AuthManager: IterableAuthManagerProtocol {
         _ = queueAuthTokenExpirationRefresh(authToken)
     }
     
+    /// Resolves a completed auth token fetch.
+    ///
+    /// Success path ordering is deliberate:
+    /// 1. Drain piggybacked `pendingAuth` waiters with the new token (via `invokePendingCallbacks`)
+    ///    before step 2 re-enqueues `onSuccess` for the scheduled refresh cycle — otherwise the
+    ///    direct caller's `onSuccess` would fire twice.
+    /// 2. Queue the next expiration refresh (`queueAuthTokenExpirationRefresh`), which may enqueue
+    ///    `onSuccess`/`onRetryExhausted` against the future timer.
+    /// 3. Fire the direct caller's `onSuccess` with the resolved token.
+    ///
+    /// Failure path (nil token): report auth failure, then schedule a retry timer carrying
+    /// `onSuccess`/`onRetryExhausted` forward.
     private func onAuthTokenReceived(retrievedAuthToken: String?, onSuccess: AuthTokenRetrievalHandler? = nil, onRetryExhausted: (() -> Void)? = nil) {
         ITBInfo()
 
