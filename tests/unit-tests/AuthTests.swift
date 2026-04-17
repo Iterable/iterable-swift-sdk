@@ -755,46 +755,47 @@ class AuthTests: XCTestCase {
     }
     
     func testRefreshTimerQueueRejection() {
-        let condition1 = expectation(description: "\(#function) - first refresh timer never happened called")
-        let condition2 = expectation(description: "\(#function) - second refresh timer should not have been called")
-        condition2.isInverted = true
-        
+        // With the unified pendingAuth callback contract, a second in-flight
+        // requestNewAuthToken piggybacks on the pending request and receives
+        // the same resolved token instead of being silently dropped.
+        let condition1 = expectation(description: "\(#function) - first caller resolves with token")
+        let condition2 = expectation(description: "\(#function) - piggyback caller resolves with same token")
+
         class AsyncAuthDelegate: IterableAuthDelegate {
             func onAuthTokenRequested(completion: @escaping AuthTokenRetrievalHandler) {
                 DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
                     completion(AuthTests.authToken)
                 }
             }
-            
-            func onAuthFailure(_ authFailure: AuthFailure) {
-                
-            }
+
+            func onAuthFailure(_ authFailure: AuthFailure) {}
         }
-        
+
         let authDelegate = AsyncAuthDelegate()
-        
+
         let config = IterableConfig()
         config.authDelegate = authDelegate
-        
-        let authManager = AuthManager(delegate: config.authDelegate, 
+
+        let authManager = AuthManager(delegate: config.authDelegate,
                                       authRetryPolicy: RetryPolicy(maxRetry: 1, retryInterval: 0, retryBackoff: .linear),
                                       expirationRefreshPeriod: config.expiringAuthTokenRefreshPeriod,
                                       localStorage: MockLocalStorage(),
                                       dateProvider: MockDateProvider())
-        
+
         authManager.requestNewAuthToken(hasFailedPriorAuth: false,
                                         onSuccess: { token in
                                             XCTAssertEqual(token, AuthTests.authToken)
                                             condition1.fulfill()
         }, shouldIgnoreRetryPolicy: true)
-        
+
         authManager.requestNewAuthToken(hasFailedPriorAuth: false,
                                         onSuccess: { token in
+                                            XCTAssertEqual(token, AuthTests.authToken)
                                             condition2.fulfill()
         }, shouldIgnoreRetryPolicy: true)
-        
-        wait(for: [condition1], timeout: testExpectationTimeout)
-        wait(for: [condition2], timeout: 1.0)
+
+        wait(for: [condition1, condition2], timeout: testExpectationTimeout)
+        _ = authDelegate
     }
     
     func testAuthTokenNotRequestingForAlreadyExistingEmail() {
