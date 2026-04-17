@@ -350,10 +350,6 @@ class AuthManager: IterableAuthManagerProtocol {
         }
     }
     
-    private func clearPendingCallbacks() {
-        _ = drainCallbacks()
-    }
-    
     private func clearRefreshTimer() {
         ITBInfo()
         
