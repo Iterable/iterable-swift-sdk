@@ -102,6 +102,10 @@ class InAppHelperTests: XCTestCase {
     }
 
     func testGetInAppMessagesRetriesAfterJWT401() {
+        let firstCall = expectation(description: "first call succeeds")
+        let secondCall = expectation(description: "second call succeeds after JWT retry")
+        let thirdCall = expectation(description: "third call succeeds with valid token")
+        
         let authManager = MockAuthManager()
         authManager.shouldRetry = true
         
@@ -110,34 +114,38 @@ class InAppHelperTests: XCTestCase {
         
         InAppHelper.getInAppMessagesFromServer(apiClient: apiClient,
                                                authManager: authManager,
-                                               number: apiClient.numOfMessages).onSuccess { messages in
-            print(messages)
+                                               number: apiClient.numOfMessages).onSuccess { _ in
+            firstCall.fulfill()
         }.onError { error in
             XCTFail("expected success, got error: \(error)")
         }
+        wait(for: [firstCall], timeout: testExpectationTimeout)
         
         InAppHelper.getInAppMessagesFromServer(apiClient: apiClient,
                                                authManager: authManager,
                                                number: apiClient.numOfMessages,
-                                               successHandler: { data in
+                                               successHandler: { _ in
             XCTAssertTrue(authManager.handleAuthFailureCalled)
             XCTAssertTrue(authManager.getNextRetryIntervalCalled)
             
             XCTAssertTrue(authManager.retryWasRequested)
             XCTAssertEqual(authManager.getAuthToken(), "newAuthToken")
-        }).onSuccess { messages in
-            print(messages)
+        }).onSuccess { _ in
+            secondCall.fulfill()
         }.onError { error in
             XCTFail("expected success, got error: \(error)")
         }
+        wait(for: [secondCall], timeout: testExpectationTimeout)
         
         InAppHelper.getInAppMessagesFromServer(apiClient: apiClient,
                                                authManager: authManager,
-                                               number: apiClient.numOfMessages).onSuccess { messages in
+                                               number: apiClient.numOfMessages).onSuccess { _ in
             XCTAssertTrue(authManager.retryWasRequested)
+            thirdCall.fulfill()
         }.onError { error in
             XCTFail("expected success, got error: \(error)")
         }
+        wait(for: [thirdCall], timeout: testExpectationTimeout)
     }
 
     func testParseURL() {

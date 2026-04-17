@@ -25,9 +25,12 @@ struct RequestProcessorUtil {
                     authManager?.setIsLastAuthTokenValid(false)
                     let retryInterval = authManager?.getNextRetryInterval() ?? 1
                     DispatchQueue.main.async {
-                        authManager?.scheduleAuthTokenRefreshTimer(interval: retryInterval, isScheduledRefresh: false, successCallback: { _ in
-                            attemptSend()
-                        })
+                        authManager?.scheduleAuthTokenRefreshTimer(
+                            interval: retryInterval,
+                            isScheduledRefresh: false,
+                            successCallback: { _ in attemptSend() },
+                            onRetryExhausted: { reportFailure(result: result, error: error, failureHandler: onFailure, identifier: identifier) }
+                        )
                     }
                 } else if error.httpStatusCode == 401, error.iterableCode == JsonValue.Code.badApiKey {
                     ITBError(error.reason)

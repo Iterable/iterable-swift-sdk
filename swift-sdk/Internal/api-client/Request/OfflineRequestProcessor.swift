@@ -384,9 +384,16 @@ struct OfflineRequestProcessor: RequestProcessorProtocol {
                     authManager?.setIsLastAuthTokenValid(false)
                     let retryInterval = authManager?.getNextRetryInterval() ?? 1
                     DispatchQueue.main.async {
-                        authManager?.scheduleAuthTokenRefreshTimer(interval: retryInterval, isScheduledRefresh: false, successCallback: { _ in
-                            _ = sendIterableRequest(requestGenerator: requestGenerator, successHandler: onSuccess, failureHandler: onFailure, identifier: identifier)
-                        })
+                        authManager?.scheduleAuthTokenRefreshTimer(
+                            interval: retryInterval,
+                            isScheduledRefresh: false,
+                            successCallback: { _ in
+                                _ = sendIterableRequest(requestGenerator: requestGenerator, successHandler: onSuccess, failureHandler: onFailure, identifier: identifier)
+                            },
+                            onRetryExhausted: {
+                                onFailure?(error.reason, error.data)
+                            }
+                        )
                     }
 
                 }
