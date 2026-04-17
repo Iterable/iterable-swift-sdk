@@ -125,6 +125,41 @@ class AuthCallbackResolutionTests: XCTestCase {
         wait(for: [exhaustionCalled], timeout: testExpectationTimeout)
     }
 
+    func testScheduleRefreshTimer_queuesBothCallbacks_whenTimerAlreadyScheduled() {
+        let firstSuccess = expectation(description: "first successCallback resolved")
+        let secondSuccess = expectation(description: "queued successCallback resolved")
+
+        let authDelegate = SyncAuthDelegate { Self.authToken }
+        let localStorage = MockLocalStorage()
+        localStorage.email = Self.email
+
+        let authManager = AuthManager(
+            delegate: authDelegate,
+            authRetryPolicy: RetryPolicy(maxRetry: 10, retryInterval: 0, retryBackoff: .linear),
+            expirationRefreshPeriod: 60,
+            localStorage: localStorage,
+            dateProvider: MockDateProvider()
+        )
+
+        authManager.scheduleAuthTokenRefreshTimer(
+            interval: 0.05,
+            isScheduledRefresh: false,
+            successCallback: { _ in firstSuccess.fulfill() },
+            onRetryExhausted: { XCTFail("exhaustion should not fire on success") }
+        )
+
+        // Second scheduling while the first timer is still pending — should queue
+        // both successCallback and onRetryExhausted callbacks.
+        authManager.scheduleAuthTokenRefreshTimer(
+            interval: 10,
+            isScheduledRefresh: false,
+            successCallback: { _ in secondSuccess.fulfill() },
+            onRetryExhausted: { XCTFail("exhaustion should not fire on success") }
+        )
+
+        wait(for: [firstSuccess, secondSuccess], timeout: testExpectationTimeout)
+    }
+
     // MARK: - RequestProcessorUtil end-to-end
 
     func testSendRequest_resolvesFulfillViaExhaustion_on401WhenRetriesExhausted() {
