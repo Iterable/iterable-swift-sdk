@@ -13,6 +13,7 @@ class MockAuthManager: IterableAuthManagerProtocol {
     var token = "AuthToken"
     
     var shouldRetry = true
+    var shouldRespectPauseRetry = false
     var retryWasRequested = false
     var isLastAuthTokenValid = false
     var pauseAuthRetries = false
@@ -26,7 +27,12 @@ class MockAuthManager: IterableAuthManagerProtocol {
         print("AuthManager handleAuthFailure with reason: \(reason.rawValue) and token: \(String(describing: failedAuthToken))")
     }
 
-    func requestNewAuthToken(hasFailedPriorAuth: Bool, onSuccess: ((String?) -> Void)?, shouldIgnoreRetryPolicy: Bool) {
+    func requestNewAuthToken(hasFailedPriorAuth: Bool, onSuccess: ((String?) -> Void)?, onRetryExhausted: (() -> Void)?, shouldIgnoreRetryPolicy: Bool) {
+        if shouldRespectPauseRetry && pauseAuthRetries && !shouldIgnoreRetryPolicy {
+            retryWasRequested = false
+            onRetryExhausted?()
+            return
+        }
         if shouldRetry {
             // Simulate the authManager obtaining a new token
             retryWasRequested = true
@@ -35,7 +41,7 @@ class MockAuthManager: IterableAuthManagerProtocol {
         } else {
             // Simulate failing to obtain a new token
             retryWasRequested = false
-            onSuccess?(nil)
+            onRetryExhausted?()
         }
     }
     
@@ -44,10 +50,8 @@ class MockAuthManager: IterableAuthManagerProtocol {
             if let newToken {
                 self.setNewToken(newToken)
                 successCallback?(newToken)
-            } else {
-                onRetryExhausted?()
             }
-        }, shouldIgnoreRetryPolicy: true)
+        }, onRetryExhausted: onRetryExhausted, shouldIgnoreRetryPolicy: true)
     }
     
     func pauseAuthRetries(_ pauseAuthRetry: Bool) {

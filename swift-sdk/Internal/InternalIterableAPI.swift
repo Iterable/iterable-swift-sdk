@@ -896,7 +896,7 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
             if token != nil {
                 self?.completeUserLogin(onloginSuccessCallBack: onloginSuccessCallBack)
             }
-        }, shouldIgnoreRetryPolicy: true)
+        }, onRetryExhausted: nil, shouldIgnoreRetryPolicy: true)
     }
     
     private func completeUserLogin(onloginSuccessCallBack: (()->())? = nil) {
