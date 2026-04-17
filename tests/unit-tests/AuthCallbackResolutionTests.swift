@@ -100,6 +100,79 @@ class AuthCallbackResolutionTests: XCTestCase {
         wait(for: [exhaustionCalled], timeout: testExpectationTimeout)
     }
 
+    func testScheduleRefreshTimer_queuesCallbacks_whenTimerAlreadyScheduled() {
+        let firstSuccess = expectation(description: "first request's successCallback fires")
+        let secondSuccess = expectation(description: "queued request's successCallback fires")
+
+        let authDelegate = DelayedAuthDelegate(delay: 0.2) { Self.authToken }
+        let localStorage = MockLocalStorage()
+        localStorage.email = Self.email
+
+        let authManager = AuthManager(
+            delegate: authDelegate,
+            authRetryPolicy: RetryPolicy(maxRetry: 10, retryInterval: 0, retryBackoff: .linear),
+            expirationRefreshPeriod: 60,
+            localStorage: localStorage,
+            dateProvider: MockDateProvider()
+        )
+
+        authManager.scheduleAuthTokenRefreshTimer(
+            interval: 0.05,
+            isScheduledRefresh: false,
+            successCallback: { token in
+                XCTAssertEqual(token, Self.authToken)
+                firstSuccess.fulfill()
+            },
+            onRetryExhausted: { XCTFail("first request should not exhaust") }
+        )
+
+        // Second call while timer is still scheduled — should hit the queueing branch
+        authManager.scheduleAuthTokenRefreshTimer(
+            interval: 0.05,
+            isScheduledRefresh: false,
+            successCallback: { token in
+                XCTAssertEqual(token, Self.authToken)
+                secondSuccess.fulfill()
+            },
+            onRetryExhausted: { XCTFail("queued request should not exhaust") }
+        )
+
+        wait(for: [firstSuccess, secondSuccess], timeout: testExpectationTimeout)
+    }
+
+    func testScheduleRefreshTimer_queuesExhaustionCallbacks_whenTimerAlreadyScheduled() {
+        let firstExhausted = expectation(description: "first request's exhaustion fires")
+        let secondExhausted = expectation(description: "queued request's exhaustion fires")
+
+        let authDelegate = DelayedAuthDelegate(delay: 0.2) { nil }
+        let localStorage = MockLocalStorage()
+        localStorage.email = Self.email
+
+        let authManager = AuthManager(
+            delegate: authDelegate,
+            authRetryPolicy: RetryPolicy(maxRetry: 0, retryInterval: 0, retryBackoff: .linear),
+            expirationRefreshPeriod: 60,
+            localStorage: localStorage,
+            dateProvider: MockDateProvider()
+        )
+
+        authManager.scheduleAuthTokenRefreshTimer(
+            interval: 0.05,
+            isScheduledRefresh: false,
+            successCallback: { _ in XCTFail("first should not succeed") },
+            onRetryExhausted: { firstExhausted.fulfill() }
+        )
+
+        authManager.scheduleAuthTokenRefreshTimer(
+            interval: 0.05,
+            isScheduledRefresh: false,
+            successCallback: { _ in XCTFail("queued should not succeed") },
+            onRetryExhausted: { secondExhausted.fulfill() }
+        )
+
+        wait(for: [firstExhausted, secondExhausted], timeout: testExpectationTimeout)
+    }
+
     func testScheduleRefreshTimer_callsExhaustion_whenNoUserIdentity() {
         let exhaustionCalled = expectation(description: "onRetryExhausted called when no email/userId")
 
@@ -175,6 +248,24 @@ class AuthCallbackResolutionTests: XCTestCase {
 
         func onAuthTokenRequested(completion: @escaping AuthTokenRetrievalHandler) {
             completion(tokenProvider())
+        }
+
+        func onAuthFailure(_ authFailure: AuthFailure) {}
+    }
+
+    private class DelayedAuthDelegate: IterableAuthDelegate {
+        private let delay: TimeInterval
+        private let tokenProvider: () -> String?
+
+        init(delay: TimeInterval, _ tokenProvider: @escaping () -> String?) {
+            self.delay = delay
+            self.tokenProvider = tokenProvider
+        }
+
+        func onAuthTokenRequested(completion: @escaping AuthTokenRetrievalHandler) {
+            DispatchQueue.main.asyncAfter(deadline: .now() + delay) { [tokenProvider] in
+                completion(tokenProvider())
+            }
         }
 
         func onAuthFailure(_ authFailure: AuthFailure) {}

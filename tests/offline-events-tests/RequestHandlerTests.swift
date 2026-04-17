@@ -1284,6 +1284,60 @@ class RequestHandlerTests: XCTestCase {
         let provider = CoreDataPersistenceContextProvider(dateProvider: dateProvider)!
         return provider
     }()
+
+    func testOfflineProcessor_callsOnFailure_whenJwt401AndAuthRetryExhausted() throws {
+        let onFailureCalled = expectation(description: "onFailure invoked via onRetryExhausted")
+
+        let notificationCenter = MockNotificationCenter()
+        let authManager = MockAuthManager()
+        authManager.shouldRetry = false  // forces requestNewAuthToken to return nil → onRetryExhausted
+
+        let networkSession = MockNetworkSession()
+        let healthMonitor = HealthMonitor(dataProvider: HealthMonitorDataProvider(maxTasks: 1000,
+                                                                                  persistenceContextProvider: persistenceContextProvider),
+                                          dateProvider: dateProvider,
+                                          networkSession: networkSession)
+        let taskScheduler = IterableTaskScheduler(persistenceContextProvider: persistenceContextProvider,
+                                                  notificationCenter: notificationCenter,
+                                                  healthMonitor: healthMonitor,
+                                                  dateProvider: dateProvider)
+        let taskRunner = IterableTaskRunner(networkSession: networkSession,
+                                            persistenceContextProvider: persistenceContextProvider,
+                                            healthMonitor: healthMonitor,
+                                            notificationCenter: notificationCenter,
+                                            timeInterval: 0.5,
+                                            dateProvider: dateProvider)
+
+        let offlineProcessor = OfflineRequestProcessor(apiKey: "zee-api-key",
+                                                       authProvider: self,
+                                                       authManager: authManager,
+                                                       endpoint: Endpoint.api,
+                                                       deviceMetadata: Self.deviceMetadata,
+                                                       taskScheduler: taskScheduler,
+                                                       taskRunner: taskRunner,
+                                                       notificationCenter: notificationCenter)
+
+        offlineProcessor.updateCart(items: [CommerceItem(id: "id-1", name: "name-1", price: 1, quantity: 1)],
+                                    onSuccess: nil,
+                                    onFailure: { _, _ in onFailureCalled.fulfill() })
+
+        // Wait for the task to be persisted, then simulate a 401 JWT failure notification
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+            guard let task = try? self.persistenceContextProvider.mainQueueContext().findAllTasks().first else {
+                XCTFail("expected scheduled task to be persisted")
+                return
+            }
+            let jwtError = SendRequestError(reason: "Invalid JWT",
+                                            data: nil,
+                                            httpStatusCode: 401,
+                                            iterableCode: JsonValue.Code.invalidJwtPayload)
+            let userInfo = IterableNotificationUtil.sendRequestErrorToUserInfo(jwtError, taskId: task.id)
+            notificationCenter.post(name: .iterableTaskFinishedWithNoRetry, object: nil, userInfo: userInfo)
+        }
+
+        wait(for: [onFailureCalled], timeout: testExpectationTimeout)
+        XCTAssertTrue(authManager.handleAuthFailureCalled)
+    }
 }
 
 extension RequestHandlerTests: AuthProvider {
