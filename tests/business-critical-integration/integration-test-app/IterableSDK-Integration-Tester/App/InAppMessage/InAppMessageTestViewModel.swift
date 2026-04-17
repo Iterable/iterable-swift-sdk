@@ -197,6 +197,17 @@ class InAppMessageTestViewModel: ObservableObject {
     func clearMessageQueue() {
         print("🗑️ Clearing message queue...")
         
+        // Dismiss any in-app message VC that may be showing (e.g. auto-shown from leftover messages)
+        if let rootVC = UIApplication.shared.connectedScenes
+            .compactMap({ $0 as? UIWindowScene })
+            .flatMap({ $0.windows })
+            .first(where: { $0.isKeyWindow })?
+            .rootViewController,
+           let presentedVC = rootVC.presentedViewController,
+           !presentedVC.isBeingDismissed {
+            presentedVC.dismiss(animated: false)
+        }
+        
         guard let apiClient,
               let testUserEmail = AppDelegate.loadTestUserEmailFromConfig() else {
             showAlert(title: "Error", message: "API client not initialized or test user email not found")

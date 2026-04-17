@@ -15,15 +15,17 @@ class IterableEmbeddedManager: NSObject, IterableInternalEmbeddedManagerProtocol
          customActionDelegate: IterableCustomActionDelegate?,
          urlOpener: UrlOpenerProtocol,
          allowedProtocols: [String],
-         enableEmbeddedMessaging: Bool) {
+         enableEmbeddedMessaging: Bool,
+         authManager: IterableAuthManagerProtocol? = nil) {
          ITBInfo()
-        
+
         self.apiClient = apiClient
         self.urlDelegate = urlDelegate
         self.customActionDelegate = customActionDelegate
         self.urlOpener = urlOpener
         self.allowedProtocols = allowedProtocols
         self.enableEmbeddedMessaging = enableEmbeddedMessaging
+        self.authManager = authManager
         
         super.init()
         addForegroundObservers()
@@ -132,6 +134,7 @@ class IterableEmbeddedManager: NSObject, IterableInternalEmbeddedManagerProtocol
     }
 
     // MARK: - PRIVATE/INTERNAL
+    private weak var authManager: IterableAuthManagerProtocol?
     private var apiClient: ApiClientProtocol
     private let urlDelegate: IterableURLDelegate?
     private let customActionDelegate: IterableCustomActionDelegate?
@@ -190,6 +193,14 @@ class IterableEmbeddedManager: NSObject, IterableInternalEmbeddedManagerProtocol
                     self.trackNewlyRetrieved(processor)
                     self.notifyUpdateDelegates(processor)
                     self.notifySyncSucceeded()
+
+                    // A successful response proves the current JWT is valid.
+                    // Reset auth state so the offline task runner can resume
+                    // (matches Android's handleSuccessResponse behavior).
+                    self.authManager?.resetFailedAuthCount()
+                    self.authManager?.pauseAuthRetries(false)
+                    self.authManager?.setIsLastAuthTokenValid(true)
+
                     completion()
                 },
                 receiveError: { sendRequestError in

@@ -133,7 +133,7 @@ class IterableHtmlMessageViewController: UIViewController {
         
         webView.set(position: ViewPosition(width: view.frame.width, height: view.frame.height, center: view.center))
 
-        if location == .full {
+        if location == .full || location == .top || location == .bottom {
             // Prevent the scroll view from automatically adjusting content insets for the safe area,
             // so the HTML content can extend behind the status bar / Dynamic Island / home indicator.
             if let wkWebView = webView.view as? WKWebView {
@@ -141,7 +141,7 @@ class IterableHtmlMessageViewController: UIViewController {
             }
         }
 
-        let html = (location == .full) ? Self.injectViewportFitCover(html: parameters.html) : parameters.html
+        let html = (location == .full || location == .top || location == .bottom) ? Self.injectViewportFitCover(html: parameters.html) : parameters.html
         webView.loadHTMLString(html, baseURL: URL(string: ""))
         webView.set(navigationDelegate: self)
 
@@ -166,7 +166,11 @@ class IterableHtmlMessageViewController: UIViewController {
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
 
-        resizeWebView(animate: false)
+        // Only resize if webview has finished loading to prevent positioning issues
+        // caused by calculating height before DOM is ready
+        if webViewDidFinishLoading {
+            resizeWebView(animate: false)
+        }
     }
     
     override func viewDidAppear(_ animated: Bool) {
@@ -222,6 +226,7 @@ class IterableHtmlMessageViewController: UIViewController {
     private var location: IterableMessageLocation = .full
     private var linkClicked = false
     private var clickedLink: String?
+    private var webViewDidFinishLoading = false
     
     private lazy var webView = webViewProvider()
     private var eventTracker: MessageViewControllerEventTrackerProtocol? {
@@ -383,6 +388,7 @@ class IterableHtmlMessageViewController: UIViewController {
 extension IterableHtmlMessageViewController: WKNavigationDelegate {
     func webView(_: WKWebView, didFinish _: WKNavigation!) {
         ITBInfo()
+        webViewDidFinishLoading = true
         resizeWebView(animate: true)
         presenter?.webViewDidFinish()
     }

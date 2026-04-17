@@ -70,6 +70,14 @@ class IterableUserDefaults {
         }
     }
 
+    var autoRetry: Bool {
+        get {
+            bool(withKey: .autoRetry)
+        } set {
+            save(bool: newValue, withKey: .autoRetry)
+        }
+    }
+
     var visitorUsageTracked: Bool {
         get {
             return bool(withKey: .visitorUsageTracked)
@@ -337,6 +345,7 @@ class IterableUserDefaults {
         static let deviceId = UserDefaultsKey(value: Const.UserDefault.deviceId)
         static let sdkVersion = UserDefaultsKey(value: Const.UserDefault.sdkVersion)
         static let offlineMode = UserDefaultsKey(value: Const.UserDefault.offlineMode)
+        static let autoRetry = UserDefaultsKey(value: Const.UserDefault.autoRetry)
         static let unknownUserEvents = UserDefaultsKey(value: Const.UserDefault.unknownUserEvents)
         static let unknownUserUpdate = UserDefaultsKey(value: Const.UserDefault.unknownUserUpdate)
         static let criteriaData = UserDefaultsKey(value: Const.UserDefault.criteriaData)

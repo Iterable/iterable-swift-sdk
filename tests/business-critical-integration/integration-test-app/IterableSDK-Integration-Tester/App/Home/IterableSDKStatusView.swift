@@ -23,6 +23,7 @@ final class IterableSDKStatusView: UIView {
     }()
     
     private let initializationStatusView = StatusRowView(title: "SDK Initialized")
+    private let jwtAuthStatusView = StatusRowView(title: "JWT Auth")
     private let emailStatusView = StatusRowView(title: "Email")
     private let userIdStatusView = StatusRowView(title: "User ID")
     
@@ -58,6 +59,7 @@ final class IterableSDKStatusView: UIView {
         
         containerStackView.addArrangedSubview(titleLabel)
         containerStackView.addArrangedSubview(initializationStatusView)
+        containerStackView.addArrangedSubview(jwtAuthStatusView)
         containerStackView.addArrangedSubview(emailStatusView)
         containerStackView.addArrangedSubview(userIdStatusView)
         
@@ -105,11 +107,16 @@ final class IterableSDKStatusView: UIView {
         let currentUserId = IterableAPI.userId
         
         // SDK Initialization status
-        initializationStatusView.setValue(isInitialized ? "✓" : "✗", 
+        initializationStatusView.setValue(isInitialized ? "✓" : "✗",
                                         color: isInitialized ? .systemGreen : .systemRed)
-        
+
+        // JWT Auth status
+        let hasJWTAuth = AppDelegate.mockAuthDelegate != nil
+        jwtAuthStatusView.setValue(hasJWTAuth ? "Enabled" : "Disabled",
+                                  color: hasJWTAuth ? .systemGreen : .systemGray)
+
         // Email status - can exist independently of SDK initialization
-        emailStatusView.setValue(currentEmail ?? "Not set", 
+        emailStatusView.setValue(currentEmail ?? "Not set",
                                color: currentEmail != nil ? .systemGreen : .systemOrange)
         
         // UserId status - can exist independently of SDK initialization  

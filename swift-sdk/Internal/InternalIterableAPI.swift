@@ -37,7 +37,7 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
             authManager.getAuthToken()
         }
     }
-    
+
     var deviceId: String {
         if let value = localStorage.deviceId {
             return value
@@ -105,7 +105,8 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
     
     lazy var embeddedManager: IterableInternalEmbeddedManagerProtocol = {
         self.dependencyContainer.createEmbeddedManager(config: self.config,
-                                                                apiClient: self.apiClient)
+                                                                apiClient: self.apiClient,
+                                                                authManager: self.authManager)
     }()
     
     var apiEndPointForTest: String {
@@ -741,24 +742,6 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
     }
     
     @discardableResult
-    func track(embeddedMessageDismiss message: IterableEmbeddedMessage,
-               onSuccess: OnSuccessHandler? = nil,
-               onFailure: OnFailureHandler? = nil) -> Pending<SendRequestValue, SendRequestError> {
-        requestHandler.track(embeddedMessageDismiss: message,
-                             onSuccess: onSuccess,
-                             onFailure: onFailure)
-    }
-    
-    @discardableResult
-    func track(embeddedMessageImpression message: IterableEmbeddedMessage,
-               onSuccess: OnSuccessHandler? = nil,
-               onFailure: OnFailureHandler? = nil) -> Pending<SendRequestValue, SendRequestError> {
-        requestHandler.track(embeddedMessageImpression: message,
-                             onSuccess: onSuccess,
-                             onFailure: onFailure)
-    }
-    
-    @discardableResult
     func track(embeddedSession: IterableEmbeddedSession,
                onSuccess: OnSuccessHandler? = nil,
                onFailure: OnFailureHandler? = nil) -> Pending<SendRequestValue, SendRequestError> {
@@ -808,13 +791,15 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
     
     lazy var requestHandler: RequestHandlerProtocol = {
         let offlineMode = self.localStorage.offlineMode
+        let autoRetry = self.localStorage.autoRetry
         return dependencyContainer.createRequestHandler(apiKey: apiKey,
                                                         config: config,
                                                         endpoint: apiEndPoint,
                                                         authProvider: self,
                                                         authManager: authManager,
                                                         deviceMetadata: deviceMetadata,
-                                                        offlineMode: offlineMode)
+                                                        offlineMode: offlineMode,
+                                                        autoRetry: autoRetry)
     }()
     
     private var deviceAttributes = [String: String]()
@@ -1140,10 +1125,13 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
         requestHandler.getRemoteConfiguration().onSuccess { remoteConfiguration in
             self.localStorage.offlineMode = remoteConfiguration.offlineMode
             self.requestHandler.offlineMode = remoteConfiguration.offlineMode
-            ITBInfo("setting offlineMode: \(self.requestHandler.offlineMode)")
+            self.localStorage.autoRetry = remoteConfiguration.autoRetry
+            self.requestHandler.autoRetry = remoteConfiguration.autoRetry
+            ITBInfo("setting offlineMode: \(self.requestHandler.offlineMode), autoRetry: \(self.requestHandler.autoRetry)")
         }.onError { error in
             let offlineMode = self.requestHandler.offlineMode
-            ITBError("Could not get remote configuration: \(error.localizedDescription), using saved value: \(offlineMode)")
+            let autoRetry = self.requestHandler.autoRetry
+            ITBError("Could not get remote configuration: \(error.localizedDescription), using saved values - offlineMode: \(offlineMode), autoRetry: \(autoRetry)")
         }
     }
     

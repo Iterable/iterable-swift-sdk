@@ -7,7 +7,7 @@ import UIKit
 
 @objcMembers public final class IterableAPI: NSObject {
     /// The current SDK version
-    public static let sdkVersion = "6.6.7"
+    public static let sdkVersion = "6.7.1"
     
     /// The email of the logged in user that this IterableAPI is using
     public static var email: String? {
@@ -33,7 +33,7 @@ import UIKit
             implementation?.authToken
         }
     }
-    
+
     /// The `userInfo` dictionary which came with last push
     public static var lastPushPayload: [AnyHashable: Any]? {
         implementation?.lastPushPayload

@@ -76,7 +76,9 @@ jobs:
         ./scripts/setup-local-environment.sh \
           "${{ secrets.BCIT_TEST_PROJECT_ID }}" \
           "${{ secrets.BCIT_ITERABLE_SERVER_KEY }}" \
-          "${{ secrets.BCIT_ITERABLE_API_KEY }}"
+          "${{ secrets.BCIT_ITERABLE_API_KEY }}" \
+          "${{ secrets.BCIT_JWT_API_KEY }}" \
+          "${{ secrets.BCIT_JWT_SECRET }}"
 
     - name: Validate Setup
       working-directory: tests/business-critical-integration

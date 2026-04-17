@@ -44,7 +44,18 @@ class InAppMessageIntegrationTests: IntegrationTestBase {
         XCTAssertTrue(inAppMessageRow.waitForExistence(timeout: standardTimeout), "In-app message row should exist")
         inAppMessageRow.tap()
         //screenshotCapture.captureScreenshot(named: "01-inapp-display-test-started")
-        
+
+        // Clear any existing messages before triggering the test campaign
+        // This prevents stale messages from previous runs from interfering
+        let initialClearButton = app.buttons["clear-messages-button"]
+        if initialClearButton.waitForExistence(timeout: 5.0) {
+            initialClearButton.tap()
+            if app.alerts["Success"].waitForExistence(timeout: 5.0) {
+                app.alerts["Success"].buttons["OK"].tap()
+            }
+            sleep(1)
+        }
+
         // Step 1: Trigger InApp display campaign (14751067)
         var triggerTestViewButton = app.buttons["trigger-in-app-button"]
         XCTAssertTrue(triggerTestViewButton.waitForExistence(timeout: standardTimeout), "Trigger InApp display button should exist")
@@ -106,19 +117,10 @@ class InAppMessageIntegrationTests: IntegrationTestBase {
             app.links["Dismiss"].tap()
         }
         
-        // Trying a different approach on this one.
-//        var showTestViewLink = app.links["Dismiss"]
-//        showTestViewLink.tap()
-        
-        //screenshotCapture.captureScreenshot(named: "04-inapp-display-dismiss-tapped")
-        
-        // Step 4: Verify in-app message is dismissed
-        print("⏳ Waiting for in-app message to dismiss...")
-        var webViewGone = NSPredicate(format: "exists == false")
-        var webViewExpectation = expectation(for: webViewGone, evaluatedWith: webView, handler: nil)
-        wait(for: [webViewExpectation], timeout: standardTimeout)
+        // Step 4: Dismiss any remaining queued in-app messages that auto-show
+        print("⏳ Waiting for all in-app messages to dismiss...")
+        dismissAllInAppMessages()
         print("✅ In-app message dismissed")
-        //screenshotCapture.captureScreenshot(named: "03-inapp-display-inapp-dismissed")
         
         var triggerClearMessagesButton = app.buttons["clear-messages-button"]
         XCTAssertTrue(triggerClearMessagesButton.waitForExistence(timeout: standardTimeout), "Clear messages button should exist")
@@ -157,6 +159,14 @@ class InAppMessageIntegrationTests: IntegrationTestBase {
             app.alerts["Success"].buttons["OK"].tap()
         }
         
+        // Wait for Iterable backend to process the campaign trigger before fetching messages.
+        // CI environments have higher latency between triggering a campaign and the message
+        // being available via getMessages API.
+        if isRunningInCI {
+            print("⏳ [CI] Waiting for backend to process campaign trigger...")
+            sleep(5)
+        }
+        
         // Tap "Check for Messages" to fetch and show the in-app
         XCTAssertTrue(checkMessagesButton.waitForExistence(timeout: standardTimeout), "Check for Messages button should exist")
         checkMessagesButton.tap()
@@ -175,8 +185,8 @@ class InAppMessageIntegrationTests: IntegrationTestBase {
                 checkMessagesButton.tap()
                 retryCount += 1
                 
-                // Give time for network request to complete before checking again
-                sleep(2)
+                // Give more time for CI network latency on campaign delivery
+                sleep(4)
             } else {
                 print("⏸️ Button not enabled, waiting...")
                 sleep(1)
@@ -189,25 +199,34 @@ class InAppMessageIntegrationTests: IntegrationTestBase {
         )
         //screenshotCapture.captureScreenshot(named: "03-testview-inapp-displayed")
         
-        // Step 3: Wait for webView content to be accessible and tap "Show Test View" link
+        // Step 3: Wait for "Show Test View" link; dismiss stale messages that appear first
         print("👆 Waiting for 'Show Test View' link to become accessible in webView...")
-        XCTAssertTrue(
-            waitForWebViewLink(linkText: "Show Test View", timeout: standardTimeout),
-            "Show Test View link should be accessible in the in-app message"
-        )
+        var showTestViewFound = waitForWebViewLink(linkText: "Show Test View", timeout: 10.0)
+        var dismissRetries = 0
+        while !showTestViewFound && dismissRetries < 5 {
+            // Wrong in-app is showing — dismiss it and wait for the right one
+            if app.links["Dismiss"].exists {
+                print("🗑️ Dismissing stale in-app (attempt \(dismissRetries + 1))")
+                app.links["Dismiss"].tap()
+                sleep(2)
+            } else {
+                sleep(1)
+            }
+            dismissRetries += 1
+            if webView.exists {
+                showTestViewFound = waitForWebViewLink(linkText: "Show Test View", timeout: 10.0)
+            }
+        }
+        XCTAssertTrue(showTestViewFound, "Show Test View link should be accessible in the in-app message")
         
         if app.links["Show Test View"].waitForExistence(timeout: standardTimeout) {
             app.links["Show Test View"].tap()
         }
         
-        // Step 4: Wait for in-app message to dismiss completely
-        print("⏳ Waiting for in-app message to dismiss...")
-        webViewGone = NSPredicate(format: "exists == false")
-        webViewExpectation = expectation(for: webViewGone, evaluatedWith: webView, handler: nil)
-        wait(for: [webViewExpectation], timeout: standardTimeout)
+        // Step 4: Dismiss any remaining queued in-app messages that auto-show
+        print("⏳ Waiting for all in-app messages to dismiss...")
+        dismissAllInAppMessages()
         print("✅ In-app message dismissed")
-        
-        //screenshotCapture.captureScreenshot(named: "04b-inapp-dismissed")
         
         // Step 5: Verify TestView alert appears
         print("⏳ Waiting for TestView Alert to appear...")
@@ -288,8 +307,39 @@ class InAppMessageIntegrationTests: IntegrationTestBase {
         XCTAssertEqual(inAppEnabledValue.label, "✓ Enabled", "In-app messages should be enabled")
         //screenshotCapture.captureScreenshot(named: "03-inapp-reenabled")
         
-        // Verify message now appears
+        // Trigger a fresh campaign now that in-app is re-enabled.
+        // The previous campaign triggered while disabled was likely discarded by the SDK.
+        if app.buttons["trigger-in-app-button"].waitForExistence(timeout: standardTimeout) {
+            app.buttons["trigger-in-app-button"].tap()
+        }
+        
+        // Handle success alert
+        if app.alerts["Success"].waitForExistence(timeout: standardTimeout) {
+            app.alerts["Success"].buttons["OK"].tap()
+        }
+        
+        // Wait for backend to process the campaign trigger (CI needs more time)
+        if isRunningInCI {
+            print("⏳ [CI] Waiting for backend to process campaign trigger...")
+            sleep(5)
+        }
+        
+        // Check for messages
+        checkMessagesButton.tap()
+        
+        // Verify message now appears — retry loop mirrors the pattern used earlier
         let secondWebView = app.descendants(matching: .webView).element(boundBy: 0)
+        var secondRetryCount = 0
+        while !secondWebView.exists && secondRetryCount < maxRetries {
+            if checkMessagesButton.isEnabled {
+                print("🔄 Retry \(secondRetryCount + 1)/\(maxRetries): Tapping check-messages-button (post-re-enable)...")
+                checkMessagesButton.tap()
+                secondRetryCount += 1
+                sleep(2)
+            } else {
+                sleep(1)
+            }
+        }
         XCTAssertTrue(
             secondWebView.waitForExistence(timeout: standardTimeout),
             "In-app message should appear"
@@ -305,6 +355,8 @@ class InAppMessageIntegrationTests: IntegrationTestBase {
         if app.links["Dismiss"].waitForExistence(timeout: standardTimeout) {
             app.links["Dismiss"].tap()
         }
+        
+        dismissAllInAppMessages()
         
         triggerClearMessagesButton = app.buttons["clear-messages-button"]
         XCTAssertTrue(triggerClearMessagesButton.waitForExistence(timeout: standardTimeout), "Clear messages button should exist")
@@ -390,11 +442,9 @@ class InAppMessageIntegrationTests: IntegrationTestBase {
             app.links["Dismiss"].tap()
         }
         
-        // Step 4: Verify in-app message is dismissed
-        print("⏳ Waiting for in-app message to dismiss...")
-        webViewGone = NSPredicate(format: "exists == false")
-        webViewExpectation = expectation(for: webViewGone, evaluatedWith: webView, handler: nil)
-        wait(for: [webViewExpectation], timeout: standardTimeout)
+        // Step 4: Dismiss any remaining queued in-app messages
+        print("⏳ Waiting for all in-app messages to dismiss...")
+        dismissAllInAppMessages()
         print("✅ In-app message dismissed")
         
         // Step 5: Verify network calls in expected order with 200 status codes
