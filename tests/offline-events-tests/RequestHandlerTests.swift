@@ -1288,11 +1288,12 @@ class RequestHandlerTests: XCTestCase {
     func testOfflineProcessor_callsOnFailure_whenJwt401AndAuthRetryExhausted() throws {
         let onFailureCalled = expectation(description: "onFailure invoked via onRetryExhausted")
 
+        let jwtErrorData = ["code": JsonValue.Code.invalidJwtPayload].toJsonData()
+        let networkSession = MockNetworkSession(statusCode: 401, data: jwtErrorData)
         let notificationCenter = MockNotificationCenter()
         let authManager = MockAuthManager()
-        authManager.shouldRetry = false  // forces requestNewAuthToken to return nil → onRetryExhausted
+        authManager.shouldRetry = false  // forces onRetryExhausted path in scheduleAuthTokenRefreshTimer
 
-        let networkSession = MockNetworkSession()
         let healthMonitor = HealthMonitor(dataProvider: HealthMonitorDataProvider(maxTasks: 1000,
                                                                                   persistenceContextProvider: persistenceContextProvider),
                                           dateProvider: dateProvider,
@@ -1317,26 +1318,14 @@ class RequestHandlerTests: XCTestCase {
                                                        taskRunner: taskRunner,
                                                        notificationCenter: notificationCenter)
 
+        offlineProcessor.start()
         offlineProcessor.updateCart(items: [CommerceItem(id: "id-1", name: "name-1", price: 1, quantity: 1)],
                                     onSuccess: nil,
                                     onFailure: { _, _ in onFailureCalled.fulfill() })
 
-        // Wait for the task to be persisted, then simulate a 401 JWT failure notification
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-            guard let task = try? self.persistenceContextProvider.mainQueueContext().findAllTasks().first else {
-                XCTFail("expected scheduled task to be persisted")
-                return
-            }
-            let jwtError = SendRequestError(reason: "Invalid JWT",
-                                            data: nil,
-                                            httpStatusCode: 401,
-                                            iterableCode: JsonValue.Code.invalidJwtPayload)
-            let userInfo = IterableNotificationUtil.sendRequestErrorToUserInfo(jwtError, taskId: task.id)
-            notificationCenter.post(name: .iterableTaskFinishedWithNoRetry, object: nil, userInfo: userInfo)
-        }
-
         wait(for: [onFailureCalled], timeout: testExpectationTimeout)
         XCTAssertTrue(authManager.handleAuthFailureCalled)
+        offlineProcessor.stop()
     }
 }
 
