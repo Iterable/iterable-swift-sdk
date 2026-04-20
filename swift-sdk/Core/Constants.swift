@@ -108,6 +108,7 @@ enum Const {
             static let userId = "itbl_userid"
             static let userIdUnknownUser = "itbl_userid_unknown_user"
             static let authToken = "itbl_auth_token"
+            static let deviceId = "itbl_device_id"
         }
     }
     
