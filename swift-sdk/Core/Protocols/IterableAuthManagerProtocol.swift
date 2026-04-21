@@ -7,8 +7,8 @@ import Foundation
 @objc public protocol IterableAuthManagerProtocol {
     func getAuthToken() -> String?
     func resetFailedAuthCount()
-    func requestNewAuthToken(hasFailedPriorAuth: Bool, onSuccess: ((String?) -> Void)?, shouldIgnoreRetryPolicy: Bool)
-    func scheduleAuthTokenRefreshTimer(interval: TimeInterval, isScheduledRefresh: Bool, successCallback: AuthTokenRetrievalHandler?)
+    func requestNewAuthToken(hasFailedPriorAuth: Bool, onSuccess: ((String?) -> Void)?, onRetryExhausted: (() -> Void)?, shouldIgnoreRetryPolicy: Bool)
+    func scheduleAuthTokenRefreshTimer(interval: TimeInterval, isScheduledRefresh: Bool, successCallback: AuthTokenRetrievalHandler?, onRetryExhausted: (() -> Void)?)
     func setNewToken(_ newToken: String)
     func logoutUser()
     func handleAuthFailure(failedAuthToken: String?, reason: AuthFailureReason)

@@ -1284,6 +1284,49 @@ class RequestHandlerTests: XCTestCase {
         let provider = CoreDataPersistenceContextProvider(dateProvider: dateProvider)!
         return provider
     }()
+
+    func testOfflineProcessor_callsOnFailure_whenJwt401AndAuthRetryExhausted() throws {
+        let onFailureCalled = expectation(description: "onFailure invoked via onRetryExhausted")
+
+        let jwtErrorData = ["code": JsonValue.Code.invalidJwtPayload].toJsonData()
+        let networkSession = MockNetworkSession(statusCode: 401, data: jwtErrorData)
+        let notificationCenter = MockNotificationCenter()
+        let authManager = MockAuthManager()
+        authManager.shouldRetry = false  // forces onRetryExhausted path in scheduleAuthTokenRefreshTimer
+
+        let healthMonitor = HealthMonitor(dataProvider: HealthMonitorDataProvider(maxTasks: 1000,
+                                                                                  persistenceContextProvider: persistenceContextProvider),
+                                          dateProvider: dateProvider,
+                                          networkSession: networkSession)
+        let taskScheduler = IterableTaskScheduler(persistenceContextProvider: persistenceContextProvider,
+                                                  notificationCenter: notificationCenter,
+                                                  healthMonitor: healthMonitor,
+                                                  dateProvider: dateProvider)
+        let taskRunner = IterableTaskRunner(networkSession: networkSession,
+                                            persistenceContextProvider: persistenceContextProvider,
+                                            healthMonitor: healthMonitor,
+                                            notificationCenter: notificationCenter,
+                                            timeInterval: 0.5,
+                                            dateProvider: dateProvider)
+
+        let offlineProcessor = OfflineRequestProcessor(apiKey: "zee-api-key",
+                                                       authProvider: self,
+                                                       authManager: authManager,
+                                                       endpoint: Endpoint.api,
+                                                       deviceMetadata: Self.deviceMetadata,
+                                                       taskScheduler: taskScheduler,
+                                                       taskRunner: taskRunner,
+                                                       notificationCenter: notificationCenter)
+
+        offlineProcessor.start()
+        offlineProcessor.updateCart(items: [CommerceItem(id: "id-1", name: "name-1", price: 1, quantity: 1)],
+                                    onSuccess: nil,
+                                    onFailure: { _, _ in onFailureCalled.fulfill() })
+
+        wait(for: [onFailureCalled], timeout: testExpectationTimeout)
+        XCTAssertTrue(authManager.handleAuthFailureCalled)
+        offlineProcessor.stop()
+    }
 }
 
 extension RequestHandlerTests: AuthProvider {

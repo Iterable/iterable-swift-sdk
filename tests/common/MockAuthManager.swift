@@ -13,6 +13,7 @@ class MockAuthManager: IterableAuthManagerProtocol {
     var token = "AuthToken"
     
     var shouldRetry = true
+    var shouldRespectPauseRetry = false
     var retryWasRequested = false
     var isLastAuthTokenValid = false
     var pauseAuthRetries = false
@@ -26,7 +27,12 @@ class MockAuthManager: IterableAuthManagerProtocol {
         print("AuthManager handleAuthFailure with reason: \(reason.rawValue) and token: \(String(describing: failedAuthToken))")
     }
 
-    func requestNewAuthToken(hasFailedPriorAuth: Bool, onSuccess: ((String?) -> Void)?, shouldIgnoreRetryPolicy: Bool) {
+    func requestNewAuthToken(hasFailedPriorAuth: Bool, onSuccess: ((String?) -> Void)?, onRetryExhausted: (() -> Void)?, shouldIgnoreRetryPolicy: Bool) {
+        if shouldRespectPauseRetry && pauseAuthRetries && !shouldIgnoreRetryPolicy {
+            retryWasRequested = false
+            onRetryExhausted?()
+            return
+        }
         if shouldRetry {
             // Simulate the authManager obtaining a new token
             retryWasRequested = true
@@ -35,16 +41,17 @@ class MockAuthManager: IterableAuthManagerProtocol {
         } else {
             // Simulate failing to obtain a new token
             retryWasRequested = false
-            onSuccess?(nil)
+            onRetryExhausted?()
         }
     }
     
-    func scheduleAuthTokenRefreshTimer(interval: TimeInterval, isScheduledRefresh: Bool, successCallback: IterableSDK.AuthTokenRetrievalHandler?) {
+    func scheduleAuthTokenRefreshTimer(interval: TimeInterval, isScheduledRefresh: Bool, successCallback: IterableSDK.AuthTokenRetrievalHandler?, onRetryExhausted: (() -> Void)?) {
         requestNewAuthToken(hasFailedPriorAuth: false, onSuccess: { newToken in
-            guard let newToken else { return }
-            self.setNewToken(newToken)
-            successCallback?(newToken)
-        }, shouldIgnoreRetryPolicy: true)
+            if let newToken {
+                self.setNewToken(newToken)
+                successCallback?(newToken)
+            }
+        }, onRetryExhausted: onRetryExhausted, shouldIgnoreRetryPolicy: true)
     }
     
     func pauseAuthRetries(_ pauseAuthRetry: Bool) {

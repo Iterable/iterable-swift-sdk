@@ -324,7 +324,7 @@ class AuthTests: XCTestCase {
         XCTAssertEqual(API.auth.authToken, AuthTests.authToken)
         
         authTokenChanged = true
-        API.authManager.requestNewAuthToken(hasFailedPriorAuth: false, onSuccess: nil, shouldIgnoreRetryPolicy: true)
+        API.authManager.requestNewAuthToken(hasFailedPriorAuth: false, onSuccess: nil, onRetryExhausted: nil, shouldIgnoreRetryPolicy: true)
         
         XCTAssertEqual(API.email, AuthTests.email)
         XCTAssertEqual(API.auth.authToken, newAuthToken)
@@ -361,7 +361,7 @@ class AuthTests: XCTestCase {
         XCTAssertEqual(API.auth.authToken, AuthTests.authToken)
         
         authTokenChanged = true
-        API.authManager.requestNewAuthToken(hasFailedPriorAuth: false, onSuccess: nil, shouldIgnoreRetryPolicy: true)
+        API.authManager.requestNewAuthToken(hasFailedPriorAuth: false, onSuccess: nil, onRetryExhausted: nil, shouldIgnoreRetryPolicy: true)
         
         XCTAssertEqual(API.userId, AuthTests.userId)
         XCTAssertEqual(API.auth.authToken, newAuthToken)
@@ -731,13 +731,13 @@ class AuthTests: XCTestCase {
         internalAPI.email = AuthTests.email
         
         // pass a failed state to the AuthManager
-        internalAPI.authManager.requestNewAuthToken(hasFailedPriorAuth: true, onSuccess: nil, shouldIgnoreRetryPolicy: true)
+        internalAPI.authManager.requestNewAuthToken(hasFailedPriorAuth: true, onSuccess: nil, onRetryExhausted: nil, shouldIgnoreRetryPolicy: true)
         
         // verify that on retry it's still in a failed state with the inverted condition
         internalAPI.authManager.requestNewAuthToken(hasFailedPriorAuth: true,
                                                     onSuccess: { token in
                                                         condition2.fulfill()
-        }, shouldIgnoreRetryPolicy: true)
+        }, onRetryExhausted: nil, shouldIgnoreRetryPolicy: true)
         
         // now make a successful request to reset the AuthManager
         internalAPI.track("", onSuccess: { data in
@@ -748,53 +748,54 @@ class AuthTests: XCTestCase {
         internalAPI.authManager.requestNewAuthToken(hasFailedPriorAuth: false,
                                                     onSuccess: { token in
                                                         condition3.fulfill()
-        }, shouldIgnoreRetryPolicy: true)
+        }, onRetryExhausted: nil, shouldIgnoreRetryPolicy: true)
         
         wait(for: [condition1, condition3], timeout: testExpectationTimeout)
         wait(for: [condition2], timeout: testExpectationTimeoutForInverted)
     }
     
     func testRefreshTimerQueueRejection() {
-        let condition1 = expectation(description: "\(#function) - first refresh timer never happened called")
-        let condition2 = expectation(description: "\(#function) - second refresh timer should not have been called")
-        condition2.isInverted = true
-        
+        // With the unified pendingAuth callback contract, a second in-flight
+        // requestNewAuthToken piggybacks on the pending request and receives
+        // the same resolved token instead of being silently dropped.
+        let condition1 = expectation(description: "\(#function) - first caller resolves with token")
+        let condition2 = expectation(description: "\(#function) - piggyback caller resolves with same token")
+
         class AsyncAuthDelegate: IterableAuthDelegate {
             func onAuthTokenRequested(completion: @escaping AuthTokenRetrievalHandler) {
                 DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
                     completion(AuthTests.authToken)
                 }
             }
-            
-            func onAuthFailure(_ authFailure: AuthFailure) {
-                
-            }
+
+            func onAuthFailure(_ authFailure: AuthFailure) {}
         }
-        
+
         let authDelegate = AsyncAuthDelegate()
-        
+
         let config = IterableConfig()
         config.authDelegate = authDelegate
-        
-        let authManager = AuthManager(delegate: config.authDelegate, 
+
+        let authManager = AuthManager(delegate: config.authDelegate,
                                       authRetryPolicy: RetryPolicy(maxRetry: 1, retryInterval: 0, retryBackoff: .linear),
                                       expirationRefreshPeriod: config.expiringAuthTokenRefreshPeriod,
                                       localStorage: MockLocalStorage(),
                                       dateProvider: MockDateProvider())
-        
+
         authManager.requestNewAuthToken(hasFailedPriorAuth: false,
                                         onSuccess: { token in
                                             XCTAssertEqual(token, AuthTests.authToken)
                                             condition1.fulfill()
         }, shouldIgnoreRetryPolicy: true)
-        
+
         authManager.requestNewAuthToken(hasFailedPriorAuth: false,
                                         onSuccess: { token in
+                                            XCTAssertEqual(token, AuthTests.authToken)
                                             condition2.fulfill()
         }, shouldIgnoreRetryPolicy: true)
-        
-        wait(for: [condition1], timeout: testExpectationTimeout)
-        wait(for: [condition2], timeout: 1.0)
+
+        wait(for: [condition1, condition2], timeout: testExpectationTimeout)
+        _ = authDelegate
     }
     
     func testAuthTokenNotRequestingForAlreadyExistingEmail() {
@@ -1032,6 +1033,222 @@ class AuthTests: XCTestCase {
         log("final: totalAttempts=\(totalAttempts) tokenRequestedCount=\(tokenRequestedCount) tokenDelivered=\(tokenDelivered) attemptsByRequest=\(attemptsByRequest)")
         XCTAssertEqual(tokenRequestedCount, 1)
         XCTAssertEqual(totalAttempts, 8)
+    }
+
+    // MARK: - SDK-392: callback resolution tests
+
+    func testScheduleRefreshTimer_callsOnRetryExhausted_whenRetriesPaused() {
+        let exhaustionCalled = expectation(description: "onRetryExhausted called when retries paused")
+        let successNotCalled = expectation(description: "successCallback should not be called")
+        successNotCalled.isInverted = true
+
+        let authDelegate = createAuthDelegate({ nil })
+        let authManager = AuthManager(delegate: authDelegate,
+                                      authRetryPolicy: RetryPolicy(maxRetry: 10, retryInterval: 0, retryBackoff: .linear),
+                                      expirationRefreshPeriod: 60,
+                                      localStorage: MockLocalStorage(),
+                                      dateProvider: MockDateProvider())
+        authManager.pauseAuthRetries(true)
+
+        authManager.scheduleAuthTokenRefreshTimer(interval: 0.01,
+                                                  isScheduledRefresh: false,
+                                                  successCallback: { _ in successNotCalled.fulfill() },
+                                                  onRetryExhausted: { exhaustionCalled.fulfill() })
+
+        wait(for: [exhaustionCalled], timeout: testExpectationTimeout)
+        wait(for: [successNotCalled], timeout: testExpectationTimeoutForInverted)
+    }
+
+    func testScheduleRefreshTimer_callsExhaustion_whenMaxRetriesReached() {
+        let exhaustionCalled = expectation(description: "onRetryExhausted called when max retries reached")
+
+        let authDelegate = createAuthDelegate({ nil })
+        let localStorage = MockLocalStorage()
+        localStorage.email = AuthTests.email
+
+        let authManager = AuthManager(delegate: authDelegate,
+                                      authRetryPolicy: RetryPolicy(maxRetry: 0, retryInterval: 0, retryBackoff: .linear),
+                                      expirationRefreshPeriod: 60,
+                                      localStorage: localStorage,
+                                      dateProvider: MockDateProvider())
+
+        authManager.scheduleAuthTokenRefreshTimer(interval: 0.01,
+                                                  isScheduledRefresh: false,
+                                                  successCallback: { _ in XCTFail("successCallback should not be called when retries exhausted") },
+                                                  onRetryExhausted: { exhaustionCalled.fulfill() })
+
+        wait(for: [exhaustionCalled], timeout: testExpectationTimeout)
+    }
+
+    func testScheduleRefreshTimer_callsExhaustion_whenNoUserIdentity() {
+        let exhaustionCalled = expectation(description: "onRetryExhausted called when no email/userId")
+
+        let authDelegate = createAuthDelegate({ AuthTests.authToken })
+        let authManager = AuthManager(delegate: authDelegate,
+                                      authRetryPolicy: RetryPolicy(maxRetry: 10, retryInterval: 0, retryBackoff: .linear),
+                                      expirationRefreshPeriod: 60,
+                                      localStorage: MockLocalStorage(),
+                                      dateProvider: MockDateProvider())
+
+        authManager.scheduleAuthTokenRefreshTimer(interval: 0.01,
+                                                  isScheduledRefresh: false,
+                                                  successCallback: { _ in XCTFail("successCallback should not be called with no user identity") },
+                                                  onRetryExhausted: { exhaustionCalled.fulfill() })
+
+        wait(for: [exhaustionCalled], timeout: testExpectationTimeout)
+    }
+
+    func testSendRequest_resolvesFulfillViaExhaustion_on401WhenRetriesExhausted() {
+        let failureCalled = expectation(description: "failure handler called via exhaustion path")
+
+        let invalidJwtError = SendRequestError(reason: "Invalid JWT",
+                                               data: [JsonKey.Response.iterableCode: JsonValue.Code.invalidJwtPayload].toJsonData(),
+                                               httpStatusCode: 401,
+                                               iterableCode: JsonValue.Code.invalidJwtPayload)
+
+        let authDelegate = createAuthDelegate({ AuthTests.authToken })
+        let localStorage = MockLocalStorage()
+        localStorage.email = AuthTests.email
+
+        let authManager = AuthManager(delegate: authDelegate,
+                                      authRetryPolicy: RetryPolicy(maxRetry: 0, retryInterval: 0, retryBackoff: .linear),
+                                      expirationRefreshPeriod: 60,
+                                      localStorage: localStorage,
+                                      dateProvider: MockDateProvider())
+
+        let result = RequestProcessorUtil.sendRequest(requestProvider: { Fulfill(error: invalidJwtError) },
+                                                     failureHandler: { _, _ in failureCalled.fulfill() },
+                                                     authManager: authManager,
+                                                     requestIdentifier: "test-exhausted-retries")
+
+        result.onSuccess { _ in XCTFail("should not succeed when auth retries are exhausted") }
+
+        wait(for: [failureCalled], timeout: testExpectationTimeout)
+        XCTAssertTrue(result.isResolved())
+    }
+
+    func testScheduleRefreshTimer_notifiesAllQueuedCallers_onExhaustion() {
+        let firstExhausted = expectation(description: "first caller exhaustion fires")
+        let secondExhausted = expectation(description: "second caller exhaustion fires")
+
+        let authDelegate = createAuthDelegate({ nil })
+        let localStorage = MockLocalStorage()
+        localStorage.email = AuthTests.email
+
+        let authManager = AuthManager(delegate: authDelegate,
+                                      authRetryPolicy: RetryPolicy(maxRetry: 0, retryInterval: 0, retryBackoff: .linear),
+                                      expirationRefreshPeriod: 60,
+                                      localStorage: localStorage,
+                                      dateProvider: MockDateProvider())
+
+        authManager.scheduleAuthTokenRefreshTimer(interval: 0.2,
+                                                  isScheduledRefresh: false,
+                                                  successCallback: { _ in XCTFail("success should not fire") },
+                                                  onRetryExhausted: { firstExhausted.fulfill() })
+
+        authManager.scheduleAuthTokenRefreshTimer(interval: 0.2,
+                                                  isScheduledRefresh: false,
+                                                  successCallback: { _ in XCTFail("success should not fire") },
+                                                  onRetryExhausted: { secondExhausted.fulfill() })
+
+        wait(for: [firstExhausted, secondExhausted], timeout: testExpectationTimeout)
+    }
+
+    func testScheduleRefreshTimer_resolvesExhaustion_whenPausedMidInterval() {
+        let exhaustionCalled = expectation(description: "exhaustion fires when paused mid-interval")
+
+        // Keep localStorage empty at init so AuthManager doesn't auto-schedule an
+        // expiration-refresh timer via retrieveAuthToken; then set email so the timer
+        // closure takes the requestNewAuthToken path and hits shouldPauseRetry.
+        let authDelegate = createAuthDelegate({ AuthTests.authToken })
+        let localStorage = MockLocalStorage()
+
+        let authManager = AuthManager(delegate: authDelegate,
+                                      authRetryPolicy: RetryPolicy(maxRetry: 10, retryInterval: 0, retryBackoff: .linear),
+                                      expirationRefreshPeriod: 60,
+                                      localStorage: localStorage,
+                                      dateProvider: MockDateProvider())
+
+        localStorage.email = AuthTests.email
+
+        authManager.scheduleAuthTokenRefreshTimer(interval: 0.2,
+                                                  isScheduledRefresh: false,
+                                                  successCallback: { _ in XCTFail("success should not fire once paused") },
+                                                  onRetryExhausted: { exhaustionCalled.fulfill() })
+
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.05) {
+            authManager.pauseAuthRetries(true)
+        }
+
+        wait(for: [exhaustionCalled], timeout: testExpectationTimeout)
+    }
+
+    func testLogout_resolvesPendingFulfills_viaExhaustion() {
+        let exhaustionCalled = expectation(description: "exhaustion fires on logout while retry is pending")
+
+        class HangingAuthDelegate: IterableAuthDelegate {
+            func onAuthTokenRequested(completion: @escaping AuthTokenRetrievalHandler) { /* never completes */ }
+            func onAuthFailure(_ authFailure: AuthFailure) {}
+        }
+
+        let localStorage = MockLocalStorage()
+        localStorage.email = AuthTests.email
+
+        let authManager = AuthManager(delegate: HangingAuthDelegate(),
+                                      authRetryPolicy: RetryPolicy(maxRetry: 10, retryInterval: 0, retryBackoff: .linear),
+                                      expirationRefreshPeriod: 60,
+                                      localStorage: localStorage,
+                                      dateProvider: MockDateProvider())
+
+        authManager.scheduleAuthTokenRefreshTimer(interval: 1.0,
+                                                  isScheduledRefresh: false,
+                                                  successCallback: { _ in XCTFail("success should not fire after logout") },
+                                                  onRetryExhausted: { exhaustionCalled.fulfill() })
+
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.05) {
+            authManager.logoutUser()
+        }
+
+        wait(for: [exhaustionCalled], timeout: testExpectationTimeout)
+    }
+
+    func testRequestNewAuthToken_enqueuesCallbacks_whenPendingAuth() {
+        let firstResolved = expectation(description: "first caller resolves with token")
+        let piggybackResolved = expectation(description: "piggyback caller resolves with same token")
+
+        class AsyncAuthDelegate: IterableAuthDelegate {
+            func onAuthTokenRequested(completion: @escaping AuthTokenRetrievalHandler) {
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                    completion(AuthTests.authToken)
+                }
+            }
+            func onAuthFailure(_ authFailure: AuthFailure) {}
+        }
+
+        // AuthManager holds delegate weakly; retain locally so the async completion fires.
+        let authDelegate = AsyncAuthDelegate()
+        let authManager = AuthManager(delegate: authDelegate,
+                                      authRetryPolicy: RetryPolicy(maxRetry: 10, retryInterval: 0, retryBackoff: .linear),
+                                      expirationRefreshPeriod: 0,
+                                      localStorage: MockLocalStorage(),
+                                      dateProvider: MockDateProvider())
+
+        authManager.requestNewAuthToken(hasFailedPriorAuth: false,
+                                        onSuccess: { token in
+                                            XCTAssertEqual(token, AuthTests.authToken)
+                                            firstResolved.fulfill()
+                                        },
+                                        shouldIgnoreRetryPolicy: true)
+
+        authManager.requestNewAuthToken(hasFailedPriorAuth: false,
+                                        onSuccess: { token in
+                                            XCTAssertEqual(token, AuthTests.authToken)
+                                            piggybackResolved.fulfill()
+                                        },
+                                        shouldIgnoreRetryPolicy: true)
+
+        wait(for: [firstResolved, piggybackResolved], timeout: testExpectationTimeout)
+        _ = authDelegate
     }
 
     // MARK: - Private

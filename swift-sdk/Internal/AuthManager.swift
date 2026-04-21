@@ -39,10 +39,26 @@ class AuthManager: IterableAuthManagerProtocol {
     
     func requestNewAuthToken(hasFailedPriorAuth: Bool = false,
                              onSuccess: AuthTokenRetrievalHandler? = nil,
+                             onRetryExhausted: (() -> Void)? = nil,
                              shouldIgnoreRetryPolicy: Bool) {
         ITBInfo()
         
-        if shouldPauseRetry(shouldIgnoreRetryPolicy) || pendingAuth || hasFailedAuth(hasFailedPriorAuth) {
+        if shouldPauseRetry(shouldIgnoreRetryPolicy) {
+            addPendingExhaustionCallback(onRetryExhausted)
+            invokePendingExhaustionCallbacks()
+            return
+        }
+
+        if pendingAuth {
+            // In-flight auth is already running; piggyback so the current resolution drains us.
+            addPendingCallback(onSuccess)
+            addPendingExhaustionCallback(onRetryExhausted)
+            return
+        }
+
+        if hasFailedAuth(hasFailedPriorAuth) {
+            addPendingExhaustionCallback(onRetryExhausted)
+            invokePendingExhaustionCallbacks()
             return
         }
         
@@ -51,14 +67,14 @@ class AuthManager: IterableAuthManagerProtocol {
         
         if shouldUseLastValidToken(shouldIgnoreRetryPolicy) {
             // if some JWT retry had valid token it will not fetch the auth token again from developer function
-            onAuthTokenReceived(retrievedAuthToken: authToken, onSuccess: onSuccess)
+            onAuthTokenReceived(retrievedAuthToken: authToken, onSuccess: onSuccess, onRetryExhausted: onRetryExhausted)
             return
         }
         
         delegate?.onAuthTokenRequested { [weak self] retrievedAuthToken in
             self?.pendingAuth = false
             self?.retryCount+=1
-            self?.onAuthTokenReceived(retrievedAuthToken: retrievedAuthToken, onSuccess: onSuccess)
+            self?.onAuthTokenReceived(retrievedAuthToken: retrievedAuthToken, onSuccess: onSuccess, onRetryExhausted: onRetryExhausted)
         }
     }
     
@@ -89,7 +105,8 @@ class AuthManager: IterableAuthManagerProtocol {
         storeAuthToken()
         
         clearRefreshTimer()
-        clearPendingCallbacks()
+        // Resolve any upstream Fulfills instead of orphaning them.
+        invokePendingExhaustionCallbacks()
   
         if localStorage.email != nil || localStorage.userId != nil || localStorage.userIdUnknownUser != nil {
             localStorage.unknownUserEvents = nil
@@ -124,6 +141,7 @@ class AuthManager: IterableAuthManagerProtocol {
     private var isTimerScheduled: Bool = false
     
     private var pendingSuccessCallbacks: [AuthTokenRetrievalHandler] = []
+    private var pendingExhaustionCallbacks: [() -> Void] = []
     private let callbackQueue = DispatchQueue(label: "com.iterable.authCallbackQueue")
     
     private weak var delegate: IterableAuthDelegate?
@@ -178,7 +196,19 @@ class AuthManager: IterableAuthManagerProtocol {
         _ = queueAuthTokenExpirationRefresh(authToken)
     }
     
-    private func onAuthTokenReceived(retrievedAuthToken: String?, onSuccess: AuthTokenRetrievalHandler? = nil) {
+    /// Resolves a completed auth token fetch.
+    ///
+    /// Success path ordering is deliberate:
+    /// 1. Drain piggybacked `pendingAuth` waiters with the new token (via `invokePendingCallbacks`)
+    ///    before step 2 re-enqueues `onSuccess` for the scheduled refresh cycle — otherwise the
+    ///    direct caller's `onSuccess` would fire twice.
+    /// 2. Queue the next expiration refresh (`queueAuthTokenExpirationRefresh`), which may enqueue
+    ///    `onSuccess`/`onRetryExhausted` against the future timer.
+    /// 3. Fire the direct caller's `onSuccess` with the resolved token.
+    ///
+    /// Failure path (nil token): report auth failure, then schedule a retry timer carrying
+    /// `onSuccess`/`onRetryExhausted` forward.
+    private func onAuthTokenReceived(retrievedAuthToken: String?, onSuccess: AuthTokenRetrievalHandler? = nil, onRetryExhausted: (() -> Void)? = nil) {
         ITBInfo()
 
         pendingAuth = false
@@ -187,13 +217,16 @@ class AuthManager: IterableAuthManagerProtocol {
         authToken = retrievedAuthToken
         storeAuthToken()
 
-        if retrievedAuthToken != nil {
+        if let resolvedToken = retrievedAuthToken {
             // Only transition to .unknown from .invalid (auth recovery).
             // When state is .valid (normal scheduled refresh), keep it .valid.
             if lastAuthTokenState == .invalid {
                 lastAuthTokenState = .unknown
             }
-            let isRefreshQueued = queueAuthTokenExpirationRefresh(retrievedAuthToken, onSuccess: onSuccess)
+            // Drain pendingAuth waiters before queueAuthTokenExpirationRefresh re-enqueues `onSuccess`
+            // for the future refresh cycle; otherwise direct + drain would double-fire it.
+            invokePendingCallbacks(with: resolvedToken)
+            let isRefreshQueued = queueAuthTokenExpirationRefresh(retrievedAuthToken, onSuccess: onSuccess, onRetryExhausted: onRetryExhausted)
             if !isRefreshQueued {
                 onSuccess?(authToken)
                 authToken = retrievedAuthToken
@@ -206,7 +239,7 @@ class AuthManager: IterableAuthManagerProtocol {
             NotificationCenter.default.post(name: .iterableAuthTokenRefreshed, object: nil)
         } else {
             handleAuthFailure(failedAuthToken: nil, reason: .authTokenNull)
-            scheduleAuthTokenRefreshTimer(interval: getNextRetryInterval(), successCallback: onSuccess)
+            scheduleAuthTokenRefreshTimer(interval: getNextRetryInterval(), successCallback: onSuccess, onRetryExhausted: onRetryExhausted)
             authToken = retrievedAuthToken
             storeAuthToken()
         }
@@ -216,7 +249,7 @@ class AuthManager: IterableAuthManagerProtocol {
         delegate?.onAuthFailure(AuthFailure(userKey: IterableUtil.getEmailOrUserId(), failedAuthToken: failedAuthToken, failedRequestTime: IterableUtil.secondsFromEpoch(for: dateProvider.currentDate), failureReason: reason))
     }
     
-    private func queueAuthTokenExpirationRefresh(_ authToken: String?, onSuccess: AuthTokenRetrievalHandler? = nil) -> Bool {
+    private func queueAuthTokenExpirationRefresh(_ authToken: String?, onSuccess: AuthTokenRetrievalHandler? = nil, onRetryExhausted: (() -> Void)? = nil) -> Bool {
         ITBInfo()
         
         clearRefreshTimer()
@@ -225,45 +258,52 @@ class AuthManager: IterableAuthManagerProtocol {
             handleAuthFailure(failedAuthToken: authToken, reason: .authTokenPayloadInvalid)
             
             /// schedule a default timer of 10 seconds if we fall into this case
-            scheduleAuthTokenRefreshTimer(interval: getNextRetryInterval(), successCallback: onSuccess)
+            scheduleAuthTokenRefreshTimer(interval: getNextRetryInterval(), successCallback: onSuccess, onRetryExhausted: onRetryExhausted)
             
             return false  // Return false since we couldn't queue a valid refresh
         }
         
         let timeIntervalToRefresh = TimeInterval(expirationDate) - dateProvider.currentDate.timeIntervalSince1970 - expirationRefreshPeriod
         if timeIntervalToRefresh > 0 {
-            scheduleAuthTokenRefreshTimer(interval: timeIntervalToRefresh, isScheduledRefresh: true, successCallback: onSuccess)
+            scheduleAuthTokenRefreshTimer(interval: timeIntervalToRefresh, isScheduledRefresh: true, successCallback: onSuccess, onRetryExhausted: onRetryExhausted)
             return true  // Only return true when we successfully queue a refresh
         }
         return false
     }
     
-    func scheduleAuthTokenRefreshTimer(interval: TimeInterval, isScheduledRefresh: Bool = false, successCallback: AuthTokenRetrievalHandler? = nil) {
+    func scheduleAuthTokenRefreshTimer(interval: TimeInterval, isScheduledRefresh: Bool = false, successCallback: AuthTokenRetrievalHandler? = nil, onRetryExhausted: (() -> Void)? = nil) {
         ITBInfo()
         
         // If timer is already scheduled, queue the callback for later invocation
         if isTimerScheduled && !isScheduledRefresh {
             addPendingCallback(successCallback)
+            addPendingExhaustionCallback(onRetryExhausted)
             return
         }
         
         if shouldSkipTokenRefresh(isScheduledRefresh: isScheduledRefresh) {
-            // we only stop schedule token refresh if it is called from retry (in case of failure). The normal auth token refresh schedule would work
+            onRetryExhausted?()
             return
         }
         
-        // Add the initial callback to pending list
+        // Add the initial callbacks to pending lists
         addPendingCallback(successCallback)
+        addPendingExhaustionCallback(onRetryExhausted)
         
         expirationRefreshTimer = Timer.scheduledTimer(withTimeInterval: interval, repeats: false) { [weak self] _ in
-            self?.isTimerScheduled = false
             if self?.localStorage.email != nil || self?.localStorage.userId != nil {
                 self?.requestNewAuthToken(hasFailedPriorAuth: false, onSuccess: { [weak self] token in
-                    self?.invokePendingCallbacks(with: token)
+                    if let token = token {
+                        self?.invokePendingCallbacks(with: token)
+                    } else {
+                        self?.invokePendingExhaustionCallbacks()
+                    }
                 }, shouldIgnoreRetryPolicy: isScheduledRefresh)
+                self?.isTimerScheduled = false
             } else {
                 ITBDebug("Email or userId is not available. Skipping token refresh")
-                self?.clearPendingCallbacks()
+                self?.isTimerScheduled = false
+                self?.invokePendingExhaustionCallbacks()
             }
         }
         
@@ -283,18 +323,30 @@ class AuthManager: IterableAuthManagerProtocol {
         }
     }
     
-    private func invokePendingCallbacks(with token: String?) {
-        let callbacks = callbackQueue.sync { () -> [AuthTokenRetrievalHandler] in
-            let current = pendingSuccessCallbacks
-            pendingSuccessCallbacks.removeAll()
-            return current
-        }
-        callbacks.forEach { $0(token) }
+    private func invokePendingCallbacks(with token: String) {
+        drainCallbacks().success.forEach { $0(token) }
     }
     
-    private func clearPendingCallbacks() {
+    private func addPendingExhaustionCallback(_ callback: (() -> Void)?) {
+        guard let callback = callback else { return }
         callbackQueue.sync {
+            pendingExhaustionCallbacks.append(callback)
+        }
+    }
+    
+    private func invokePendingExhaustionCallbacks() {
+        drainCallbacks().exhaustion.forEach { $0() }
+    }
+    
+    /// Atomically drains both queues. Success and exhaustion are mutually exclusive:
+    /// invoking either one clears the other, so pending waiters only fire once.
+    private func drainCallbacks() -> (success: [AuthTokenRetrievalHandler], exhaustion: [() -> Void]) {
+        return callbackQueue.sync {
+            let success = pendingSuccessCallbacks
+            let exhaustion = pendingExhaustionCallbacks
             pendingSuccessCallbacks.removeAll()
+            pendingExhaustionCallbacks.removeAll()
+            return (success, exhaustion)
         }
     }
     
