@@ -93,8 +93,8 @@ final class MockAPIServer {
     }
 
     /// Returns a locally-synthesized mock response for `.server500` / `.connectionError`.
-    /// For `.normal` / `.jwt401` the request is proxied to the real Iterable API by
-    /// MockAPIServerURLProtocol; this method returns nil in those cases.
+    /// `.normal` is not intercepted (URLProtocol.canInit returns false), and `.jwt401`
+    /// is proxied by MockAPIServerURLProtocol, so this method returns nil for both.
     func mockResponse(for request: URLRequest) -> MockResponse? {
         guard isActive, let url = request.url else { return nil }
 
