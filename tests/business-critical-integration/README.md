@@ -277,6 +277,32 @@ To see everything that's happening:
 | `./scripts/run-tests.sh push --verbose` | Test push with details |
 | `open reports/` | View test reports in Finder |
 
+## 🔐 JWT Auth Retry Screen — Response Modes
+
+The **JWT Auth Retry** screen (inside the integration tester app) exercises the SDK's unified JWT retry logic. Its response-mode radios determine where traffic actually goes — matching the Android network-tester's behavior:
+
+| Mode       | Destination                               | Notes                                                                          |
+|------------|-------------------------------------------|--------------------------------------------------------------------------------|
+| `Normal`   | Real `https://api.iterable.com` (direct)  | URLProtocol opts out — the SDK talks to Iterable directly, no proxy. Use this to validate retry against prod-shape responses. |
+| `401`      | Real `https://api.iterable.com` (proxied) | Intercepted and re-issued with the `Authorization` header swapped to an **expired** JWT. Real backend returns a real `401 InvalidJwtPayload`. |
+| `500`      | Local synthesis inside `MockAPIServer`    | No real traffic — you can't force prod to 500.                                 |
+| `Conn Err` | Local synthesis inside `MockAPIServer`    | Emits `NSURLErrorNotConnectedToInternet`. Equivalent to Android's `DEAD_PORT` trick. |
+
+### Configuring a test project
+
+Proxied traffic lands in a real Iterable project. Use a **dedicated test project** to keep prod dashboards clean. The tester reads credentials from `integration-test-app/config/test-config.json`:
+
+```json
+{
+  "jwtApiKey": "<JWT-enabled API key from your test project>",
+  "jwtSecret": "<HMAC secret from the same test project>",
+  "baseUrl": "https://api.iterable.com",
+  "projectId": "<your test project ID>"
+}
+```
+
+The JWT secret rotates on the Iterable project's settings page; if you regenerate it, update `test-config.json` and rebuild.
+
 ## 🎉 What's Next?
 
 Once your local tests are passing:

@@ -208,8 +208,10 @@ extension AppDelegate {
 
         let apiKey = loadJWTApiKeyFromConfig() ?? loadApiKeyFromConfig()
 
-        // Activate mock server BEFORE init to intercept GET requests (getInAppMessages,
-        // embedded-messaging) so they don't hit the real API with test emails.
+        // Activate mock server BEFORE init so requests route through it. Depending
+        // on `apiResponseMode` the protocol will either proxy to the real Iterable
+        // API (.normal / .jwt401) or synthesize locally (.server500 / .connectionError).
+        MockAPIServer.shared.jwtSecret = jwtSecret
         MockAPIServer.shared.activate()
 
         IterableAPI.initialize(apiKey: apiKey, launchOptions: nil, config: config)

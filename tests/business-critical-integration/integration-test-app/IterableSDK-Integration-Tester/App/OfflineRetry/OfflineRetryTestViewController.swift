@@ -42,6 +42,15 @@ final class OfflineRetryTestViewController: UIViewController {
     private var radioButtons: [UIButton] = []
     private var selectedResponseMode: MockAPIServer.APIResponseMode = .normal
 
+    // Hint beside the radios: "→ real backend" vs "→ local mock"
+    private let responseDestinationLabel: UILabel = {
+        let label = UILabel()
+        label.font = .systemFont(ofSize: 10, weight: .regular)
+        label.textColor = .systemGray
+        label.text = "→ real backend (direct)"
+        return label
+    }()
+
     // Auth status
     private let authStatusLabel: UILabel = {
         let label = UILabel()
@@ -176,6 +185,7 @@ final class OfflineRetryTestViewController: UIViewController {
             radioButtons.append(button)
             radioRow.addArrangedSubview(button)
         }
+        radioRow.addArrangedSubview(responseDestinationLabel)
         // Select first radio
         radioButtons.first?.isSelected = true
         updateRadioAppearance()
@@ -573,7 +583,16 @@ final class OfflineRetryTestViewController: UIViewController {
         let mode = modes[sender.tag]
         selectedResponseMode = mode
         MockAPIServer.shared.apiResponseMode = mode
-        log("Response: \(mode.rawValue)")
+
+        let destination: String
+        switch mode {
+        case .normal:          destination = "→ real backend (direct)"
+        case .jwt401:          destination = "→ real backend (expired JWT)"
+        case .server500:       destination = "→ local mock"
+        case .connectionError: destination = "→ local mock"
+        }
+        responseDestinationLabel.text = destination
+        log("Response: \(mode.rawValue) \(destination)")
     }
 
     @objc private func showDatabase() {
