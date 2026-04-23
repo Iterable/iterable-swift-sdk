@@ -132,6 +132,15 @@ struct MessagesObtainedHandler {
         
         var messagesOverwritten = 0
         var newMessagesMap = OrderedDictionary<String, IterableInAppMessage>()
+        
+        // Mark messages that have been removed from the server response as consumed
+        // This ensures recalled campaigns won't be shown
+        removedMessages.forEach { message in
+            var mutableMessage = message
+            mutableMessage.consumed = true
+            newMessagesMap[message.messageId] = mutableMessage
+        }
+        
         messages.forEach { serverMessage in
             let messageId = serverMessage.messageId
             if let existingMessage = messagesMap[messageId] {
