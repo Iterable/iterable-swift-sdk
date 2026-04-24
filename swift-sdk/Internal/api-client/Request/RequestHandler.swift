@@ -56,18 +56,22 @@ class RequestHandler: RequestHandlerProtocol {
     func disableDeviceForCurrentUser(hexToken: String,
                                      withOnSuccess onSuccess: OnSuccessHandler?,
                                      onFailure: OnFailureHandler?) -> Pending<SendRequestValue, SendRequestError> {
-        onlineProcessor.disableDeviceForCurrentUser(hexToken: hexToken,
-                                                    withOnSuccess: onSuccess,
-                                                    onFailure: onFailure)
+        sendUsingRequestProcessor { processor in
+            processor.disableDeviceForCurrentUser(hexToken: hexToken,
+                                                  withOnSuccess: onSuccess,
+                                                  onFailure: onFailure)
+        }
     }
-    
+
     @discardableResult
     func disableDeviceForAllUsers(hexToken: String,
                                   withOnSuccess onSuccess: OnSuccessHandler?,
                                   onFailure: OnFailureHandler?) -> Pending<SendRequestValue, SendRequestError> {
-        onlineProcessor.disableDeviceForAllUsers(hexToken: hexToken,
-                                                 withOnSuccess: onSuccess,
-                                                 onFailure: onFailure)
+        sendUsingRequestProcessor { processor in
+            processor.disableDeviceForAllUsers(hexToken: hexToken,
+                                               withOnSuccess: onSuccess,
+                                               onFailure: onFailure)
+        }
     }
     
     @discardableResult

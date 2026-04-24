@@ -40,7 +40,35 @@ struct OfflineRequestProcessor: RequestProcessorProtocol {
         ITBInfo()
         taskRunner.stop()
     }
-    
+
+    @discardableResult
+    func disableDeviceForCurrentUser(hexToken: String,
+                                     withOnSuccess onSuccess: OnSuccessHandler?,
+                                     onFailure: OnFailureHandler?) -> Pending<SendRequestValue, SendRequestError> {
+        let requestGenerator = { (requestCreator: RequestCreator) in
+            requestCreator.createDisableDeviceRequest(forAllUsers: false, hexToken: hexToken)
+        }
+
+        return sendIterableRequest(requestGenerator: requestGenerator,
+                                   successHandler: onSuccess,
+                                   failureHandler: onFailure,
+                                   identifier: #function)
+    }
+
+    @discardableResult
+    func disableDeviceForAllUsers(hexToken: String,
+                                  withOnSuccess onSuccess: OnSuccessHandler?,
+                                  onFailure: OnFailureHandler?) -> Pending<SendRequestValue, SendRequestError> {
+        let requestGenerator = { (requestCreator: RequestCreator) in
+            requestCreator.createDisableDeviceRequest(forAllUsers: true, hexToken: hexToken)
+        }
+
+        return sendIterableRequest(requestGenerator: requestGenerator,
+                                   successHandler: onSuccess,
+                                   failureHandler: onFailure,
+                                   identifier: #function)
+    }
+
     @discardableResult
     func updateCart(items: [CommerceItem],
                     onSuccess: OnSuccessHandler?,
