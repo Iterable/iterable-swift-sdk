@@ -102,7 +102,7 @@ class BlankApiClient: ApiClientProtocol {
         Pending()
     }
     
-    func disableDevice(forAllUsers allUsers: Bool, hexToken: String) -> Pending<SendRequestValue, SendRequestError> {
+    func disableDevice(forAllUsers allUsers: Bool, hexToken: String, email: String?, userId: String?) -> Pending<SendRequestValue, SendRequestError> {
         Pending()
     }
     

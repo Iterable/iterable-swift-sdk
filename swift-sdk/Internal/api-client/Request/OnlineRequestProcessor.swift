@@ -40,23 +40,26 @@ struct OnlineRequestProcessor: RequestProcessorProtocol {
                                      userId: String? = nil,
                                      withOnSuccess onSuccess: OnSuccessHandler? = nil,
                                      onFailure: OnFailureHandler? = nil) -> Pending<SendRequestValue, SendRequestError> {
-        // Online path is synchronous within a call, so live `auth` matches the caller's
-        // identity at invocation time. The `email`/`userId` snapshot is only meaningful
-        // on the offline path, where request construction is deferred.
-        _ = email
-        _ = userId
-        return disableDevice(forAllUsers: false,
-                             hexToken: hexToken,
-                             onSuccess: onSuccess,
-                             onFailure: onFailure)
+        // Honor the caller-captured snapshot so the online fallback (when
+        // `HealthMonitor.canSchedule()` returns false) still targets the user who was
+        // current at call time — not whoever live `auth` points to after the deferred
+        // dispatch resolves.
+        disableDevice(forAllUsers: false,
+                      hexToken: hexToken,
+                      email: email,
+                      userId: userId,
+                      onSuccess: onSuccess,
+                      onFailure: onFailure)
     }
-    
+
     @discardableResult
     func disableDeviceForAllUsers(hexToken: String,
                                   withOnSuccess onSuccess: OnSuccessHandler? = nil,
                                   onFailure: OnFailureHandler? = nil) -> Pending<SendRequestValue, SendRequestError> {
         disableDevice(forAllUsers: true,
                       hexToken: hexToken,
+                      email: nil,
+                      userId: nil,
                       onSuccess: onSuccess,
                       onFailure: onFailure)
     }
@@ -324,9 +327,14 @@ struct OnlineRequestProcessor: RequestProcessorProtocol {
     @discardableResult
     private func disableDevice(forAllUsers allUsers: Bool,
                                hexToken: String,
+                               email: String?,
+                               userId: String?,
                                onSuccess: OnSuccessHandler? = nil,
                                onFailure: OnFailureHandler? = nil) -> Pending<SendRequestValue, SendRequestError> {
-        sendRequest(requestProvider: { apiClient.disableDevice(forAllUsers: allUsers, hexToken: hexToken) },
+        sendRequest(requestProvider: { apiClient.disableDevice(forAllUsers: allUsers,
+                                                               hexToken: hexToken,
+                                                               email: email,
+                                                               userId: userId) },
                     successHandler: onSuccess,
                     failureHandler: onFailure,
                     requestIdentifier: "disableDevice")

@@ -363,7 +363,11 @@ class RequestHandler: RequestHandlerProtocol {
     func handleLogout() throws {
         if offlineMode {
             DispatchQueue.global(qos: .background).async { [weak self] in
-                self?.offlineProcessor?.deleteAllTasks()
+                // Preserve queued `disableDevice` tasks across logout. They carry an
+                // identity snapshot baked in at call time, so they can safely replay
+                // after the current user is cleared — and they're the whole point of
+                // SDK-297 (retry the logout-time device disable if the network fails).
+                self?.offlineProcessor?.deleteAllTasks(preservingTasksWithName: Const.Path.disableDevice)
             }
         }
     }

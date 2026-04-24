@@ -150,9 +150,11 @@ extension ApiClient: ApiClientProtocol {
         return send(iterableRequestResult: result)
     }
     
-    func disableDevice(forAllUsers allUsers: Bool, hexToken: String) -> Pending<SendRequestValue, SendRequestError> {
+    func disableDevice(forAllUsers allUsers: Bool, hexToken: String, email: String?, userId: String?) -> Pending<SendRequestValue, SendRequestError> {
         let result = createRequestCreator().flatMap { $0.createDisableDeviceRequest(forAllUsers: allUsers,
-                                                                                    hexToken: hexToken) }
+                                                                                    hexToken: hexToken,
+                                                                                    email: email,
+                                                                                    userId: userId) }
         return send(iterableRequestResult: result)
     }
     

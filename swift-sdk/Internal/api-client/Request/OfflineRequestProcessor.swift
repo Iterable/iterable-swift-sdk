@@ -368,6 +368,11 @@ struct OfflineRequestProcessor: RequestProcessorProtocol {
         ITBInfo()
         taskScheduler.deleteAllTasks()
     }
+
+    func deleteAllTasks(preservingTasksWithName preservedName: String) {
+        ITBInfo()
+        taskScheduler.deleteAllTasks(preservingTasksWithName: preservedName)
+    }
     
     private let apiKey: String
     private weak var authProvider: AuthProvider?

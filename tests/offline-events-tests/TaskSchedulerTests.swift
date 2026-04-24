@@ -70,6 +70,52 @@ class TaskSchedulerTests: XCTestCase {
         XCTAssertEqual(numTimes, taskIds.count)
     }
     
+    // Regression for SDK-297: logout purges the offline queue, but a queued
+    // `disableDevice` task is the whole point of enabling offline retry for this
+    // endpoint — it must survive the purge so it can replay after the current user
+    // is cleared.
+    func testDeleteAllTasksPreservingTasksWithNameKeepsMatchingTasks() throws {
+        let preservedName = Const.Path.disableDevice
+        let mainContext = persistenceContextProvider.mainQueueContext()
+        try mainContext.create(task: IterableTask(id: "keep-1",
+                                                  name: preservedName,
+                                                  type: .apiCall,
+                                                  scheduledAt: dateProvider.currentDate,
+                                                  requestedAt: dateProvider.currentDate))
+        try mainContext.create(task: IterableTask(id: "drop-1",
+                                                  name: Const.Path.trackEvent,
+                                                  type: .apiCall,
+                                                  scheduledAt: dateProvider.currentDate,
+                                                  requestedAt: dateProvider.currentDate))
+        try mainContext.create(task: IterableTask(id: "drop-2",
+                                                  name: Const.Path.updateCart,
+                                                  type: .apiCall,
+                                                  scheduledAt: dateProvider.currentDate,
+                                                  requestedAt: dateProvider.currentDate))
+        try mainContext.save()
+        XCTAssertEqual(try mainContext.findAllTasks().count, 3, "sanity: seeded 3 tasks")
+
+        let healthMonitor = HealthMonitor(dataProvider: HealthMonitorDataProvider(maxTasks: 1000,
+                                                                                  persistenceContextProvider: persistenceContextProvider),
+                                          dateProvider: dateProvider,
+                                          networkSession: MockNetworkSession())
+        let scheduler = try createTaskScheduler(notificationCenter: MockNotificationCenter(),
+                                                healthMonitor: healthMonitor)
+
+        scheduler.deleteAllTasks(preservingTasksWithName: preservedName)
+
+        // The scheduler dispatches deletion onto a background CoreData context via
+        // `perform`. Give it a beat to settle, then verify from the main context.
+        let purgeSettled = expectation(description: #function)
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) { purgeSettled.fulfill() }
+        wait(for: [purgeSettled], timeout: 2.0)
+
+        let remaining = try mainContext.findAllTasks()
+        XCTAssertEqual(remaining.count, 1, "only the preserved task should remain")
+        XCTAssertEqual(remaining.first?.id, "keep-1")
+        XCTAssertEqual(remaining.first?.name, preservedName)
+    }
+
     @discardableResult
     private func scheduleSampleTask(taskScheduler: IterableTaskScheduler) throws -> Pending<String, IterableTaskError> {
         let apiKey = "zee-api-key"

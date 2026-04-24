@@ -184,6 +184,49 @@ class RequestHandlerTests: XCTestCase {
         waitForTaskRunner(requestHandler: requestHandler, expectation: bodyValidated)
     }
 
+    // Regression for SDK-297 P2 round 2: when offline mode is enabled but
+    // `HealthMonitor.canSchedule()` returns false, `RequestHandler` falls back to the
+    // online processor. The caller-captured identity snapshot must still be honored by
+    // that fallback path so the request doesn't race live `auth` mutations.
+    func testOnlineDisableDeviceForCurrentUserHonorsIdentitySnapshot() throws {
+        let snapshotEmail = "captured@example.com"
+        let hexToken = "zee-token"
+        let expectedBody: [String: Any] = [
+            "token": hexToken,
+            "email": snapshotEmail,
+        ]
+
+        let bodyValidated = expectation(description: #function)
+        let networkSession = MockNetworkSession()
+        networkSession.requestCallback = { request in
+            TestUtils.validate(request: request, apiEndPoint: Endpoint.api, path: Const.Path.disableDevice)
+            var requestBody = request.bodyDict
+            requestBody.removeValue(forKey: "createdAt")
+            XCTAssertTrue(TestUtils.areEqual(dict1: expectedBody, dict2: requestBody),
+                          "online fallback body should use the snapshot, got \(requestBody)")
+            bodyValidated.fulfill()
+        }
+
+        // `self` (the test class) conforms to AuthProvider with email="user@example.com",
+        // so passing a *different* snapshot email proves the online path used the
+        // snapshot rather than live `auth`.
+        let onlineProcessor = OnlineRequestProcessor(apiKey: "zee-api-key",
+                                                     authProvider: self,
+                                                     authManager: nil,
+                                                     endpoint: Endpoint.api,
+                                                     networkSession: networkSession,
+                                                     deviceMetadata: Self.deviceMetadata,
+                                                     dateProvider: dateProvider)
+
+        onlineProcessor.disableDeviceForCurrentUser(hexToken: hexToken,
+                                                    email: snapshotEmail,
+                                                    userId: nil,
+                                                    withOnSuccess: nil,
+                                                    onFailure: nil)
+
+        wait(for: [bodyValidated], timeout: testExpectationTimeout)
+    }
+
     // Regression for SDK-297 P2: the offline disable-device task must carry the literal
     // "disableDevice" request identifier so `RequestProcessorUtil.resetAuthRetries` skips
     // this request class on success. If the identifier drifts (e.g. `#function`), a
