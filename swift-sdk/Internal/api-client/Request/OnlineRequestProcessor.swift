@@ -36,8 +36,7 @@ struct OnlineRequestProcessor: RequestProcessorProtocol {
     
     @discardableResult
     func disableDeviceForCurrentUser(hexToken: String,
-                                     email: String? = nil,
-                                     userId: String? = nil,
+                                     identitySnapshot: UserIdentitySnapshot? = nil,
                                      withOnSuccess onSuccess: OnSuccessHandler? = nil,
                                      onFailure: OnFailureHandler? = nil) -> Pending<SendRequestValue, SendRequestError> {
         // Honor the caller-captured snapshot so the online fallback (when
@@ -46,8 +45,7 @@ struct OnlineRequestProcessor: RequestProcessorProtocol {
         // dispatch resolves.
         disableDevice(forAllUsers: false,
                       hexToken: hexToken,
-                      email: email,
-                      userId: userId,
+                      identitySnapshot: identitySnapshot,
                       onSuccess: onSuccess,
                       onFailure: onFailure)
     }
@@ -58,8 +56,7 @@ struct OnlineRequestProcessor: RequestProcessorProtocol {
                                   onFailure: OnFailureHandler? = nil) -> Pending<SendRequestValue, SendRequestError> {
         disableDevice(forAllUsers: true,
                       hexToken: hexToken,
-                      email: nil,
-                      userId: nil,
+                      identitySnapshot: nil,
                       onSuccess: onSuccess,
                       onFailure: onFailure)
     }
@@ -327,17 +324,15 @@ struct OnlineRequestProcessor: RequestProcessorProtocol {
     @discardableResult
     private func disableDevice(forAllUsers allUsers: Bool,
                                hexToken: String,
-                               email: String?,
-                               userId: String?,
+                               identitySnapshot: UserIdentitySnapshot?,
                                onSuccess: OnSuccessHandler? = nil,
                                onFailure: OnFailureHandler? = nil) -> Pending<SendRequestValue, SendRequestError> {
         sendRequest(requestProvider: { apiClient.disableDevice(forAllUsers: allUsers,
                                                                hexToken: hexToken,
-                                                               email: email,
-                                                               userId: userId) },
+                                                               identitySnapshot: identitySnapshot) },
                     successHandler: onSuccess,
                     failureHandler: onFailure,
-                    requestIdentifier: "disableDevice")
+                    requestIdentifier: RequestIdentifier.disableDevice)
     }
 
     private func sendRequest(requestProvider: @escaping () -> Pending<SendRequestValue, SendRequestError>,

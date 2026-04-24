@@ -25,12 +25,15 @@ struct UpdateSubscriptionsInfo {
     let templateId: NSNumber?
 }
 
+enum RequestIdentifier {
+    static let disableDevice = "disableDevice"
+}
+
 /// `RequestHandler` will delegate network related calls to this protocol.
 protocol RequestProcessorProtocol {
     @discardableResult
     func disableDeviceForCurrentUser(hexToken: String,
-                                     email: String?,
-                                     userId: String?,
+                                     identitySnapshot: UserIdentitySnapshot?,
                                      withOnSuccess onSuccess: OnSuccessHandler?,
                                      onFailure: OnFailureHandler?) -> Pending<SendRequestValue, SendRequestError>
 

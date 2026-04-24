@@ -615,23 +615,17 @@ struct RequestCreator {
     
     func createDisableDeviceRequest(forAllUsers allUsers: Bool,
                                     hexToken: String,
-                                    email: String? = nil,
-                                    userId: String? = nil) -> Result<IterableRequest, IterableError> {
+                                    identitySnapshot: UserIdentitySnapshot? = nil) -> Result<IterableRequest, IterableError> {
         var body = [AnyHashable: Any]()
 
         body.setValue(for: JsonKey.token, value: hexToken)
 
         if !allUsers {
-            // Prefer an explicit identity snapshot when provided (offline queue path)
-            // so the replayed request targets the user who was current at call time,
-            // not whoever `auth` points to when the task eventually runs.
-            if email != nil || userId != nil {
-                if let email = email {
-                    body.setValue(for: JsonKey.email, value: email)
-                }
-                if let userId = userId {
-                    body.setValue(for: JsonKey.userId, value: userId)
-                }
+            // Prefer an explicit identity snapshot when provided so the request targets
+            // the user who was current at call time, not whoever `auth` points to
+            // when deferred processor selection eventually resolves.
+            if let identitySnapshot {
+                identitySnapshot.apply(to: &body)
             } else {
                 setCurrentUser(inDict: &body)
             }

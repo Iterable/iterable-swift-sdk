@@ -63,13 +63,10 @@ class RequestHandler: RequestHandlerProtocol {
         // request still targets the user who was current at call time — not whoever the
         // live `auth` points to after `logoutPreviousUser()`, `setEmail`, or `setUserId`
         // has mutated state.
-        let auth = authProvider?.auth
-        let snapshotEmail = auth?.email
-        let snapshotUserId = auth?.userId
+        let identitySnapshot = UserIdentitySnapshot(auth: authProvider?.auth)
         return sendUsingRequestProcessor { processor in
             processor.disableDeviceForCurrentUser(hexToken: hexToken,
-                                                  email: snapshotEmail,
-                                                  userId: snapshotUserId,
+                                                  identitySnapshot: identitySnapshot,
                                                   withOnSuccess: onSuccess,
                                                   onFailure: onFailure)
         }

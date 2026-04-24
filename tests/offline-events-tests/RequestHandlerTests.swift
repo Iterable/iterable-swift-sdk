@@ -219,8 +219,7 @@ class RequestHandlerTests: XCTestCase {
                                                      dateProvider: dateProvider)
 
         onlineProcessor.disableDeviceForCurrentUser(hexToken: hexToken,
-                                                    email: snapshotEmail,
-                                                    userId: nil,
+                                                    identitySnapshot: .email(snapshotEmail),
                                                     withOnSuccess: nil,
                                                     onFailure: nil)
 
@@ -269,8 +268,7 @@ class RequestHandlerTests: XCTestCase {
         offlineProcessor.start()
         let onSuccessCalled = expectation(description: "disableDevice onSuccess")
         offlineProcessor.disableDeviceForCurrentUser(hexToken: hexToken,
-                                                     email: "user@example.com",
-                                                     userId: nil,
+                                                     identitySnapshot: .email("user@example.com"),
                                                      withOnSuccess: { _ in onSuccessCalled.fulfill() },
                                                      onFailure: nil)
 
