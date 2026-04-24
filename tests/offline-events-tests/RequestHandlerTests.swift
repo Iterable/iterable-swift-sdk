@@ -125,20 +125,120 @@ class RequestHandlerTests: XCTestCase {
         let bodyDict: [String: Any] = [
             "token": hexToken,
         ]
-        
+
         let expectations = createExpectations(description: #function)
-        
+
         let requestGenerator = { (requestHandler: RequestHandlerProtocol) in
             requestHandler.disableDeviceForAllUsers(hexToken: hexToken,
                                                     withOnSuccess: expectations.onSuccess,
                                                     onFailure: expectations.onFailure)
         }
-        
+
         try handleRequestWithSuccessAndFailure(requestGenerator: requestGenerator,
                                                 path: Const.Path.disableDevice,
                                                 bodyDict: bodyDict)
-        
+
         wait(for: [expectations.successExpectation, expectations.failureExpectation], timeout: testExpectationTimeout)
+    }
+
+    // Regression for SDK-297 P1: the offline queue must bake in the identity that was
+    // current at call time. `logoutPreviousUser()` (and `setEmail`/`setUserId`) clear
+    // `_email`/`_userId` synchronously after invoking `disableDeviceForCurrentUser`, so
+    // the replayed request would otherwise target the wrong user (or no user, collapsing
+    // into the all-users payload).
+    func testDisableDeviceForCurrentUserCapturesIdentityAtCallTime() throws {
+        let originalEmail = "original@example.com"
+        let mutatedEmail = "mutated@example.com"
+        let hexToken = "zee-token"
+        let expectedBody: [String: Any] = [
+            "token": hexToken,
+            "email": originalEmail,
+        ]
+
+        let mutableAuth = MutableAuthProvider(
+            initial: Auth(userId: nil, email: originalEmail, authToken: nil, userIdUnknownUser: nil)
+        )
+
+        let bodyValidated = expectation(description: #function)
+        let networkSession = MockNetworkSession()
+        networkSession.requestCallback = { request in
+            TestUtils.validate(request: request, apiEndPoint: Endpoint.api, path: Const.Path.disableDevice)
+            var requestBody = request.bodyDict
+            requestBody.removeValue(forKey: "createdAt")
+            XCTAssertTrue(TestUtils.areEqual(dict1: expectedBody, dict2: requestBody),
+                          "replayed body should carry the identity captured at call time, got \(requestBody)")
+            bodyValidated.fulfill()
+        }
+
+        let requestHandler = createRequestHandler(networkSession: networkSession,
+                                                  notificationCenter: MockNotificationCenter(),
+                                                  selectOffline: true,
+                                                  authProvider: mutableAuth)
+
+        requestHandler.disableDeviceForCurrentUser(hexToken: hexToken,
+                                                   withOnSuccess: nil,
+                                                   onFailure: nil)
+        // Simulate `logoutPreviousUser()` nulling identity immediately after the call.
+        mutableAuth.currentAuth = Auth(userId: nil, email: mutatedEmail, authToken: nil, userIdUnknownUser: nil)
+
+        waitForTaskRunner(requestHandler: requestHandler, expectation: bodyValidated)
+    }
+
+    // Regression for SDK-297 P2: the offline disable-device task must carry the literal
+    // "disableDevice" request identifier so `RequestProcessorUtil.resetAuthRetries` skips
+    // this request class on success. If the identifier drifts (e.g. `#function`), a
+    // queued JWT 401 followed by a successful disable would incorrectly flip auth state
+    // back to "valid" and resume auth-paused tasks.
+    func testDisableDeviceForCurrentUserSuccessDoesNotResetAuthRetries() throws {
+        let hexToken = "zee-token"
+
+        let authManager = MockAuthManager()
+        // Simulate the state an offline queue is in after a prior JWT 401.
+        authManager.pauseAuthRetries = true
+        authManager.isLastAuthTokenValid = false
+        authManager.failedAuthCount = 3
+
+        let notificationCenter = MockNotificationCenter()
+        let networkSession = MockNetworkSession() // 200 OK
+        let healthMonitor = HealthMonitor(dataProvider: HealthMonitorDataProvider(maxTasks: 1000,
+                                                                                  persistenceContextProvider: persistenceContextProvider),
+                                          dateProvider: dateProvider,
+                                          networkSession: networkSession)
+        let taskScheduler = IterableTaskScheduler(persistenceContextProvider: persistenceContextProvider,
+                                                  notificationCenter: notificationCenter,
+                                                  healthMonitor: healthMonitor,
+                                                  dateProvider: dateProvider)
+        let taskRunner = IterableTaskRunner(networkSession: networkSession,
+                                            persistenceContextProvider: persistenceContextProvider,
+                                            healthMonitor: healthMonitor,
+                                            notificationCenter: notificationCenter,
+                                            timeInterval: 0.5,
+                                            dateProvider: dateProvider)
+        let offlineProcessor = OfflineRequestProcessor(apiKey: "zee-api-key",
+                                                       authProvider: self,
+                                                       authManager: authManager,
+                                                       endpoint: Endpoint.api,
+                                                       deviceMetadata: Self.deviceMetadata,
+                                                       taskScheduler: taskScheduler,
+                                                       taskRunner: taskRunner,
+                                                       notificationCenter: notificationCenter)
+
+        offlineProcessor.start()
+        let onSuccessCalled = expectation(description: "disableDevice onSuccess")
+        offlineProcessor.disableDeviceForCurrentUser(hexToken: hexToken,
+                                                     email: "user@example.com",
+                                                     userId: nil,
+                                                     withOnSuccess: { _ in onSuccessCalled.fulfill() },
+                                                     onFailure: nil)
+
+        wait(for: [onSuccessCalled], timeout: testExpectationTimeout)
+        offlineProcessor.stop()
+
+        // Auth-pause state must be preserved — the "disableDevice" identifier opts
+        // out of the `resetAuthRetries` branch in RequestProcessorUtil.
+        XCTAssertTrue(authManager.pauseAuthRetries, "pauseAuthRetries must stay true after a disable-device success")
+        XCTAssertFalse(authManager.isLastAuthTokenValid, "isLastAuthTokenValid must stay false after a disable-device success")
+        XCTAssertEqual(authManager.failedAuthCount, 3, "failedAuthCount must not be reset by a disable-device success")
     }
     
     func testUpdateUser() throws {
@@ -1158,7 +1258,9 @@ class RequestHandlerTests: XCTestCase {
     
     private func createRequestHandler(networkSession: NetworkSessionProtocol,
                                       notificationCenter: NotificationCenterProtocol,
-                                      selectOffline: Bool) -> RequestHandlerProtocol {
+                                      selectOffline: Bool,
+                                      authProvider: AuthProvider? = nil) -> RequestHandlerProtocol {
+        let resolvedAuthProvider: AuthProvider = authProvider ?? self
         let healthMonitor = HealthMonitor(dataProvider: HealthMonitorDataProvider(maxTasks: 1000,
                                                                                   persistenceContextProvider: persistenceContextProvider),
                                           dateProvider: dateProvider,
@@ -1173,26 +1275,27 @@ class RequestHandlerTests: XCTestCase {
                                             notificationCenter: notificationCenter,
                                             timeInterval: 0.5,
                                             dateProvider: dateProvider)
-        
+
         let onlineProcessor = OnlineRequestProcessor(apiKey: "zee-api-key",
-                                                     authProvider: self,
+                                                     authProvider: resolvedAuthProvider,
                                                      authManager: nil,
                                                      endpoint: Endpoint.api,
                                                      networkSession: networkSession,
                                                      deviceMetadata: Self.deviceMetadata,
                                                      dateProvider: self.dateProvider)
         let offlineProcessor = OfflineRequestProcessor(apiKey: "zee-api-key",
-                                                       authProvider: self,
+                                                       authProvider: resolvedAuthProvider,
                                                        authManager: nil,
                                                        endpoint: Endpoint.api,
                                                        deviceMetadata: Self.deviceMetadata,
                                                        taskScheduler: taskScheduler,
                                                        taskRunner: taskRunner,
                                                        notificationCenter: notificationCenter)
-        
+
         return RequestHandler(onlineProcessor: onlineProcessor,
                               offlineProcessor: offlineProcessor,
                               healthMonitor: healthMonitor,
+                              authProvider: resolvedAuthProvider,
                               offlineMode: selectOffline)
     }
     
@@ -1345,4 +1448,10 @@ fileprivate extension MockNetworkSession {
         }
         self.init(mapping: mapping)
     }
+}
+
+fileprivate final class MutableAuthProvider: AuthProvider {
+    var currentAuth: Auth
+    init(initial: Auth) { currentAuth = initial }
+    var auth: Auth { currentAuth }
 }

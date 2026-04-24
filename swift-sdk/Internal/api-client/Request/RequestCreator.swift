@@ -613,15 +613,30 @@ struct RequestCreator {
     
     // MARK: - Misc Request Calls
     
-    func createDisableDeviceRequest(forAllUsers allUsers: Bool, hexToken: String) -> Result<IterableRequest, IterableError> {
+    func createDisableDeviceRequest(forAllUsers allUsers: Bool,
+                                    hexToken: String,
+                                    email: String? = nil,
+                                    userId: String? = nil) -> Result<IterableRequest, IterableError> {
         var body = [AnyHashable: Any]()
-        
+
         body.setValue(for: JsonKey.token, value: hexToken)
-        
+
         if !allUsers {
-            setCurrentUser(inDict: &body)
+            // Prefer an explicit identity snapshot when provided (offline queue path)
+            // so the replayed request targets the user who was current at call time,
+            // not whoever `auth` points to when the task eventually runs.
+            if email != nil || userId != nil {
+                if let email = email {
+                    body.setValue(for: JsonKey.email, value: email)
+                }
+                if let userId = userId {
+                    body.setValue(for: JsonKey.userId, value: userId)
+                }
+            } else {
+                setCurrentUser(inDict: &body)
+            }
         }
-        
+
         return .success(.post(createPostRequest(path: Const.Path.disableDevice, body: body)))
     }
     

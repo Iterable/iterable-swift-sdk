@@ -8,12 +8,14 @@ class RequestHandler: RequestHandlerProtocol {
     init(onlineProcessor: OnlineRequestProcessor,
          offlineProcessor: OfflineRequestProcessor?,
          healthMonitor: HealthMonitor?,
+         authProvider: AuthProvider? = nil,
          offlineMode: Bool = false,
          autoRetry: Bool = false) {
         ITBInfo()
         self.onlineProcessor = onlineProcessor
         self.offlineProcessor = offlineProcessor
         self.healthMonitor = healthMonitor
+        self.authProvider = authProvider
         self.offlineMode = offlineMode
         self.autoRetry = autoRetry
         self.healthMonitor?.delegate = self
@@ -56,8 +58,18 @@ class RequestHandler: RequestHandlerProtocol {
     func disableDeviceForCurrentUser(hexToken: String,
                                      withOnSuccess onSuccess: OnSuccessHandler?,
                                      onFailure: OnFailureHandler?) -> Pending<SendRequestValue, SendRequestError> {
-        sendUsingRequestProcessor { processor in
+        // Snapshot identity synchronously so that when `sendUsingRequestProcessor` defers
+        // request construction (waiting on `HealthMonitor.canSchedule()`), the replayed
+        // request still targets the user who was current at call time — not whoever the
+        // live `auth` points to after `logoutPreviousUser()`, `setEmail`, or `setUserId`
+        // has mutated state.
+        let auth = authProvider?.auth
+        let snapshotEmail = auth?.email
+        let snapshotUserId = auth?.userId
+        return sendUsingRequestProcessor { processor in
             processor.disableDeviceForCurrentUser(hexToken: hexToken,
+                                                  email: snapshotEmail,
+                                                  userId: snapshotUserId,
                                                   withOnSuccess: onSuccess,
                                                   onFailure: onFailure)
         }
@@ -359,6 +371,7 @@ class RequestHandler: RequestHandlerProtocol {
     private var offlineProcessor: OfflineRequestProcessor?
     private let healthMonitor: HealthMonitor?
     private let onlineProcessor: OnlineRequestProcessor
+    private weak var authProvider: AuthProvider?
 
     private func sendUsingRequestProcessor(closure: @escaping (RequestProcessorProtocol) -> Pending<SendRequestValue, SendRequestError>) -> Pending<SendRequestValue, SendRequestError> {
         chooseRequestProcessor().flatMap { processor in

@@ -43,16 +43,21 @@ struct OfflineRequestProcessor: RequestProcessorProtocol {
 
     @discardableResult
     func disableDeviceForCurrentUser(hexToken: String,
+                                     email: String?,
+                                     userId: String?,
                                      withOnSuccess onSuccess: OnSuccessHandler?,
                                      onFailure: OnFailureHandler?) -> Pending<SendRequestValue, SendRequestError> {
         let requestGenerator = { (requestCreator: RequestCreator) in
-            requestCreator.createDisableDeviceRequest(forAllUsers: false, hexToken: hexToken)
+            requestCreator.createDisableDeviceRequest(forAllUsers: false,
+                                                      hexToken: hexToken,
+                                                      email: email,
+                                                      userId: userId)
         }
 
         return sendIterableRequest(requestGenerator: requestGenerator,
                                    successHandler: onSuccess,
                                    failureHandler: onFailure,
-                                   identifier: #function)
+                                   identifier: "disableDevice")
     }
 
     @discardableResult
@@ -66,7 +71,7 @@ struct OfflineRequestProcessor: RequestProcessorProtocol {
         return sendIterableRequest(requestGenerator: requestGenerator,
                                    successHandler: onSuccess,
                                    failureHandler: onFailure,
-                                   identifier: #function)
+                                   identifier: "disableDevice")
     }
 
     @discardableResult

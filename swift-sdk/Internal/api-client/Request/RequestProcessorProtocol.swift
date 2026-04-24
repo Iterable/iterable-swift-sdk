@@ -29,6 +29,8 @@ struct UpdateSubscriptionsInfo {
 protocol RequestProcessorProtocol {
     @discardableResult
     func disableDeviceForCurrentUser(hexToken: String,
+                                     email: String?,
+                                     userId: String?,
                                      withOnSuccess onSuccess: OnSuccessHandler?,
                                      onFailure: OnFailureHandler?) -> Pending<SendRequestValue, SendRequestError>
 

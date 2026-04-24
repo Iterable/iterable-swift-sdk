@@ -36,12 +36,19 @@ struct OnlineRequestProcessor: RequestProcessorProtocol {
     
     @discardableResult
     func disableDeviceForCurrentUser(hexToken: String,
+                                     email: String? = nil,
+                                     userId: String? = nil,
                                      withOnSuccess onSuccess: OnSuccessHandler? = nil,
                                      onFailure: OnFailureHandler? = nil) -> Pending<SendRequestValue, SendRequestError> {
-        disableDevice(forAllUsers: false,
-                      hexToken: hexToken,
-                      onSuccess: onSuccess,
-                      onFailure: onFailure)
+        // Online path is synchronous within a call, so live `auth` matches the caller's
+        // identity at invocation time. The `email`/`userId` snapshot is only meaningful
+        // on the offline path, where request construction is deferred.
+        _ = email
+        _ = userId
+        return disableDevice(forAllUsers: false,
+                             hexToken: hexToken,
+                             onSuccess: onSuccess,
+                             onFailure: onFailure)
     }
     
     @discardableResult
