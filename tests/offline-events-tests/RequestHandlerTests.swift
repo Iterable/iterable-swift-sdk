@@ -141,6 +141,28 @@ class RequestHandlerTests: XCTestCase {
         wait(for: [expectations.successExpectation, expectations.failureExpectation], timeout: testExpectationTimeout)
     }
 
+    // Dedicated visibility test for the offline path on the all-users variant.
+    // `testDisableUserforAllUsers` above already exercises offline-success and
+    // offline-failure via `handleRequestWithSuccessAndFailure`, but the coverage
+    // isn't obvious from the test name. This one calls out the offline path
+    // explicitly so the regression is locked in.
+    func testOfflineDisableDeviceForAllUsersReplaysWithExpectedBody() throws {
+        let hexToken = "zee-token"
+        let bodyDict: [String: Any] = [
+            "token": hexToken,
+        ]
+
+        let requestGenerator = { (requestHandler: RequestHandlerProtocol) in
+            requestHandler.disableDeviceForAllUsers(hexToken: hexToken,
+                                                    withOnSuccess: nil,
+                                                    onFailure: nil)
+        }
+
+        handleOfflineRequestWithSuccess(requestGenerator: requestGenerator,
+                                        path: Const.Path.disableDevice,
+                                        bodyDict: bodyDict)
+    }
+
     // Regression for SDK-297 P1: the offline queue must bake in the identity that was
     // current at call time. `logoutPreviousUser()` (and `setEmail`/`setUserId`) clear
     // `_email`/`_userId` synchronously after invoking `disableDeviceForCurrentUser`, so

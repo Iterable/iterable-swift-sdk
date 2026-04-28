@@ -36,7 +36,7 @@ struct OnlineRequestProcessor: RequestProcessorProtocol {
     
     @discardableResult
     func disableDeviceForCurrentUser(hexToken: String,
-                                     identitySnapshot: UserIdentitySnapshot? = nil,
+                                     identitySnapshot: UserIdentitySnapshot?,
                                      withOnSuccess onSuccess: OnSuccessHandler? = nil,
                                      onFailure: OnFailureHandler? = nil) -> Pending<SendRequestValue, SendRequestError> {
         // Honor the caller-captured snapshot so the online fallback (when

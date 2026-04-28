@@ -63,7 +63,19 @@ class RequestHandler: RequestHandlerProtocol {
         // request still targets the user who was current at call time — not whoever the
         // live `auth` points to after `logoutPreviousUser()`, `setEmail`, or `setUserId`
         // has mutated state.
-        let identitySnapshot = UserIdentitySnapshot(auth: authProvider?.auth)
+        guard let identitySnapshot = UserIdentitySnapshot(auth: authProvider?.auth) else {
+            // Fail loudly: without a snapshot, `RequestCreator.createDisableDeviceRequest`
+            // would fall back to `setCurrentUser(inDict:)` and read the live auth at
+            // build time — which is exactly the cross-user race this method exists to
+            // prevent. The public `IterableAPI.disableDeviceForCurrentUser` already
+            // guards on `isEitherUserIdOrEmailSet()`, so reaching this branch means an
+            // internal caller bypassed that check and we should refuse rather than
+            // silently target the wrong user.
+            let reason = "disableDeviceForCurrentUser called without a current user identity"
+            ITBError(reason)
+            onFailure?(reason, nil)
+            return SendRequestError.createErroredFuture(reason: reason)
+        }
         return sendUsingRequestProcessor { processor in
             processor.disableDeviceForCurrentUser(hexToken: hexToken,
                                                   identitySnapshot: identitySnapshot,

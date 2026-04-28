@@ -105,10 +105,17 @@ class TaskSchedulerTests: XCTestCase {
         scheduler.deleteAllTasks(preservingTasksWithName: preservedName)
 
         // The scheduler dispatches deletion onto a background CoreData context via
-        // `perform`. Give it a beat to settle, then verify from the main context.
-        let purgeSettled = expectation(description: #function)
-        DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) { purgeSettled.fulfill() }
-        wait(for: [purgeSettled], timeout: 2.0)
+        // `perform`. Poll the main context for the expected end-state instead of
+        // sleeping a fixed interval — sturdier on slow CI runners and stops as soon
+        // as the purge lands. `XCTNSPredicateExpectation` evaluates the predicate
+        // on the main thread, so reading `mainContext` here is safe.
+        let purgeSettled = XCTNSPredicateExpectation(
+            predicate: NSPredicate { _, _ in
+                ((try? mainContext.findAllTasks().count) ?? -1) == 1
+            },
+            object: nil
+        )
+        wait(for: [purgeSettled], timeout: 5.0)
 
         let remaining = try mainContext.findAllTasks()
         XCTAssertEqual(remaining.count, 1, "only the preserved task should remain")
