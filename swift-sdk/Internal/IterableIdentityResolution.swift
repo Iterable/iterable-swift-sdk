@@ -13,11 +13,24 @@ import Foundation
     public var replayOnVisitorToKnown: Bool?
 
     /// When true, merges the unknown user profile with the known user profile on identification.
-    public let mergeOnUnknownUserToKnown: Bool?
+    public let mergeOnUnknownToKnown: Bool?
 
     public init(replayOnVisitorToKnown: Bool?,
-                                  mergeOnUnknownUserToKnown: Bool?) {
+                mergeOnUnknownToKnown: Bool?) {
         self.replayOnVisitorToKnown = replayOnVisitorToKnown
-        self.mergeOnUnknownUserToKnown = mergeOnUnknownUserToKnown
+        self.mergeOnUnknownToKnown = mergeOnUnknownToKnown
+    }
+
+    // MARK: - Deprecated alias (remove in next major)
+
+    /// - Note: This property is kept for backward compatibility. Use ``mergeOnUnknownToKnown`` instead.
+    @available(*, deprecated, renamed: "mergeOnUnknownToKnown")
+    public var mergeOnUnknownUserToKnown: Bool? { mergeOnUnknownToKnown }
+
+    @available(*, deprecated, renamed: "init(replayOnVisitorToKnown:mergeOnUnknownToKnown:)")
+    public convenience init(replayOnVisitorToKnown: Bool?,
+                            mergeOnUnknownUserToKnown: Bool?) {
+        self.init(replayOnVisitorToKnown: replayOnVisitorToKnown,
+                  mergeOnUnknownToKnown: mergeOnUnknownUserToKnown)
     }
 }

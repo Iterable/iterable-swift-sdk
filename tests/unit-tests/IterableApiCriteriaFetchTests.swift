@@ -61,8 +61,8 @@ class IterableApiCriteriaFetchTests: XCTestCase {
         
         // Manually trigger the criteria fetch logic that happens in initialize2() but not in initializeForTesting()
         if let implementation = IterableAPI.implementation, config.enableUnknownUserActivation, !implementation.isSDKInitialized(), implementation.getVisitorUsageTracked() {
-            implementation.unknownUserManager.getUnknownUserCriteria()
-            implementation.unknownUserManager.updateUnknownUserSession()
+            implementation.unknownUserManager.getUnknownCriteria()
+            implementation.unknownUserManager.updateUnknownSession()
         }
         
         internalApi = InternalIterableAPI.initializeForTesting(
@@ -149,8 +149,8 @@ class IterableApiCriteriaFetchTests: XCTestCase {
         if let implementation = IterableAPI.implementation, config.enableUnknownUserActivation, !implementation
             .isSDKInitialized(), implementation
             .getVisitorUsageTracked() {
-            implementation.unknownUserManager.getUnknownUserCriteria()
-            implementation.unknownUserManager.updateUnknownUserSession()
+            implementation.unknownUserManager.getUnknownCriteria()
+            implementation.unknownUserManager.updateUnknownSession()
         }
 
         internalApi = InternalIterableAPI.initializeForTesting(
