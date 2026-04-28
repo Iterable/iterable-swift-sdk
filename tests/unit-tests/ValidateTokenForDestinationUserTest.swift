@@ -202,7 +202,7 @@ final class ValidateTokenForDestinationUserTest: XCTestCase {
         XCTAssertEqual(IterableAPI.authToken, ValidateTokenForDestinationUserTest.userIdUnknownUserToken)
 
 
-        let identityResolution = IterableIdentityResolution(replayOnVisitorToKnown: true, mergeOnUnknownUserToKnown: true)
+        let identityResolution = IterableIdentityResolution(replayOnVisitorToKnown: true, mergeOnUnknownToKnown: true)
         IterableAPI.setUserId(ValidateTokenForDestinationUserTest.userId, nil, identityResolution)
 
         // Verify "merge user" API call is made
@@ -305,7 +305,7 @@ final class ValidateTokenForDestinationUserTest: XCTestCase {
         XCTAssertNil(IterableAPI.email)
         XCTAssertEqual(IterableAPI.authToken, ValidateTokenForDestinationUserTest.userIdUnknownUserToken)
 
-        let identityResolution = IterableIdentityResolution(replayOnVisitorToKnown: true, mergeOnUnknownUserToKnown: true)
+        let identityResolution = IterableIdentityResolution(replayOnVisitorToKnown: true, mergeOnUnknownToKnown: true)
         IterableAPI.setEmail(ValidateTokenForDestinationUserTest.email, nil, identityResolution)
 
         // Verify "merge user" API call is made
