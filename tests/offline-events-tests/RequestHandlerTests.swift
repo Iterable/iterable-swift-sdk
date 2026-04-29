@@ -206,6 +206,39 @@ class RequestHandlerTests: XCTestCase {
         waitForTaskRunner(requestHandler: requestHandler, expectation: bodyValidated)
     }
 
+    // Regression for the fail-loud guard added in review: when no current user is
+    // set (auth is `.none`), `RequestHandler.disableDeviceForCurrentUser` must
+    // surface the error via `onFailure` instead of letting the request fall through
+    // to `setCurrentUser(inDict:)` and reading live auth at request-build time.
+    func testDisableDeviceForCurrentUserWithNoIdentityFailsLoudly() throws {
+        let emptyAuth = MutableAuthProvider(
+            initial: Auth(userId: nil, email: nil, authToken: nil, userIdUnknownUser: nil)
+        )
+
+        let onFailureCalled = expectation(description: "onFailure invoked")
+        var capturedReason: String?
+
+        let requestHandler = createRequestHandler(networkSession: MockNetworkSession(),
+                                                  notificationCenter: MockNotificationCenter(),
+                                                  selectOffline: true,
+                                                  authProvider: emptyAuth)
+
+        requestHandler.disableDeviceForCurrentUser(
+            hexToken: "zee-token",
+            withOnSuccess: { _ in
+                XCTFail("onSuccess must not fire when no current user is set")
+            },
+            onFailure: { reason, _ in
+                capturedReason = reason
+                onFailureCalled.fulfill()
+            }
+        )
+
+        wait(for: [onFailureCalled], timeout: testExpectationTimeout)
+        XCTAssertEqual(capturedReason,
+                       "disableDeviceForCurrentUser called without a current user identity")
+    }
+
     // Regression for SDK-297 P2 round 2: when offline mode is enabled but
     // `HealthMonitor.canSchedule()` returns false, `RequestHandler` falls back to the
     // online processor. The caller-captured identity snapshot must still be honored by
