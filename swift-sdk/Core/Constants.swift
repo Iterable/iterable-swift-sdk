@@ -236,6 +236,10 @@ enum JsonKey {
     /// Legacy event-type discriminator key written to local storage prior to UUA naming
     /// normalization. Read for one-shot migration only.
     static let legacyEventType = "dataType"
+    /// Criteria payload field (from `/unknownuser/list`) that specifies which event type
+    /// a criteria applies to. Distinct from ``eventType``; happens to share the same string
+    /// as ``legacyEventType``, but is a permanent backend contract, not a storage migration.
+    static let criteriaDataType = "dataType"
     static let eventTimeStamp = "eventTimeStamp"
     static let criteriaSets = "criteriaSets"
     static let matchedCriteriaId = "matchedCriteriaId"

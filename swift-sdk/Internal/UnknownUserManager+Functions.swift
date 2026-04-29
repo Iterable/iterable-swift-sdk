@@ -56,7 +56,19 @@ func getUTCDateTime() -> String {
 
 struct CriteriaCompletionChecker {
     init(unknownUserCriteria: Data, unknownUserEvents: [[AnyHashable: Any]]) {
-        self.unknownUserEvents = unknownUserEvents
+        self.unknownUserEvents = unknownUserEvents.map { event in
+            // Defensive: events may still carry the legacy `dataType` discriminator
+            // (e.g. payloads not routed through `IterableUserDefaults`'s normalizer,
+            // or fixtures constructed in tests). Promote to `eventType` so the
+            // matcher's stored-event reads work consistently.
+            if event[JsonKey.eventType] == nil, let legacy = event[JsonKey.legacyEventType] {
+                var normalized = event
+                normalized[JsonKey.eventType] = legacy
+                normalized.removeValue(forKey: JsonKey.legacyEventType)
+                return normalized
+            }
+            return event
+        }
         self.unknownUserCriteria = unknownUserCriteria
     }
     
@@ -241,7 +253,7 @@ struct CriteriaCompletionChecker {
             var mutableNode = node
         for (index, eventData) in localEventData.enumerated() {
                 guard let trackingType = eventData[JsonKey.eventType] as? String else { continue }
-                let dataType = mutableNode[JsonKey.eventType] as? String
+                let dataType = mutableNode[JsonKey.criteriaDataType] as? String
                 if eventData[JsonKey.CriteriaItem.criteriaId] == nil && dataType == trackingType {
                     if let searchCombo = mutableNode[JsonKey.CriteriaItem.searchCombo] as? [String: Any] {
                         let searchQueries = searchCombo[JsonKey.CriteriaItem.searchQueries] as? [[AnyHashable: Any]] ?? []
@@ -369,7 +381,7 @@ struct CriteriaCompletionChecker {
           let matchResult = filteredSearchQueries.allSatisfy { query in
               let field = query[JsonKey.CriteriaItem.field] as! String
               var doesKeyExist = false
-              if let eventType = query[JsonKey.eventType] as? String, eventType == EventType.customEvent, let fieldType = query[JsonKey.CriteriaItem.fieldType] as? String, fieldType == "object", let comparatorType = query[JsonKey.CriteriaItem.comparatorType] as? String, comparatorType == JsonKey.CriteriaItem.Comparator.IsSet, let eventName = eventData[JsonKey.eventName] as? String {
+              if let eventType = query[JsonKey.criteriaDataType] as? String, eventType == EventType.customEvent, let fieldType = query[JsonKey.CriteriaItem.fieldType] as? String, fieldType == "object", let comparatorType = query[JsonKey.CriteriaItem.comparatorType] as? String, comparatorType == JsonKey.CriteriaItem.Comparator.IsSet, let eventName = eventData[JsonKey.eventName] as? String {
                   if (eventName == EventType.updateCart && field == eventName) ||
                      (field == eventName) {
                       return true
