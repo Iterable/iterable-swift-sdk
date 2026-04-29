@@ -663,7 +663,7 @@ struct RequestCreator {
         return .success(.get(createGetRequest(forPath: Const.Path.getCriteria, withArgs: body as! [String: String])))
     }
 
-    func createTrackUnknownUserSessionRequest(createdAt: Int, withUserId userId: String, dataFields: [AnyHashable: Any]?, requestJson: [AnyHashable: Any]) -> Result<IterableRequest, IterableError> {
+    func createTrackUnknownSessionRequest(createdAt: Int, withUserId userId: String, dataFields: [AnyHashable: Any]?, requestJson: [AnyHashable: Any]) -> Result<IterableRequest, IterableError> {
         var body = [AnyHashable: Any]()
         
         var userDict = [AnyHashable: Any]()
@@ -679,7 +679,7 @@ struct RequestCreator {
         body.setValue(for: JsonKey.Body.createdAt, value: createdAt)
         body.setValue(for: JsonKey.deviceInfo, value: deviceMetadata.asDictionary())
         body.setValue(for: JsonKey.unknownSessionContext, value: requestJson)
-        return .success(.post(createPostRequest(path: Const.Path.trackUnknownUserSession, body: body)))
+        return .success(.post(createPostRequest(path: Const.Path.trackUnknownSession, body: body)))
     }
     
     func createTrackConsentRequest(consentTimestamp: Int64, email: String?, userId: String?, isUserKnown: Bool) -> Result<IterableRequest, IterableError> {

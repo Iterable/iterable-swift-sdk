@@ -96,18 +96,52 @@ class IterableUserDefaults {
 
     var unknownUserEvents: [[AnyHashable: Any]]? {
         get {
-            return eventData(withKey: .unknownUserEvents)
+            guard let raw = eventData(withKey: .unknownUserEvents) else { return nil }
+            let (normalized, didMigrate) = Self.normalizeLegacyEventTypeKey(in: raw)
+            if didMigrate {
+                saveEventData(unknownUserEvents: normalized, withKey: .unknownUserEvents)
+            }
+            return normalized
         } set {
             saveEventData(unknownUserEvents: newValue, withKey: .unknownUserEvents)
         }
     }
-    
+
     var unknownUserUpdate: [AnyHashable: Any]? {
         get {
-            return userUpdateData(withKey: .unknownUserUpdate)
+            guard let raw = userUpdateData(withKey: .unknownUserUpdate) else { return nil }
+            let (normalized, didMigrate) = Self.normalizeLegacyEventTypeKey(in: raw)
+            if didMigrate {
+                saveUserUpdate(normalized, withKey: .unknownUserUpdate)
+            }
+            return normalized
         } set {
             saveUserUpdate(newValue, withKey: .unknownUserUpdate)
         }
+    }
+
+    /// Migrates locally stored entries written prior to UUA naming normalization,
+    /// where the event-type discriminator was keyed as `"dataType"`. Returns the
+    /// normalized payload and whether any migration occurred.
+    private static func normalizeLegacyEventTypeKey(in events: [[AnyHashable: Any]]) -> ([[AnyHashable: Any]], Bool) {
+        var didMigrate = false
+        let normalized = events.map { event -> [AnyHashable: Any] in
+            let (out, migrated) = normalizeLegacyEventTypeKey(in: event)
+            if migrated { didMigrate = true }
+            return out
+        }
+        return (normalized, didMigrate)
+    }
+
+    private static func normalizeLegacyEventTypeKey(in event: [AnyHashable: Any]) -> ([AnyHashable: Any], Bool) {
+        guard event[JsonKey.eventType] == nil,
+              let legacy = event[JsonKey.legacyEventType] else {
+            return (event, false)
+        }
+        var migrated = event
+        migrated[JsonKey.eventType] = legacy
+        migrated.removeValue(forKey: JsonKey.legacyEventType)
+        return (migrated, true)
     }
     
     var criteriaData: Data? {
@@ -130,8 +164,20 @@ class IterableUserDefaults {
     
     private func unknownUserSessionsData(withKey key: UserDefaultsKey) -> IterableUnknownUserSessionsWrapper? {
         if let savedData = UserDefaults.standard.data(forKey: key.value) {
-            let decodedData = try? JSONDecoder().decode(IterableUnknownUserSessionsWrapper.self, from: savedData)
-            return decodedData
+            return try? JSONDecoder().decode(IterableUnknownUserSessionsWrapper.self, from: savedData)
+        }
+        // One-shot migration from the legacy UserDefaults key, if present.
+        let legacyKey = UserDefaultsKey.legacyUnknownUserSessions
+        if let legacyData = UserDefaults.standard.data(forKey: legacyKey.value) {
+            let decoded = try? JSONDecoder().decode(IterableUnknownUserSessionsWrapper.self, from: legacyData)
+            if let decoded = decoded {
+                if let reEncoded = try? JSONEncoder().encode(decoded) {
+                    userDefaults.set(reEncoded, forKey: key.value)
+                }
+                userDefaults.removeObject(forKey: legacyKey.value)
+                return decoded
+            }
+            userDefaults.removeObject(forKey: legacyKey.value)
         }
         return nil
     }
@@ -350,6 +396,7 @@ class IterableUserDefaults {
         static let unknownUserUpdate = UserDefaultsKey(value: Const.UserDefault.unknownUserUpdate)
         static let criteriaData = UserDefaultsKey(value: Const.UserDefault.criteriaData)
         static let unknownUserSessions = UserDefaultsKey(value: Const.UserDefault.unknownUserSessions)
+        static let legacyUnknownUserSessions = UserDefaultsKey(value: Const.UserDefault.legacyUnknownUserSessions)
         static let visitorUsageTracked = UserDefaultsKey(value: Const.UserDefault.visitorUsageTracked)
         static let visitorConsentTimestamp = UserDefaultsKey(value: Const.UserDefault.visitorConsentTimestamp)
 
