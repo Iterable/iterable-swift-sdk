@@ -40,7 +40,38 @@ struct OfflineRequestProcessor: RequestProcessorProtocol {
         ITBInfo()
         taskRunner.stop()
     }
-    
+
+    @discardableResult
+    func disableDeviceForCurrentUser(hexToken: String,
+                                     identitySnapshot: UserIdentitySnapshot?,
+                                     withOnSuccess onSuccess: OnSuccessHandler?,
+                                     onFailure: OnFailureHandler?) -> Pending<SendRequestValue, SendRequestError> {
+        let requestGenerator = { (requestCreator: RequestCreator) in
+            requestCreator.createDisableDeviceRequest(forAllUsers: false,
+                                                      hexToken: hexToken,
+                                                      identitySnapshot: identitySnapshot)
+        }
+
+        return sendIterableRequest(requestGenerator: requestGenerator,
+                                   successHandler: onSuccess,
+                                   failureHandler: onFailure,
+                                   identifier: RequestIdentifier.disableDevice)
+    }
+
+    @discardableResult
+    func disableDeviceForAllUsers(hexToken: String,
+                                  withOnSuccess onSuccess: OnSuccessHandler?,
+                                  onFailure: OnFailureHandler?) -> Pending<SendRequestValue, SendRequestError> {
+        let requestGenerator = { (requestCreator: RequestCreator) in
+            requestCreator.createDisableDeviceRequest(forAllUsers: true, hexToken: hexToken)
+        }
+
+        return sendIterableRequest(requestGenerator: requestGenerator,
+                                   successHandler: onSuccess,
+                                   failureHandler: onFailure,
+                                   identifier: RequestIdentifier.disableDevice)
+    }
+
     @discardableResult
     func updateCart(items: [CommerceItem],
                     onSuccess: OnSuccessHandler?,
@@ -334,6 +365,11 @@ struct OfflineRequestProcessor: RequestProcessorProtocol {
     func deleteAllTasks() {
         ITBInfo()
         taskScheduler.deleteAllTasks()
+    }
+
+    func deleteAllTasks(preservingTasksWithName preservedName: String) {
+        ITBInfo()
+        taskScheduler.deleteAllTasks(preservingTasksWithName: preservedName)
     }
     
     private let apiKey: String

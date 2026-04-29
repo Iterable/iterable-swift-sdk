@@ -36,20 +36,27 @@ struct OnlineRequestProcessor: RequestProcessorProtocol {
     
     @discardableResult
     func disableDeviceForCurrentUser(hexToken: String,
+                                     identitySnapshot: UserIdentitySnapshot?,
                                      withOnSuccess onSuccess: OnSuccessHandler? = nil,
                                      onFailure: OnFailureHandler? = nil) -> Pending<SendRequestValue, SendRequestError> {
+        // Honor the caller-captured snapshot so the online fallback (when
+        // `HealthMonitor.canSchedule()` returns false) still targets the user who was
+        // current at call time — not whoever live `auth` points to after the deferred
+        // dispatch resolves.
         disableDevice(forAllUsers: false,
                       hexToken: hexToken,
+                      identitySnapshot: identitySnapshot,
                       onSuccess: onSuccess,
                       onFailure: onFailure)
     }
-    
+
     @discardableResult
     func disableDeviceForAllUsers(hexToken: String,
                                   withOnSuccess onSuccess: OnSuccessHandler? = nil,
                                   onFailure: OnFailureHandler? = nil) -> Pending<SendRequestValue, SendRequestError> {
         disableDevice(forAllUsers: true,
                       hexToken: hexToken,
+                      identitySnapshot: nil,
                       onSuccess: onSuccess,
                       onFailure: onFailure)
     }
@@ -317,12 +324,15 @@ struct OnlineRequestProcessor: RequestProcessorProtocol {
     @discardableResult
     private func disableDevice(forAllUsers allUsers: Bool,
                                hexToken: String,
+                               identitySnapshot: UserIdentitySnapshot?,
                                onSuccess: OnSuccessHandler? = nil,
                                onFailure: OnFailureHandler? = nil) -> Pending<SendRequestValue, SendRequestError> {
-        sendRequest(requestProvider: { apiClient.disableDevice(forAllUsers: allUsers, hexToken: hexToken) },
+        sendRequest(requestProvider: { apiClient.disableDevice(forAllUsers: allUsers,
+                                                               hexToken: hexToken,
+                                                               identitySnapshot: identitySnapshot) },
                     successHandler: onSuccess,
                     failureHandler: onFailure,
-                    requestIdentifier: "disableDevice")
+                    requestIdentifier: RequestIdentifier.disableDevice)
     }
 
     private func sendRequest(requestProvider: @escaping () -> Pending<SendRequestValue, SendRequestError>,

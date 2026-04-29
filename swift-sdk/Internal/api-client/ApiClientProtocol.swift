@@ -48,7 +48,7 @@ protocol ApiClientProtocol: AnyObject {
     
     func track(inboxSession: IterableInboxSession) -> Pending<SendRequestValue, SendRequestError>
     
-    func disableDevice(forAllUsers allUsers: Bool, hexToken: String) -> Pending<SendRequestValue, SendRequestError>
+    func disableDevice(forAllUsers allUsers: Bool, hexToken: String, identitySnapshot: UserIdentitySnapshot?) -> Pending<SendRequestValue, SendRequestError>
 
     func getRemoteConfiguration() -> Pending<RemoteConfiguration, SendRequestError>
         

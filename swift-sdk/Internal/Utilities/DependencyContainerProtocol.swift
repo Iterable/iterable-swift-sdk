@@ -93,6 +93,7 @@ extension DependencyContainerProtocol {
             return RequestHandler(onlineProcessor: onlineProcessor,
                                   offlineProcessor: nil,
                                   healthMonitor: nil,
+                                  authProvider: authProvider,
                                   offlineMode: offlineMode,
                                   autoRetry: autoRetry)
         }
@@ -119,12 +120,14 @@ extension DependencyContainerProtocol {
             return RequestHandler(onlineProcessor: onlineProcessor,
                                   offlineProcessor: offlineProcessor,
                                   healthMonitor: healthMonitor,
+                                  authProvider: authProvider,
                                   offlineMode: offlineMode,
                                   autoRetry: autoRetry)
         } else {
             return RequestHandler(onlineProcessor: onlineProcessor,
                                   offlineProcessor: nil,
                                   healthMonitor: nil,
+                                  authProvider: authProvider,
                                   offlineMode: offlineMode,
                                   autoRetry: autoRetry)
         }
