@@ -970,11 +970,11 @@ class IntegrationTestBase: XCTestCase {
                 "mutable-content": 1
             ],
             "itbl": [
-                "campaignId": 14695444,
-                "templateId": 19156078,
+                "campaignId": 17929289,
+                "templateId": 23334345,
                 "messageId": "f2a2dd3a974c4e44a8ec5e9ab5a63290",
                 "isGhostPush": 0,
-                "attachment-url": "https://library.iterable.com/24/28411/24c51520ef0f439da54622b5f8771791-square_cat.jpg",
+                "attachment-url": "https://library.iterable.com/1733/1226/57740fdbf0be4cc79672eb07d9969f30-square_cat.png",
                 "defaultAction": [
                     "type": "openUrl",
                     "data": deepLinkUrl
@@ -1045,7 +1045,7 @@ class IntegrationTestBase: XCTestCase {
                 "badge": 0
             ],
             "itbl": [
-                "campaignId": 15418588,
+                "campaignId": 17929292,
                 "messageId": "embedded_silent_\(UUID().uuidString)",
                 "isGhostPush": 0,
                 "notificationType": "UpdateEmbedded"

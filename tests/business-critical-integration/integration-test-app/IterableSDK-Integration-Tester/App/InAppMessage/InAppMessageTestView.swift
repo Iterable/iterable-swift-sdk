@@ -93,21 +93,21 @@ struct InAppMessageTestView: View {
             .disabled(viewModel.isCheckingMessages)
             
             ActionButton(
-                title: "Send In-App Message (Campaign 14751067)",
+                title: "Send In-App Message (Campaign 17929293)",
                 backgroundColor: .green,
                 isLoading: viewModel.isTriggeringCampaign
             ) {
-                viewModel.triggerCampaign(14751067)
+                viewModel.triggerCampaign(17929293)
             }
             .accessibilityIdentifier("trigger-in-app-button")
             .disabled(viewModel.isTriggeringCampaign)
             
             ActionButton(
-                title: "Send DeepLink In-App Message (Campaign 15231325)",
+                title: "Send DeepLink In-App Message (Campaign 17929295)",
                 backgroundColor: Color(.systemIndigo),
                 isLoading: viewModel.isTriggeringCampaign
             ) {
-                viewModel.triggerCampaign(15231325)
+                viewModel.triggerCampaign(17929295)
             }
             .accessibilityIdentifier("trigger-testview-in-app-button")
             .disabled(viewModel.isTriggeringCampaign)
@@ -117,7 +117,7 @@ struct InAppMessageTestView: View {
                 backgroundColor: Color(.systemPurple),
                 isLoading: viewModel.isTriggeringCampaign
             ) {
-                viewModel.triggerCampaign(16505358)
+                viewModel.triggerCampaign(17929296)
             }
             .accessibilityIdentifier("trigger-fullscreen-in-app-button")
             .disabled(viewModel.isTriggeringCampaign)
@@ -136,7 +136,7 @@ struct InAppMessageTestView: View {
                 backgroundColor: Color(.systemMint),
                 isLoading: viewModel.isTriggeringCampaign
             ) {
-                viewModel.triggerCampaign(17407752)
+                viewModel.triggerCampaign(17929298)
             }
             .accessibilityIdentifier("trigger-bottom-position-in-app-button")
             .disabled(viewModel.isTriggeringCampaign)
@@ -146,17 +146,17 @@ struct InAppMessageTestView: View {
                 backgroundColor: Color(.systemBlue).opacity(0.7),
                 isLoading: viewModel.isTriggeringCampaign
             ) {
-                viewModel.triggerCampaign(17408654)
+                viewModel.triggerCampaign(17929299)
             }
             .accessibilityIdentifier("trigger-top-position-in-app-button")
             .disabled(viewModel.isTriggeringCampaign)
 
             ActionButton(
-                title: "Send Silent Push (Campaign 14750476)",
+                title: "Send Silent Push (Campaign 17929290)",
                 backgroundColor: Color(.brown),
                 isLoading: viewModel.isTriggeringCampaign
             ) {
-                viewModel.sendSilentPush(14750476)
+                viewModel.sendSilentPush(17929290)
             }
             .accessibilityIdentifier("trigger-test-silent-push-button")
             .disabled(viewModel.isTriggeringCampaign)
