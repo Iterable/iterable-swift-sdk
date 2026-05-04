@@ -87,7 +87,6 @@ class EmbeddedMessageTestViewModel: NSObject, ObservableObject {
         print("👤 Updating user profile - Premium Member: \(isPremiumMember)")
         
         let dataFields: [String: Any] = [
-            "isPremium": isPremiumMember,
             "membershipLevel": isPremiumMember ? "premium" : "standard"
         ]
         
