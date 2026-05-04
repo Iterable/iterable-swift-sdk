@@ -330,7 +330,11 @@ class InAppMessageIntegrationTests: IntegrationTestBase {
         }
         
         // Check for messages
-        checkMessagesButton.tap()
+        if checkMessagesButton.isHittable {
+            checkMessagesButton.tap()
+        } else {
+            checkMessagesButton.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.5)).tap()
+        }
         
         // Verify message now appears — retry loop mirrors the pattern used earlier
         let secondWebView = app.descendants(matching: .webView).element(boundBy: 0)
@@ -338,7 +342,11 @@ class InAppMessageIntegrationTests: IntegrationTestBase {
         while !secondWebView.exists && secondRetryCount < maxRetries {
             if checkMessagesButton.isEnabled {
                 print("🔄 Retry \(secondRetryCount + 1)/\(maxRetries): Tapping check-messages-button (post-re-enable)...")
-                checkMessagesButton.tap()
+                if checkMessagesButton.isHittable {
+                    checkMessagesButton.tap()
+                } else {
+                    checkMessagesButton.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.5)).tap()
+                }
                 secondRetryCount += 1
                 sleep(2)
             } else {
