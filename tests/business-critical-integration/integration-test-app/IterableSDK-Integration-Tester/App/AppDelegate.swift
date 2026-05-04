@@ -363,10 +363,10 @@ extension AppDelegate: UNUserNotificationCenterDelegate {
         
         print("🔔 Foreground notification received: \(notification.request.content.userInfo)")
         
-        // Check if this is from our silent push campaign (17967055)
+        // Check if this is from our silent push campaign
         let itbl = notification.request.content.userInfo["itbl"] as? [String: Any]
         if let campaignId = itbl?["campaignId"] as? Int,
-           campaignId == 17967055 {
+           campaignId == BCITCampaign.silentPush {
             print("🔕 Silent push campaign detected in foreground - treating as silent")
             
             // Extract badge count and content-available flag, then show our custom alert

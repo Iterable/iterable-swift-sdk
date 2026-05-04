@@ -93,21 +93,21 @@ struct InAppMessageTestView: View {
             .disabled(viewModel.isCheckingMessages)
             
             ActionButton(
-                title: "Send In-App Message (Campaign 17967060)",
+                title: "Send In-App Message (Campaign \(BCITCampaign.inAppDisplay))",
                 backgroundColor: .green,
                 isLoading: viewModel.isTriggeringCampaign
             ) {
-                viewModel.triggerCampaign(17967060)
+                viewModel.triggerCampaign(BCITCampaign.inAppDisplay)
             }
             .accessibilityIdentifier("trigger-in-app-button")
             .disabled(viewModel.isTriggeringCampaign)
-            
+
             ActionButton(
-                title: "Send DeepLink In-App Message (Campaign 17967062)",
+                title: "Send DeepLink In-App Message (Campaign \(BCITCampaign.inAppDeepLink))",
                 backgroundColor: Color(.systemIndigo),
                 isLoading: viewModel.isTriggeringCampaign
             ) {
-                viewModel.triggerCampaign(17967062)
+                viewModel.triggerCampaign(BCITCampaign.inAppDeepLink)
             }
             .accessibilityIdentifier("trigger-testview-in-app-button")
             .disabled(viewModel.isTriggeringCampaign)
@@ -117,7 +117,7 @@ struct InAppMessageTestView: View {
                 backgroundColor: Color(.systemPurple),
                 isLoading: viewModel.isTriggeringCampaign
             ) {
-                viewModel.triggerCampaign(17967063)
+                viewModel.triggerCampaign(BCITCampaign.inAppFullScreen)
             }
             .accessibilityIdentifier("trigger-fullscreen-in-app-button")
             .disabled(viewModel.isTriggeringCampaign)
@@ -136,7 +136,7 @@ struct InAppMessageTestView: View {
                 backgroundColor: Color(.systemMint),
                 isLoading: viewModel.isTriggeringCampaign
             ) {
-                viewModel.triggerCampaign(17967064)
+                viewModel.triggerCampaign(BCITCampaign.inAppBottomPosition)
             }
             .accessibilityIdentifier("trigger-bottom-position-in-app-button")
             .disabled(viewModel.isTriggeringCampaign)
@@ -146,17 +146,17 @@ struct InAppMessageTestView: View {
                 backgroundColor: Color(.systemBlue).opacity(0.7),
                 isLoading: viewModel.isTriggeringCampaign
             ) {
-                viewModel.triggerCampaign(17967065)
+                viewModel.triggerCampaign(BCITCampaign.inAppTopPosition)
             }
             .accessibilityIdentifier("trigger-top-position-in-app-button")
             .disabled(viewModel.isTriggeringCampaign)
 
             ActionButton(
-                title: "Send Silent Push (Campaign 17967055)",
+                title: "Send Silent Push (Campaign \(BCITCampaign.silentPush))",
                 backgroundColor: Color(.brown),
                 isLoading: viewModel.isTriggeringCampaign
             ) {
-                viewModel.sendSilentPush(17967055)
+                viewModel.sendSilentPush(BCITCampaign.silentPush)
             }
             .accessibilityIdentifier("trigger-test-silent-push-button")
             .disabled(viewModel.isTriggeringCampaign)

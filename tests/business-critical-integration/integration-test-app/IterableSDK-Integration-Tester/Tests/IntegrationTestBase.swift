@@ -970,8 +970,8 @@ class IntegrationTestBase: XCTestCase {
                 "mutable-content": 1
             ],
             "itbl": [
-                "campaignId": 17967053,
-                "templateId": 23382695,
+                "campaignId": BCITCampaign.deepLinkPush,
+                "templateId": BCITTemplate.deepLinkPush,
                 "messageId": "f2a2dd3a974c4e44a8ec5e9ab5a63290",
                 "isGhostPush": 0,
                 "attachment-url": "https://library.iterable.com/1733/1226/57740fdbf0be4cc79672eb07d9969f30-square_cat.png",
@@ -1045,7 +1045,7 @@ class IntegrationTestBase: XCTestCase {
                 "badge": 0
             ],
             "itbl": [
-                "campaignId": 17967057,
+                "campaignId": BCITCampaign.embeddedSilentPush,
                 "messageId": "embedded_silent_\(UUID().uuidString)",
                 "isGhostPush": 0,
                 "notificationType": "UpdateEmbedded"
