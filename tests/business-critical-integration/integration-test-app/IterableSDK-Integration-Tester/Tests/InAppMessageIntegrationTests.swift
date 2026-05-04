@@ -309,8 +309,13 @@ class InAppMessageIntegrationTests: IntegrationTestBase {
         
         // Trigger a fresh campaign now that in-app is re-enabled.
         // The previous campaign triggered while disabled was likely discarded by the SDK.
-        if app.buttons["trigger-in-app-button"].waitForExistence(timeout: standardTimeout) {
-            app.buttons["trigger-in-app-button"].tap()
+        let reenabledTriggerButton = app.buttons["trigger-in-app-button"]
+        if reenabledTriggerButton.waitForExistence(timeout: standardTimeout) {
+            if reenabledTriggerButton.isHittable {
+                reenabledTriggerButton.tap()
+            } else {
+                reenabledTriggerButton.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.5)).tap()
+            }
         }
         
         // Handle success alert
