@@ -56,7 +56,7 @@ class InAppMessageIntegrationTests: IntegrationTestBase {
             sleep(1)
         }
 
-        // Step 1: Trigger InApp display campaign (17929293)
+        // Step 1: Trigger InApp display campaign (17967060)
         var triggerTestViewButton = app.buttons["trigger-in-app-button"]
         XCTAssertTrue(triggerTestViewButton.waitForExistence(timeout: standardTimeout), "Trigger InApp display button should exist")
         triggerTestViewButton.tap()
@@ -133,7 +133,7 @@ class InAppMessageIntegrationTests: IntegrationTestBase {
         
         print("✅ In-app message display flow completed successfully")
         print("✅ Flow verified:")
-        print("   1. Triggered campaign 17929293")
+        print("   1. Triggered campaign 17967060")
         print("   2. In-app message displayed")
         print("   3. User tapped 'Dismiss' button")
         print("   4. In-app message dismissed")
@@ -148,7 +148,7 @@ class InAppMessageIntegrationTests: IntegrationTestBase {
          
         ##########################################################################################*/
         
-        // Step 1: Trigger TestView campaign (17929295)
+        // Step 1: Trigger TestView campaign (17967062)
         triggerTestViewButton = app.buttons["trigger-testview-in-app-button"]
         XCTAssertTrue(triggerTestViewButton.waitForExistence(timeout: standardTimeout), "Trigger TestView button should exist")
         triggerTestViewButton.tap()
@@ -231,7 +231,7 @@ class InAppMessageIntegrationTests: IntegrationTestBase {
         // Step 5: Verify TestView alert appears
         print("⏳ Waiting for TestView Alert to appear...")
         
-        // Handle success alert: "Success - Deep link push notification sent successfully! Campaign ID: 17929289"
+        // Handle success alert: "Success - Deep link push notification sent successfully! Campaign ID: 17967053"
         let testViewSuccessAlert = app.alerts["Deep link to Test View"]
         XCTAssertTrue(
             testViewSuccessAlert.waitForExistence(timeout: standardTimeout),
@@ -253,7 +253,7 @@ class InAppMessageIntegrationTests: IntegrationTestBase {
         
         print("✅ In-app message deep link to TestView flow completed successfully")
         print("✅ Flow verified:")
-        print("   1. Triggered campaign 17929295")
+        print("   1. Triggered campaign 17967062")
         print("   2. In-app message displayed")
         print("   3. User tapped 'Show Test View' button")
         print("   4. In-app message dismissed automatically")
@@ -382,7 +382,7 @@ class InAppMessageIntegrationTests: IntegrationTestBase {
         // Wait for message queue to settle before re-triggering
         sleep(3)
         
-        // Step 1: Trigger InApp display campaign (17929293)
+        // Step 1: Trigger InApp display campaign (17967060)
         triggerTestViewButton = app.buttons["trigger-in-app-button"]
         XCTAssertTrue(triggerTestViewButton.waitForExistence(timeout: standardTimeout), "Trigger InApp display button should exist")
         triggerTestViewButton.tap()
@@ -515,8 +515,8 @@ class InAppMessageIntegrationTests: IntegrationTestBase {
                     "badge": 0
                 ],
                 "itbl": [
-                    "campaignId": 17929288,
-                    "templateId": 23334342,
+                    "campaignId": 17966885,
+                    "templateId": 23382518,
                     "messageId": "silent_push_test_" + UUID().uuidString,
                     "isGhostPush": 0
                 ]
@@ -549,12 +549,12 @@ class InAppMessageIntegrationTests: IntegrationTestBase {
         /*##########################################################################################
          
          Test Custom Action Deeplink rules:
-             NOTE: Skipped - this re-tests the same campaign (17929295) already validated above.
+             NOTE: Skipped - this re-tests the same campaign (17967062) already validated above.
                    Custom action handling is covered by the earlier deep link test.
          
         ##########################################################################################*/
         
-        print("ℹ️ Skipping redundant Custom Action test (campaign 17929295 already validated)")
+        print("ℹ️ Skipping redundant Custom Action test (campaign 17967062 already validated)")
         
         //##########################################################################################
         print("")

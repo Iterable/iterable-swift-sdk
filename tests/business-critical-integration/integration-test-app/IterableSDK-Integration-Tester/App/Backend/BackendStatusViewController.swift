@@ -115,7 +115,7 @@ final class BackendStatusViewController: UIViewController {
     
     private let sendDeepLinkPushButton: UIButton = {
         let button = UIButton(type: .system)
-        button.setTitle("Send Deep Link Push (Campaign 17929289)", for: .normal)
+        button.setTitle("Send Deep Link Push (Campaign 17967053)", for: .normal)
         button.backgroundColor = .systemPurple
         button.setTitleColor(.white, for: .normal)
         button.layer.cornerRadius = 8
@@ -128,7 +128,7 @@ final class BackendStatusViewController: UIViewController {
     
     private let sendSilentPushButton: UIButton = {
         let button = UIButton(type: .system)
-        button.setTitle("Send Silent Push (Campaign 17929290)", for: .normal)
+        button.setTitle("Send Silent Push (Campaign 17967055)", for: .normal)
         button.backgroundColor = .systemOrange
         button.setTitleColor(.white, for: .normal)
         button.layer.cornerRadius = 8
@@ -507,12 +507,12 @@ final class BackendStatusViewController: UIViewController {
         
         sendDeepLinkPushButton.isEnabled = false
         
-        pushSender.sendDeepLinkPush(to: testUserEmail, campaignId: 17929289) { [weak self] success, messageId, error in
+        pushSender.sendDeepLinkPush(to: testUserEmail, campaignId: 17967053) { [weak self] success, messageId, error in
             DispatchQueue.main.async {
                 self?.sendDeepLinkPushButton.isEnabled = true
                 
                 if success {
-                    let message = "Deep link push notification sent successfully!\nCampaign ID: 17929289"
+                    let message = "Deep link push notification sent successfully!\nCampaign ID: 17967053"
                     if let messageId = messageId {
                         print("✅ Deep link push sent with message ID: \(messageId)")
                     }
@@ -534,7 +534,7 @@ final class BackendStatusViewController: UIViewController {
         
         sendSilentPushButton.isEnabled = false
         
-        pushSender.sendSilentPush(to: testUserEmail, campaignId: 17929290) { [weak self] success, messageId, error in
+        pushSender.sendSilentPush(to: testUserEmail, campaignId: 17967055) { [weak self] success, messageId, error in
             DispatchQueue.main.async {
                 self?.sendSilentPushButton.isEnabled = true
                 

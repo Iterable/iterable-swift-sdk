@@ -75,7 +75,7 @@ class PushNotificationSender {
         
         let payload: [String: Any] = [
             "recipientEmail": userEmail,
-            "campaignId": 17929288,
+            "campaignId": 17966885,
             "allowRepeatMarketingSends": true,
             "dataFields": [:],
             "metadata": [:]
@@ -107,7 +107,7 @@ class PushNotificationSender {
         
         let payload: [String: Any] = [
             "recipientEmail": userEmail,
-            "campaignId": 17929288,
+            "campaignId": 17966885,
             "allowRepeatMarketingSends": true,
             "dataFields": [:],
             "metadata": [:]

@@ -227,16 +227,16 @@ Don't delete project 28411 immediately — keep it alive for a buffer period in 
 
 | Old Campaign ID | New Campaign ID | Type |
 |---|---|---|
-| 14679102 | **17929288** | Push (simple) |
-| 14695444 | **17929289** | Push (deep link) |
-| 14750476 | **17929290** | Silent push |
-| 14751067 | **17929293** | In-app |
-| 15231325 | **17929295** | In-app (deep link) |
-| 15418588 | **17929292** | Silent push (embedded) |
-| 16505358 | **17929296** | In-app (full screen) |
-| 17407752 | **17929298** | In-app (bottom) |
-| 17408654 | **17929299** | In-app (top) |
+| 14679102 | **17966885** | Push (simple) |
+| 14695444 | **17967053** | Push (deep link) |
+| 14750476 | **17967055** | Silent push |
+| 14751067 | **17967060** | In-app |
+| 15231325 | **17967062** | In-app (deep link) |
+| 15418588 | **17967057** | Silent push (embedded) |
+| 16505358 | **17967063** | In-app (full screen) |
+| 17407752 | **17967064** | In-app (bottom) |
+| 17408654 | **17967065** | In-app (top) |
 
-Old project: `28411` (Sumeru's Iterable account) → New project: Mobile SDK Testing (NJ org), folder `BCIT Mobile`, ID `_TBD_`
+Old project: `28411` (Sumeru's Iterable account) → New project: **Mobile SDK Testing** (NJ org), folder `BCIT Mobile`.
 
 New image URL: `https://library.iterable.com/1733/1226/57740fdbf0be4cc79672eb07d9969f30-square_cat.png`

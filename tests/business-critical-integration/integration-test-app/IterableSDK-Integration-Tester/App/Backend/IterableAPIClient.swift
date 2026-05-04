@@ -503,7 +503,7 @@ class IterableAPIClient {
     func sendSilentPush(to userEmail: String, triggerType: String, completion: @escaping (Bool, Error?) -> Void) {
         let payload: [String: Any] = [
             "recipientEmail": userEmail,
-            "campaignId": 17929288,
+            "campaignId": 17966885,
             "allowRepeatMarketingSends": true,
             "dataFields": [:],
             "metadata": [:]
