@@ -330,14 +330,13 @@ create_test_user() {
             "email": "'$TEST_USER_EMAIL'",
             "dataFields": {
                 "firstName": "Integration",
-                "lastName": "TestUser", 
+                "lastName": "TestUser",
                 "testUser": true,
                 "createdForTesting": true,
                 "platform": "iOS",
                 "sdkVersion": "integration-tests",
                 "purpose": "Swift SDK Integration Testing",
-                "projectId": "'$PROJECT_ID'",
-                "lastUpdated": "'$(date -u +"%Y-%m-%dT%H:%M:%SZ")'"
+                "projectId": "'$PROJECT_ID'"
             }
         }')
     
