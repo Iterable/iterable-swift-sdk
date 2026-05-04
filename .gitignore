@@ -8,6 +8,8 @@ tests/business-critical-integration/integration-test-app/config
 tests/business-critical-integration/reports
 tests/business-critical-integration/screenshots
 
+.githooks
+.env
 
 .swiftpm/
 
