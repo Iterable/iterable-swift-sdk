@@ -54,3 +54,10 @@ enum BCITTemplate {
     /// Template attached to the deep link push campaign.
     static let deepLinkPush = 23382695
 }
+
+/// Asset URLs referenced by simulated push payloads in CI.
+enum BCITAsset {
+    /// `attachment-url` stamped on simulated deep-link push payloads. Lives in
+    /// the Mobile SDK Testing project's media library (project 1226).
+    static let deepLinkPushAttachment = "https://library.iterable.com/1733/1226/57740fdbf0be4cc79672eb07d9969f30-square_cat.png"
+}

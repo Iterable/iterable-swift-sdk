@@ -974,7 +974,7 @@ class IntegrationTestBase: XCTestCase {
                 "templateId": BCITTemplate.deepLinkPush,
                 "messageId": "f2a2dd3a974c4e44a8ec5e9ab5a63290",
                 "isGhostPush": 0,
-                "attachment-url": "https://library.iterable.com/1733/1226/57740fdbf0be4cc79672eb07d9969f30-square_cat.png",
+                "attachment-url": BCITAsset.deepLinkPushAttachment,
                 "defaultAction": [
                     "type": "openUrl",
                     "data": deepLinkUrl
