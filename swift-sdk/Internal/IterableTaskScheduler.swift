@@ -61,6 +61,27 @@ class IterableTaskScheduler {
         }
     }
 
+    // Delete every task except those whose `name` (set to the API path at schedule time)
+    // matches `preservedName`. Used by the logout flow so that an in-flight
+    // `disableDevice` task — which carries its own identity snapshot and is explicitly
+    // meant to run after the user logs out — survives the queue purge.
+    func deleteAllTasks(preservingTasksWithName preservedName: String) {
+        ITBInfo()
+        let persistenceContext = persistenceContextProvider.newBackgroundContext()
+        persistenceContext.perform { [weak self] in
+            do {
+                let tasks = try persistenceContext.findAllTasks()
+                for task in tasks where task.name != preservedName {
+                    try persistenceContext.delete(task: task)
+                }
+                try persistenceContext.save()
+            } catch {
+                ITBError("deleteAllTasks(preserving:) failed: \(error.localizedDescription)")
+                self?.healthMonitor.onDeleteAllTasksError()
+            }
+        }
+    }
+
     private let persistenceContextProvider: IterablePersistenceContextProvider
     private let notificationCenter: NotificationCenterProtocol
     private let healthMonitor: HealthMonitor
