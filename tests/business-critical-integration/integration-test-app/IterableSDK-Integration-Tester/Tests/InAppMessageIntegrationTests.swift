@@ -56,7 +56,7 @@ class InAppMessageIntegrationTests: IntegrationTestBase {
             sleep(1)
         }
 
-        // Step 1: Trigger InApp display campaign (14751067)
+        // Step 1: Trigger InApp display campaign (BCITCampaign.inAppDisplay)
         var triggerTestViewButton = app.buttons["trigger-in-app-button"]
         XCTAssertTrue(triggerTestViewButton.waitForExistence(timeout: standardTimeout), "Trigger InApp display button should exist")
         triggerTestViewButton.tap()
@@ -133,7 +133,7 @@ class InAppMessageIntegrationTests: IntegrationTestBase {
         
         print("✅ In-app message display flow completed successfully")
         print("✅ Flow verified:")
-        print("   1. Triggered campaign 14751067")
+        print("   1. Triggered campaign \(BCITCampaign.inAppDisplay)")
         print("   2. In-app message displayed")
         print("   3. User tapped 'Dismiss' button")
         print("   4. In-app message dismissed")
@@ -148,7 +148,7 @@ class InAppMessageIntegrationTests: IntegrationTestBase {
          
         ##########################################################################################*/
         
-        // Step 1: Trigger TestView campaign (15231325)
+        // Step 1: Trigger TestView campaign (BCITCampaign.inAppDeepLink)
         triggerTestViewButton = app.buttons["trigger-testview-in-app-button"]
         XCTAssertTrue(triggerTestViewButton.waitForExistence(timeout: standardTimeout), "Trigger TestView button should exist")
         triggerTestViewButton.tap()
@@ -231,7 +231,7 @@ class InAppMessageIntegrationTests: IntegrationTestBase {
         // Step 5: Verify TestView alert appears
         print("⏳ Waiting for TestView Alert to appear...")
         
-        // Handle success alert: "Success - Deep link push notification sent successfully! Campaign ID: 14695444"
+        // Handle success alert: "Success - Deep link push notification sent successfully! Campaign ID: BCITCampaign.deepLinkPush"
         let testViewSuccessAlert = app.alerts["Deep link to Test View"]
         XCTAssertTrue(
             testViewSuccessAlert.waitForExistence(timeout: standardTimeout),
@@ -253,7 +253,7 @@ class InAppMessageIntegrationTests: IntegrationTestBase {
         
         print("✅ In-app message deep link to TestView flow completed successfully")
         print("✅ Flow verified:")
-        print("   1. Triggered campaign 15231325")
+        print("   1. Triggered campaign \(BCITCampaign.inAppDeepLink)")
         print("   2. In-app message displayed")
         print("   3. User tapped 'Show Test View' button")
         print("   4. In-app message dismissed automatically")
@@ -309,8 +309,13 @@ class InAppMessageIntegrationTests: IntegrationTestBase {
         
         // Trigger a fresh campaign now that in-app is re-enabled.
         // The previous campaign triggered while disabled was likely discarded by the SDK.
-        if app.buttons["trigger-in-app-button"].waitForExistence(timeout: standardTimeout) {
-            app.buttons["trigger-in-app-button"].tap()
+        let reenabledTriggerButton = app.buttons["trigger-in-app-button"]
+        if reenabledTriggerButton.waitForExistence(timeout: standardTimeout) {
+            if reenabledTriggerButton.isHittable {
+                reenabledTriggerButton.tap()
+            } else {
+                reenabledTriggerButton.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.5)).tap()
+            }
         }
         
         // Handle success alert
@@ -325,7 +330,11 @@ class InAppMessageIntegrationTests: IntegrationTestBase {
         }
         
         // Check for messages
-        checkMessagesButton.tap()
+        if checkMessagesButton.isHittable {
+            checkMessagesButton.tap()
+        } else {
+            checkMessagesButton.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.5)).tap()
+        }
         
         // Verify message now appears — retry loop mirrors the pattern used earlier
         let secondWebView = app.descendants(matching: .webView).element(boundBy: 0)
@@ -333,7 +342,11 @@ class InAppMessageIntegrationTests: IntegrationTestBase {
         while !secondWebView.exists && secondRetryCount < maxRetries {
             if checkMessagesButton.isEnabled {
                 print("🔄 Retry \(secondRetryCount + 1)/\(maxRetries): Tapping check-messages-button (post-re-enable)...")
-                checkMessagesButton.tap()
+                if checkMessagesButton.isHittable {
+                    checkMessagesButton.tap()
+                } else {
+                    checkMessagesButton.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.5)).tap()
+                }
                 secondRetryCount += 1
                 sleep(2)
             } else {
@@ -382,7 +395,7 @@ class InAppMessageIntegrationTests: IntegrationTestBase {
         // Wait for message queue to settle before re-triggering
         sleep(3)
         
-        // Step 1: Trigger InApp display campaign (14751067)
+        // Step 1: Trigger InApp display campaign (BCITCampaign.inAppDisplay)
         triggerTestViewButton = app.buttons["trigger-in-app-button"]
         XCTAssertTrue(triggerTestViewButton.waitForExistence(timeout: standardTimeout), "Trigger InApp display button should exist")
         triggerTestViewButton.tap()
@@ -515,8 +528,8 @@ class InAppMessageIntegrationTests: IntegrationTestBase {
                     "badge": 0
                 ],
                 "itbl": [
-                    "campaignId": 14679102,
-                    "templateId": 19136236,
+                    "campaignId": BCITCampaign.basicPush,
+                    "templateId": BCITTemplate.basicPush,
                     "messageId": "silent_push_test_" + UUID().uuidString,
                     "isGhostPush": 0
                 ]
@@ -546,17 +559,6 @@ class InAppMessageIntegrationTests: IntegrationTestBase {
             app.alerts["Success"].buttons["OK"].tap()
         }
         
-        /*##########################################################################################
-         
-         Test Custom Action Deeplink rules:
-             NOTE: Skipped - this re-tests the same campaign (15231325) already validated above.
-                   Custom action handling is covered by the earlier deep link test.
-         
-        ##########################################################################################*/
-        
-        print("ℹ️ Skipping redundant Custom Action test (campaign 15231325 already validated)")
-        
-        //##########################################################################################
         print("")
         print("✅✅✅✅✅✅✅✅✅✅✅")
         print("All InApp Message Tests Passed")

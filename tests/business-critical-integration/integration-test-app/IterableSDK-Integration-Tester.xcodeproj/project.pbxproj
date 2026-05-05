@@ -39,6 +39,7 @@
 		8A24D3B12E4508F400B53850 /* PBXFileSystemSynchronizedBuildFileExceptionSet */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
+				App/Constants/BCITIDs.swift,
 				Tests/DeepLinkingIntegrationTests.swift,
 				Tests/EmbeddedMessageIntegrationTests.swift,
 				Tests/InAppMessageIntegrationTests.swift,

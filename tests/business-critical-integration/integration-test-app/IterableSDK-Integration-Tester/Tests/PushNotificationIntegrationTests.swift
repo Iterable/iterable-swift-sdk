@@ -178,8 +178,8 @@ class PushNotificationIntegrationTests: IntegrationTestBase {
                         "relevance-score": 1
                     ],
                     "itbl": [
-                        "campaignId": 14679102,
-                        "templateId": 19136236,
+                        "campaignId": BCITCampaign.basicPush,
+                        "templateId": BCITTemplate.basicPush,
                         "messageId": "e9c8a7d8882a4df0b487a8e7f697bef8",
                         "isGhostPush": 0
                     ]
@@ -248,13 +248,13 @@ class PushNotificationIntegrationTests: IntegrationTestBase {
             deepLinkPushButton.tap()
             screenshotCapture.captureScreenshot(named: "14-deep-link-push-sent")
             
-            // Handle success alert: "Success - Deep link push notification sent successfully! Campaign ID: 14695444"
+            // Handle success alert: "Success - Deep link push notification sent successfully! Campaign ID: BCITCampaign.deepLinkPush"
             let deepLinkSuccessAlert = app.alerts["Success"]
             XCTAssertTrue(deepLinkSuccessAlert.waitForExistence(timeout: 5.0), "Success alert should appear")
-            
+
             // Verify the alert message contains the campaign ID
             let deepLinkSuccessMessage = deepLinkSuccessAlert.staticTexts.element(boundBy: 1)
-            XCTAssertTrue(deepLinkSuccessMessage.label.contains("14695444"), "Success message should contain campaign ID 14695444")
+            XCTAssertTrue(deepLinkSuccessMessage.label.contains("\(BCITCampaign.deepLinkPush)"), "Success message should contain campaign ID \(BCITCampaign.deepLinkPush)")
             
             let deepLinkSuccessOKButton = deepLinkSuccessAlert.buttons["OK"]
             XCTAssertTrue(deepLinkSuccessOKButton.exists, "Success alert OK button should exist")

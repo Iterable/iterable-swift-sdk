@@ -87,7 +87,6 @@ class EmbeddedMessageTestViewModel: NSObject, ObservableObject {
         print("👤 Updating user profile - Premium Member: \(isPremiumMember)")
         
         let dataFields: [String: Any] = [
-            "isPremium": isPremiumMember,
             "membershipLevel": isPremiumMember ? "premium" : "standard"
         ]
         
@@ -112,7 +111,7 @@ class EmbeddedMessageTestViewModel: NSObject, ObservableObject {
             return
         }
         
-        pushSender.sendSilentPush(to: testUserEmail, campaignId: 15418588) {
+        pushSender.sendSilentPush(to: testUserEmail, campaignId: BCITCampaign.embeddedSilentPush) {
             [weak self] success,
             messageId,
             error in
