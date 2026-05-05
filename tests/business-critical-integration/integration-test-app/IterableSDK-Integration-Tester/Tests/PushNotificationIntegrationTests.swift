@@ -248,7 +248,7 @@ class PushNotificationIntegrationTests: IntegrationTestBase {
             deepLinkPushButton.tap()
             screenshotCapture.captureScreenshot(named: "14-deep-link-push-sent")
             
-            // Handle success alert: "Success - Deep link push notification sent successfully! Campaign ID: \(BCITCampaign.deepLinkPush)"
+            // Handle success alert: "Success - Deep link push notification sent successfully! Campaign ID: BCITCampaign.deepLinkPush"
             let deepLinkSuccessAlert = app.alerts["Success"]
             XCTAssertTrue(deepLinkSuccessAlert.waitForExistence(timeout: 5.0), "Success alert should appear")
 
