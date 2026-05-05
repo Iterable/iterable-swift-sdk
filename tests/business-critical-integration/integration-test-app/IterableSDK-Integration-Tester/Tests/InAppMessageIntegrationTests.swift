@@ -231,7 +231,7 @@ class InAppMessageIntegrationTests: IntegrationTestBase {
         // Step 5: Verify TestView alert appears
         print("⏳ Waiting for TestView Alert to appear...")
         
-        // Handle success alert: "Success - Deep link push notification sent successfully! Campaign ID: <BCITCampaign.deepLinkPush>"
+        // Handle success alert: "Success - Deep link push notification sent successfully! Campaign ID: BCITCampaign.deepLinkPush"
         let testViewSuccessAlert = app.alerts["Deep link to Test View"]
         XCTAssertTrue(
             testViewSuccessAlert.waitForExistence(timeout: standardTimeout),
