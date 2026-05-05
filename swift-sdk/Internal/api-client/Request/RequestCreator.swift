@@ -613,15 +613,24 @@ struct RequestCreator {
     
     // MARK: - Misc Request Calls
     
-    func createDisableDeviceRequest(forAllUsers allUsers: Bool, hexToken: String) -> Result<IterableRequest, IterableError> {
+    func createDisableDeviceRequest(forAllUsers allUsers: Bool,
+                                    hexToken: String,
+                                    identitySnapshot: UserIdentitySnapshot? = nil) -> Result<IterableRequest, IterableError> {
         var body = [AnyHashable: Any]()
-        
+
         body.setValue(for: JsonKey.token, value: hexToken)
-        
+
         if !allUsers {
-            setCurrentUser(inDict: &body)
+            // Prefer an explicit identity snapshot when provided so the request targets
+            // the user who was current at call time, not whoever `auth` points to
+            // when deferred processor selection eventually resolves.
+            if let identitySnapshot {
+                identitySnapshot.apply(to: &body)
+            } else {
+                setCurrentUser(inDict: &body)
+            }
         }
-        
+
         return .success(.post(createPostRequest(path: Const.Path.disableDevice, body: body)))
     }
     

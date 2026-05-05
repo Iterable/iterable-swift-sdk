@@ -65,7 +65,7 @@ XCODEBUILD_CMD="xcodebuild test \
     -project swift-sdk.xcodeproj \
     -scheme swift-sdk \
     -sdk iphonesimulator \
-    -destination 'platform=iOS Simulator,name=iPhone 16 Pro,OS=18.2' \
+    -destination 'platform=iOS Simulator,name=iPhone 17 Pro' \
     -enableCodeCoverage YES \
     -skipPackagePluginValidation \
     CODE_SIGNING_REQUIRED=NO"

@@ -40,3 +40,4 @@ CI.swift
 .build/arm64-apple-macosx/debug/IterableSDK.build/output-file-map.json
 .build
 .mcp.json
+.githooks/

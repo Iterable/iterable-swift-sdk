@@ -523,6 +523,10 @@ final class OfflineRetryTestViewController: UIViewController {
             ("Sync Embedded", #selector(performSyncEmbedded))
         ]))
 
+        stack.addArrangedSubview(makeButtonRow([
+            ("Disable Push", #selector(performDisablePush))
+        ]))
+
         stack.addArrangedSubview(makeColorButtonRow([
             ("Go Offline", #selector(goOffline), UIColor(red: 0.9, green: 0.32, blue: 0, alpha: 1)),
             ("Go Online", #selector(goOnline), UIColor(red: 0.18, green: 0.49, blue: 0.2, alpha: 1))
@@ -673,6 +677,21 @@ final class OfflineRetryTestViewController: UIViewController {
     @objc private func performRegisterPush() {
         AppDelegate.registerForPushNotifications()
         log("Push: registerForPush called")
+    }
+
+    @objc private func performDisablePush() {
+        // SDK-297 manual test hook: directly fire disableDeviceForCurrentUser so we
+        // can exercise the offline-queue path without relying on autoPushRegistration
+        // (which is disabled in the BCIT config so logout doesn't auto-fire it).
+        log("DisablePush: calling IterableAPI.disableDeviceForCurrentUser")
+        IterableAPI.disableDeviceForCurrentUser(
+            withOnSuccess: { _ in
+                LogStore.shared.log("DisablePush: success")
+            },
+            onFailure: { reason, _ in
+                LogStore.shared.log("DisablePush: failure — \(reason ?? "no reason")")
+            }
+        )
     }
 
     @objc private func goOffline() {

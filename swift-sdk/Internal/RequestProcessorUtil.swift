@@ -148,7 +148,7 @@ struct RequestProcessorUtil {
     }
     
     private static func resetAuthRetries(authManager: IterableAuthManagerProtocol?, requestIdentifier: String) {
-        if requestIdentifier != "disableDevice" {
+        if requestIdentifier != RequestIdentifier.disableDevice {
             authManager?.resetFailedAuthCount()
             authManager?.pauseAuthRetries(false)
             authManager?.setIsLastAuthTokenValid(true)

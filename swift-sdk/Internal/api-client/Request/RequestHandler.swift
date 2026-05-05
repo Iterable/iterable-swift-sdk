@@ -8,12 +8,14 @@ class RequestHandler: RequestHandlerProtocol {
     init(onlineProcessor: OnlineRequestProcessor,
          offlineProcessor: OfflineRequestProcessor?,
          healthMonitor: HealthMonitor?,
+         authProvider: AuthProvider? = nil,
          offlineMode: Bool = false,
          autoRetry: Bool = false) {
         ITBInfo()
         self.onlineProcessor = onlineProcessor
         self.offlineProcessor = offlineProcessor
         self.healthMonitor = healthMonitor
+        self.authProvider = authProvider
         self.offlineMode = offlineMode
         self.autoRetry = autoRetry
         self.healthMonitor?.delegate = self
@@ -56,18 +58,41 @@ class RequestHandler: RequestHandlerProtocol {
     func disableDeviceForCurrentUser(hexToken: String,
                                      withOnSuccess onSuccess: OnSuccessHandler?,
                                      onFailure: OnFailureHandler?) -> Pending<SendRequestValue, SendRequestError> {
-        onlineProcessor.disableDeviceForCurrentUser(hexToken: hexToken,
-                                                    withOnSuccess: onSuccess,
-                                                    onFailure: onFailure)
+        // Snapshot identity synchronously so that when `sendUsingRequestProcessor` defers
+        // request construction (waiting on `HealthMonitor.canSchedule()`), the replayed
+        // request still targets the user who was current at call time — not whoever the
+        // live `auth` points to after `logoutPreviousUser()`, `setEmail`, or `setUserId`
+        // has mutated state.
+        guard let identitySnapshot = UserIdentitySnapshot(auth: authProvider?.auth) else {
+            // Fail loudly: without a snapshot, `RequestCreator.createDisableDeviceRequest`
+            // would fall back to `setCurrentUser(inDict:)` and read the live auth at
+            // build time — which is exactly the cross-user race this method exists to
+            // prevent. The public `IterableAPI.disableDeviceForCurrentUser` already
+            // guards on `isEitherUserIdOrEmailSet()`, so reaching this branch means an
+            // internal caller bypassed that check and we should refuse rather than
+            // silently target the wrong user.
+            let reason = "disableDeviceForCurrentUser called without a current user identity"
+            ITBError(reason)
+            onFailure?(reason, nil)
+            return SendRequestError.createErroredFuture(reason: reason)
+        }
+        return sendUsingRequestProcessor { processor in
+            processor.disableDeviceForCurrentUser(hexToken: hexToken,
+                                                  identitySnapshot: identitySnapshot,
+                                                  withOnSuccess: onSuccess,
+                                                  onFailure: onFailure)
+        }
     }
-    
+
     @discardableResult
     func disableDeviceForAllUsers(hexToken: String,
                                   withOnSuccess onSuccess: OnSuccessHandler?,
                                   onFailure: OnFailureHandler?) -> Pending<SendRequestValue, SendRequestError> {
-        onlineProcessor.disableDeviceForAllUsers(hexToken: hexToken,
-                                                 withOnSuccess: onSuccess,
-                                                 onFailure: onFailure)
+        sendUsingRequestProcessor { processor in
+            processor.disableDeviceForAllUsers(hexToken: hexToken,
+                                               withOnSuccess: onSuccess,
+                                               onFailure: onFailure)
+        }
     }
     
     @discardableResult
@@ -347,7 +372,11 @@ class RequestHandler: RequestHandlerProtocol {
     func handleLogout() throws {
         if offlineMode {
             DispatchQueue.global(qos: .background).async { [weak self] in
-                self?.offlineProcessor?.deleteAllTasks()
+                // Preserve queued `disableDevice` tasks across logout. They carry an
+                // identity snapshot baked in at call time, so they can safely replay
+                // after the current user is cleared — and they're the whole point of
+                // SDK-297 (retry the logout-time device disable if the network fails).
+                self?.offlineProcessor?.deleteAllTasks(preservingTasksWithName: Const.Path.disableDevice)
             }
         }
     }
@@ -355,6 +384,7 @@ class RequestHandler: RequestHandlerProtocol {
     private var offlineProcessor: OfflineRequestProcessor?
     private let healthMonitor: HealthMonitor?
     private let onlineProcessor: OnlineRequestProcessor
+    private weak var authProvider: AuthProvider?
 
     private func sendUsingRequestProcessor(closure: @escaping (RequestProcessorProtocol) -> Pending<SendRequestValue, SendRequestError>) -> Pending<SendRequestValue, SendRequestError> {
         chooseRequestProcessor().flatMap { processor in
