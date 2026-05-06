@@ -53,7 +53,7 @@ enum Const {
         static let getRemoteConfiguration = "mobile/getRemoteConfiguration"
         static let mergeUser = "users/merge";
         static let getCriteria = "unknownuser/list";
-        static let trackUnknownUserSession = "unknownuser/events/session";
+        static let trackUnknownSession = "unknownuser/events/session";
         static let trackConsent = "unknownuser/consent";
         static let getEmbeddedMessages = "embedded-messaging/messages"
         static let embeddedMessageReceived = "embedded-messaging/events/received"
@@ -67,7 +67,7 @@ enum Const {
             getRemoteConfiguration,
             mergeUser,
             getCriteria,
-            trackUnknownUserSession,
+            trackUnknownSession,
             trackConsent,
         ]
 
@@ -226,9 +226,16 @@ enum JsonKey {
     
     static let contentType = "Content-Type"
     
-    // AUT
+    // UUA
     static let createNewFields = "createNewFields"
-    static let eventType = "dataType"
+    static let eventType = "eventType"
+    /// Legacy event-type discriminator key written to local storage prior to UUA naming
+    /// normalization. Read for one-shot migration only.
+    static let legacyEventType = "dataType"
+    /// Criteria payload field (from `/unknownuser/list`) that specifies which event type
+    /// a criteria applies to. Distinct from ``eventType``; happens to share the same string
+    /// as ``legacyEventType``, but is a permanent backend contract, not a storage migration.
+    static let criteriaDataType = "dataType"
     static let eventTimeStamp = "eventTimeStamp"
     static let criteriaSets = "criteriaSets"
     static let matchedCriteriaId = "matchedCriteriaId"

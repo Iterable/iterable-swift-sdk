@@ -95,7 +95,7 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
         self.dependencyContainer.createAuthManager(config: self.config)
     }()
     
-    lazy var unknownUserManager: UnknownUserManagerProtocol = {
+    lazy var unknownUserManager: UnknownUserManager = {
         self.dependencyContainer.createUnknownUserManager(config: self.config)
     }()
     
@@ -165,7 +165,7 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
             guard let config = self?.config else {
                 return
             }
-            let merge = identityResolution?.mergeOnUnknownUserToKnown ?? config.identityResolution.mergeOnUnknownUserToKnown
+            let merge = identityResolution?.mergeOnUnknownToKnown ?? config.identityResolution.mergeOnUnknownToKnown
             let replay = identityResolution?.replayOnVisitorToKnown ?? config.identityResolution.replayOnVisitorToKnown
             if config.enableUnknownUserActivation, let email = email {
                 // Prepare consent for replay scenario before merge
@@ -216,7 +216,7 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
             }
             if config.enableUnknownUserActivation {
                 if let userId = userId, userId != (self?.localStorage.userIdUnknownUser ?? "") {
-                    let merge = identityResolution?.mergeOnUnknownUserToKnown ?? config.identityResolution.mergeOnUnknownUserToKnown
+                    let merge = identityResolution?.mergeOnUnknownToKnown ?? config.identityResolution.mergeOnUnknownToKnown
                     let replay = identityResolution?.replayOnVisitorToKnown ?? config.identityResolution.replayOnVisitorToKnown
                     
                     // Prepare consent for replay scenario before merge
@@ -283,8 +283,8 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
         
         if isVisitorUsageTracked && config.enableUnknownUserActivation {
             ITBInfo("CONSENT GIVEN and UNKNOWN USER TRACKING ENABLED - Criteria fetched")
-            self.unknownUserManager.getUnknownUserCriteria()
-            self.unknownUserManager.updateUnknownUserSession()
+            self.unknownUserManager.getUnknownCriteria()
+            self.unknownUserManager.updateUnknownSession()
         }
     }
 
@@ -377,7 +377,7 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
 
          if !isEitherUserIdOrEmailSet() && localStorage.userIdUnknownUser == nil {
             if config.enableUnknownUserActivation {
-                unknownUserManager.trackUnknownUserTokenRegistration(token: token)
+                unknownUserManager.trackUnknownTokenRegistration(token: token)
             }
             onFailure?("Iterable SDK must be initialized with an API key and user email/userId before calling SDK methods", nil)
             return
@@ -467,7 +467,7 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
         if !isEitherUserIdOrEmailSet() && localStorage.userIdUnknownUser == nil {
             if config.enableUnknownUserActivation {
                 ITBInfo("UUA ENABLED - unknown user update user")
-                unknownUserManager.trackUnknownUserUpdateUser(dataFields)
+                unknownUserManager.trackUnknownUpdateUser(dataFields)
             }
             return rejectWithInitializationError(onFailure: onFailure)
         }
@@ -499,7 +499,7 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
         if !isEitherUserIdOrEmailSet() && localStorage.userIdUnknownUser == nil {
             if config.enableUnknownUserActivation {
                 ITBInfo("UUA ENABLED - unknown user update cart")
-                unknownUserManager.trackUnknownUserUpdateCart(items: items)
+                unknownUserManager.trackUnknownUpdateCart(items: items)
             }
             return rejectWithInitializationError(onFailure: onFailure)
         }
@@ -532,7 +532,7 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
         if !isEitherUserIdOrEmailSet() {
             if config.enableUnknownUserActivation {
                 ITBInfo("UUA ENABLED - unknown user track purchase")
-                unknownUserManager.trackUnknownUserPurchaseEvent(total: total, items: items, dataFields: dataFields)
+                unknownUserManager.trackUnknownPurchaseEvent(total: total, items: items, dataFields: dataFields)
             }
             return rejectWithInitializationError(onFailure: onFailure)
         }
@@ -606,7 +606,7 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
         if !isEitherUserIdOrEmailSet() && localStorage.userIdUnknownUser == nil {
             if config.enableUnknownUserActivation {
                 ITBInfo("UUA ENABLED - unknown user track custom event")
-                unknownUserManager.trackUnknownUserEvent(name: eventName, dataFields: dataFields)
+                unknownUserManager.trackUnknownEvent(name: eventName, dataFields: dataFields)
             }
             return rejectWithInitializationError(onFailure: onFailure)
         }
@@ -1055,7 +1055,7 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
             && (currentTime - unknownUserManager.getLastCriteriaFetch() >= Const.criteriaFetchingCooldown) {
             
             unknownUserManager.updateLastCriteriaFetch(currentTime: currentTime)
-            unknownUserManager.getUnknownUserCriteria()
+            unknownUserManager.getUnknownCriteria()
             ITBInfo("Fetching unknown user criteria - Foreground")
         }
     }

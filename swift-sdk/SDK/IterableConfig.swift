@@ -194,7 +194,7 @@ public class IterableConfig: NSObject {
     // How many events can be stored in the local storage. By default limt is 100.
     public var eventThresholdLimit: Int = 100
     
-    public var identityResolution: IterableIdentityResolution = IterableIdentityResolution(replayOnVisitorToKnown: true, mergeOnUnknownUserToKnown: true)
+    public var identityResolution: IterableIdentityResolution = IterableIdentityResolution(replayOnVisitorToKnown: true, mergeOnUnknownToKnown: true)
     
     /// The type of mobile framework we are using.
     public var mobileFrameworkInfo: IterableAPIMobileFrameworkInfo?
