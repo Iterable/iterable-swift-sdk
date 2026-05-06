@@ -95,7 +95,7 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
         self.dependencyContainer.createAuthManager(config: self.config)
     }()
     
-    lazy var unknownUserManager: UnknownUserManagerProtocol = {
+    lazy var unknownUserManager: UnknownUserManager = {
         self.dependencyContainer.createUnknownUserManager(config: self.config)
     }()
     

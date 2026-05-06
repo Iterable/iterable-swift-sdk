@@ -164,20 +164,8 @@ class IterableUserDefaults {
     
     private func unknownUserSessionsData(withKey key: UserDefaultsKey) -> IterableUnknownUserSessionsWrapper? {
         if let savedData = UserDefaults.standard.data(forKey: key.value) {
-            return try? JSONDecoder().decode(IterableUnknownUserSessionsWrapper.self, from: savedData)
-        }
-        // One-shot migration from the legacy UserDefaults key, if present.
-        let legacyKey = UserDefaultsKey.legacyUnknownUserSessions
-        if let legacyData = UserDefaults.standard.data(forKey: legacyKey.value) {
-            let decoded = try? JSONDecoder().decode(IterableUnknownUserSessionsWrapper.self, from: legacyData)
-            if let decoded = decoded {
-                if let reEncoded = try? JSONEncoder().encode(decoded) {
-                    userDefaults.set(reEncoded, forKey: key.value)
-                }
-                userDefaults.removeObject(forKey: legacyKey.value)
-                return decoded
-            }
-            userDefaults.removeObject(forKey: legacyKey.value)
+            let decodedData = try? JSONDecoder().decode(IterableUnknownUserSessionsWrapper.self, from: savedData)
+            return decodedData
         }
         return nil
     }
@@ -396,7 +384,6 @@ class IterableUserDefaults {
         static let unknownUserUpdate = UserDefaultsKey(value: Const.UserDefault.unknownUserUpdate)
         static let criteriaData = UserDefaultsKey(value: Const.UserDefault.criteriaData)
         static let unknownUserSessions = UserDefaultsKey(value: Const.UserDefault.unknownUserSessions)
-        static let legacyUnknownUserSessions = UserDefaultsKey(value: Const.UserDefault.legacyUnknownUserSessions)
         static let visitorUsageTracked = UserDefaultsKey(value: Const.UserDefault.visitorUsageTracked)
         static let visitorConsentTimestamp = UserDefaultsKey(value: Const.UserDefault.visitorConsentTimestamp)
 
