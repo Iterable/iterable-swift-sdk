@@ -89,9 +89,7 @@ enum Const {
         static let unknownUserEvents = "itbl_unknown_user_events"
         static let unknownUserUpdate = "itbl_unknown_user_update"
         static let criteriaData = "itbl_criteria_data"
-        static let unknownUserSessions = "itbl_unknown_sessions"
-        /// Legacy key used prior to UUA naming normalization. Read for one-shot migration only.
-        static let legacyUnknownUserSessions = "itbl_unknown_user_sessions"
+        static let unknownUserSessions = "itbl_unknown_user_sessions"
         static let matchedCriteria = "itbl_matched_criteria"
         static let eventList = "itbl_event_list"
         static let visitorUsageTracked = "itbl_visitor_usage_tracked"
@@ -108,9 +106,7 @@ enum Const {
         enum Key {
             static let email = "itbl_email"
             static let userId = "itbl_userid"
-            static let userIdUnknownUser = "itbl_userid_unknown"
-            /// Legacy key used prior to UUA naming normalization. Read for one-shot migration only.
-            static let legacyUserIdUnknownUser = "itbl_userid_unknown_user"
+            static let userIdUnknownUser = "itbl_userid_unknown_user"
             static let authToken = "itbl_auth_token"
         }
     }

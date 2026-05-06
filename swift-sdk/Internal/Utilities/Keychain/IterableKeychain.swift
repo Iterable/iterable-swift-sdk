@@ -101,30 +101,19 @@ class IterableKeychain {
     
     var userIdUnknownUser: String? {
         get {
-            if let data = wrapper.data(forKey: Const.Keychain.Key.userIdUnknownUser),
-               let value = String(data: data, encoding: .utf8) {
-                return value
-            }
-            // One-shot migration from the legacy key used prior to UUA naming normalization.
-            if let legacyData = wrapper.data(forKey: Const.Keychain.Key.legacyUserIdUnknownUser),
-               let legacyValue = String(data: legacyData, encoding: .utf8) {
-                wrapper.set(legacyData, forKey: Const.Keychain.Key.userIdUnknownUser)
-                wrapper.removeValue(forKey: Const.Keychain.Key.legacyUserIdUnknownUser)
-                return legacyValue
-            }
-            return nil
+            let data = wrapper.data(forKey: Const.Keychain.Key.userIdUnknownUser)
+            
+            return data.flatMap { String(data: $0, encoding: .utf8) }
         }
-
+        
         set {
             guard let token = newValue,
                   let data = token.data(using: .utf8) else {
                 wrapper.removeValue(forKey: Const.Keychain.Key.userIdUnknownUser)
-                wrapper.removeValue(forKey: Const.Keychain.Key.legacyUserIdUnknownUser)
                 return
             }
-
+            
             wrapper.set(data, forKey: Const.Keychain.Key.userIdUnknownUser)
-            wrapper.removeValue(forKey: Const.Keychain.Key.legacyUserIdUnknownUser)
         }
     }
     
