@@ -21,78 +21,117 @@ extension IterableError: LocalizedError {
 // either there is a success with result
 // or there is a failure with error
 // There is no way to set value a result in this class.
+//
+// Thread-safety: all mutations of `result`, `successCallbacks`, and `errorCallbacks`
+// are serialized through `stateQueue`. Callbacks are snapshotted under `.sync` and
+// invoked OUTSIDE the critical section — user code that re-enters `onSuccess` /
+// `onError` on the same instance therefore cannot deadlock the queue, and user code
+// never runs while we hold the lock. Matches the AuthManager.callbackQueue pattern.
 public class Pending<Value, Failure> where Failure: Error {
     fileprivate var successCallbacks = [(Value) -> Void]()
     fileprivate var errorCallbacks = [(Failure) -> Void]()
-    
+    fileprivate var result: Result<Value, Failure>?
+
+    private let stateQueue = DispatchQueue(label: "com.iterable.pending.state")
+
     public func onCompletion(receiveValue: @escaping ((Value) -> Void), receiveError: ( (Failure) -> Void)? = nil) {
-        successCallbacks.append(receiveValue)
-        
-        // if a successful result already exists (from constructor), report it
-        if case let Result.success(value)? = result {
-            successCallbacks.forEach { $0(value) }
-        }
-        
-        if let receiveError = receiveError {
-            errorCallbacks.append(receiveError)
-            
-            // if a failed result already exists (from constructor), report it
-            if case let Result.failure(error)? = result {
-                errorCallbacks.forEach { $0(error) }
+        // Atomically: either record both callbacks (unresolved), or capture the result (resolved).
+        // Appending both inside one `.sync` block guarantees we don't lose `receiveError` to a
+        // `.failure` resolve that lands between the two appends.
+        let current: Result<Value, Failure>? = stateQueue.sync {
+            if let result = result {
+                return result
             }
+            successCallbacks.append(receiveValue)
+            if let receiveError = receiveError {
+                errorCallbacks.append(receiveError)
+            }
+            return nil
+        }
+
+        // Late registration on an already-resolved Pending: fire synchronously on the
+        // registering thread, matching prior semantics.
+        guard let current = current else { return }
+        switch current {
+        case let .success(value):
+            receiveValue(value)
+        case let .failure(error):
+            receiveError?(error)
         }
     }
-    
+
     @discardableResult public func onSuccess(block: @escaping ((Value) -> Void)) -> Pending<Value, Failure> {
-        successCallbacks.append(block)
-        
-        // if a successful result already exists (from constructor), report it
-        if case let Result.success(value)? = result {
-            successCallbacks.forEach { $0(value) }
+        let current: Result<Value, Failure>? = stateQueue.sync {
+            if let result = result {
+                return result
+            }
+            successCallbacks.append(block)
+            return nil
         }
-        
+
+        if case let .success(value)? = current {
+            block(value)
+        }
         return self
     }
-    
+
     @discardableResult public func onError(block: @escaping ((Failure) -> Void)) -> Pending<Value, Failure> {
-        errorCallbacks.append(block)
-        
-        // if a failed result already exists (from constructor), report it
-        if case let Result.failure(error)? = result {
-            errorCallbacks.forEach { $0(error) }
+        let current: Result<Value, Failure>? = stateQueue.sync {
+            if let result = result {
+                return result
+            }
+            errorCallbacks.append(block)
+            return nil
         }
-        
+
+        if case let .failure(error)? = current {
+            block(error)
+        }
         return self
     }
-    
+
     public func isResolved() -> Bool {
-        result != nil
+        stateQueue.sync { result != nil }
     }
-    
+
     public func wait() {
         ITBDebug()
         guard !isResolved() else {
             ITBDebug("isResolved")
             return
         }
-        
+
         ITBDebug("waiting....")
         Thread.sleep(forTimeInterval: 0.1)
         wait()
     }
-    
-    fileprivate var result: Result<Value, Failure>? {
-        // Observe whenever a result is assigned, and report it
-        didSet { result.map(report) }
-    }
-    
-    // Report success or error based on result
-    private func report(result: Result<Value, Failure>) {
-        switch result {
+
+    /// One-shot promise resolution.
+    ///
+    /// Under `stateQueue.sync`: ignore duplicate resolves, otherwise store the result
+    /// and snapshot+clear the callback arrays. Callbacks fire OUTSIDE the sync so
+    /// re-entrant `onSuccess` / `onError` registrations on the same instance from
+    /// inside a callback do not deadlock and observe the resolved state correctly.
+    fileprivate func setResult(_ newResult: Result<Value, Failure>) {
+        let snapshot: (successes: [(Value) -> Void], errors: [(Failure) -> Void])? = stateQueue.sync {
+            guard result == nil else {
+                ITBDebug("Pending: ignored duplicate resolve")
+                return nil
+            }
+            result = newResult
+            let successes = successCallbacks
+            let errors = errorCallbacks
+            successCallbacks.removeAll()
+            errorCallbacks.removeAll()
+            return (successes, errors)
+        }
+
+        guard let snapshot = snapshot else { return }
+        switch newResult {
         case let .success(value):
-            successCallbacks.forEach { $0(value) }
+            snapshot.successes.forEach { $0(value) }
         case let .failure(error):
-            errorCallbacks.forEach { $0(error) }
+            snapshot.errors.forEach { $0(error) }
         }
     }
 }
@@ -101,7 +140,7 @@ public class Pending<Value, Failure> where Failure: Error {
 public class FailPending<Value, Failure: Error>: Pending<Value, Failure> {
     public init(error: Failure) {
         super.init()
-        self.result = .failure(error)
+        setResult(.failure(error))
     }
 }
 
@@ -199,27 +238,25 @@ public class Fulfill<Value, Failure>: Pending<Value, Failure> where Failure: Err
         ITBDebug()
         super.init()
         if let value = value {
-            result = Result.success(value)
-        } else {
-            result = nil
+            setResult(.success(value))
         }
     }
-    
+
     public init(error: Failure) {
         ITBDebug()
         super.init()
-        result = Result.failure(error)
+        setResult(.failure(error))
     }
 
     deinit {
         ITBDebug()
     }
-    
+
     public func resolve(with value: Value) {
-        result = .success(value)
+        setResult(.success(value))
     }
-    
+
     public func reject(with error: Failure) {
-        result = .failure(error)
+        setResult(.failure(error))
     }
 }
