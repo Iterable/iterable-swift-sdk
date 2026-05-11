@@ -24,9 +24,8 @@ extension IterableError: LocalizedError {
 //
 // Thread-safety: all mutations of `result`, `successCallbacks`, and `errorCallbacks`
 // are serialized through `stateQueue`. Callbacks are snapshotted under `.sync` and
-// invoked OUTSIDE the critical section — user code that re-enters `onSuccess` /
-// `onError` on the same instance therefore cannot deadlock the queue, and user code
-// never runs while we hold the lock. Matches the AuthManager.callbackQueue pattern.
+// invoked outside the critical section, so user code that re-enters `onSuccess` /
+// `onError` on the same instance cannot deadlock the queue.
 public class Pending<Value, Failure> where Failure: Error {
     fileprivate var successCallbacks = [(Value) -> Void]()
     fileprivate var errorCallbacks = [(Failure) -> Void]()
@@ -35,22 +34,18 @@ public class Pending<Value, Failure> where Failure: Error {
     private let stateQueue = DispatchQueue(label: "com.iterable.pending.state")
 
     public func onCompletion(receiveValue: @escaping ((Value) -> Void), receiveError: ( (Failure) -> Void)? = nil) {
-        // Atomically: either record both callbacks (unresolved), or capture the result (resolved).
-        // Appending both inside one `.sync` block guarantees we don't lose `receiveError` to a
-        // `.failure` resolve that lands between the two appends.
+        // Append both callbacks in one critical section so a concurrent failure
+        // cannot land between the success and error registrations.
         let current: Result<Value, Failure>? = stateQueue.sync {
-            if let result = result {
-                return result
-            }
             successCallbacks.append(receiveValue)
             if let receiveError = receiveError {
                 errorCallbacks.append(receiveError)
             }
-            return nil
+            return result
         }
 
-        // Late registration on an already-resolved Pending: fire synchronously on the
-        // registering thread, matching prior semantics.
+        // Late registration on an already-resolved Pending: replay the current
+        // result for the newly registered callback only.
         guard let current = current else { return }
         switch current {
         case let .success(value):
@@ -62,11 +57,8 @@ public class Pending<Value, Failure> where Failure: Error {
 
     @discardableResult public func onSuccess(block: @escaping ((Value) -> Void)) -> Pending<Value, Failure> {
         let current: Result<Value, Failure>? = stateQueue.sync {
-            if let result = result {
-                return result
-            }
             successCallbacks.append(block)
-            return nil
+            return result
         }
 
         if case let .success(value)? = current {
@@ -77,11 +69,8 @@ public class Pending<Value, Failure> where Failure: Error {
 
     @discardableResult public func onError(block: @escaping ((Failure) -> Void)) -> Pending<Value, Failure> {
         let current: Result<Value, Failure>? = stateQueue.sync {
-            if let result = result {
-                return result
-            }
             errorCallbacks.append(block)
-            return nil
+            return result
         }
 
         if case let .failure(error)? = current {
@@ -106,27 +95,19 @@ public class Pending<Value, Failure> where Failure: Error {
         wait()
     }
 
-    /// One-shot promise resolution.
+    /// Stores the result and fires every currently-registered callback.
     ///
-    /// Under `stateQueue.sync`: ignore duplicate resolves, otherwise store the result
-    /// and snapshot+clear the callback arrays. Callbacks fire OUTSIDE the sync so
-    /// re-entrant `onSuccess` / `onError` registrations on the same instance from
-    /// inside a callback do not deadlock and observe the resolved state correctly.
+    /// Repeated calls are allowed: in-tree callers reuse a single `Fulfill` as a
+    /// broadcast event signal. Each call overwrites `result` and fires the matching
+    /// branch against a snapshot of the callback list taken under the lock.
+    /// Callbacks fire outside the critical section so re-entrant registrations on
+    /// the same instance cannot deadlock.
     fileprivate func setResult(_ newResult: Result<Value, Failure>) {
-        let snapshot: (successes: [(Value) -> Void], errors: [(Failure) -> Void])? = stateQueue.sync {
-            guard result == nil else {
-                ITBDebug("Pending: ignored duplicate resolve")
-                return nil
-            }
+        let snapshot: (successes: [(Value) -> Void], errors: [(Failure) -> Void]) = stateQueue.sync {
             result = newResult
-            let successes = successCallbacks
-            let errors = errorCallbacks
-            successCallbacks.removeAll()
-            errorCallbacks.removeAll()
-            return (successes, errors)
+            return (successCallbacks, errorCallbacks)
         }
 
-        guard let snapshot = snapshot else { return }
         switch newResult {
         case let .success(value):
             snapshot.successes.forEach { $0(value) }

@@ -7,7 +7,8 @@
 //  `successCallbacks`, `errorCallbacks`, and `result` in `swift-sdk/Internal/Pending.swift`.
 //  Each test races registration (`onSuccess` / `onError` / `onCompletion`) against
 //  resolution (`resolve` / `reject`) across queues. With the fix in place, every
-//  callback must fire exactly once and no crash / TSan report should occur.
+//  callback must fire exactly once per matching resolution and no crash / TSan
+//  report should occur.
 //
 
 import XCTest
@@ -100,26 +101,31 @@ class PendingConcurrencyTests: XCTestCase {
             let successCount = AtomicInt()
             let errorCount = AtomicInt()
 
+            let operationGroup = DispatchGroup()
+
+            operationGroup.enter()
             consumerQueue.async {
                 pending.onCompletion(receiveValue: { _ in
                     successCount.increment()
                 }, receiveError: { _ in
                     errorCount.increment()
                 })
+                operationGroup.leave()
             }
 
+            operationGroup.enter()
             producerQueue.async {
                 if i.isMultiple(of: 2) {
                     pending.resolve(with: i)
                 } else {
                     pending.reject(with: MyError(message: "n=\(i)"))
                 }
+                operationGroup.leave()
             }
 
-            // Drain after a short window so registration + resolution have raced.
-            DispatchQueue.global().asyncAfter(deadline: .now() + 0.05) {
+            DispatchQueue.global().async {
+                operationGroup.wait()
                 let total = successCount.value + errorCount.value
-                // Either branch must fire exactly once.
                 XCTAssertEqual(total, 1, "iteration \(i) saw success=\(successCount.value) error=\(errorCount.value)")
                 expectation1.fulfill()
             }
@@ -189,10 +195,10 @@ class PendingConcurrencyTests: XCTestCase {
 
     // MARK: - Late registration after resolve
 
-    /// Locks in the fix for the O(N²) latent bug: prior to SDK-471, registering N
+    /// Locks in the fix for the O(N^2) latent bug: prior to SDK-471, registering N
     /// callbacks on an already-resolved Pending iterated the full accumulated array
     /// each time, firing earlier callbacks repeatedly. After the fix each
-    /// late-registered callback fires exactly once and the stored array is empty.
+    /// late-registered callback replays the current result once.
     func testLateRegisterAfterResolveFiresOnce() {
         let pending = Fulfill<Int, MyError>(value: 99)
         XCTAssertTrue(pending.isResolved())
@@ -212,54 +218,72 @@ class PendingConcurrencyTests: XCTestCase {
         wait(for: [expectation1], timeout: testExpectationTimeout)
     }
 
-    // MARK: - Double resolve
+    func testLateRegisterAfterResolveStaysRegisteredForFutureResolves() {
+        let pending = Fulfill<Int, MyError>(value: 99)
+        var firstValues = [Int]()
+        var secondValues = [Int]()
 
-    /// `Fulfill` is a one-shot promise. The second `resolve` (or `reject`) must be
-    /// silently ignored — a late `onCompletion` should observe the FIRST value.
-    func testDoubleResolveIsIgnored() {
-        let pending = Fulfill<Int, MyError>()
-        pending.resolve(with: 1)
-        pending.resolve(with: 2) // should be ignored
-
-        let expectation1 = expectation(description: "callback sees first value only")
         pending.onSuccess { value in
-            XCTAssertEqual(value, 1)
-            expectation1.fulfill()
+            firstValues.append(value)
         }
-        wait(for: [expectation1], timeout: testExpectationTimeout)
+
+        pending.onSuccess { value in
+            secondValues.append(value)
+        }
+
+        XCTAssertEqual(firstValues, [99])
+        XCTAssertEqual(secondValues, [99])
+
+        pending.resolve(with: 100)
+
+        XCTAssertEqual(firstValues, [99, 100])
+        XCTAssertEqual(secondValues, [99, 100])
     }
 
-    func testDoubleRejectIsIgnored() {
-        let pending = Fulfill<Int, MyError>()
-        pending.reject(with: MyError(message: "first"))
-        pending.reject(with: MyError(message: "second")) // ignored
+    // MARK: - Repeated resolution
 
-        let expectation1 = expectation(description: "callback sees first error only")
+    func testRepeatedResolveNotifiesRegisteredCallbacks() {
+        let pending = Fulfill<Int, MyError>()
+        var values = [Int]()
+
+        pending.onSuccess { value in
+            values.append(value)
+        }
+
+        pending.resolve(with: 1)
+        pending.resolve(with: 2)
+
+        XCTAssertEqual(values, [1, 2])
+    }
+
+    func testRepeatedRejectNotifiesRegisteredCallbacks() {
+        let pending = Fulfill<Int, MyError>()
+        var errors = [MyError]()
+
         pending.onError { error in
-            XCTAssertEqual(error, MyError(message: "first"))
-            expectation1.fulfill()
+            errors.append(error)
         }
-        wait(for: [expectation1], timeout: testExpectationTimeout)
+
+        pending.reject(with: MyError(message: "first"))
+        pending.reject(with: MyError(message: "second"))
+
+        XCTAssertEqual(errors, [MyError(message: "first"), MyError(message: "second")])
     }
 
-    func testResolveAfterRejectIsIgnored() {
+    func testResolveAfterRejectNotifiesMatchingBranches() {
         let pending = Fulfill<Int, MyError>()
-        pending.reject(with: MyError(message: "first"))
-        pending.resolve(with: 42) // ignored — already rejected
-
-        let expectationError = expectation(description: "error branch fires")
-        let expectationSuccess = expectation(description: "success branch must NOT fire")
-        expectationSuccess.isInverted = true
+        var events = [String]()
 
         pending.onCompletion(receiveValue: { _ in
-            expectationSuccess.fulfill()
+            events.append("success")
         }, receiveError: { error in
-            XCTAssertEqual(error, MyError(message: "first"))
-            expectationError.fulfill()
+            events.append("error:\(error.message)")
         })
 
-        wait(for: [expectationError], timeout: testExpectationTimeout)
-        wait(for: [expectationSuccess], timeout: testExpectationTimeoutForInverted)
+        pending.reject(with: MyError(message: "first"))
+        pending.resolve(with: 42)
+
+        XCTAssertEqual(events, ["error:first", "success"])
     }
 
     // MARK: - Stress
