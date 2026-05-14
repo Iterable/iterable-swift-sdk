@@ -404,6 +404,7 @@
 		ACDBB33B239582450036BB38 /* NotificationExtensionConstants.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACDBB33A239582450036BB38 /* NotificationExtensionConstants.swift */; };
 		ACE34AB5213776CB00691224 /* LocalStorageTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACE34AB4213776CB00691224 /* LocalStorageTests.swift */; };
 		ACED4C01213F50B30055A497 /* LoggingTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACED4C00213F50B30055A497 /* LoggingTests.swift */; };
+		8A4680022E4D000100000001 /* NetworkMonitorLifecycleTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8A4680012E4D000100000001 /* NetworkMonitorLifecycleTests.swift */; };
 		ACEDF41F2183C436000B9BFE /* PendingTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACEDF41E2183C436000B9BFE /* PendingTests.swift */; };
 		ACF406252507F90F005FD775 /* NetworkConnectivityManagerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACF406242507F90F005FD775 /* NetworkConnectivityManagerTests.swift */; };
 		ACF560D620E443BF000AAC23 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACF560D520E443BF000AAC23 /* AppDelegate.swift */; };
@@ -849,6 +850,7 @@
 		ACDBB33A239582450036BB38 /* NotificationExtensionConstants.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NotificationExtensionConstants.swift; sourceTree = "<group>"; };
 		ACE34AB4213776CB00691224 /* LocalStorageTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocalStorageTests.swift; sourceTree = "<group>"; };
 		ACED4C00213F50B30055A497 /* LoggingTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoggingTests.swift; sourceTree = "<group>"; };
+		8A4680012E4D000100000001 /* NetworkMonitorLifecycleTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkMonitorLifecycleTests.swift; sourceTree = "<group>"; };
 		ACEDF41E2183C436000B9BFE /* PendingTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PendingTests.swift; sourceTree = "<group>"; };
 		ACF406242507F90F005FD775 /* NetworkConnectivityManagerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkConnectivityManagerTests.swift; sourceTree = "<group>"; };
 		ACF560D320E443BF000AAC23 /* host-app.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "host-app.app"; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -1371,6 +1373,7 @@
 				55B37FC0229620D20042F13A /* CommerceItemTests.swift */,
 				5536781E2576FF9000DB3652 /* IterableUtilTests.swift */,
 				ACED4C00213F50B30055A497 /* LoggingTests.swift */,
+				8A4680012E4D000100000001 /* NetworkMonitorLifecycleTests.swift */,
 				55B37FC5229752DD0042F13A /* OrderedDictionaryTests.swift */,
 				ACEDF41E2183C436000B9BFE /* PendingTests.swift */,
 			);
@@ -2407,6 +2410,7 @@
 				5588DFE928C046D7000697D7 /* MockInboxState.swift in Sources */,
 				181063DF2C9D51000078E0ED /* ValidateStoredEventCheckUnknownToKnownUserTest.swift in Sources */,
 				ACED4C01213F50B30055A497 /* LoggingTests.swift in Sources */,
+				8A4680022E4D000100000001 /* NetworkMonitorLifecycleTests.swift in Sources */,
 				AC52C5B8272A8B32000DCDCF /* KeychainWrapperTests.swift in Sources */,
 				ACC3FD9E2536D7A30004A2E0 /* InAppFilePersistenceTests.swift in Sources */,
 				5B5AA714284F1A6D0093FED4 /* MockNetworkSession.swift in Sources */,

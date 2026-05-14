@@ -8,6 +8,45 @@ import Foundation
 import Network
 #endif
 
+struct NetworkPathUpdate {
+    let debugDescription: String
+    let status: String
+}
+
+protocol NetworkPathMonitorProtocol: AnyObject {
+    var pathUpdateHandler: ((NetworkPathUpdate) -> Void)? { get set }
+    func start(queue: DispatchQueue)
+    func cancel()
+}
+
+#if canImport(Network)
+private final class NetworkPathMonitor: NetworkPathMonitorProtocol {
+    var pathUpdateHandler: ((NetworkPathUpdate) -> Void)? {
+        didSet {
+            guard let pathUpdateHandler = pathUpdateHandler else {
+                monitor.pathUpdateHandler = nil
+                return
+            }
+
+            monitor.pathUpdateHandler = { path in
+                pathUpdateHandler(NetworkPathUpdate(debugDescription: path.debugDescription,
+                                                    status: String(describing: path.status)))
+            }
+        }
+    }
+
+    func start(queue: DispatchQueue) {
+        monitor.start(queue: queue)
+    }
+
+    func cancel() {
+        monitor.cancel()
+    }
+
+    private let monitor = NWPathMonitor()
+}
+#endif
+
 /// Listens to network interface to detect status change.
 /// It only knows that the status has changed.
 /// It does not know if the network is online or not.
@@ -18,8 +57,9 @@ protocol NetworkMonitorProtocol {
 }
 
 class NetworkMonitor: NetworkMonitorProtocol {
-    init() {
+    init(pathMonitorFactory: @escaping () -> NetworkPathMonitorProtocol = { NetworkPathMonitor() }) {
         ITBInfo()
+        self.pathMonitorFactory = pathMonitorFactory
     }
     
     deinit {
@@ -31,10 +71,12 @@ class NetworkMonitor: NetworkMonitorProtocol {
 
     func start() {
         ITBInfo()
-        let networkMonitor = NWPathMonitor()
-        networkMonitor.pathUpdateHandler = { path in
+        stop()
+
+        let networkMonitor = pathMonitorFactory()
+        networkMonitor.pathUpdateHandler = { [weak self] path in
             ITBInfo("networkMonitor.pathUpdateHandler, path: \(path.debugDescription), status: \(path.status)")
-            self.statusUpdatedCallback?()
+            self?.statusUpdatedCallback?()
         }
 
         networkMonitor.start(queue: queue)
@@ -43,10 +85,12 @@ class NetworkMonitor: NetworkMonitorProtocol {
     
     func stop() {
         ITBInfo()
+        networkMonitor?.pathUpdateHandler = nil
         networkMonitor?.cancel()
         networkMonitor = nil
     }
     
-    private weak var networkMonitor: NWPathMonitor?
+    private var networkMonitor: NetworkPathMonitorProtocol?
+    private let pathMonitorFactory: () -> NetworkPathMonitorProtocol
     private let queue = DispatchQueue(label: "NetworkMonitor")
 }
