@@ -7,6 +7,34 @@ import XCTest
 @testable import IterableSDK
 
 class TaskRunnerTests: XCTestCase {
+    private final class WeakBox<T: AnyObject> {
+        weak var value: T?
+
+        init(_ value: T?) {
+            self.value = value
+        }
+    }
+
+    private final class LifecycleNetworkMonitor: NetworkMonitorProtocol {
+        var statusUpdatedCallback: (() -> Void)?
+        private(set) var startCount = 0
+        private(set) var stopCount = 0
+
+        func start() {
+            startCount += 1
+        }
+
+        func stop() {
+            stopCount += 1
+        }
+    }
+
+    private final class ImmediatePersistenceContext: MockPersistenceContext {
+        override func perform(_ block: @escaping () -> Void) {
+            block()
+        }
+    }
+
     override func setUpWithError() throws {
         try super.setUpWithError()
         
@@ -270,6 +298,58 @@ class TaskRunnerTests: XCTestCase {
         notificationCenter.post(name: UIApplication.willEnterForegroundNotification, object: nil, userInfo: nil)
         verifyTaskIsExecuted(notificationCenter, withinInterval: 10.0)
         taskRunner.stop()
+    }
+
+    func testForegroundBackgroundCyclingDoesNotLeakConnectivityLifecycle() throws {
+        let weakMonitor = WeakBox<LifecycleNetworkMonitor>(nil)
+        let weakManager = WeakBox<NetworkConnectivityManager>(nil)
+        let weakTaskRunner = WeakBox<IterableTaskRunner>(nil)
+
+        autoreleasepool {
+            let networkSession = MockNetworkSession()
+            let checker = NetworkConnectivityChecker(networkSession: networkSession)
+            let monitor = LifecycleNetworkMonitor()
+            weakMonitor.value = monitor
+            let notificationCenter = MockNotificationCenter()
+            let persistenceContextProvider = MockPersistenceContextProvider(context: ImmediatePersistenceContext())
+            let manager = NetworkConnectivityManager(networkMonitor: monitor,
+                                                     connectivityChecker: checker,
+                                                     notificationCenter: notificationCenter,
+                                                     offlineModePollingInterval: 600,
+                                                     onlineModePollingInterval: 600)
+            weakManager.value = manager
+
+            let healthMonitor = HealthMonitor(dataProvider: HealthMonitorDataProvider(maxTasks: 1000,
+                                                                                      persistenceContextProvider: persistenceContextProvider),
+                                              dateProvider: SystemDateProvider(),
+                                              networkSession: networkSession)
+            let taskRunner = IterableTaskRunner(networkSession: networkSession,
+                                                persistenceContextProvider: persistenceContextProvider,
+                                                healthMonitor: healthMonitor,
+                                                notificationCenter: notificationCenter,
+                                                timeInterval: 600,
+                                                connectivityManager: manager)
+            weakTaskRunner.value = taskRunner
+
+            taskRunner.start()
+            XCTAssertEqual(monitor.startCount, 1)
+
+            for cycleIndex in 1...3 {
+                notificationCenter.post(name: UIApplication.didEnterBackgroundNotification, object: nil, userInfo: nil)
+                XCTAssertEqual(monitor.stopCount, cycleIndex)
+
+                notificationCenter.post(name: UIApplication.willEnterForegroundNotification, object: nil, userInfo: nil)
+                XCTAssertEqual(monitor.startCount, cycleIndex + 1)
+            }
+
+            taskRunner.stop()
+            XCTAssertEqual(monitor.stopCount, 4)
+            XCTAssertNil(monitor.statusUpdatedCallback)
+        }
+
+        XCTAssertNil(weakTaskRunner.value)
+        XCTAssertNil(weakManager.value)
+        XCTAssertNil(weakMonitor.value)
     }
     
     func testSentAtInHeader() throws {

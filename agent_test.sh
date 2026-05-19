@@ -57,6 +57,21 @@ fi
 
 echo "Running Iterable Swift SDK unit tests..."
 
+# Resolve the simulator by name and boot it via CoreSimulator. Targeting by
+# UDID avoids xcodebuild's "no matching device" failures when multiple devices
+# share the same name across runtimes. This does NOT touch any Simulator.app
+# instance the user may already have open for another project.
+SIMULATOR_NAME="${SIMULATOR_NAME:-iPhone 17 Pro}"
+SIMULATOR_ID=$(xcrun simctl list devices available | grep -F "$SIMULATOR_NAME (" | head -1 | sed -E 's/.*\(([A-F0-9-]+)\).*/\1/')
+
+if [[ -z "$SIMULATOR_ID" ]]; then
+    echo "❌ Could not find available simulator named '$SIMULATOR_NAME'"
+    exit 1
+fi
+
+xcrun simctl boot "$SIMULATOR_ID" >/dev/null 2>&1 || true
+xcrun simctl bootstatus "$SIMULATOR_ID" -b >/dev/null
+
 # Create a temporary file for the test output
 TEMP_OUTPUT=$(mktemp)
 
@@ -65,7 +80,7 @@ XCODEBUILD_CMD="xcodebuild test \
     -project swift-sdk.xcodeproj \
     -scheme swift-sdk \
     -sdk iphonesimulator \
-    -destination 'platform=iOS Simulator,name=iPhone 17 Pro' \
+    -destination 'platform=iOS Simulator,id=$SIMULATOR_ID' \
     -enableCodeCoverage YES \
     -skipPackagePluginValidation \
     CODE_SIGNING_REQUIRED=NO"
