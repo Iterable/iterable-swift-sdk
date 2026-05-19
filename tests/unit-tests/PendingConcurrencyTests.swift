@@ -177,16 +177,23 @@ class PendingConcurrencyTests: XCTestCase {
             return inner
         }
 
-        DispatchQueue.global(qos: .background).async {
-            chained.onCompletion { result in
-                XCTAssertEqual(result, "v=7")
-                expectation1.fulfill()
-            } receiveError: { _ in
-                XCTFail("error branch should not fire")
-            }
+        // Register `chained.onCompletion` synchronously. The cross-queue
+        // aspect this test exercises is `outer.resolve` on `.userInitiated`
+        // chaining through `inner.resolve` on `.main` and back into
+        // `chained` — the callback-array locking is queue-agnostic, so
+        // registering from yet another queue would not strengthen coverage
+        // and previously made the test flaky under GitHub Actions runner
+        // contention (15 s timeout exceeded waiting for `.background`
+        // scheduling). Concurrent registration vs. resolve is covered by
+        // `testConcurrentOnSuccessAndResolve` above.
+        chained.onCompletion { result in
+            XCTAssertEqual(result, "v=7")
+            expectation1.fulfill()
+        } receiveError: { _ in
+            XCTFail("error branch should not fire")
         }
 
-        DispatchQueue.global(qos: .userInitiated).asyncAfter(deadline: .now() + 0.05) {
+        DispatchQueue.global(qos: .userInitiated).async {
             outer.resolve(with: 7)
         }
 
