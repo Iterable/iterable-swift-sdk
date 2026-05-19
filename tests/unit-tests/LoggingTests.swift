@@ -7,6 +7,15 @@ import XCTest
 @testable import IterableSDK
 
 class LoggingTests: XCTestCase {
+    private class SpyDateProvider: DateProviderProtocol {
+        private(set) var currentDateAccessCount = 0
+
+        var currentDate: Date {
+            currentDateAccessCount += 1
+            return Date(timeIntervalSince1970: 0)
+        }
+    }
+
     func testLogging() {
         let expectation1 = expectation(description: "debug message")
         let expectation2 = expectation(description: "info message")
@@ -47,5 +56,25 @@ class LoggingTests: XCTestCase {
         ITBError(errorMessage)
         
         wait(for: [expectation1, expectation2, expectation3], timeout: 10.0)
+    }
+
+    func testDefaultLogDelegateDoesNotFormatFilteredLogLevel() {
+        let dateProvider = SpyDateProvider()
+        let logUtil = IterableLogUtil(dateProvider: dateProvider, logDelegate: DefaultLogDelegate(minLogLevel: .error))
+
+        logUtil.log(level: .info, message: "filtered", file: #file, method: #function, line: #line)
+        XCTAssertEqual(dateProvider.currentDateAccessCount, 0)
+
+        logUtil.log(level: .error, message: "logged", file: #file, method: #function, line: #line)
+        XCTAssertEqual(dateProvider.currentDateAccessCount, 1)
+    }
+
+    func testNoneLogDelegateDoesNotFormatMessages() {
+        let dateProvider = SpyDateProvider()
+        let logUtil = IterableLogUtil(dateProvider: dateProvider, logDelegate: NoneLogDelegate())
+
+        logUtil.log(level: .error, message: "filtered", file: #file, method: #function, line: #line)
+
+        XCTAssertEqual(dateProvider.currentDateAccessCount, 0)
     }
 }
