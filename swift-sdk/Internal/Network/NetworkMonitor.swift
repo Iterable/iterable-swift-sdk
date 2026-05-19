@@ -85,6 +85,10 @@ class NetworkMonitor: NetworkMonitorProtocol {
     
     func stop() {
         ITBInfo()
+        // `statusUpdatedCallback` intentionally persists across stop/start cycles:
+        // callers (e.g. `NetworkConnectivityManager`) set it once and expect it to
+        // survive, so they don't have to re-register after every stop. The
+        // `pathUpdateHandler` weak-self capture means this is not a leak risk.
         networkMonitor?.pathUpdateHandler = nil
         networkMonitor?.cancel()
         networkMonitor = nil
