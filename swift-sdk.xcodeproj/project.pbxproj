@@ -405,6 +405,7 @@
 		ACE34AB5213776CB00691224 /* LocalStorageTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACE34AB4213776CB00691224 /* LocalStorageTests.swift */; };
 		ACED4C01213F50B30055A497 /* LoggingTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACED4C00213F50B30055A497 /* LoggingTests.swift */; };
 		ACEDF41F2183C436000B9BFE /* PendingTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACEDF41E2183C436000B9BFE /* PendingTests.swift */; };
+		5C0471F221F0F0F0000B7CCC /* PendingConcurrencyTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C0471F121F0F0F0000B7CCC /* PendingConcurrencyTests.swift */; };
 		ACF406252507F90F005FD775 /* NetworkConnectivityManagerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACF406242507F90F005FD775 /* NetworkConnectivityManagerTests.swift */; };
 		ACF560D620E443BF000AAC23 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACF560D520E443BF000AAC23 /* AppDelegate.swift */; };
 		ACF560DB20E443BF000AAC23 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = ACF560D920E443BF000AAC23 /* Main.storyboard */; };
@@ -850,6 +851,7 @@
 		ACE34AB4213776CB00691224 /* LocalStorageTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocalStorageTests.swift; sourceTree = "<group>"; };
 		ACED4C00213F50B30055A497 /* LoggingTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoggingTests.swift; sourceTree = "<group>"; };
 		ACEDF41E2183C436000B9BFE /* PendingTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PendingTests.swift; sourceTree = "<group>"; };
+		5C0471F121F0F0F0000B7CCC /* PendingConcurrencyTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PendingConcurrencyTests.swift; sourceTree = "<group>"; };
 		ACF406242507F90F005FD775 /* NetworkConnectivityManagerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkConnectivityManagerTests.swift; sourceTree = "<group>"; };
 		ACF560D320E443BF000AAC23 /* host-app.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "host-app.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		ACF560D520E443BF000AAC23 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
@@ -1373,6 +1375,7 @@
 				ACED4C00213F50B30055A497 /* LoggingTests.swift */,
 				55B37FC5229752DD0042F13A /* OrderedDictionaryTests.swift */,
 				ACEDF41E2183C436000B9BFE /* PendingTests.swift */,
+				5C0471F121F0F0F0000B7CCC /* PendingConcurrencyTests.swift */,
 			);
 			name = "foundational-tests";
 			sourceTree = "<group>";
@@ -2461,6 +2464,7 @@
 				5588DFA128C04570000697D7 /* MockApplicationStateProvider.swift in Sources */,
 				5588DFF128C046FF000697D7 /* MockMessageViewControllerEventTracker.swift in Sources */,
 				ACEDF41F2183C436000B9BFE /* PendingTests.swift in Sources */,
+				5C0471F221F0F0F0000B7CCC /* PendingConcurrencyTests.swift in Sources */,
 				AC1B29002742579000AD2BE3 /* InAppNavigationTests.swift in Sources */,
 				5588DF7128C0442D000697D7 /* MockDateProvider.swift in Sources */,
 				1CBFFE1A2A97AEEF00ED57EE /* EmbeddedManagerTests.swift in Sources */,
