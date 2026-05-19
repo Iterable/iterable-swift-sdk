@@ -13,10 +13,12 @@ import os
         self.minLogLevel = minLogLevel
     }
     
+    public func shouldLog(level: LogLevel) -> Bool {
+        level.rawValue >= minLogLevel.rawValue
+    }
+
     public func log(level: LogLevel = .info, message: String) {
-        guard level.rawValue >= minLogLevel.rawValue else {
-            return
-        }
+        guard shouldLog(level: level) else { return }
         
         let markedMessage = IterableLogUtil.markedMessage(level: level, message: message)
         os_log("%@", log: OSLog.default, type: OSLogType.error, markedMessage)
@@ -33,6 +35,10 @@ import os
 
 /// Will log nothing
 @objc public class NoneLogDelegate: NSObject, IterableLogDelegate {
+    public func shouldLog(level _: LogLevel) -> Bool {
+        false
+    }
+
     public func log(level _: LogLevel = .info, message _: String) {
         // Do nothing
     }
