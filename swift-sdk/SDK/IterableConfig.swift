@@ -85,6 +85,12 @@ public struct IterableAPIMobileFrameworkInfo: Codable {
     ///     - message: The message to log. The message will include file, method and line of the call.
     @objc(log:message:)
     func log(level: LogLevel, message: String)
+
+    /// Return whether a message at the given level should be formatted and logged.
+    /// If this optional method is not implemented, all levels will be formatted and logged.
+    /// - Parameter level: The logging level
+    @objc(shouldLog:)
+    optional func shouldLog(level: LogLevel) -> Bool
 }
 
 /// The delegate for getting the authentication token

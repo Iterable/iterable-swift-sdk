@@ -48,12 +48,14 @@ class NetworkConnectivityManager: NSObject {
     
     func stop() {
         ITBInfo()
+        networkMonitor.statusUpdatedCallback = nil
         networkMonitor.stop()
         stopTimer()
     }
     
     private func startTimer() {
         ITBInfo()
+        stopTimer()
         let interval = online ? onlineModePollingInterval : offlineModePollingInterval
         timer = Timer.scheduledTimer(withTimeInterval: interval, repeats: true, block: { [weak self] _ in
             ITBInfo("timer called")
@@ -75,8 +77,8 @@ class NetworkConnectivityManager: NSObject {
 
     private func updateStatus() {
         ITBInfo()
-        connectivityChecker.checkConnectivity().onSuccess { connected in
-            self.online = connected
+        connectivityChecker.checkConnectivity().onSuccess { [weak self] connected in
+            self?.online = connected
         }
     }
     
@@ -116,4 +118,3 @@ class NetworkConnectivityManager: NSObject {
         }
     }
 }
-

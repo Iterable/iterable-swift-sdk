@@ -16,6 +16,8 @@ struct IterableLogUtil {
     static var sharedInstance: IterableLogUtil?
     
     func log(level: LogLevel, message: String?, file: String, method: String, line: Int) {
+        guard logDelegate.shouldLog?(level: level) ?? true else { return }
+
         let logMessage = IterableLogUtil.formatLogMessage(message: message, file: file, method: method, line: line, date: dateProvider.currentDate)
         logDelegate.log(level: level, message: logMessage)
     }
@@ -49,9 +51,13 @@ struct IterableLogUtil {
         }
     }
     
-    private static func formatDate(date: Date) -> String {
+    private static let dateFormatter: DateFormatter = {
         let formatter = DateFormatter()
         formatter.dateFormat = "HH:mm:ss.SSSS"
-        return formatter.string(from: date)
+        return formatter
+    }()
+
+    private static func formatDate(date: Date) -> String {
+        dateFormatter.string(from: date)
     }
 }
