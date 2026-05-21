@@ -294,4 +294,49 @@ class KeychainMigrationTests: XCTestCase {
         // Once the dust settles, the migrated value must be visible.
         XCTAssertEqual(keychain.email, migratedEmail)
     }
+
+    /// SDK-478: exercise the four public property setters through the
+    /// coordinator queue's barrier write. Existing migration tests write
+    /// through the underlying wrappers directly and only read via the
+    /// public getters, so the setter paths went uncovered.
+    func testPublicSettersWriteThroughCoordinatorQueue() throws {
+        let isolatedWrapper = KeychainWrapper(serviceName: isolatedServiceName)
+        let keychain = IterableKeychain(wrapper: isolatedWrapper, legacyWrapper: nil)
+
+        // Set non-nil values. Each setter takes the barrier sync path and
+        // calls rawWrite, which writes to the underlying KeychainWrapper.
+        keychain.email = "set-via-property@example.com"
+        keychain.userId = "set-via-property-user"
+        keychain.userIdUnknownUser = "set-via-property-uua"
+        keychain.authToken = "set-via-property-token"
+
+        XCTAssertEqual(keychain.email, "set-via-property@example.com")
+        XCTAssertEqual(keychain.userId, "set-via-property-user")
+        XCTAssertEqual(keychain.userIdUnknownUser, "set-via-property-uua")
+        XCTAssertEqual(keychain.authToken, "set-via-property-token")
+    }
+
+    /// SDK-478: setting a property to nil routes rawWrite into the
+    /// `wrapper.removeValue` branch. Covers the nil-removal path of the
+    /// setter without requiring the migration flow.
+    func testPublicSetterNilRemovesValue() throws {
+        let isolatedWrapper = KeychainWrapper(serviceName: isolatedServiceName)
+        let keychain = IterableKeychain(wrapper: isolatedWrapper, legacyWrapper: nil)
+
+        // Seed via the setter, then clear via the setter.
+        keychain.email = "to-be-cleared@example.com"
+        keychain.userId = "to-be-cleared"
+        keychain.userIdUnknownUser = "to-be-cleared-uua"
+        keychain.authToken = "to-be-cleared-token"
+
+        keychain.email = nil
+        keychain.userId = nil
+        keychain.userIdUnknownUser = nil
+        keychain.authToken = nil
+
+        XCTAssertNil(keychain.email)
+        XCTAssertNil(keychain.userId)
+        XCTAssertNil(keychain.userIdUnknownUser)
+        XCTAssertNil(keychain.authToken)
+    }
 }
