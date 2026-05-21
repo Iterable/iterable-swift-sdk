@@ -38,7 +38,13 @@ protocol LocalStorageProtocol {
     var isNotificationsEnabled: Bool { get set }
     
     var hasStoredNotificationSetting: Bool { get set }
-    
+
+    /// Tracks whether `migrateKeychainToIsolatedStorage()` has run to
+    /// completion at least once on this install. Gates the migration so it
+    /// is a true one-shot - subsequent `start()` calls do not pay the
+    /// SecItem syscall cost. See SDK-478.
+    var keychainMigrationCompleted: Bool { get set }
+
     func getAttributionInfo(currentDate: Date) -> IterableAttributionInfo?
     
     func save(attributionInfo: IterableAttributionInfo?, withExpiration expiration: Date?)

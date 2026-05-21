@@ -154,7 +154,15 @@ struct LocalStorage: LocalStorageProtocol {
             iterableUserDefaults.hasStoredNotificationSetting = newValue
         }
     }
-    
+
+    var keychainMigrationCompleted: Bool {
+        get {
+            iterableUserDefaults.keychainMigrationCompleted
+        } set {
+            iterableUserDefaults.keychainMigrationCompleted = newValue
+        }
+    }
+
     func getAttributionInfo(currentDate: Date) -> IterableAttributionInfo? {
         iterableUserDefaults.getAttributionInfo(currentDate: currentDate)
     }

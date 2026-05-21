@@ -4,6 +4,12 @@ All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 ## [Unreleased]
 
+### Fixed
+- [SDK-478] Moved keychain migration (`migrateKeychainToIsolatedStorage`) off the main thread and gated it as a one-shot via a UserDefaults flag. Prior to this change the migration ran on the caller's thread on every `start()` invocation; for cross-platform bridges (React Native and Flutter), `start()` is called from `DispatchQueue.main.async`, so the migration's keychain syscalls blocked the main thread on every cold start. The migration now dispatches to `DispatchQueue.global(qos: .userInitiated)` and runs only when a UserDefaults flag indicates it has not yet completed for this install. Reads of `email`, `userId`, `userIdUnknownUser`, and `authToken` are coordinated against the in-flight migration via a concurrent dispatch queue with a barrier write, so callers observe consistent state regardless of timing. See [SDK-294] for context on the original isolated-keychain change.
+- Added empty-key guard and tighter `SecItemCopyMatching` status handling on `KeychainWrapper.data(forKey:)` / `set(_:forKey:)` / `removeValue(forKey:)` to prevent edge-case crashes on app launch.
+- Added duration logging to `IterableKeychain.migrateFromLegacy()` so future regressions of this shape surface in dev logs immediately.
+- Added non-success logging to `KeychainWrapper.set(_:forKey:)` and `update(_:forKey:)` so silent `SecItemAdd`/`SecItemUpdate` failures (e.g. entitlement issues) become observable.
+
 ## [6.7.1]
 ### Fixed
 - Fixed the `enableUnknownUserActivation` default value to `false`
