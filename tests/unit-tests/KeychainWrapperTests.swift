@@ -178,4 +178,26 @@ class KeychainWrapperTests: XCTestCase {
         isolatedWrapper1.removeAll()
         isolatedWrapper2.removeAll()
     }
+
+    // MARK: - SDK-478 / b521d533 defensive guards
+
+    /// SDK-478: empty keys can reach the wrapper via misconfigured callers.
+    /// Each accessor must return its safe-default rather than passing the
+    /// empty string into `SecItem*` (which can return non-standard statuses
+    /// that downstream code does not handle).
+    func testEmptyKeyReturnsNilImmediately() throws {
+        let wrapper = KeychainWrapper(serviceName: "test-keychain")
+        XCTAssertNil(wrapper.data(forKey: ""))
+    }
+
+    func testEmptyKeySetReturnsFalse() throws {
+        let wrapper = KeychainWrapper(serviceName: "test-keychain")
+        let value = "anything".data(using: .utf8)!
+        XCTAssertFalse(wrapper.set(value, forKey: ""))
+    }
+
+    func testEmptyKeyRemoveReturnsFalse() throws {
+        let wrapper = KeychainWrapper(serviceName: "test-keychain")
+        XCTAssertFalse(wrapper.removeValue(forKey: ""))
+    }
 }

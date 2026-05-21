@@ -30,47 +30,65 @@ class KeychainWrapper {
     
     @discardableResult
     func set(_ value: Data, forKey key: String) -> Bool {
+        guard !key.isEmpty else { return false }
+
         var keychainQueryDictionary: [String: Any] = setupKeychainQueryDictionary(forKey: key)
-        
+
         keychainQueryDictionary[SecValueData] = value
-        
+
         // Assign default protection - Protect the keychain entry so it's only valid when the device is unlocked
         keychainQueryDictionary[SecAttrAccessible] = SecAttrAccessibleWhenUnlocked
-        
+
         let status: OSStatus = SecItemAdd(keychainQueryDictionary as CFDictionary, nil)
-        
+
         if status == errSecSuccess {
             return true
         } else if status == errSecDuplicateItem {
             return update(value, forKey: key)
         } else {
+            // Surface silent failure paths (e.g. errSecMissingEntitlement in
+            // misconfigured Expo apps) so they become observable in dev logs.
+            // See SDK-478.
+            ITBError("keychain SecItemAdd failed for key=\(key) status=\(status)")
             return false
         }
     }
-    
+
     func data(forKey key: String) -> Data? {
+        guard !key.isEmpty else { return nil }
+
         var keychainQueryDictionary = setupKeychainQueryDictionary(forKey: key)
-        
+
         // Limit search results to one
         keychainQueryDictionary[SecMatchLimit] = SecMatchLimitOne
-        
+
         // Specify we want Data/CFData returned
         keychainQueryDictionary[SecReturnData] = CFBooleanTrue
-        
+
         // Search
         var result: AnyObject?
         let status = SecItemCopyMatching(keychainQueryDictionary as CFDictionary, &result)
-        
+
+        // Treat anything other than noErr / errSecItemNotFound as a benign
+        // miss rather than passing weird statuses through; this prevents
+        // downstream crashes when callers force-unwrap the returned data.
+        // See SDK-478 / b521d533.
+        guard status == noErr || status == errSecItemNotFound else {
+            return nil
+        }
+
         return status == noErr ? result as? Data : nil
     }
-    
+
     @discardableResult
     func removeValue(forKey key: String) -> Bool {
+        guard !key.isEmpty else { return false }
+
         let keychainQueryDictionary: [String: Any] = setupKeychainQueryDictionary(forKey: key)
-        
+
         // Delete
         let status: OSStatus = SecItemDelete(keychainQueryDictionary as CFDictionary)
-        
+
         return status == errSecSuccess
     }
     
@@ -109,10 +127,14 @@ class KeychainWrapper {
     private func update(_ value: Data, forKey key: String) -> Bool {
         let keychainQueryDictionary: [String: Any] = setupKeychainQueryDictionary(forKey: key)
         let updateDictionary = [SecValueData: value]
-        
+
         // Update
         let status: OSStatus = SecItemUpdate(keychainQueryDictionary as CFDictionary, updateDictionary as CFDictionary)
-        
+
+        if status != errSecSuccess {
+            ITBError("keychain SecItemUpdate failed for key=\(key) status=\(status)")
+        }
+
         return status == errSecSuccess
     }
     
