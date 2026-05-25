@@ -28,6 +28,9 @@ class IterableKeychain {
         }
 
         return coordinatorQueue.sync(flags: .barrier) {
+            if migrationAttempted { return false }
+            migrationAttempted = true
+
             var migrated = false
             let migrationStartedAt = Date()
 
@@ -110,6 +113,12 @@ class IterableKeychain {
 
     private let wrapper: KeychainWrapper
     private let legacyWrapper: KeychainWrapper?
+
+    /// Guards against re-running the migration body within a single
+    /// process lifetime if `migrateFromLegacy()` is invoked more than once
+    /// (e.g. a second `start()` call before the UserDefaults flag is
+    /// observed). Read/write only inside the `coordinatorQueue` barrier.
+    private var migrationAttempted = false
 
     /// Concurrent queue used to serialize the migration (which runs as a
     /// barrier) against the property reads/writes. Reads run fully in

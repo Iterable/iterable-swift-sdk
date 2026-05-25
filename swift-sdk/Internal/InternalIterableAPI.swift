@@ -1101,22 +1101,16 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
     }
     
     private func updateSDKVersion() {
-        // Keychain migration is one-shot per SDK upgrade. We gate on a
-        // UserDefaults flag so subsequent cold starts skip the SecItem
-        // syscall cost entirely, and dispatch the actual work to a
-        // background queue so the calling thread (which for cross-platform
-        // bridges is the main thread, via DispatchQueue.main.async) is not
-        // blocked for the duration of the migration. See SDK-478.
-        //
-        // Reads of email / userId / authToken / userIdUnknownUser are
-        // race-safe against the in-flight migration thanks to the barrier
-        // coordinator inside IterableKeychain.
+        // Keychain migration is one-shot per install. We gate on a
+        // UserDefaults flag so every subsequent cold start (the hot path)
+        // skips the SecItem syscall cost entirely. On the rare first launch
+        // after an upgrade from a pre-isolated-keychain build we run the
+        // migration synchronously on the calling thread, because
+        // retrieveIdentifierData() runs immediately after this and must
+        // observe the migrated identity. See SDK-478.
         if !localStorage.keychainMigrationCompleted {
-            DispatchQueue.global(qos: .userInitiated).async { [localStorage] in
-                var localStorage = localStorage
-                localStorage.migrateKeychainToIsolatedStorage()
-                localStorage.keychainMigrationCompleted = true
-            }
+            localStorage.migrateKeychainToIsolatedStorage()
+            localStorage.keychainMigrationCompleted = true
         }
 
         if let lastVersion = localStorage.sdkVersion, lastVersion != IterableAPI.sdkVersion {

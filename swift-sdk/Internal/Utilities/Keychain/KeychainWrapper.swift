@@ -77,7 +77,7 @@ class KeychainWrapper {
             return nil
         }
 
-        return status == noErr ? result as? Data : nil
+        return result as? Data
     }
 
     @discardableResult
