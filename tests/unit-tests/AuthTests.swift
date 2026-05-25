@@ -1251,6 +1251,92 @@ class AuthTests: XCTestCase {
         _ = authDelegate
     }
 
+    /// SDK-478 gap-fill: complements `testLogout_resolvesPendingFulfills_viaExhaustion` by
+    /// exercising `logoutUser()` while *multiple* callers are queued in
+    /// `pendingExhaustionCallbacks` via the timer-piggyback path
+    /// (`scheduleAuthTokenRefreshTimer` with `isTimerScheduled=true`). Pre-#1058 every
+    /// piggybacked caller would orphan; the fix routes all of them through
+    /// `invokePendingExhaustionCallbacks()` on logout.
+    func testLogout_drainsAllPiggybackedExhaustionCallbacks() {
+        let firstExhausted = expectation(description: "first piggybacked caller exhaustion fires on logout")
+        let secondExhausted = expectation(description: "second piggybacked caller exhaustion fires on logout")
+        let thirdExhausted = expectation(description: "third piggybacked caller exhaustion fires on logout")
+
+        class HangingAuthDelegate: IterableAuthDelegate {
+            func onAuthTokenRequested(completion: @escaping AuthTokenRetrievalHandler) { /* never completes */ }
+            func onAuthFailure(_ authFailure: AuthFailure) {}
+        }
+
+        let localStorage = MockLocalStorage()
+        localStorage.email = AuthTests.email
+
+        let authManager = AuthManager(delegate: HangingAuthDelegate(),
+                                      authRetryPolicy: RetryPolicy(maxRetry: 10, retryInterval: 0, retryBackoff: .linear),
+                                      expirationRefreshPeriod: 60,
+                                      localStorage: localStorage,
+                                      dateProvider: MockDateProvider())
+
+        // Three back-to-back schedules: the first arms the timer, the next two piggyback
+        // via `isTimerScheduled` and end up in pendingExhaustionCallbacks.
+        authManager.scheduleAuthTokenRefreshTimer(interval: 5.0,
+                                                  isScheduledRefresh: false,
+                                                  successCallback: { _ in XCTFail("success should not fire after logout") },
+                                                  onRetryExhausted: { firstExhausted.fulfill() })
+        authManager.scheduleAuthTokenRefreshTimer(interval: 5.0,
+                                                  isScheduledRefresh: false,
+                                                  successCallback: { _ in XCTFail("success should not fire after logout") },
+                                                  onRetryExhausted: { secondExhausted.fulfill() })
+        authManager.scheduleAuthTokenRefreshTimer(interval: 5.0,
+                                                  isScheduledRefresh: false,
+                                                  successCallback: { _ in XCTFail("success should not fire after logout") },
+                                                  onRetryExhausted: { thirdExhausted.fulfill() })
+
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.05) {
+            authManager.logoutUser()
+        }
+
+        wait(for: [firstExhausted, secondExhausted, thirdExhausted], timeout: testExpectationTimeout)
+    }
+
+    /// SDK-478 gap-fill: covers the third early-return inside `AuthManager.requestNewAuthToken`
+    /// (the `hasFailedAuth(_:)` branch). Pre-#1058 this branch dropped both the success and
+    /// the (non-existent) exhaustion callback silently — the upstream `Pending` would hang
+    /// forever once a prior auth attempt had failed. The fix drains via
+    /// `invokePendingExhaustionCallbacks()`. We assert that both callers' `onRetryExhausted`
+    /// fire when the second call hits the early return.
+    func testRequestNewAuthToken_drainsExhaustion_whenHasFailedPriorAuthEarlyReturn() {
+        let firstExhausted = expectation(description: "first caller exhaustion fires")
+        let secondExhausted = expectation(description: "second caller exhaustion fires after hasFailedAuth early return")
+
+        let authDelegate = createAuthDelegate({ nil })
+        let localStorage = MockLocalStorage()
+        localStorage.email = AuthTests.email
+
+        // High retryInterval keeps the failure-path Timer from racing the second call;
+        // high maxRetry keeps shouldPauseRetry from short-circuiting first.
+        let authManager = AuthManager(delegate: authDelegate,
+                                      authRetryPolicy: RetryPolicy(maxRetry: 10, retryInterval: 60, retryBackoff: .linear),
+                                      expirationRefreshPeriod: 60,
+                                      localStorage: localStorage,
+                                      dateProvider: MockDateProvider())
+
+        // Call 1: drives self.hasFailedPriorAuth → true via the delegate-returns-nil path,
+        // queues onRetryExhausted into pendingExhaustionCallbacks via scheduleAuthTokenRefreshTimer.
+        authManager.requestNewAuthToken(hasFailedPriorAuth: true,
+                                        onSuccess: { _ in XCTFail("success should not fire when delegate returns nil") },
+                                        onRetryExhausted: { firstExhausted.fulfill() },
+                                        shouldIgnoreRetryPolicy: true)
+
+        // Call 2: hits the hasFailedAuth(_:) early return; the fix path appends our exhaustion
+        // callback then drains, so both calls' exhaustion callbacks fire.
+        authManager.requestNewAuthToken(hasFailedPriorAuth: true,
+                                        onSuccess: { _ in XCTFail("success should not fire after hasFailedAuth early return") },
+                                        onRetryExhausted: { secondExhausted.fulfill() },
+                                        shouldIgnoreRetryPolicy: true)
+
+        wait(for: [firstExhausted, secondExhausted], timeout: testExpectationTimeout)
+    }
+
     // MARK: - Private
     
     class DefaultAuthDelegate: IterableAuthDelegate {

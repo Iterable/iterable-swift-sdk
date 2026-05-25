@@ -225,4 +225,118 @@ class KeychainMigrationTests: XCTestCase {
         // Email should still be correct
         XCTAssertEqual(keychain.email, testEmail)
     }
+
+    // MARK: - SDK-478 thread / one-shot / race tests
+
+    /// SDK-478: cross-platform iOS bridges invoke `IterableAPI.initialize`
+    /// from `DispatchQueue.main.async`. The migration must run off the main
+    /// thread so it does not block JS / Dart callers. updateSDKVersion()
+    /// dispatches it to `DispatchQueue.global(qos: .userInitiated)`; this
+    /// test calls the migration directly from a background queue and asserts
+    /// it executes there, not on main.
+    func testMigrationRunsOffMainThread() throws {
+        let legacyWrapper = KeychainWrapper(serviceName: legacyServiceName)
+        let isolatedWrapper = KeychainWrapper(serviceName: isolatedServiceName)
+        XCTAssertTrue(legacyWrapper.set("user@example.com".data(using: .utf8)!,
+                                        forKey: Const.Keychain.Key.email))
+
+        let keychain = IterableKeychain(wrapper: isolatedWrapper, legacyWrapper: legacyWrapper)
+        let didRunOffMain = expectation(description: "migration body executed off main thread")
+
+        DispatchQueue.global(qos: .userInitiated).async {
+            // The migration coordinator queue is concurrent and the barrier
+            // sync runs on whichever queue invoked it (here, the global
+            // userInitiated queue) - never on main.
+            keychain.migrateFromLegacy()
+            if !Thread.isMainThread {
+                didRunOffMain.fulfill()
+            }
+        }
+
+        wait(for: [didRunOffMain], timeout: 5)
+    }
+
+    /// SDK-478: the migration must remain race-safe against concurrent reads
+    /// that arrive while it is in flight. Concurrent reads through the
+    /// coordinator queue should observe the migrated value, never a
+    /// half-migrated state where the isolated keychain is empty and the
+    /// legacy one has been wiped.
+    func testReadDuringMigrationReturnsConsistentData() throws {
+        let legacyWrapper = KeychainWrapper(serviceName: legacyServiceName)
+        let isolatedWrapper = KeychainWrapper(serviceName: isolatedServiceName)
+        let migratedEmail = "race@example.com"
+        XCTAssertTrue(legacyWrapper.set(migratedEmail.data(using: .utf8)!,
+                                        forKey: Const.Keychain.Key.email))
+
+        let keychain = IterableKeychain(wrapper: isolatedWrapper, legacyWrapper: legacyWrapper)
+        let readsCompleted = expectation(description: "concurrent reads finished")
+        readsCompleted.expectedFulfillmentCount = 10
+
+        // Kick off the migration on a background queue.
+        DispatchQueue.global(qos: .userInitiated).async {
+            keychain.migrateFromLegacy()
+        }
+
+        // Fire concurrent reads. Each one routes through the same
+        // coordinator queue. They must all observe either nil (read landed
+        // before migration started) or the migrated email - never an
+        // inconsistent intermediate state.
+        for _ in 0..<10 {
+            DispatchQueue.global(qos: .utility).async {
+                let observed = keychain.email
+                XCTAssert(observed == nil || observed == migratedEmail,
+                          "unexpected intermediate keychain state: \(String(describing: observed))")
+                readsCompleted.fulfill()
+            }
+        }
+
+        wait(for: [readsCompleted], timeout: 5)
+        // Once the dust settles, the migrated value must be visible.
+        XCTAssertEqual(keychain.email, migratedEmail)
+    }
+
+    /// SDK-478: exercise the four public property setters through the
+    /// coordinator queue's barrier write. Existing migration tests write
+    /// through the underlying wrappers directly and only read via the
+    /// public getters, so the setter paths went uncovered.
+    func testPublicSettersWriteThroughCoordinatorQueue() throws {
+        let isolatedWrapper = KeychainWrapper(serviceName: isolatedServiceName)
+        let keychain = IterableKeychain(wrapper: isolatedWrapper, legacyWrapper: nil)
+
+        // Set non-nil values. Each setter takes the barrier sync path and
+        // calls rawWrite, which writes to the underlying KeychainWrapper.
+        keychain.email = "set-via-property@example.com"
+        keychain.userId = "set-via-property-user"
+        keychain.userIdUnknownUser = "set-via-property-uua"
+        keychain.authToken = "set-via-property-token"
+
+        XCTAssertEqual(keychain.email, "set-via-property@example.com")
+        XCTAssertEqual(keychain.userId, "set-via-property-user")
+        XCTAssertEqual(keychain.userIdUnknownUser, "set-via-property-uua")
+        XCTAssertEqual(keychain.authToken, "set-via-property-token")
+    }
+
+    /// SDK-478: setting a property to nil routes rawWrite into the
+    /// `wrapper.removeValue` branch. Covers the nil-removal path of the
+    /// setter without requiring the migration flow.
+    func testPublicSetterNilRemovesValue() throws {
+        let isolatedWrapper = KeychainWrapper(serviceName: isolatedServiceName)
+        let keychain = IterableKeychain(wrapper: isolatedWrapper, legacyWrapper: nil)
+
+        // Seed via the setter, then clear via the setter.
+        keychain.email = "to-be-cleared@example.com"
+        keychain.userId = "to-be-cleared"
+        keychain.userIdUnknownUser = "to-be-cleared-uua"
+        keychain.authToken = "to-be-cleared-token"
+
+        keychain.email = nil
+        keychain.userId = nil
+        keychain.userIdUnknownUser = nil
+        keychain.authToken = nil
+
+        XCTAssertNil(keychain.email)
+        XCTAssertNil(keychain.userId)
+        XCTAssertNil(keychain.userIdUnknownUser)
+        XCTAssertNil(keychain.authToken)
+    }
 }

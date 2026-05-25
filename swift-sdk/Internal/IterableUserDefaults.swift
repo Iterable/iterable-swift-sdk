@@ -177,7 +177,15 @@ class IterableUserDefaults {
             save(bool: newValue, withKey: .hasStoredNotificationSetting)
         }
     }
-    
+
+    var keychainMigrationCompleted: Bool {
+        get {
+            bool(withKey: .keychainMigrationCompleted)
+        } set {
+            save(bool: newValue, withKey: .keychainMigrationCompleted)
+        }
+    }
+
     func getAttributionInfo(currentDate: Date) -> IterableAttributionInfo? {
         (try? codable(withKey: .attributionInfo, currentDate: currentDate)) ?? nil
     }
@@ -355,6 +363,7 @@ class IterableUserDefaults {
 
         static let isNotificationsEnabled = UserDefaultsKey(value: Const.UserDefault.isNotificationsEnabled)
         static let hasStoredNotificationSetting = UserDefaultsKey(value: Const.UserDefault.hasStoredNotificationSetting)
+        static let keychainMigrationCompleted = UserDefaultsKey(value: Const.UserDefault.keychainMigrationCompleted)
     }
     private struct Envelope: Codable {
         let payload: Data
