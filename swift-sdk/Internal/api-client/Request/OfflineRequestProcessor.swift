@@ -42,6 +42,22 @@ struct OfflineRequestProcessor: RequestProcessorProtocol {
     }
 
     @discardableResult
+    func register(registerTokenInfo: RegisterTokenInfo,
+                  notificationsEnabled: Bool,
+                  onSuccess: OnSuccessHandler?,
+                  onFailure: OnFailureHandler?) -> Pending<SendRequestValue, SendRequestError> {
+        let requestGenerator = { (requestCreator: RequestCreator) in
+            requestCreator.createRegisterTokenRequest(registerTokenInfo: registerTokenInfo,
+                                                      notificationsEnabled: notificationsEnabled)
+        }
+
+        return sendIterableRequest(requestGenerator: requestGenerator,
+                                   successHandler: onSuccess,
+                                   failureHandler: onFailure,
+                                   identifier: RequestIdentifier.registerToken)
+    }
+
+    @discardableResult
     func disableDeviceForCurrentUser(hexToken: String,
                                      identitySnapshot: UserIdentitySnapshot?,
                                      withOnSuccess onSuccess: OnSuccessHandler?,

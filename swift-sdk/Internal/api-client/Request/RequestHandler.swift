@@ -48,10 +48,14 @@ class RequestHandler: RequestHandlerProtocol {
                   notificationStateProvider: NotificationStateProviderProtocol,
                   onSuccess: OnSuccessHandler?,
                   onFailure: OnFailureHandler?) {
-        onlineProcessor.register(registerTokenInfo: registerTokenInfo,
-                                 notificationStateProvider: notificationStateProvider,
-                                 onSuccess: onSuccess,
-                                 onFailure: onFailure)
+        notificationStateProvider.isNotificationsEnabled { notificationsEnabled in
+            _ = self.sendUsingRequestProcessor { processor in
+                processor.register(registerTokenInfo: registerTokenInfo,
+                                   notificationsEnabled: notificationsEnabled,
+                                   onSuccess: onSuccess,
+                                   onFailure: onFailure)
+            }
+        }
     }
     
     @discardableResult

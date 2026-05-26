@@ -27,10 +27,17 @@ struct UpdateSubscriptionsInfo {
 
 enum RequestIdentifier {
     static let disableDevice = "disableDevice"
+    static let registerToken = "registerToken"
 }
 
 /// `RequestHandler` will delegate network related calls to this protocol.
 protocol RequestProcessorProtocol {
+    @discardableResult
+    func register(registerTokenInfo: RegisterTokenInfo,
+                  notificationsEnabled: Bool,
+                  onSuccess: OnSuccessHandler?,
+                  onFailure: OnFailureHandler?) -> Pending<SendRequestValue, SendRequestError>
+
     @discardableResult
     func disableDeviceForCurrentUser(hexToken: String,
                                      identitySnapshot: UserIdentitySnapshot?,
