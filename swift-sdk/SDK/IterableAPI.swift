@@ -212,7 +212,23 @@ import UIKit
     ///           If `autoPushRegistration` is `true` (which is the default value), this will also
     ///           disable the current push token.
     public static func logoutUser() {
-        implementation?.logoutUser()
+        logoutUser(withOnSuccess: nil, onFailure: nil)
+    }
+
+    /// Logs out the current user from the SDK instance, with custom completion blocks
+    ///
+    /// - Parameters:
+    ///    - onSuccess: `OnSuccessHandler` to invoke if logout is successful
+    ///    - onFailure: `OnFailureHandler` to invoke if logout fails
+    ///
+    /// - SeeAlso: OnSuccessHandler, OnFailureHandler
+    public static func logoutUser(withOnSuccess onSuccess: OnSuccessHandler?, onFailure: OnFailureHandler?) {
+        guard let implementation else {
+            onFailure?("Iterable SDK is not initialized", nil)
+            return
+        }
+
+        implementation.logoutUser(withOnSuccess: onSuccess, onFailure: onFailure)
     }
     
     /// The instance that manages getting and showing in-app messages

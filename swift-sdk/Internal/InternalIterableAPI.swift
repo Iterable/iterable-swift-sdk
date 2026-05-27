@@ -248,7 +248,37 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
     }
 
     func logoutUser() {
-        logoutPreviousUser()
+        logoutUser(withOnSuccess: nil, onFailure: nil)
+    }
+
+    func logoutUser(withOnSuccess onSuccess: OnSuccessHandler?,
+                    onFailure: OnFailureHandler?) {
+        ITBInfo()
+
+        guard isSDKInitialized() else {
+            onFailure?("Iterable SDK is not initialized", nil)
+            return
+        }
+
+        if config.autoPushRegistration {
+            disableDeviceForCurrentUser(withOnSuccess: onSuccess, onFailure: onFailure)
+        }
+
+        _email = nil
+        _userId = nil
+
+        storeIdentifierData()
+
+        authManager.logoutUser()
+
+        _ = inAppManager.reset()
+        _ = embeddedManager.reset()
+
+        try? requestHandler.handleLogout()
+
+        if !config.autoPushRegistration {
+            onSuccess?(nil)
+        }
     }
     
     func attemptAndProcessMerge(merge: Bool, replay: Bool, destinationUser: String?, isEmail: Bool, failureHandler: OnFailureHandler? = nil) {
