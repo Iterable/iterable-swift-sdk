@@ -145,7 +145,7 @@ extension DependencyContainerProtocol {
         RedirectNetworkSession(delegate: delegate)
     }
 
-    func createUnknownUserManager(config: IterableConfig) -> UnknownUserManagerProtocol {
+    func createUnknownUserManager(config: IterableConfig) -> UnknownUserManager {
         UnknownUserManager(config:config,
                            localStorage: localStorage,
                            dateProvider: dateProvider,

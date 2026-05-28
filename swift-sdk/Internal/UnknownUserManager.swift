@@ -31,7 +31,7 @@ public class UnknownUserManager: UnknownUserManagerProtocol {
     private var isCriteriaMatched = false
 
     /// Tracks an unknown user event and store it locally
-    public func trackUnknownUserEvent(name: String, dataFields: [AnyHashable: Any]?) {
+    public func trackUnknownEvent(name: String, dataFields: [AnyHashable: Any]?) {
         var body = [AnyHashable: Any]()
         body.setValue(for: JsonKey.eventName, value: name)
         body.setValue(for: JsonKey.Body.createdAt, value: IterableUtil.secondsFromEpoch(for: dateProvider.currentDate))
@@ -41,14 +41,14 @@ public class UnknownUserManager: UnknownUserManagerProtocol {
         }
         storeEventData(type: EventType.customEvent, data: body)
     }
-    
+
     /// Tracks an unknown user update event and store it locally
-    public func trackUnknownUserUpdateUser(_ dataFields: [AnyHashable: Any]) {
+    public func trackUnknownUpdateUser(_ dataFields: [AnyHashable: Any]) {
         storeEventData(type: EventType.updateUser, data: dataFields, shouldOverWrite: true)
     }
-    
+
     /// Tracks an unknown user purchase event and store it locally
-    public func trackUnknownUserPurchaseEvent(total: NSNumber, items: [CommerceItem], dataFields: [AnyHashable: Any]?) {
+    public func trackUnknownPurchaseEvent(total: NSNumber, items: [CommerceItem], dataFields: [AnyHashable: Any]?) {
         var body = [AnyHashable: Any]()
         body.setValue(for: JsonKey.Body.createdAt, value:IterableUtil.secondsFromEpoch(for: dateProvider.currentDate))
         body.setValue(for: JsonKey.Commerce.total, value: total.stringValue)
@@ -58,24 +58,24 @@ public class UnknownUserManager: UnknownUserManagerProtocol {
         }
         storeEventData(type: EventType.purchase, data: body)
     }
-    
+
     /// Tracks an unknown user cart event and store it locally
-    public func trackUnknownUserUpdateCart(items: [CommerceItem]) {
+    public func trackUnknownUpdateCart(items: [CommerceItem]) {
         var body = [AnyHashable: Any]()
         body.setValue(for: JsonKey.Body.createdAt, value: IterableUtil.secondsFromEpoch(for: dateProvider.currentDate))
         body.setValue(for: JsonKey.Commerce.items, value: convertCommerceItemsToDictionary(items))
         storeEventData(type: EventType.updateCart, data: body)
     }
-    
+
     /// Tracks an unknown user token registration event and store it locally
-    public func trackUnknownUserTokenRegistration(token: String) {
+    public func trackUnknownTokenRegistration(token: String) {
         var body = [AnyHashable: Any]()
         body.setValue(for: JsonKey.token, value: token)
         storeEventData(type: EventType.tokenRegistration, data: body)
     }
-    
+
     /// Stores an unknown user sessions locally. Updates the last session time each time when new session is created
-    public func updateUnknownUserSession() {
+    public func updateUnknownSession() {
         if var sessions = localStorage.unknownUserSessions {
             sessions.itbl_unknown_user_sessions.totalUnknownUserSessionCount += 1
             sessions.itbl_unknown_user_sessions.lastUnknownUserSession = IterableUtil.secondsFromEpoch(for: dateProvider.currentDate)
@@ -86,6 +86,38 @@ public class UnknownUserManager: UnknownUserManagerProtocol {
             let unknownUserSessionWrapper = IterableUnknownUserSessionsWrapper(itbl_unknown_user_sessions: initialUnknownUserSessions)
             localStorage.unknownUserSessions = unknownUserSessionWrapper
         }
+    }
+
+    // MARK: - Deprecated aliases (forward to new names; remove in next major)
+
+    @available(*, deprecated, renamed: "trackUnknownEvent(name:dataFields:)")
+    public func trackUnknownUserEvent(name: String, dataFields: [AnyHashable: Any]?) {
+        trackUnknownEvent(name: name, dataFields: dataFields)
+    }
+
+    @available(*, deprecated, renamed: "trackUnknownUpdateUser(_:)")
+    public func trackUnknownUserUpdateUser(_ dataFields: [AnyHashable: Any]) {
+        trackUnknownUpdateUser(dataFields)
+    }
+
+    @available(*, deprecated, renamed: "trackUnknownPurchaseEvent(total:items:dataFields:)")
+    public func trackUnknownUserPurchaseEvent(total: NSNumber, items: [CommerceItem], dataFields: [AnyHashable: Any]?) {
+        trackUnknownPurchaseEvent(total: total, items: items, dataFields: dataFields)
+    }
+
+    @available(*, deprecated, renamed: "trackUnknownUpdateCart(items:)")
+    public func trackUnknownUserUpdateCart(items: [CommerceItem]) {
+        trackUnknownUpdateCart(items: items)
+    }
+
+    @available(*, deprecated, renamed: "trackUnknownTokenRegistration(token:)")
+    public func trackUnknownUserTokenRegistration(token: String) {
+        trackUnknownTokenRegistration(token: token)
+    }
+
+    @available(*, deprecated, renamed: "updateUnknownSession()")
+    public func updateUnknownUserSession() {
+        updateUnknownSession()
     }
     
     /// Syncs unsynced data which might have failed to sync when calling syncEvents for the first time after criterias met
@@ -99,8 +131,13 @@ public class UnknownUserManager: UnknownUserManagerProtocol {
     public func syncEvents() {
         if let events = localStorage.unknownUserEvents {
             for var eventData in events {
-                if let eventType = eventData[JsonKey.eventType] as? String {
+                // Read the new key first; fall back to the legacy `dataType` key to migrate
+                // events that were stored prior to UUA naming normalization.
+                let eventTypeValue = (eventData[JsonKey.eventType] as? String)
+                    ?? (eventData[JsonKey.legacyEventType] as? String)
+                if let eventType = eventTypeValue {
                     eventData.removeValue(forKey: JsonKey.eventType)
+                    eventData.removeValue(forKey: JsonKey.legacyEventType)
                     switch eventType {
                     case EventType.customEvent:
                         IterableAPI.implementation?.track(eventData[JsonKey.eventName] as? String ?? "", withBody: eventData)
@@ -132,10 +169,9 @@ public class UnknownUserManager: UnknownUserManagerProtocol {
         }
         
         if var userUpdate = localStorage.unknownUserUpdate {
-            if userUpdate[JsonKey.eventType] is String {
-                userUpdate.removeValue(forKey: JsonKey.eventType)
-            }
-            
+            userUpdate.removeValue(forKey: JsonKey.eventType)
+            userUpdate.removeValue(forKey: JsonKey.legacyEventType)
+
             IterableAPI.implementation?.updateUser(userUpdate, mergeNestedObjects: false)
         }
     }
@@ -147,12 +183,17 @@ public class UnknownUserManager: UnknownUserManagerProtocol {
     }
     
     /// Gets the unknown user criteria and updates the last criteria fetch time in milliseconds
-    public func getUnknownUserCriteria() {
+    public func getUnknownCriteria() {
         updateLastCriteriaFetch(currentTime: Date().timeIntervalSince1970 * 1000)
         
         IterableAPI.implementation?.getCriteriaData { returnedData in
             self.localStorage.criteriaData = returnedData
         };
+    }
+
+    @available(*, deprecated, renamed: "getUnknownCriteria()")
+    public func getUnknownUserCriteria() {
+        getUnknownCriteria()
     }
     
     /// Gets the last criteria fetch time in milliseconds
@@ -177,7 +218,7 @@ public class UnknownUserManager: UnknownUserManagerProtocol {
             }
            
             //track unknown user session for new user
-            IterableAPI.implementation?.apiClient.trackUnknownUserSession(
+            IterableAPI.implementation?.apiClient.trackUnknownSession(
                 createdAt: IterableUtil.secondsFromEpoch(for: self.dateProvider.currentDate),
                 withUserId: userId,
                 dataFields: self.localStorage.unknownUserUpdate,
@@ -185,7 +226,7 @@ public class UnknownUserManager: UnknownUserManagerProtocol {
             ).onError { error in
                 self.isCriteriaMatched = false
                 if error.httpStatusCode == 409 {
-                    self.getUnknownUserCriteria() // refetch the criteria
+                    self.getUnknownCriteria() // refetch the criteria
                 }
             }.onSuccess { success in
                 self.localStorage.userIdUnknownUser = userId
