@@ -1251,7 +1251,204 @@ class AuthTests: XCTestCase {
         _ = authDelegate
     }
 
+    func testLogoutUserWithHandlersAutoPushOnDisableDeviceSucceeds() {
+        let logoutSucceeded = expectation(description: "logout success handler called")
+        let token = "zeeToken".data(using: .utf8)!
+        let networkSession = MockNetworkSession(statusCode: 200)
+        let context = createLogoutTestContext(autoPushRegistration: true, networkSession: networkSession)
+
+        context.api.email = AuthTests.email
+        context.api.register(token: token)
+
+        context.api.logoutUser(withOnSuccess: { _ in
+            logoutSucceeded.fulfill()
+        }, onFailure: { reason, _ in
+            XCTFail("logout should not fail: \(reason ?? "nil")")
+        })
+
+        wait(for: [logoutSucceeded], timeout: testExpectationTimeout)
+
+        assertLogoutCleanupCompleted(context)
+
+        guard let request = networkSession.getRequest(withEndPoint: Const.Path.disableDevice),
+              let body = TestUtils.getRequestBody(request: request) else {
+            XCTFail("Expected disableDevice request")
+            return
+        }
+
+        TestUtils.validateElementPresent(withName: JsonKey.token, andValue: token.hexString(), inDictionary: body)
+        TestUtils.validateElementPresent(withName: JsonKey.email, andValue: AuthTests.email, inDictionary: body)
+    }
+
+    func testLogoutUserWithHandlersAutoPushOnDisableDeviceFails() {
+        let logoutFailed = expectation(description: "logout failure handler called")
+        let expectedReason = "disable failed"
+        let token = "zeeToken".data(using: .utf8)!
+        let networkSession = MockNetworkSession(statusCode: 400,
+                                                json: ["msg": expectedReason])
+        let context = createLogoutTestContext(autoPushRegistration: true, networkSession: networkSession)
+
+        context.api.email = AuthTests.email
+        context.api.register(token: token)
+
+        context.api.logoutUser(withOnSuccess: { _ in
+            XCTFail("logout should not succeed")
+        }, onFailure: { reason, data in
+            XCTAssertEqual(reason, expectedReason)
+            XCTAssertNotNil(data)
+            logoutFailed.fulfill()
+        })
+
+        wait(for: [logoutFailed], timeout: testExpectationTimeout)
+
+        assertLogoutCleanupCompleted(context)
+
+        guard let request = networkSession.getRequest(withEndPoint: Const.Path.disableDevice),
+              let body = TestUtils.getRequestBody(request: request) else {
+            XCTFail("Expected disableDevice request")
+            return
+        }
+
+        TestUtils.validateElementPresent(withName: JsonKey.token, andValue: token.hexString(), inDictionary: body)
+        TestUtils.validateElementPresent(withName: JsonKey.email, andValue: AuthTests.email, inDictionary: body)
+    }
+
+    func testLogoutUserWithHandlersAutoPushOffSucceedsSynchronouslyWithoutNetwork() {
+        let logoutSucceeded = expectation(description: "logout success handler called")
+        let networkSession = MockNetworkSession(statusCode: 200)
+        let context = createLogoutTestContext(autoPushRegistration: false, networkSession: networkSession)
+
+        context.api.email = AuthTests.email
+
+        var logoutReturned = false
+        context.api.logoutUser(withOnSuccess: { data in
+            XCTAssertNil(data)
+            XCTAssertFalse(logoutReturned)
+            logoutSucceeded.fulfill()
+        }, onFailure: { reason, _ in
+            XCTFail("logout should not fail: \(reason ?? "nil")")
+        })
+        logoutReturned = true
+
+        wait(for: [logoutSucceeded], timeout: testExpectationTimeout)
+
+        assertLogoutCleanupCompleted(context)
+        XCTAssertTrue(networkSession.requests.isEmpty)
+    }
+
+    func testLogoutUserWithHandlersAutoPushOnNoTokenFailsButStillClearsLocalState() {
+        let logoutFailed = expectation(description: "logout failure handler called")
+        let networkSession = MockNetworkSession(statusCode: 200)
+        let context = createLogoutTestContext(autoPushRegistration: true, networkSession: networkSession)
+
+        context.api.email = AuthTests.email
+        // Intentionally do NOT register a token: there is no push token to disable.
+
+        context.api.logoutUser(withOnSuccess: { _ in
+            XCTFail("logout should not report success when there is no token to disable")
+        }, onFailure: { reason, data in
+            XCTAssertEqual(reason, "no token present")
+            XCTAssertNil(data)
+            logoutFailed.fulfill()
+        })
+
+        wait(for: [logoutFailed], timeout: testExpectationTimeout)
+
+        // Logout is local-only and must still complete even though the triggered
+        // disableDevice could not run (no token) and onFailure was reported.
+        assertLogoutCleanupCompleted(context)
+        XCTAssertNil(networkSession.getRequest(withEndPoint: Const.Path.disableDevice),
+                     "no disableDevice request should be sent when there is no token")
+    }
+
+    func testLogoutUserWithHandlersNotInitializedFails() {
+        let logoutFailed = expectation(description: "logout failure handler called")
+        let networkSession = MockNetworkSession(statusCode: 200)
+        let context = createLogoutTestContext(autoPushRegistration: true, networkSession: networkSession)
+
+        context.api.logoutUser(withOnSuccess: { _ in
+            XCTFail("logout should not succeed")
+        }, onFailure: { reason, data in
+            XCTAssertEqual(reason, "Iterable SDK is not initialized")
+            XCTAssertNil(data)
+            logoutFailed.fulfill()
+        })
+
+        wait(for: [logoutFailed], timeout: testExpectationTimeout)
+
+        XCTAssertTrue(networkSession.requests.isEmpty)
+        XCTAssertEqual(context.inAppManager.resetCallCount, 0)
+        XCTAssertEqual(context.embeddedManager.resetCallCount, 0)
+    }
+
+    func testLogoutUserParameterlessOverloadStillLogsOut() {
+        let networkSession = MockNetworkSession(statusCode: 200)
+        let context = createLogoutTestContext(autoPushRegistration: false, networkSession: networkSession)
+
+        context.api.email = AuthTests.email
+
+        context.api.logoutUser()
+
+        assertLogoutCleanupCompleted(context)
+        XCTAssertTrue(networkSession.requests.isEmpty)
+    }
+
     // MARK: - Private
+
+    private final class LogoutTrackingInAppManager: EmptyInAppManager {
+        private(set) var resetCallCount = 0
+
+        override func reset() -> Pending<Bool, Error> {
+            resetCallCount += 1
+            return Fulfill<Bool, Error>(value: true)
+        }
+    }
+
+    private final class LogoutTrackingEmbeddedManager: EmptyEmbeddedManager {
+        private(set) var resetCallCount = 0
+
+        override func reset() {
+            resetCallCount += 1
+        }
+    }
+
+    private typealias LogoutTestContext = (api: InternalIterableAPI,
+                                           localStorage: MockLocalStorage,
+                                           inAppManager: LogoutTrackingInAppManager,
+                                           embeddedManager: LogoutTrackingEmbeddedManager)
+
+    private func createLogoutTestContext(autoPushRegistration: Bool,
+                                         networkSession: MockNetworkSession) -> LogoutTestContext {
+        let config = IterableConfig()
+        config.autoPushRegistration = autoPushRegistration
+        config.pushIntegrationName = "my-push-integration"
+
+        let localStorage = MockLocalStorage()
+        let api = InternalIterableAPI.initializeForTesting(config: config,
+                                                           networkSession: networkSession,
+                                                           notificationStateProvider: MockNotificationStateProvider(enabled: true),
+                                                           localStorage: localStorage)
+        let inAppManager = LogoutTrackingInAppManager()
+        let embeddedManager = LogoutTrackingEmbeddedManager()
+        api.inAppManager = inAppManager
+        api.embeddedManager = embeddedManager
+
+        return (api: api,
+                localStorage: localStorage,
+                inAppManager: inAppManager,
+                embeddedManager: embeddedManager)
+    }
+
+    private func assertLogoutCleanupCompleted(_ context: LogoutTestContext,
+                                              file: StaticString = #file,
+                                              line: UInt = #line) {
+        XCTAssertNil(context.api.email, file: file, line: line)
+        XCTAssertNil(context.api.userId, file: file, line: line)
+        XCTAssertNil(context.localStorage.email, file: file, line: line)
+        XCTAssertNil(context.localStorage.userId, file: file, line: line)
+        XCTAssertEqual(context.inAppManager.resetCallCount, 1, file: file, line: line)
+        XCTAssertEqual(context.embeddedManager.resetCallCount, 1, file: file, line: line)
+    }
     
     class DefaultAuthDelegate: IterableAuthDelegate {
         var authTokenGenerator: (() -> String?)

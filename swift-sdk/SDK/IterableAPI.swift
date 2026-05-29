@@ -212,7 +212,47 @@ import UIKit
     ///           If `autoPushRegistration` is `true` (which is the default value), this will also
     ///           disable the current push token.
     public static func logoutUser() {
-        implementation?.logoutUser()
+        logoutUser(withOnSuccess: nil, onFailure: nil)
+    }
+
+    /// Logs out the current user from the SDK instance, with completion handlers.
+    ///
+    /// Logout itself is a **local-only** operation: it clears the stored user
+    /// identity, resets the in-app and embedded managers, and clears auth state.
+    /// Once the SDK is initialized this local cleanup always runs (and
+    /// effectively always succeeds).
+    ///
+    /// The handlers are an **observability** signal for the one network
+    /// side-effect logout can trigger — the `disableDevice` call made when
+    /// `autoPushRegistration` is enabled:
+    /// - When `autoPushRegistration` is `true`, the handlers reflect the result
+    ///   of that `disableDevice` request: `onSuccess` when it succeeds,
+    ///   `onFailure` when it fails or cannot be sent (e.g. no push token is
+    ///   registered, reported as `"no token present"`). An `onFailure` here does
+    ///   **not** mean the local logout failed — the local logout still completed.
+    /// - When `autoPushRegistration` is `false`, no network call is made and
+    ///   `onSuccess(nil)` is invoked once the local logout sequence completes.
+    /// - If the SDK is not initialized, `onFailure("Iterable SDK is not
+    ///   initialized", nil)` is invoked and no logout is performed.
+    ///
+    /// - Note: Handlers are delivered in-process and are not persisted. If the
+    ///   triggered `disableDevice` request is retried offline, the handler is
+    ///   resolved if/when the retry completes within the same app session — it is
+    ///   not preserved across app termination. Handlers are also not guaranteed
+    ///   to be invoked on the main thread.
+    ///
+    /// - Parameters:
+    ///    - onSuccess: `OnSuccessHandler` to invoke on success (see above)
+    ///    - onFailure: `OnFailureHandler` to invoke on failure (see above)
+    ///
+    /// - SeeAlso: OnSuccessHandler, OnFailureHandler
+    public static func logoutUser(withOnSuccess onSuccess: OnSuccessHandler?, onFailure: OnFailureHandler?) {
+        guard let implementation else {
+            onFailure?("Iterable SDK is not initialized", nil)
+            return
+        }
+
+        implementation.logoutUser(withOnSuccess: onSuccess, onFailure: onFailure)
     }
     
     /// The instance that manages getting and showing in-app messages

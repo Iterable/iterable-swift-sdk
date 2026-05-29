@@ -250,6 +250,36 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
     func logoutUser() {
         logoutPreviousUser()
     }
+
+    func logoutUser(withOnSuccess onSuccess: OnSuccessHandler?,
+                    onFailure: OnFailureHandler?) {
+        ITBInfo()
+
+        guard isSDKInitialized() else {
+            onFailure?("Iterable SDK is not initialized", nil)
+            return
+        }
+
+        if config.autoPushRegistration {
+            disableDeviceForCurrentUser(withOnSuccess: onSuccess, onFailure: onFailure)
+        }
+
+        _email = nil
+        _userId = nil
+
+        storeIdentifierData()
+
+        authManager.logoutUser()
+
+        _ = inAppManager.reset()
+        _ = embeddedManager.reset()
+
+        try? requestHandler.handleLogout()
+
+        if !config.autoPushRegistration {
+            onSuccess?(nil)
+        }
+    }
     
     func attemptAndProcessMerge(merge: Bool, replay: Bool, destinationUser: String?, isEmail: Bool, failureHandler: OnFailureHandler? = nil) {
         unknownUserMerge.tryMergeUser(destinationUser: destinationUser, isEmail: isEmail, merge: merge) { mergeResult, error in
@@ -845,25 +875,12 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
     }
     
     private func logoutPreviousUser() {
-        ITBInfo()
-        
-        guard isSDKInitialized() else { return }
-        
-        if config.autoPushRegistration {
-            disableDeviceForCurrentUser()
-        }
-        
-        _email = nil
-        _userId = nil
-        
-        storeIdentifierData()
-        
-        authManager.logoutUser()
-                
-        _ = inAppManager.reset()
-        _ = embeddedManager.reset()
-        
-        try? requestHandler.handleLogout()
+        // Delegates to logoutUser(withOnSuccess:onFailure:) so the logout cleanup
+        // sequence has a single source of truth. The user-switch paths (setEmail/
+        // setUserId) pass no handlers: a nil onFailure keeps the not-initialized
+        // guard a silent no-op, and a nil onSuccess makes the auto-push-off
+        // completion a no-op — matching this method's previous behavior.
+        logoutUser(withOnSuccess: nil, onFailure: nil)
     }
     
     private func storeIdentifierData() {
