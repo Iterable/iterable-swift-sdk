@@ -93,8 +93,13 @@ class DeepLinkManager: NSObject {
         guard let regex = try? NSRegularExpression(pattern: Const.deepLinkRegex, options: []) else {
             return false
         }
-        
-        return regex.firstMatch(in: urlString, options: [], range: NSMakeRange(0, urlString.count)) != nil
+
+        // NSRegularExpression operates on NSString (UTF-16) semantics, so the search
+        // range must be built from the NSString length, not String.count. Mixing the
+        // two conflates length measures and produces an incorrect range for strings
+        // containing non-BMP characters (e.g. emoji). See CWE-135 (SDK-469).
+        let nsString = urlString as NSString
+        return regex.firstMatch(in: urlString, options: [], range: NSRange(location: 0, length: nsString.length)) != nil
     }
     
     private lazy var redirectUrlSession: NetworkSessionProtocol = {
