@@ -1336,6 +1336,31 @@ class AuthTests: XCTestCase {
         XCTAssertTrue(networkSession.requests.isEmpty)
     }
 
+    func testLogoutUserWithHandlersAutoPushOnNoTokenFailsButStillClearsLocalState() {
+        let logoutFailed = expectation(description: "logout failure handler called")
+        let networkSession = MockNetworkSession(statusCode: 200)
+        let context = createLogoutTestContext(autoPushRegistration: true, networkSession: networkSession)
+
+        context.api.email = AuthTests.email
+        // Intentionally do NOT register a token: there is no push token to disable.
+
+        context.api.logoutUser(withOnSuccess: { _ in
+            XCTFail("logout should not report success when there is no token to disable")
+        }, onFailure: { reason, data in
+            XCTAssertEqual(reason, "no token present")
+            XCTAssertNil(data)
+            logoutFailed.fulfill()
+        })
+
+        wait(for: [logoutFailed], timeout: testExpectationTimeout)
+
+        // Logout is local-only and must still complete even though the triggered
+        // disableDevice could not run (no token) and onFailure was reported.
+        assertLogoutCleanupCompleted(context)
+        XCTAssertNil(networkSession.getRequest(withEndPoint: Const.Path.disableDevice),
+                     "no disableDevice request should be sent when there is no token")
+    }
+
     func testLogoutUserWithHandlersNotInitializedFails() {
         let logoutFailed = expectation(description: "logout failure handler called")
         let networkSession = MockNetworkSession(statusCode: 200)
