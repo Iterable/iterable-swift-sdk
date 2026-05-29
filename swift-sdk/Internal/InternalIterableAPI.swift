@@ -248,7 +248,7 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
     }
 
     func logoutUser() {
-        logoutUser(withOnSuccess: nil, onFailure: nil)
+        logoutPreviousUser()
     }
 
     func logoutUser(withOnSuccess onSuccess: OnSuccessHandler?,
