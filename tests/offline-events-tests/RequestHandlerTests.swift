@@ -97,6 +97,168 @@ class RequestHandlerTests: XCTestCase {
 
         wait(for: [expectation1], timeout: testExpectationTimeout)
     }
+
+    func testOfflineRegisterTokenReplaysWithExpectedBody() throws {
+        let registerTokenInfo = createRegisterTokenInfo()
+        let bodyValidated = expectation(description: #function)
+        let networkSession = MockNetworkSession()
+        networkSession.requestCallback = { request in
+            self.validateRegisterTokenRequest(request,
+                                              registerTokenInfo: registerTokenInfo,
+                                              notificationsEnabled: true)
+            bodyValidated.fulfill()
+        }
+
+        let requestHandler = createRequestHandler(networkSession: networkSession,
+                                                  notificationCenter: MockNotificationCenter(),
+                                                  selectOffline: true)
+
+        requestHandler.register(registerTokenInfo: registerTokenInfo,
+                                notificationStateProvider: MockNotificationStateProvider(enabled: true),
+                                onSuccess: nil,
+                                onFailure: nil)
+
+        waitForTaskRunner(requestHandler: requestHandler, expectation: bodyValidated)
+    }
+
+    func testOfflineRegisterTokenRetriesAfterNetworkFailureWithSnapshottedNotificationsEnabled() throws {
+        let registerTokenInfo = createRegisterTokenInfo()
+        let notificationCenter = MockNotificationCenter()
+        let notificationStateProvider = MockNotificationStateProvider(enabled: true)
+        let firstRetryObserved = expectation(description: "register task retained after transient failure")
+        let replayedRequestObserved = expectation(description: "register task replayed")
+        let successObserved = expectation(description: "register success")
+        let networkError = IterableError.general(description: "The Internet connection appears to be offline.")
+
+        let retryCallback = notificationCenter.addCallback(forNotification: .iterableTaskFinishedWithRetry) { _ in
+            firstRetryObserved.fulfill()
+        }
+        XCTAssertNotNil(retryCallback)
+
+        var registerAttemptCount = 0
+        let networkSession = MockNetworkSession(responseCallback: { _ in
+            registerAttemptCount += 1
+            if registerAttemptCount == 1 {
+                return MockNetworkSession.MockResponse(statusCode: 0,
+                                                       data: nil,
+                                                       error: networkError)
+            }
+
+            return MockNetworkSession.MockResponse()
+        })
+        networkSession.requestCallback = { request in
+            guard request.url?.absoluteString.contains(Const.Path.registerDeviceToken) == true else {
+                return
+            }
+
+            self.validateRegisterTokenRequest(request,
+                                              registerTokenInfo: registerTokenInfo,
+                                              notificationsEnabled: true)
+            if registerAttemptCount == 2 {
+                replayedRequestObserved.fulfill()
+            }
+        }
+
+        let requestHandler = createRequestHandler(networkSession: networkSession,
+                                                  notificationCenter: notificationCenter,
+                                                  selectOffline: true)
+        requestHandler.start()
+        requestHandler.register(registerTokenInfo: registerTokenInfo,
+                                notificationStateProvider: notificationStateProvider,
+                                onSuccess: { _ in successObserved.fulfill() },
+                                onFailure: { _, _ in XCTFail("register should retry and eventually succeed") })
+        notificationStateProvider.enabled = false
+
+        wait(for: [firstRetryObserved], timeout: testExpectationTimeout)
+        XCTAssertEqual(try persistenceContextProvider.mainQueueContext().findAllTasks().count, 1)
+
+        wait(for: [replayedRequestObserved, successObserved], timeout: testExpectationTimeout)
+        XCTAssertEqual(registerAttemptCount, 2)
+        XCTAssertEqual(try persistenceContextProvider.mainQueueContext().findAllTasks().count, 0)
+        requestHandler.stop()
+    }
+
+    func testOfflineRegisterTokenCapturesIdentityAtCallTime() throws {
+        let registerTokenInfo = createRegisterTokenInfo()
+        let originalUserId = "original-user-id"
+        let liveAuth = MutableAuthProvider(
+            initial: Auth(userId: originalUserId, email: nil, authToken: nil, userIdUnknownUser: nil)
+        )
+        let notificationStateProvider = DeferredNotificationStateProvider()
+        let bodyValidated = expectation(description: #function)
+
+        let networkSession = MockNetworkSession()
+        networkSession.requestCallback = { request in
+            guard request.url?.absoluteString.contains(Const.Path.registerDeviceToken) == true else {
+                return
+            }
+
+            self.validateRegisterTokenRequest(request,
+                                              registerTokenInfo: registerTokenInfo,
+                                              notificationsEnabled: true,
+                                              expectedEmail: nil,
+                                              expectedUserId: originalUserId,
+                                              expectedPreferUserId: true)
+            bodyValidated.fulfill()
+        }
+
+        let requestHandler = createRequestHandler(networkSession: networkSession,
+                                                  notificationCenter: MockNotificationCenter(),
+                                                  selectOffline: true,
+                                                  authProvider: liveAuth)
+
+        requestHandler.register(registerTokenInfo: registerTokenInfo,
+                                notificationStateProvider: notificationStateProvider,
+                                onSuccess: nil,
+                                onFailure: { reason, _ in XCTFail("register should not fail: \(reason ?? "nil")") })
+
+        liveAuth.currentAuth = Auth(userId: nil, email: nil, authToken: nil, userIdUnknownUser: nil)
+        notificationStateProvider.resolve(enabled: true)
+
+        waitForTaskRunner(requestHandler: requestHandler, expectation: bodyValidated)
+    }
+
+    func testOnlineFallbackRegisterTokenCapturesIdentityAtCallTime() throws {
+        let registerTokenInfo = createRegisterTokenInfo()
+        let originalEmail = "original@example.com"
+        let mutatedUserId = "mutated-user-id"
+        let liveAuth = MutableAuthProvider(
+            initial: Auth(userId: nil, email: originalEmail, authToken: nil, userIdUnknownUser: nil)
+        )
+        let notificationStateProvider = DeferredNotificationStateProvider()
+        let bodyValidated = expectation(description: #function)
+
+        let networkSession = MockNetworkSession()
+        networkSession.requestCallback = { request in
+            guard request.url?.absoluteString.contains(Const.Path.registerDeviceToken) == true else {
+                return
+            }
+
+            self.validateRegisterTokenRequest(request,
+                                              registerTokenInfo: registerTokenInfo,
+                                              notificationsEnabled: true,
+                                              expectedEmail: originalEmail,
+                                              expectedUserId: nil,
+                                              expectedPreferUserId: nil)
+            bodyValidated.fulfill()
+        }
+
+        let requestHandler = createRequestHandler(networkSession: networkSession,
+                                                  notificationCenter: MockNotificationCenter(),
+                                                  selectOffline: true,
+                                                  authProvider: liveAuth,
+                                                  maxTasks: 0)
+
+        requestHandler.register(registerTokenInfo: registerTokenInfo,
+                                notificationStateProvider: notificationStateProvider,
+                                onSuccess: nil,
+                                onFailure: { reason, _ in XCTFail("register should not fail: \(reason ?? "nil")") })
+
+        liveAuth.currentAuth = Auth(userId: mutatedUserId, email: nil, authToken: nil, userIdUnknownUser: nil)
+        notificationStateProvider.resolve(enabled: true)
+
+        wait(for: [bodyValidated], timeout: testExpectationTimeout)
+    }
     
     func testDisableUserforCurrentUser() throws {
         let hexToken = "zee-token"
@@ -1355,9 +1517,10 @@ class RequestHandlerTests: XCTestCase {
     private func createRequestHandler(networkSession: NetworkSessionProtocol,
                                       notificationCenter: NotificationCenterProtocol,
                                       selectOffline: Bool,
-                                      authProvider: AuthProvider? = nil) -> RequestHandlerProtocol {
+                                      authProvider: AuthProvider? = nil,
+                                      maxTasks: Int = 1000) -> RequestHandlerProtocol {
         let resolvedAuthProvider: AuthProvider = authProvider ?? self
-        let healthMonitor = HealthMonitor(dataProvider: HealthMonitorDataProvider(maxTasks: 1000,
+        let healthMonitor = HealthMonitor(dataProvider: HealthMonitorDataProvider(maxTasks: maxTasks,
                                                                                   persistenceContextProvider: persistenceContextProvider),
                                           dateProvider: dateProvider,
                                           networkSession: networkSession)
@@ -1437,6 +1600,72 @@ class RequestHandlerTests: XCTestCase {
         requestHandler.start()
         wait(for: [expectation], timeout: testExpectationTimeout)
         requestHandler.stop()
+    }
+
+    private func createRegisterTokenInfo() -> RegisterTokenInfo {
+        RegisterTokenInfo(hexToken: "zee-token",
+                          appName: "zee-app-name",
+                          pushServicePlatform: .auto,
+                          apnsType: .sandbox,
+                          deviceId: "deviceId",
+                          deviceAttributes: [:],
+                          sdkVersion: "6.x.x",
+                          mobileFrameworkInfo: IterableAPIMobileFrameworkInfo(frameworkType: .native,
+                                                                              iterableSdkVersion: "6.x.x"))
+    }
+
+    private func validateRegisterTokenRequest(_ request: URLRequest,
+                                              registerTokenInfo: RegisterTokenInfo,
+                                              notificationsEnabled: Bool,
+                                              expectedEmail: String? = "user@example.com",
+                                              expectedUserId: String? = nil,
+                                              expectedPreferUserId: Bool? = nil,
+                                              file: StaticString = #filePath,
+                                              line: UInt = #line) {
+        TestUtils.validate(request: request,
+                           apiEndPoint: Endpoint.api,
+                           path: Const.Path.registerDeviceToken)
+
+        let requestBody = request.bodyDict
+        XCTAssertEqual(requestBody[JsonKey.email] as? String, expectedEmail, file: file, line: line)
+        XCTAssertEqual(requestBody[JsonKey.userId] as? String, expectedUserId, file: file, line: line)
+        XCTAssertEqual(requestBody[JsonKey.preferUserId] as? Bool, expectedPreferUserId, file: file, line: line)
+
+        guard let device = requestBody[JsonKey.device] as? [String: Any] else {
+            XCTFail("missing device dictionary", file: file, line: line)
+            return
+        }
+
+        XCTAssertEqual(device[JsonKey.token] as? String,
+                       registerTokenInfo.hexToken,
+                       file: file,
+                       line: line)
+        XCTAssertEqual(device[JsonKey.applicationName] as? String,
+                       registerTokenInfo.appName,
+                       file: file,
+                       line: line)
+        XCTAssertEqual(device[JsonKey.platform] as? String,
+                       "APNS_SANDBOX",
+                       file: file,
+                       line: line)
+
+        guard let dataFields = device[JsonKey.dataFields] as? [String: Any] else {
+            XCTFail("missing dataFields dictionary", file: file, line: line)
+            return
+        }
+
+        XCTAssertEqual(dataFields[JsonKey.deviceId] as? String,
+                       registerTokenInfo.deviceId,
+                       file: file,
+                       line: line)
+        XCTAssertEqual(dataFields[JsonKey.iterableSdkVersion] as? String,
+                       registerTokenInfo.sdkVersion,
+                       file: file,
+                       line: line)
+        XCTAssertEqual(dataFields[JsonKey.notificationsEnabled] as? Bool,
+                       notificationsEnabled,
+                       file: file,
+                       line: line)
     }
     
     struct Exp {
@@ -1550,4 +1779,19 @@ fileprivate final class MutableAuthProvider: AuthProvider {
     var currentAuth: Auth
     init(initial: Auth) { currentAuth = initial }
     var auth: Auth { currentAuth }
+}
+
+fileprivate final class DeferredNotificationStateProvider: NotificationStateProviderProtocol {
+    private var callback: ((Bool) -> Void)?
+
+    func isNotificationsEnabled(withCallback callback: @escaping (Bool) -> Void) {
+        self.callback = callback
+    }
+
+    func registerForRemoteNotifications() {}
+
+    func resolve(enabled: Bool) {
+        callback?(enabled)
+        callback = nil
+    }
 }
