@@ -681,6 +681,102 @@ class IterableAPITests: XCTestCase {
         
         wait(for: [expectation], timeout: testExpectationTimeout)
     }
+
+    @available(iOS 13.0, *)
+    func testDisableDeviceForCurrentUserAsyncSuccess() async throws {
+        let oldImplementation = IterableAPI.implementation
+        defer { IterableAPI.implementation = oldImplementation }
+
+        let networkSession = MockNetworkSession(statusCode: 200)
+        let token = try await setUpIterableAPIForAsyncDisableDevice(networkSession: networkSession)
+
+        try await IterableAPI.disableDeviceForCurrentUser()
+
+        guard let request = networkSession.getRequest(withEndPoint: Const.Path.disableDevice) else {
+            return XCTFail("Expected disableDevice request")
+        }
+        guard let body = TestUtils.getRequestBody(request: request) else {
+            return XCTFail("Expected disableDevice request body")
+        }
+
+        TestUtils.validate(request: request,
+                           requestType: .post,
+                           apiEndPoint: Endpoint.api,
+                           path: Const.Path.disableDevice,
+                           queryParams: [])
+        TestUtils.validateElementPresent(withName: JsonKey.token, andValue: token.hexString(), inDictionary: body)
+        TestUtils.validateElementPresent(withName: JsonKey.email, andValue: "user@example.com", inDictionary: body)
+    }
+
+    @available(iOS 13.0, *)
+    func testDisableDeviceForAllUsersAsyncSuccess() async throws {
+        let oldImplementation = IterableAPI.implementation
+        defer { IterableAPI.implementation = oldImplementation }
+
+        let networkSession = MockNetworkSession(statusCode: 200)
+        let token = try await setUpIterableAPIForAsyncDisableDevice(networkSession: networkSession)
+
+        try await IterableAPI.disableDeviceForAllUsers()
+
+        guard let request = networkSession.getRequest(withEndPoint: Const.Path.disableDevice) else {
+            return XCTFail("Expected disableDevice request")
+        }
+        guard let body = TestUtils.getRequestBody(request: request) else {
+            return XCTFail("Expected disableDevice request body")
+        }
+
+        TestUtils.validate(request: request,
+                           requestType: .post,
+                           apiEndPoint: Endpoint.api,
+                           path: Const.Path.disableDevice,
+                           queryParams: [])
+        TestUtils.validateElementPresent(withName: JsonKey.token, andValue: token.hexString(), inDictionary: body)
+        TestUtils.validateElementNotPresent(withName: JsonKey.email, inDictionary: body)
+        TestUtils.validateElementNotPresent(withName: JsonKey.userId, inDictionary: body)
+    }
+
+    @available(iOS 13.0, *)
+    func testDisableDeviceForCurrentUserAsyncFailureThrowsSendRequestError() async throws {
+        let oldImplementation = IterableAPI.implementation
+        defer { IterableAPI.implementation = oldImplementation }
+
+        let failureReason = "disable failed"
+        let networkSession = MockNetworkSession(responseCallback: { url in
+            if url.absoluteString.contains(Const.Path.disableDevice) {
+                return MockNetworkSession.MockResponse(statusCode: 400,
+                                                       data: ["msg": failureReason].toJsonData())
+            }
+            return MockNetworkSession.MockResponse(statusCode: 200)
+        })
+        _ = try await setUpIterableAPIForAsyncDisableDevice(networkSession: networkSession)
+
+        do {
+            try await IterableAPI.disableDeviceForCurrentUser()
+            XCTFail("Expected disableDeviceForCurrentUser async API to throw")
+        } catch let error as SendRequestError {
+            XCTAssertEqual(error.reason, failureReason)
+            XCTAssertEqual(error.data, ["msg": failureReason].toJsonData())
+        } catch {
+            XCTFail("Expected SendRequestError, got \(error)")
+        }
+    }
+
+    @available(iOS 13.0, *)
+    func testDisableDeviceForCurrentUserAsyncNotInitializedThrowsSendRequestError() async {
+        let oldImplementation = IterableAPI.implementation
+        IterableAPI.implementation = nil
+        defer { IterableAPI.implementation = oldImplementation }
+
+        do {
+            try await IterableAPI.disableDeviceForCurrentUser()
+            XCTFail("Expected disableDeviceForCurrentUser async API to throw")
+        } catch let error as SendRequestError {
+            XCTAssertEqual(error.reason, "Iterable SDK is not initialized")
+            XCTAssertNil(error.data)
+        } catch {
+            XCTFail("Expected SendRequestError, got \(error)")
+        }
+    }
     
     func testUpdateCart() {
         let condition1 = XCTestExpectation(description: #function)
@@ -1478,4 +1574,54 @@ class IterableAPITests: XCTestCase {
         XCTAssertEqual(dateFromMilliseconds, testDate)
     }
 
+    @available(iOS 13.0, *)
+    private func setUpIterableAPIForAsyncDisableDevice(networkSession: MockNetworkSession) async throws -> Data {
+        let config = IterableConfig()
+        config.pushIntegrationName = "my-push-integration"
+
+        IterableAPI.initializeForTesting(apiKey: IterableAPITests.apiKey,
+                                         config: config,
+                                         networkSession: networkSession)
+        IterableAPI.email = "user@example.com"
+
+        let token = "zeeToken".data(using: .utf8)!
+        try await registerTokenForAsyncDisableDevice(token)
+        return token
+    }
+
+    @available(iOS 13.0, *)
+    private func registerTokenForAsyncDisableDevice(_ token: Data) async throws {
+        try await withCheckedThrowingContinuation { continuation in
+            let resumeGuard = TestAsyncContinuationResumeGuard()
+
+            IterableAPI.register(token: token, onSuccess: { _ in
+                resumeGuard.resume {
+                    continuation.resume(returning: ())
+                }
+            }, onFailure: { reason, data in
+                resumeGuard.resume {
+                    continuation.resume(throwing: SendRequestError(reason: reason, data: data))
+                }
+            })
+        }
+    }
+
+}
+
+private final class TestAsyncContinuationResumeGuard {
+    private let lock = NSLock()
+    private var didResume = false
+
+    func resume(_ block: () -> Void) {
+        lock.lock()
+        let shouldResume = !didResume
+        if shouldResume {
+            didResume = true
+        }
+        lock.unlock()
+
+        if shouldResume {
+            block()
+        }
+    }
 }
