@@ -475,13 +475,13 @@ extension AppDelegate: IterableURLDelegate {
             print("🌐 HTTPS URL received in URL delegate: \(url.absoluteString)")
             
             // Check if this is from our tracking domain (shouldn't happen if SDK unwrapped correctly)
-            if url.host == "links.tsetester.com" {
+            if url.host == "links.bcittesting.com" {
                 print("⚠️ Received wrapped tracking URL - SDK may not have unwrapped it")
             }
             
-            // Handle tsetester.com URLs with routing
-            if url.host == "tsetester.com" {
-                print("🎯 tsetester.com URL detected: \(url.path)")
+            // Handle bcittesting.com URLs with routing
+            if url.host == "bcittesting.com" {
+                print("🎯 bcittesting.com URL detected: \(url.path)")
                 
                 if url.path.hasPrefix("/update/") {
                     print("📱 Navigating to update screen for path: \(url.path)")
@@ -491,8 +491,8 @@ extension AppDelegate: IterableURLDelegate {
                     return true
                 }
                 
-                // For other tsetester.com paths, show generic alert
-                print("📱 Showing alert for tsetester.com path: \(url.path)")
+                // For other bcittesting.com paths, show generic alert
+                print("📱 Showing alert for bcittesting.com path: \(url.path)")
                 DispatchQueue.main.async {
                     self.showDeepLinkAlert(url: url)
                 }
