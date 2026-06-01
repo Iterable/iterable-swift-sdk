@@ -34,8 +34,9 @@ struct RequestCreator {
     }
     
     func createRegisterTokenRequest(registerTokenInfo: RegisterTokenInfo,
-                                    notificationsEnabled: Bool) -> Result<IterableRequest, IterableError> {
-        if case .none = auth.emailOrUserId {
+                                    notificationsEnabled: Bool,
+                                    identitySnapshot: UserIdentitySnapshot? = nil) -> Result<IterableRequest, IterableError> {
+        if identitySnapshot == nil, case .none = auth.emailOrUserId {
             ITBError(Self.authMissingMessage)
             return .failure(IterableError.general(description: Self.authMissingMessage))
         }
@@ -60,10 +61,17 @@ struct RequestCreator {
         
         body[JsonKey.device] = deviceDictionary
         
-        setCurrentUser(inDict: &body)
-        
-        if auth.email == nil, (auth.userId != nil || auth.userIdUnknownUser != nil) {
-            body[JsonKey.preferUserId] = true
+        if let identitySnapshot {
+            identitySnapshot.apply(to: &body)
+            if case .userId = identitySnapshot {
+                body[JsonKey.preferUserId] = true
+            }
+        } else {
+            setCurrentUser(inDict: &body)
+
+            if auth.email == nil, (auth.userId != nil || auth.userIdUnknownUser != nil) {
+                body[JsonKey.preferUserId] = true
+            }
         }
         
         return .success(.post(createPostRequest(path: Const.Path.registerDeviceToken, body: body)))

@@ -177,6 +177,88 @@ class RequestHandlerTests: XCTestCase {
         XCTAssertEqual(try persistenceContextProvider.mainQueueContext().findAllTasks().count, 0)
         requestHandler.stop()
     }
+
+    func testOfflineRegisterTokenCapturesIdentityAtCallTime() throws {
+        let registerTokenInfo = createRegisterTokenInfo()
+        let originalUserId = "original-user-id"
+        let liveAuth = MutableAuthProvider(
+            initial: Auth(userId: originalUserId, email: nil, authToken: nil, userIdUnknownUser: nil)
+        )
+        let notificationStateProvider = DeferredNotificationStateProvider()
+        let bodyValidated = expectation(description: #function)
+
+        let networkSession = MockNetworkSession()
+        networkSession.requestCallback = { request in
+            guard request.url?.absoluteString.contains(Const.Path.registerDeviceToken) == true else {
+                return
+            }
+
+            self.validateRegisterTokenRequest(request,
+                                              registerTokenInfo: registerTokenInfo,
+                                              notificationsEnabled: true,
+                                              expectedEmail: nil,
+                                              expectedUserId: originalUserId,
+                                              expectedPreferUserId: true)
+            bodyValidated.fulfill()
+        }
+
+        let requestHandler = createRequestHandler(networkSession: networkSession,
+                                                  notificationCenter: MockNotificationCenter(),
+                                                  selectOffline: true,
+                                                  authProvider: liveAuth)
+
+        requestHandler.register(registerTokenInfo: registerTokenInfo,
+                                notificationStateProvider: notificationStateProvider,
+                                onSuccess: nil,
+                                onFailure: { reason, _ in XCTFail("register should not fail: \(reason ?? "nil")") })
+
+        liveAuth.currentAuth = Auth(userId: nil, email: nil, authToken: nil, userIdUnknownUser: nil)
+        notificationStateProvider.resolve(enabled: true)
+
+        waitForTaskRunner(requestHandler: requestHandler, expectation: bodyValidated)
+    }
+
+    func testOnlineFallbackRegisterTokenCapturesIdentityAtCallTime() throws {
+        let registerTokenInfo = createRegisterTokenInfo()
+        let originalEmail = "original@example.com"
+        let mutatedUserId = "mutated-user-id"
+        let liveAuth = MutableAuthProvider(
+            initial: Auth(userId: nil, email: originalEmail, authToken: nil, userIdUnknownUser: nil)
+        )
+        let notificationStateProvider = DeferredNotificationStateProvider()
+        let bodyValidated = expectation(description: #function)
+
+        let networkSession = MockNetworkSession()
+        networkSession.requestCallback = { request in
+            guard request.url?.absoluteString.contains(Const.Path.registerDeviceToken) == true else {
+                return
+            }
+
+            self.validateRegisterTokenRequest(request,
+                                              registerTokenInfo: registerTokenInfo,
+                                              notificationsEnabled: true,
+                                              expectedEmail: originalEmail,
+                                              expectedUserId: nil,
+                                              expectedPreferUserId: nil)
+            bodyValidated.fulfill()
+        }
+
+        let requestHandler = createRequestHandler(networkSession: networkSession,
+                                                  notificationCenter: MockNotificationCenter(),
+                                                  selectOffline: true,
+                                                  authProvider: liveAuth,
+                                                  maxTasks: 0)
+
+        requestHandler.register(registerTokenInfo: registerTokenInfo,
+                                notificationStateProvider: notificationStateProvider,
+                                onSuccess: nil,
+                                onFailure: { reason, _ in XCTFail("register should not fail: \(reason ?? "nil")") })
+
+        liveAuth.currentAuth = Auth(userId: mutatedUserId, email: nil, authToken: nil, userIdUnknownUser: nil)
+        notificationStateProvider.resolve(enabled: true)
+
+        wait(for: [bodyValidated], timeout: testExpectationTimeout)
+    }
     
     func testDisableUserforCurrentUser() throws {
         let hexToken = "zee-token"
@@ -1435,9 +1517,10 @@ class RequestHandlerTests: XCTestCase {
     private func createRequestHandler(networkSession: NetworkSessionProtocol,
                                       notificationCenter: NotificationCenterProtocol,
                                       selectOffline: Bool,
-                                      authProvider: AuthProvider? = nil) -> RequestHandlerProtocol {
+                                      authProvider: AuthProvider? = nil,
+                                      maxTasks: Int = 1000) -> RequestHandlerProtocol {
         let resolvedAuthProvider: AuthProvider = authProvider ?? self
-        let healthMonitor = HealthMonitor(dataProvider: HealthMonitorDataProvider(maxTasks: 1000,
+        let healthMonitor = HealthMonitor(dataProvider: HealthMonitorDataProvider(maxTasks: maxTasks,
                                                                                   persistenceContextProvider: persistenceContextProvider),
                                           dateProvider: dateProvider,
                                           networkSession: networkSession)
@@ -1534,6 +1617,9 @@ class RequestHandlerTests: XCTestCase {
     private func validateRegisterTokenRequest(_ request: URLRequest,
                                               registerTokenInfo: RegisterTokenInfo,
                                               notificationsEnabled: Bool,
+                                              expectedEmail: String? = "user@example.com",
+                                              expectedUserId: String? = nil,
+                                              expectedPreferUserId: Bool? = nil,
                                               file: StaticString = #filePath,
                                               line: UInt = #line) {
         TestUtils.validate(request: request,
@@ -1541,10 +1627,9 @@ class RequestHandlerTests: XCTestCase {
                            path: Const.Path.registerDeviceToken)
 
         let requestBody = request.bodyDict
-        XCTAssertEqual(requestBody[JsonKey.email] as? String,
-                       "user@example.com",
-                       file: file,
-                       line: line)
+        XCTAssertEqual(requestBody[JsonKey.email] as? String, expectedEmail, file: file, line: line)
+        XCTAssertEqual(requestBody[JsonKey.userId] as? String, expectedUserId, file: file, line: line)
+        XCTAssertEqual(requestBody[JsonKey.preferUserId] as? Bool, expectedPreferUserId, file: file, line: line)
 
         guard let device = requestBody[JsonKey.device] as? [String: Any] else {
             XCTFail("missing device dictionary", file: file, line: line)
@@ -1694,4 +1779,19 @@ fileprivate final class MutableAuthProvider: AuthProvider {
     var currentAuth: Auth
     init(initial: Auth) { currentAuth = initial }
     var auth: Auth { currentAuth }
+}
+
+fileprivate final class DeferredNotificationStateProvider: NotificationStateProviderProtocol {
+    private var callback: ((Bool) -> Void)?
+
+    func isNotificationsEnabled(withCallback callback: @escaping (Bool) -> Void) {
+        self.callback = callback
+    }
+
+    func registerForRemoteNotifications() {}
+
+    func resolve(enabled: Bool) {
+        callback?(enabled)
+        callback = nil
+    }
 }

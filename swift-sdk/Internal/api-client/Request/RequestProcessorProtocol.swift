@@ -35,6 +35,7 @@ protocol RequestProcessorProtocol {
     @discardableResult
     func register(registerTokenInfo: RegisterTokenInfo,
                   notificationsEnabled: Bool,
+                  identitySnapshot: UserIdentitySnapshot?,
                   onSuccess: OnSuccessHandler?,
                   onFailure: OnFailureHandler?) -> Pending<SendRequestValue, SendRequestError>
 

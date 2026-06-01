@@ -48,10 +48,20 @@ class RequestHandler: RequestHandlerProtocol {
                   notificationStateProvider: NotificationStateProviderProtocol,
                   onSuccess: OnSuccessHandler?,
                   onFailure: OnFailureHandler?) {
+        // Snapshot identity before the async notification-state callback so deferred
+        // request construction still targets the call-time user.
+        guard let identitySnapshot = UserIdentitySnapshot(auth: authProvider?.auth) else {
+            let reason = "register(token:) called without a current user identity"
+            ITBError(reason)
+            onFailure?(reason, nil)
+            return
+        }
+
         notificationStateProvider.isNotificationsEnabled { notificationsEnabled in
             _ = self.sendUsingRequestProcessor { processor in
                 processor.register(registerTokenInfo: registerTokenInfo,
                                    notificationsEnabled: notificationsEnabled,
+                                   identitySnapshot: identitySnapshot,
                                    onSuccess: onSuccess,
                                    onFailure: onFailure)
             }

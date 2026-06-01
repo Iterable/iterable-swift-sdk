@@ -42,7 +42,9 @@ class BlankApiClient: ApiClientProtocol {
     }
     
     
-    func register(registerTokenInfo: RegisterTokenInfo, notificationsEnabled: Bool) -> Pending<SendRequestValue, SendRequestError> {
+    func register(registerTokenInfo: RegisterTokenInfo,
+                  notificationsEnabled: Bool,
+                  identitySnapshot: UserIdentitySnapshot?) -> Pending<SendRequestValue, SendRequestError> {
         Pending()
     }
     
