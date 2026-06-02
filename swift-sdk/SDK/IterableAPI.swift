@@ -340,10 +340,28 @@ import UIKit
     public static func disableDeviceForCurrentUser() {
         disableDeviceForCurrentUser(withOnSuccess: nil, onFailure: nil)
     }
+
+    /// Disable this device's token in Iterable, for the current user.
+    @nonobjc
+    @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
+    public static func disableDeviceForCurrentUser() async throws {
+        try await disableDeviceAsync { onSuccess, onFailure in
+            disableDeviceForCurrentUser(withOnSuccess: onSuccess, onFailure: onFailure)
+        }
+    }
     
     /// Disable this device's token in Iterable, for all users on this device.
     public static func disableDeviceForAllUsers() {
         disableDeviceForAllUsers(withOnSuccess: nil, onFailure: nil)
+    }
+
+    /// Disable this device's token in Iterable, for all users on this device.
+    @nonobjc
+    @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
+    public static func disableDeviceForAllUsers() async throws {
+        try await disableDeviceAsync { onSuccess, onFailure in
+            disableDeviceForAllUsers(withOnSuccess: onSuccess, onFailure: onFailure)
+        }
     }
     
     /// Disable this device's token in Iterable, for the current user, with custom completion blocks
@@ -376,6 +394,29 @@ import UIKit
         }
         
         implementation.disableDeviceForAllUsers(withOnSuccess: onSuccess, onFailure: onFailure)
+    }
+
+    @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
+    private static func disableDeviceAsync(
+        _ disableDevice: (_ onSuccess: OnSuccessHandler?, _ onFailure: OnFailureHandler?) -> Void
+    ) async throws {
+        guard let implementation, implementation.isSDKInitialized() else {
+            throw SendRequestError(reason: sdkNotInitializedErrorReason)
+        }
+
+        try await withCheckedThrowingContinuation { continuation in
+            let resumeGuard = AsyncContinuationResumeGuard()
+
+            disableDevice({ _ in
+                resumeGuard.resume {
+                    continuation.resume(returning: ())
+                }
+            }, { reason, data in
+                resumeGuard.resume {
+                    continuation.resume(throwing: SendRequestError(reason: reason, data: data))
+                }
+            })
+        }
     }
     
     /// Updates the available user fields
@@ -911,7 +952,27 @@ import UIKit
     
     // MARK: - Private/Internal
     
+    private static let sdkNotInitializedErrorReason = "Iterable SDK is not initialized"
+
     static var implementation: InternalIterableAPI?
     
     override private init() { super.init() }
+}
+
+private final class AsyncContinuationResumeGuard {
+    private let lock = NSLock()
+    private var didResume = false
+
+    func resume(_ block: () -> Void) {
+        lock.lock()
+        let shouldResume = !didResume
+        if shouldResume {
+            didResume = true
+        }
+        lock.unlock()
+
+        if shouldResume {
+            block()
+        }
+    }
 }
