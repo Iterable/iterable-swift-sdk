@@ -93,8 +93,12 @@ class DeepLinkManager: NSObject {
         guard let regex = try? NSRegularExpression(pattern: Const.deepLinkRegex, options: []) else {
             return false
         }
-        
-        return regex.firstMatch(in: urlString, options: [], range: NSMakeRange(0, urlString.count)) != nil
+
+        // Build the range with NSRange(_:in:) so it is in the UTF-16 coordinates
+        // NSRegularExpression expects. urlString.count conflates Swift String length
+        // with NSString length for non-BMP characters (CWE-135, SDK-469).
+        let range = NSRange(urlString.startIndex..<urlString.endIndex, in: urlString)
+        return regex.firstMatch(in: urlString, options: [], range: range) != nil
     }
     
     private lazy var redirectUrlSession: NetworkSessionProtocol = {

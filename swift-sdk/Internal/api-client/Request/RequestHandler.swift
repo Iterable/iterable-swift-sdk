@@ -48,10 +48,30 @@ class RequestHandler: RequestHandlerProtocol {
                   notificationStateProvider: NotificationStateProviderProtocol,
                   onSuccess: OnSuccessHandler?,
                   onFailure: OnFailureHandler?) {
-        onlineProcessor.register(registerTokenInfo: registerTokenInfo,
-                                 notificationStateProvider: notificationStateProvider,
-                                 onSuccess: onSuccess,
-                                 onFailure: onFailure)
+        // Snapshot identity before the async notification-state callback so deferred
+        // request construction still targets the call-time user.
+        let missingIdentityReason = "register(token:) called without a current user identity"
+        guard let auth = authProvider?.auth else {
+            ITBError(missingIdentityReason)
+            onFailure?(missingIdentityReason, nil)
+            return
+        }
+        if case .none = auth.emailOrUserId {
+            ITBError(missingIdentityReason)
+            onFailure?(missingIdentityReason, nil)
+            return
+        }
+        var registerTokenInfo = registerTokenInfo
+        registerTokenInfo.auth = auth
+
+        notificationStateProvider.isNotificationsEnabled { notificationsEnabled in
+            _ = self.sendUsingRequestProcessor { processor in
+                processor.register(registerTokenInfo: registerTokenInfo,
+                                   notificationsEnabled: notificationsEnabled,
+                                   onSuccess: onSuccess,
+                                   onFailure: onFailure)
+            }
+        }
     }
     
     @discardableResult
