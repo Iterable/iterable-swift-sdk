@@ -354,7 +354,10 @@ import UIKit
     ///
     /// - SeeAlso: OnSuccessHandler, OnFailureHandler
     public static func disableDeviceForCurrentUser(withOnSuccess onSuccess: OnSuccessHandler?, onFailure: OnFailureHandler?) {
-        guard let implementation, implementation.isSDKInitialized() else { return }
+        guard let implementation, implementation.isSDKInitialized() else {
+            onFailure?("Iterable SDK is not initialized", nil)
+            return
+        }
         
         implementation.disableDeviceForCurrentUser(withOnSuccess: onSuccess, onFailure: onFailure)
     }
@@ -367,7 +370,10 @@ import UIKit
     ///
     /// - SeeAlso: OnSuccessHandler, OnFailureHandler
     public static func disableDeviceForAllUsers(withOnSuccess onSuccess: OnSuccessHandler?, onFailure: OnFailureHandler?) {
-        guard let implementation, implementation.isSDKInitialized() else { return }
+        guard let implementation, implementation.isSDKInitialized() else {
+            onFailure?("Iterable SDK is not initialized", nil)
+            return
+        }
         
         implementation.disableDeviceForAllUsers(withOnSuccess: onSuccess, onFailure: onFailure)
     }

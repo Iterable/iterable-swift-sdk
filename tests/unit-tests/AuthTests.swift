@@ -1381,6 +1381,32 @@ class AuthTests: XCTestCase {
         XCTAssertEqual(context.embeddedManager.resetCallCount, 0)
     }
 
+    func testDisableDeviceWithHandlersNotInitializedFails() {
+        let previousImplementation = IterableAPI.implementation
+        defer { IterableAPI.implementation = previousImplementation }
+        IterableAPI.implementation = nil
+        let currentUserFailed = expectation(description: "current user disable failure handler called")
+        let allUsersFailed = expectation(description: "all users disable failure handler called")
+
+        IterableAPI.disableDeviceForCurrentUser(withOnSuccess: { _ in
+            XCTFail("disable current user should not succeed")
+        }, onFailure: { reason, data in
+            XCTAssertEqual(reason, "Iterable SDK is not initialized")
+            XCTAssertNil(data)
+            currentUserFailed.fulfill()
+        })
+
+        IterableAPI.disableDeviceForAllUsers(withOnSuccess: { _ in
+            XCTFail("disable all users should not succeed")
+        }, onFailure: { reason, data in
+            XCTAssertEqual(reason, "Iterable SDK is not initialized")
+            XCTAssertNil(data)
+            allUsersFailed.fulfill()
+        })
+
+        wait(for: [currentUserFailed, allUsersFailed], timeout: testExpectationTimeout)
+    }
+
     func testLogoutUserParameterlessOverloadStillLogsOut() {
         let networkSession = MockNetworkSession(statusCode: 200)
         let context = createLogoutTestContext(autoPushRegistration: false, networkSession: networkSession)
