@@ -128,12 +128,9 @@ class ApiClient {
 
 extension ApiClient: ApiClientProtocol {
    
-    func register(registerTokenInfo: RegisterTokenInfo,
-                  notificationsEnabled: Bool,
-                  identitySnapshot: UserIdentitySnapshot?) -> Pending<SendRequestValue, SendRequestError> {
+    func register(registerTokenInfo: RegisterTokenInfo, notificationsEnabled: Bool) -> Pending<SendRequestValue, SendRequestError> {
         let result = createRequestCreator().flatMap { $0.createRegisterTokenRequest(registerTokenInfo: registerTokenInfo,
-                                                                                    notificationsEnabled: notificationsEnabled,
-                                                                                    identitySnapshot: identitySnapshot) }
+                                                                                    notificationsEnabled: notificationsEnabled) }
         return send(iterableRequestResult: result)
     }
     

@@ -14,6 +14,7 @@ struct RegisterTokenInfo {
     let deviceAttributes: [String: String]
     let sdkVersion: String?
     let mobileFrameworkInfo: IterableAPIMobileFrameworkInfo
+    var auth: Auth? = nil
 }
 
 struct UpdateSubscriptionsInfo {
@@ -35,7 +36,6 @@ protocol RequestProcessorProtocol {
     @discardableResult
     func register(registerTokenInfo: RegisterTokenInfo,
                   notificationsEnabled: Bool,
-                  identitySnapshot: UserIdentitySnapshot?,
                   onSuccess: OnSuccessHandler?,
                   onFailure: OnFailureHandler?) -> Pending<SendRequestValue, SendRequestError>
 

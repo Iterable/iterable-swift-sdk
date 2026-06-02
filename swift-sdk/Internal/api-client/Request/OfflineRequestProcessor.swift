@@ -44,13 +44,11 @@ struct OfflineRequestProcessor: RequestProcessorProtocol {
     @discardableResult
     func register(registerTokenInfo: RegisterTokenInfo,
                   notificationsEnabled: Bool,
-                  identitySnapshot: UserIdentitySnapshot?,
                   onSuccess: OnSuccessHandler?,
                   onFailure: OnFailureHandler?) -> Pending<SendRequestValue, SendRequestError> {
         let requestGenerator = { (requestCreator: RequestCreator) in
             requestCreator.createRegisterTokenRequest(registerTokenInfo: registerTokenInfo,
-                                                      notificationsEnabled: notificationsEnabled,
-                                                      identitySnapshot: identitySnapshot)
+                                                      notificationsEnabled: notificationsEnabled)
         }
 
         return sendIterableRequest(requestGenerator: requestGenerator,

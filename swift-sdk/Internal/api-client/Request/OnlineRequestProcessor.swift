@@ -25,12 +25,10 @@ struct OnlineRequestProcessor: RequestProcessorProtocol {
     @discardableResult
     func register(registerTokenInfo: RegisterTokenInfo,
                   notificationsEnabled: Bool,
-                  identitySnapshot: UserIdentitySnapshot?,
                   onSuccess: OnSuccessHandler? = nil,
                   onFailure: OnFailureHandler? = nil) -> Pending<SendRequestValue, SendRequestError> {
         sendRequest(requestProvider: { apiClient.register(registerTokenInfo: registerTokenInfo,
-                                                          notificationsEnabled: notificationsEnabled,
-                                                          identitySnapshot: identitySnapshot) },
+                                                          notificationsEnabled: notificationsEnabled) },
                     successHandler: onSuccess,
                     failureHandler: onFailure,
                     requestIdentifier: RequestIdentifier.registerToken)
