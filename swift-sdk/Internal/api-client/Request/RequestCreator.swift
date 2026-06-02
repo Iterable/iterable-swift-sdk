@@ -35,6 +35,7 @@ struct RequestCreator {
     
     func createRegisterTokenRequest(registerTokenInfo: RegisterTokenInfo,
                                     notificationsEnabled: Bool) -> Result<IterableRequest, IterableError> {
+        let auth = registerTokenInfo.auth ?? self.auth
         if case .none = auth.emailOrUserId {
             ITBError(Self.authMissingMessage)
             return .failure(IterableError.general(description: Self.authMissingMessage))
@@ -60,8 +61,8 @@ struct RequestCreator {
         
         body[JsonKey.device] = deviceDictionary
         
-        setCurrentUser(inDict: &body)
-        
+        setCurrentUser(auth: auth, inDict: &body)
+
         if auth.email == nil, (auth.userId != nil || auth.userIdUnknownUser != nil) {
             body[JsonKey.preferUserId] = true
         }
@@ -737,6 +738,10 @@ struct RequestCreator {
     }
     
     private func setCurrentUser(inDict dict: inout [AnyHashable: Any]) {
+        setCurrentUser(auth: auth, inDict: &dict)
+    }
+
+    private func setCurrentUser(auth: Auth, inDict dict: inout [AnyHashable: Any]) {
         switch auth.emailOrUserId {
         case let .email(email):
             dict.setValue(for: JsonKey.email, value: email)

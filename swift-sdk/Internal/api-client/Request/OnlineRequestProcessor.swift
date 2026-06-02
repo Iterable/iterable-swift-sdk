@@ -22,18 +22,18 @@ struct OnlineRequestProcessor: RequestProcessorProtocol {
                               dateProvider: dateProvider)
     }
     
+    @discardableResult
     func register(registerTokenInfo: RegisterTokenInfo,
-                  notificationStateProvider: NotificationStateProviderProtocol,
+                  notificationsEnabled: Bool,
                   onSuccess: OnSuccessHandler? = nil,
-                  onFailure: OnFailureHandler? = nil) {
-        notificationStateProvider.isNotificationsEnabled { enabled in
-            self.register(registerTokenInfo: registerTokenInfo,
-                          notificationsEnabled: enabled,
-                          onSuccess: onSuccess,
-                          onFailure: onFailure)
-        }
+                  onFailure: OnFailureHandler? = nil) -> Pending<SendRequestValue, SendRequestError> {
+        sendRequest(requestProvider: { apiClient.register(registerTokenInfo: registerTokenInfo,
+                                                          notificationsEnabled: notificationsEnabled) },
+                    successHandler: onSuccess,
+                    failureHandler: onFailure,
+                    requestIdentifier: RequestIdentifier.registerToken)
     }
-    
+
     @discardableResult
     func disableDeviceForCurrentUser(hexToken: String,
                                      identitySnapshot: UserIdentitySnapshot?,
@@ -308,18 +308,6 @@ struct OnlineRequestProcessor: RequestProcessorProtocol {
     
     private let apiClient: ApiClientProtocol
     private weak var authManager: IterableAuthManagerProtocol?
-    
-    @discardableResult
-    private func register(registerTokenInfo: RegisterTokenInfo,
-                          notificationsEnabled: Bool,
-                          onSuccess: OnSuccessHandler? = nil,
-                          onFailure: OnFailureHandler? = nil) -> Pending<SendRequestValue, SendRequestError> {
-        sendRequest(requestProvider: { apiClient.register(registerTokenInfo: registerTokenInfo,
-                                                          notificationsEnabled: notificationsEnabled) },
-                    successHandler: onSuccess,
-                    failureHandler: onFailure,
-                    requestIdentifier: "registerToken")
-    }
     
     @discardableResult
     private func disableDevice(forAllUsers allUsers: Bool,
