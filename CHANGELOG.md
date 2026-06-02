@@ -4,6 +4,19 @@ All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 ## [Unreleased]
 
+## [6.7.2]
+### Added
+- Added optional `shouldLog(level:) -> Bool` to `IterableLogDelegate`. Defaults to `true` when not implemented. Lets the delegate short-circuit log calls before any message formatting work happens. `DefaultLogDelegate` routes its `minLogLevel` filter through this, and `NoneLogDelegate` returns `false` for every level.
+
+### Fixed
+- Fixed a memory leak in `NetworkMonitor` where `NWPathMonitor` and the monitor wrapper were retained for the lifetime of the app across foreground/background cycles. `start()` is now idempotent, captures `self` weakly in `pathUpdateHandler`, and `stop()` reliably cancels and releases the monitor. Resolves GitHub issue #867.
+- Fixed a Swift access race in `Pending`/`Fulfill` flagged by Thread Sanitizer. All reads and writes of `result`, `successCallbacks`, and `errorCallbacks` now run on a private serial queue, with callbacks invoked outside the critical section so re-entrant registrations cannot deadlock. Also fixes a latent O(N²) firing path when registering callbacks against an already-resolved `Pending`. Resolves GitHub issue #767.
+- Fixed orphaned `Pending` chains in the JWT auth retry path. When token refresh hits the retry cap, is paused, or runs after logout, callers are now notified through a new `onRetryExhausted` callback instead of being silently dropped, preventing upstream awaiters from hanging forever.
+
+### Changed
+- `IterableAPI.disableDeviceForCurrentUser` and `disableDeviceForAllUsers` are now routed through the offline queue, so a `disableDevice` call made while offline is automatically retried when connectivity returns. The original user identity is captured at call time, so the queued request still targets the correct user after logout or user switch. Queued `disableDevice` tasks are also preserved across logout while other queued work is still purged.
+- Cached the `DateFormatter` used by `IterableLogUtil` as a `private static let` and skip message formatting entirely when the log delegate filters the level out. Fixes a 2.4–3.2s main-thread hang observed on foreground transitions in apps with a restrictive `minLogLevel`.
+
 ## [6.7.1]
 ### Fixed
 - Fixed the `enableUnknownUserActivation` default value to `false`
