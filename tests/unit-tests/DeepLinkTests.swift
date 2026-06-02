@@ -149,7 +149,26 @@ class DeepLinkTests: XCTestCase {
     func testIsIterableDeepLinkReturnsFalseForEmptyString() {
         XCTAssertFalse(IterableAPI.isIterableDeepLink(""))
     }
-    
+
+    // SDK-469: when the URL contains non-BMP characters (e.g. emoji) BEFORE the
+    // deep-link path segment, String.count under-counts vs NSString.length (each
+    // 👍🏿 is one Character but four UTF-16 code units). A search range built from
+    // String.count stops short of the trailing "/a/..." segment and misses the
+    // match; a range built from NSString.length covers the full string.
+    //
+    // The emoji prefix is long enough that the count deficit pushes the entire
+    // "/a/..." token past the truncated range, so this test FAILS against the old
+    // String.count-based implementation and passes with the NSString.length fix.
+    func testIsIterableDeepLinkMatchesWithNonBMPCharactersBeforePath() {
+        let urlWithEmoji = "https://links.iterable.com/" + String(repeating: "👍🏿", count: 20) + "/a/60402396fbd5433eb35397b47ab2fb83"
+        XCTAssertTrue(IterableAPI.isIterableDeepLink(urlWithEmoji))
+    }
+
+    func testIsIterableDeepLinkHandlesNonBMPCharactersWithoutDeepLinkPath() {
+        let urlWithEmoji = "https://example.com/" + String(repeating: "👍🏿", count: 20) + "/some/path"
+        XCTAssertFalse(IterableAPI.isIterableDeepLink(urlWithEmoji))
+    }
+
     // MARK: - Other Tests
     
     /// this is a service that automatically redirects if that url is hit, make sure we are not actually hitting the url but our servers
