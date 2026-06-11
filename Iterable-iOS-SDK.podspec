@@ -29,7 +29,7 @@ Pod::Spec.new do |s|
   s.resource_bundles = {
     'IterableSDKResources' => [
       'swift-sdk/Resources/**/*.{storyboard,xib,xcassets,xcdatamodeld}',
-      'swift-sdk/ui-components/**/*.xib'
+      'swift-sdk/ui-components/**/*.{storyboard,xib,xcassets,xcdatamodeld}'
     ]
   }
 
