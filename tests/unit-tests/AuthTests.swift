@@ -17,6 +17,26 @@ class AuthTests: XCTestCase {
     override func setUp() {
         super.setUp()
     }
+
+    func testAuthFailureReasonDebugDescriptions() {
+        let expectedDescriptions: [(AuthFailureReason, String)] = [
+            (.authTokenExpired, "authTokenExpired"),
+            (.authTokenGenericError, "authTokenGenericError"),
+            (.authTokenExpirationInvalid, "authTokenExpirationInvalid"),
+            (.authTokenSignatureInvalid, "authTokenSignatureInvalid"),
+            (.authTokenFormatInvalid, "authTokenFormatInvalid"),
+            (.authTokenInvalidated, "authTokenInvalidated"),
+            (.authTokenPayloadInvalid, "authTokenPayloadInvalid"),
+            (.authTokenUserKeyInvalid, "authTokenUserKeyInvalid"),
+            (.authTokenNull, "authTokenNull"),
+            (.authTokenGenerationError, "authTokenGenerationError"),
+            (.authTokenMissing, "authTokenMissing")
+        ]
+
+        expectedDescriptions.forEach { reason, description in
+            XCTAssertEqual(String(describing: reason), description)
+        }
+    }
     
     func testEmailPersistence() {
         let internalAPI = InternalIterableAPI.initializeForTesting()
