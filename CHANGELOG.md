@@ -3,6 +3,8 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 ## [Unreleased]
+### Fixed
+- Fixed a crash showing out-of-the-box embedded messages on CocoaPods. `IterableEmbeddedView.xib` moved out of `Resources/` in 6.5.9, but the podspec only bundled `Resources/`, so the nib was missing from the CocoaPods resource bundle and `loadViewFromNib()` crashed. The podspec now bundles the UI component XIBs too. SPM was not affected.
 
 ## [6.7.2]
 ### Added
