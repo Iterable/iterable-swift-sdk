@@ -34,7 +34,7 @@ class AuthTests: XCTestCase {
         ]
 
         expectedDescriptions.forEach { reason, description in
-            XCTAssertEqual(reason.debugDescription, description)
+            XCTAssertEqual(String(describing: reason), description)
         }
     }
     
