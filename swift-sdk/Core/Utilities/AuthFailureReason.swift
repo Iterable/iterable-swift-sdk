@@ -20,3 +20,32 @@ import Foundation
     case authTokenGenerationError
     case authTokenMissing
 }
+
+extension AuthFailureReason: CustomDebugStringConvertible {
+    public var debugDescription: String {
+        switch self {
+        case .authTokenExpired:
+            return "authTokenExpired"
+        case .authTokenGenericError:
+            return "authTokenGenericError"
+        case .authTokenExpirationInvalid:
+            return "authTokenExpirationInvalid"
+        case .authTokenSignatureInvalid:
+            return "authTokenSignatureInvalid"
+        case .authTokenFormatInvalid:
+            return "authTokenFormatInvalid"
+        case .authTokenInvalidated:
+            return "authTokenInvalidated"
+        case .authTokenPayloadInvalid:
+            return "authTokenPayloadInvalid"
+        case .authTokenUserKeyInvalid:
+            return "authTokenUserKeyInvalid"
+        case .authTokenNull:
+            return "authTokenNull"
+        case .authTokenGenerationError:
+            return "authTokenGenerationError"
+        case .authTokenMissing:
+            return "authTokenMissing"
+        }
+    }
+}
