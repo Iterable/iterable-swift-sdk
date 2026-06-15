@@ -26,7 +26,12 @@ Pod::Spec.new do |s|
 
   s.swift_version = '5.3'
 
-  s.resource_bundles = {'IterableSDKResources' => 'swift-sdk/Resources/**/*.{storyboard,xib,xcassets,xcdatamodeld}' }
+  s.resource_bundles = {
+    'IterableSDKResources' => [
+      'swift-sdk/Resources/**/*.{storyboard,xib,xcassets,xcdatamodeld}',
+      'swift-sdk/ui-components/**/*.{storyboard,xib,xcassets,xcdatamodeld}'
+    ]
+  }
 
   s.header_dir = 'IterableSDK'
 end
