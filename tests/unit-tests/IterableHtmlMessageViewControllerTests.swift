@@ -49,6 +49,14 @@ class IterableHtmlMessageViewControllerTests: XCTestCase {
                          messageLocation: .full,
                          expectedWebViewPosition: ViewPosition(width: 1234, height: 400, center: CGPoint(x: 617.0, y: 200.0)))
     }
+
+    func testWebViewFullPositioningWithSafeAreaInsetsReturnsParentPosition() {
+        checkPositioning(parentPosition: ViewPosition(width: 844, height: 390, center: CGPoint(x: 422, y: 195)),
+                         safeAreaInsets: UIEdgeInsets(top: 0, left: 47, bottom: 21, right: 0),
+                         inAppHeight: 200,
+                         messageLocation: .full,
+                         expectedWebViewPosition: ViewPosition(width: 844, height: 390, center: CGPoint(x: 422, y: 195)))
+    }
     
     func testWebViewTopPositioningWithSafeAreaInsets() {
         let inAppHeight: CGFloat = 200
@@ -74,6 +82,72 @@ class IterableHtmlMessageViewControllerTests: XCTestCase {
                          inAppHeight: inAppHeight,
                          messageLocation: .bottom,
                          expectedWebViewPosition: ViewPosition(width: 1234, height: calculatedHeight, center: CGPoint(x: 617.0, y: calculatedCenterY)))
+    }
+
+    func testWebViewPositioningWithPortraitSafeAreaInsets() {
+        let parentPosition = ViewPosition(width: 390, height: 844, center: CGPoint(x: 195, y: 422))
+        let safeAreaInsets = UIEdgeInsets(top: 47, left: 0, bottom: 34, right: 0)
+        let inAppHeight: CGFloat = 200
+
+        checkPositioning(parentPosition: parentPosition,
+                         safeAreaInsets: safeAreaInsets,
+                         inAppHeight: inAppHeight,
+                         messageLocation: .top,
+                         expectedWebViewPosition: ViewPosition(width: 390, height: 247, center: CGPoint(x: 195, y: 123.5)))
+        checkPositioning(parentPosition: parentPosition,
+                         safeAreaInsets: safeAreaInsets,
+                         inAppHeight: inAppHeight,
+                         messageLocation: .bottom,
+                         expectedWebViewPosition: ViewPosition(width: 390, height: 234, center: CGPoint(x: 195, y: 727)))
+        checkPositioning(parentPosition: parentPosition,
+                         safeAreaInsets: safeAreaInsets,
+                         inAppHeight: inAppHeight,
+                         messageLocation: .center,
+                         expectedWebViewPosition: ViewPosition(width: 390, height: 200, center: CGPoint(x: 195, y: 428.5)))
+    }
+
+    func testWebViewPositioningWithLandscapeRightSafeAreaInset() {
+        let parentPosition = ViewPosition(width: 844, height: 390, center: CGPoint(x: 422, y: 195))
+        let safeAreaInsets = UIEdgeInsets(top: 0, left: 0, bottom: 21, right: 47)
+        let inAppHeight: CGFloat = 200
+
+        checkPositioning(parentPosition: parentPosition,
+                         safeAreaInsets: safeAreaInsets,
+                         inAppHeight: inAppHeight,
+                         messageLocation: .top,
+                         expectedWebViewPosition: ViewPosition(width: 797, height: 200, center: CGPoint(x: 398.5, y: 100)))
+        checkPositioning(parentPosition: parentPosition,
+                         safeAreaInsets: safeAreaInsets,
+                         inAppHeight: inAppHeight,
+                         messageLocation: .bottom,
+                         expectedWebViewPosition: ViewPosition(width: 797, height: 221, center: CGPoint(x: 398.5, y: 279.5)))
+        checkPositioning(parentPosition: parentPosition,
+                         safeAreaInsets: safeAreaInsets,
+                         inAppHeight: inAppHeight,
+                         messageLocation: .center,
+                         expectedWebViewPosition: ViewPosition(width: 797, height: 200, center: CGPoint(x: 398.5, y: 184.5)))
+    }
+
+    func testWebViewPositioningWithLandscapeLeftSafeAreaInset() {
+        let parentPosition = ViewPosition(width: 844, height: 390, center: CGPoint(x: 422, y: 195))
+        let safeAreaInsets = UIEdgeInsets(top: 0, left: 47, bottom: 21, right: 0)
+        let inAppHeight: CGFloat = 200
+
+        checkPositioning(parentPosition: parentPosition,
+                         safeAreaInsets: safeAreaInsets,
+                         inAppHeight: inAppHeight,
+                         messageLocation: .top,
+                         expectedWebViewPosition: ViewPosition(width: 797, height: 200, center: CGPoint(x: 445.5, y: 100)))
+        checkPositioning(parentPosition: parentPosition,
+                         safeAreaInsets: safeAreaInsets,
+                         inAppHeight: inAppHeight,
+                         messageLocation: .bottom,
+                         expectedWebViewPosition: ViewPosition(width: 797, height: 221, center: CGPoint(x: 445.5, y: 279.5)))
+        checkPositioning(parentPosition: parentPosition,
+                         safeAreaInsets: safeAreaInsets,
+                         inAppHeight: inAppHeight,
+                         messageLocation: .center,
+                         expectedWebViewPosition: ViewPosition(width: 797, height: 200, center: CGPoint(x: 445.5, y: 184.5)))
     }
     
     func testTopAnimation() {

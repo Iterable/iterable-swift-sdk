@@ -111,14 +111,15 @@ struct InAppCalculations {
         position.height = inAppHeight
         
         // now set the width
+        let availableWidth = parentPosition.width - safeAreaInsets.left - safeAreaInsets.right
         let notificationWidth = 100 - (paddingLeft + paddingRight)
-        position.width = parentPosition.width * notificationWidth / 100
+        position.width = availableWidth * notificationWidth / 100
         
         // Position webview
         position.center = parentPosition.center
         
         // set center x
-        position.center.x = parentPosition.width * (paddingLeft + notificationWidth / 2) / 100
+        position.center.x = safeAreaInsets.left + availableWidth * (paddingLeft + notificationWidth / 2) / 100
         
         // set center y
         switch location {
@@ -130,7 +131,11 @@ struct InAppCalculations {
             position.height = position.height + safeAreaInsets.bottom
             let halfWebViewHeight = position.height / 2
             position.center.y = parentPosition.height - halfWebViewHeight
-        default: break
+        case .center:
+            let availableHeight = parentPosition.height - safeAreaInsets.top - safeAreaInsets.bottom
+            position.center.y = safeAreaInsets.top + availableHeight / 2
+        case .full:
+            break
         }
         
         return position
