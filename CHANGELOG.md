@@ -6,6 +6,10 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 ### Fixed
 - Fixed a crash showing out-of-the-box embedded messages on CocoaPods. `IterableEmbeddedView.xib` moved out of `Resources/` in 6.5.9, but the podspec only bundled `Resources/`, so the nib was missing from the CocoaPods resource bundle and `loadViewFromNib()` crashed. The podspec now bundles the UI component XIBs too. SPM was not affected.
 
+### Changed
+- Upgrade-then-downgrade hazard on UUA storage: the sessions blob in `UserDefaults` now encodes with `totalUnknownSessionCount` / `lastUnknownSession` / `firstUnknownSession`, and stored UUA events use `eventType` as the type discriminator. A customer who installs an SDK build with this change and later rolls back to a pre-SDK-412 build will hit a decode failure on the sessions blob (unknown user session counter resets to zero) and stored UUA events will be skipped on flush since the older SDK looks for `dataType`. Limited blast radius, but worth flagging for customers who pin or roll back versions.
+
+
 ## [6.7.2]
 ### Added
 - Added optional `shouldLog(level:) -> Bool` to `IterableLogDelegate`. Defaults to `true` when not implemented. Lets the delegate short-circuit log calls before any message formatting work happens. `DefaultLogDelegate` routes its `minLogLevel` filter through this, and `NoneLogDelegate` returns `false` for every level.

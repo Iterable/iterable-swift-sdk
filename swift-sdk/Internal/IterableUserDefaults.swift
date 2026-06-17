@@ -96,18 +96,52 @@ class IterableUserDefaults {
 
     var unknownUserEvents: [[AnyHashable: Any]]? {
         get {
-            return eventData(withKey: .unknownUserEvents)
+            guard let raw = eventData(withKey: .unknownUserEvents) else { return nil }
+            let (normalized, didMigrate) = Self.normalizeLegacyEventTypeKey(in: raw)
+            if didMigrate {
+                saveEventData(unknownUserEvents: normalized, withKey: .unknownUserEvents)
+            }
+            return normalized
         } set {
             saveEventData(unknownUserEvents: newValue, withKey: .unknownUserEvents)
         }
     }
-    
+
     var unknownUserUpdate: [AnyHashable: Any]? {
         get {
-            return userUpdateData(withKey: .unknownUserUpdate)
+            guard let raw = userUpdateData(withKey: .unknownUserUpdate) else { return nil }
+            let (normalized, didMigrate) = Self.normalizeLegacyEventTypeKey(in: raw)
+            if didMigrate {
+                saveUserUpdate(normalized, withKey: .unknownUserUpdate)
+            }
+            return normalized
         } set {
             saveUserUpdate(newValue, withKey: .unknownUserUpdate)
         }
+    }
+
+    /// Migrates locally stored entries written prior to UUA naming normalization,
+    /// where the event-type discriminator was keyed as `"dataType"`. Returns the
+    /// normalized payload and whether any migration occurred.
+    private static func normalizeLegacyEventTypeKey(in events: [[AnyHashable: Any]]) -> ([[AnyHashable: Any]], Bool) {
+        var didMigrate = false
+        let normalized = events.map { event -> [AnyHashable: Any] in
+            let (out, migrated) = normalizeLegacyEventTypeKey(in: event)
+            if migrated { didMigrate = true }
+            return out
+        }
+        return (normalized, didMigrate)
+    }
+
+    private static func normalizeLegacyEventTypeKey(in event: [AnyHashable: Any]) -> ([AnyHashable: Any], Bool) {
+        guard event[JsonKey.eventType] == nil,
+              let legacy = event[JsonKey.legacyEventType] else {
+            return (event, false)
+        }
+        var migrated = event
+        migrated[JsonKey.eventType] = legacy
+        migrated.removeValue(forKey: JsonKey.legacyEventType)
+        return (migrated, true)
     }
     
     var criteriaData: Data? {
