@@ -15,7 +15,7 @@ on:
 jobs:
   embedded-messages-test:
     name: BCIT Embedded Messages Integration Test
-    runs-on: macos-latest
+    runs-on: macos-15
     timeout-minutes: 30
     env:
       XCODE_VERSION: '16.4'
