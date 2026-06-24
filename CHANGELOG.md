@@ -3,12 +3,21 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 ## [Unreleased]
+
+## [6.7.3]
+### Added
+- Added `async`/`await` variants of the device-disabling methods: `disableDeviceForCurrentUser() async throws` and `disableDeviceForAllUsers() async throws`. These are additive — the existing completion-handler methods are unchanged. On failure they throw the public `SendRequestError`.
+- Added a `logoutUser(withOnSuccess:onFailure:)` overload to `IterableAPI`. Since logout is local-only, the handlers reflect the `disableDeviceForCurrentUser` call triggered when `autoPushRegistration` is enabled. The parameterless `logoutUser()` is unchanged.
+- `AuthFailureReason` now conforms to `CustomDebugStringConvertible`, so the `Int`-backed enum prints readable case names (for example, `authTokenExpired`) in logs.
+
 ### Fixed
 - Fixed a crash showing out-of-the-box embedded messages on CocoaPods. `IterableEmbeddedView.xib` moved out of `Resources/` in 6.5.9, but the podspec only bundled `Resources/`, so the nib was missing from the CocoaPods resource bundle and `loadViewFromNib()` crashed. The podspec now bundles the UI component XIBs too. SPM was not affected.
+- Fixed in-app message positioning in landscape on devices with a notch or Dynamic Island. The webview width and horizontal center now account for the left and right safe-area insets, so top, bottom, and center messages stay within the safe area instead of running under the notch. Full-screen messages are unchanged.
+- Fixed a `String`-length conflation (CWE-135) in `DeepLinkManager.isIterableDeepLink`. The regex search range is now built from the bridged `NSString.length` (UTF-16) instead of the Swift `String` grapheme-cluster count, so deep links containing non-BMP characters such as emoji are no longer missed.
 
 ### Changed
+- `IterableAPI.register(token:)` is now routed through the offline queue, so a push token registration made while offline is automatically retried when connectivity returns instead of being dropped. The current user identity is captured at call time, so the queued request still targets the correct user after a logout or user switch. Calling `register(token:)` without a current user identity now reports `onFailure` instead of silently sending the request.
 - Upgrade-then-downgrade hazard on UUA storage: the sessions blob in `UserDefaults` now encodes with `totalUnknownSessionCount` / `lastUnknownSession` / `firstUnknownSession`, and stored UUA events use `eventType` as the type discriminator. A customer who installs an SDK build with this change and later rolls back to a pre-SDK-412 build will hit a decode failure on the sessions blob (unknown user session counter resets to zero) and stored UUA events will be skipped on flush since the older SDK looks for `dataType`. Limited blast radius, but worth flagging for customers who pin or roll back versions.
-
 
 ## [6.7.2]
 ### Added
