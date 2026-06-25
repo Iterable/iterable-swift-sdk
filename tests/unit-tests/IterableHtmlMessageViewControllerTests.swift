@@ -503,6 +503,19 @@ class IterableHtmlMessageViewControllerTests: XCTestCase {
         let webViewDidFinishLoadingAfter = mirrorAfter.children.first(where: { $0.label == "webViewDidFinishLoading" })?.value as? Bool
         XCTAssertEqual(webViewDidFinishLoadingAfter, true, "webViewDidFinishLoading should be true after didFinish is called")
     }
+
+    func testWebContentProcessTerminationDismissesNonModalInApp() {
+        let parameters = IterableHtmlMessageViewController.Parameters.createForTesting()
+        let viewController = IterableHtmlMessageViewController.create(parameters: parameters,
+                                                                      eventTracker: MockMessageViewControllerEventTracker(),
+                                                                      onClickCallback: nil)
+        let navigationController = RecordingNavigationController(rootViewController: viewController)
+
+        viewController.webViewWebContentProcessDidTerminate(WKWebView())
+
+        XCTAssertTrue(navigationController.didPopViewController)
+        XCTAssertEqual(navigationController.popAnimated, true)
+    }
 }
 
 final class FakeNavigationAction: WKNavigationAction {
@@ -522,4 +535,15 @@ final class FakeNavigationAction: WKNavigationAction {
     }
     
     func decisionHandler(_ policy: WKNavigationActionPolicy) { self.receivedPolicy = policy }
+}
+
+final class RecordingNavigationController: UINavigationController {
+    var didPopViewController = false
+    var popAnimated: Bool?
+
+    override func popViewController(animated: Bool) -> UIViewController? {
+        didPopViewController = true
+        popAnimated = animated
+        return nil
+    }
 }

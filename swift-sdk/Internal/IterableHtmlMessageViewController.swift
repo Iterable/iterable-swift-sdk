@@ -232,6 +232,10 @@ class IterableHtmlMessageViewController: UIViewController {
     private var eventTracker: MessageViewControllerEventTrackerProtocol? {
         eventTrackerProvider()
     }
+
+    private var messageIdForLogging: String {
+        parameters.messageMetadata?.message.messageId ?? "unknown"
+    }
     
     private static func createWebView() -> WebViewProtocol {
         let webView = WKWebView(frame: .zero)
@@ -391,6 +395,21 @@ extension IterableHtmlMessageViewController: WKNavigationDelegate {
         webViewDidFinishLoading = true
         resizeWebView(animate: true)
         presenter?.webViewDidFinish()
+    }
+
+    func webView(_: WKWebView, didFail _: WKNavigation!, withError error: Error) {
+        ITBError("Unable to render in-app HTML for messageId: \(messageIdForLogging), navigation failed with error: \(error)")
+    }
+
+    func webView(_: WKWebView, didFailProvisionalNavigation _: WKNavigation!, withError error: Error) {
+        ITBError("Unable to render in-app HTML for messageId: \(messageIdForLogging), provisional navigation failed with error: \(error)")
+    }
+
+    func webViewWebContentProcessDidTerminate(_: WKWebView) {
+        ITBError("Unable to render in-app HTML for messageId: \(messageIdForLogging), web content process terminated")
+        InAppCalculations.createDismisser(for: self,
+                                          isModal: parameters.isModal,
+                                          isInboxMessage: parameters.messageMetadata?.location == .inbox)()
     }
     
     func webView(_: WKWebView, decidePolicyFor navigationAction: WKNavigationAction, decisionHandler: @escaping (WKNavigationActionPolicy) -> Void) {
