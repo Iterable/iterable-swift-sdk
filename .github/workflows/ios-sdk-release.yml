@@ -38,9 +38,10 @@ jobs:
       - uses: ruby/setup-ruby@v1
         with:
           ruby-version: "3.2"
-          bundler-cache: true
-      - name: Install Cocoapods
-        run: gem install cocoapods
+          bundler-cache: false
+
+      - name: Install gems
+        run: bundle install
 
       - name: clean cocaopods cache and lint
         run: bundle exec fastlane ios clean_and_lint
@@ -58,5 +59,45 @@ jobs:
       - name: push pods to trunk
         run: bundle exec fastlane ios pod_trunk_push
 
+      - name: verify cocoapods publication
+        run: |
+          set -e
+          # Retries with linear backoff distinguish "trunk is briefly down" (5xx, 0)
+          # from "pod isn't published" (404). 404 fails fast, transient errors retry up to ~75s.
+          for pod in Iterable-iOS-SDK Iterable-iOS-AppExtensions; do
+            echo "Checking trunk for $pod $VERSION..."
+            verified=false
+            for attempt in 1 2 3 4 5; do
+              status=$(curl -s -o /dev/null -w "%{http_code}" "https://trunk.cocoapods.org/api/v1/pods/$pod/versions/$VERSION")
+              case "$status" in
+                200)
+                  echo "$pod $VERSION confirmed on trunk."
+                  verified=true
+                  break
+                  ;;
+                404)
+                  echo "::error::$pod $VERSION is not available on CocoaPods trunk (HTTP 404). The pod_trunk_push step likely failed or COCOAPODS_TRUNK_TOKEN is invalid."
+                  exit 1
+                  ;;
+                *)
+                  echo "Attempt $attempt got HTTP $status, retrying..."
+                  sleep $((attempt * 5))
+                  ;;
+              esac
+            done
+            if [ "$verified" != "true" ]; then
+              echo "::error::Could not reach CocoaPods trunk to verify $pod $VERSION after 5 attempts."
+              exit 1
+            fi
+          done
+
       - name: slack notification
         run: bundle exec fastlane ios slack_message version:$VERSION changelog_section:$CHANGELOG_SECTION slack_webhook:$SLACK_WEBHOOK
+
+      - name: slack failure notification
+        if: failure()
+        run: |
+          run_url="${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}/attempts/${{ github.run_attempt }}"
+          payload=$(printf '{"text":":alert: iOS SDK release %s failed (attempt %s). Run: %s"}' \
+            "$VERSION" "${{ github.run_attempt }}" "$run_url")
+          curl -sS -X POST -H 'Content-type: application/json' --data "$payload" "$SLACK_WEBHOOK"

@@ -82,6 +82,13 @@ platform :ios do
   lane :create_git_tag do |options|
     version = options[:version]
 
+    # Skip if the tag is already on the remote (re-runs of a partially-failed release)
+    sh("git fetch origin --tags --quiet")
+    if git_tag_exists(tag: version, remote: true)
+      UI.important("Tag #{version} already exists on remote, skipping add/push.")
+      next
+    end
+
     add_git_tag(tag: "#{version}")
     push_git_tags
   end
@@ -100,6 +107,18 @@ platform :ios do
       section_identifier: "[#{changelog_section}]",	
     )
 
+    # Skip if a release for this tag already exists (re-runs of a partially-failed release)
+    existing_release = begin
+      get_github_release(url: "Iterable/iterable-swift-sdk", version: version, api_token: github_token)
+    rescue StandardError
+      nil
+    end
+
+    if existing_release
+      UI.important("GitHub release #{version} already exists, skipping.")
+      next
+    end
+
     github_release = set_github_release(
       repository_name: "Iterable/iterable-swift-sdk",
       api_token: github_token,
@@ -114,8 +133,26 @@ platform :ios do
 
   desc "push pod trunk"
   lane :pod_trunk_push do
-    pod_push(path: "Iterable-iOS-AppExtensions.podspec", allow_warnings: true)
-    pod_push(path: "Iterable-iOS-SDK.podspec", allow_warnings: true)
+    push_pod_if_missing("Iterable-iOS-AppExtensions.podspec")
+    push_pod_if_missing("Iterable-iOS-SDK.podspec")
+  end
+
+  # Pushes a podspec to CocoaPods trunk only if that exact version is not already published.
+  # Makes the release workflow safe to re-run after a partial failure.
+  def push_pod_if_missing(podspec)
+    require 'net/http'
+    require 'uri'
+
+    pod_name = File.basename(podspec, ".podspec")
+    spec_version = read_podspec(path: podspec)["version"]
+    url = URI("https://trunk.cocoapods.org/api/v1/pods/#{pod_name}/versions/#{spec_version}")
+    response = Net::HTTP.get_response(url)
+
+    if response.code == "200"
+      UI.important("#{pod_name} #{spec_version} already published to CocoaPods trunk, skipping.")
+    else
+      pod_push(path: podspec, allow_warnings: true)
+    end
   end
 
   desc "slack message"
