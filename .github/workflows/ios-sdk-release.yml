@@ -38,9 +38,10 @@ jobs:
       - uses: ruby/setup-ruby@v1
         with:
           ruby-version: "3.2"
-          bundler-cache: true
-      - name: Install Cocoapods
-        run: gem install cocoapods
+          bundler-cache: false
+
+      - name: Install gems
+        run: bundle install
 
       - name: clean cocaopods cache and lint
         run: bundle exec fastlane ios clean_and_lint
