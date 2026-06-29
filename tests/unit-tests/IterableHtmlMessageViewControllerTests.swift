@@ -9,12 +9,15 @@ import WebKit
 @testable import IterableSDK
 
 class IterableHtmlMessageViewControllerTests: XCTestCase {
+    private var originalLogUtil: IterableLogUtil?
+
     override func setUp() {
         super.setUp()
+        originalLogUtil = IterableLogUtil.sharedInstance
     }
     
     override func tearDown() {
-        // Put teardown code here. This method is called after the invocation of each test method in the class.
+        IterableLogUtil.sharedInstance = originalLogUtil
         super.tearDown()
     }
     
@@ -516,6 +519,74 @@ class IterableHtmlMessageViewControllerTests: XCTestCase {
         XCTAssertTrue(navigationController.didPopViewController)
         XCTAssertEqual(navigationController.popAnimated, true)
     }
+
+    func testCreateDismisserDismissesModalInApp() {
+        let nonInboxViewController = RecordingDismissViewController()
+        InAppCalculations.createDismisser(for: nonInboxViewController,
+                                          isModal: true,
+                                          isInboxMessage: false)()
+        XCTAssertEqual(nonInboxViewController.dismissAnimated, false)
+
+        let inboxViewController = RecordingDismissViewController()
+        InAppCalculations.createDismisser(for: inboxViewController,
+                                          isModal: true,
+                                          isInboxMessage: true)()
+        XCTAssertEqual(inboxViewController.dismissAnimated, true)
+    }
+
+    func testRenderFailureDismissDoesNotTrackInAppClose() {
+        var closeCount = 0
+        let eventTracker = MockMessageViewControllerEventTracker()
+        eventTracker.trackInAppCloseCallback = { _, _, _, _, _ in
+            closeCount += 1
+        }
+        let parameters = IterableHtmlMessageViewController.Parameters.createForTesting()
+        let viewController = IterableHtmlMessageViewController.create(parameters: parameters,
+                                                                      eventTracker: eventTracker,
+                                                                      onClickCallback: nil)
+
+        viewController.webViewWebContentProcessDidTerminate(WKWebView())
+        viewController.viewWillDisappear(false)
+
+        XCTAssertEqual(closeCount, 0)
+    }
+
+    func testDidFailLogsRenderFailure() {
+        let messageId = UUID().uuidString
+        let logDelegate = RecordingLogDelegate()
+        IterableLogUtil.sharedInstance = IterableLogUtil(dateProvider: MockDateProvider(), logDelegate: logDelegate)
+        let parameters = IterableHtmlMessageViewController.Parameters.createForTesting(messageId: messageId)
+        let viewController = IterableHtmlMessageViewController.create(parameters: parameters,
+                                                                      eventTracker: MockMessageViewControllerEventTracker(),
+                                                                      onClickCallback: nil)
+
+        viewController.webView(WKWebView(), didFail: nil, withError: Self.renderError)
+
+        let entry = logDelegate.entry(containing: "Unable to render in-app HTML for messageId: \(messageId), navigation failed with error:")
+        XCTAssertEqual(entry?.level, .error)
+        XCTAssertTrue(entry?.message.contains(Self.renderError.localizedDescription) == true)
+    }
+
+    func testDidFailProvisionalNavigationLogsRenderFailure() {
+        let messageId = UUID().uuidString
+        let logDelegate = RecordingLogDelegate()
+        IterableLogUtil.sharedInstance = IterableLogUtil(dateProvider: MockDateProvider(), logDelegate: logDelegate)
+        let parameters = IterableHtmlMessageViewController.Parameters.createForTesting(messageId: messageId)
+        let viewController = IterableHtmlMessageViewController.create(parameters: parameters,
+                                                                      eventTracker: MockMessageViewControllerEventTracker(),
+                                                                      onClickCallback: nil)
+
+        viewController.webView(WKWebView(), didFailProvisionalNavigation: nil, withError: Self.renderError)
+
+        let entry = logDelegate.entry(containing: "Unable to render in-app HTML for messageId: \(messageId), provisional navigation failed with error:")
+        XCTAssertEqual(entry?.level, .error)
+        XCTAssertTrue(entry?.message.contains(Self.renderError.localizedDescription) == true)
+    }
+
+    private static var renderError: NSError {
+        NSError(domain: "SDK490", code: 1, userInfo: [NSLocalizedDescriptionKey: "render failed"])
+    }
+
 }
 
 final class FakeNavigationAction: WKNavigationAction {
@@ -545,5 +616,31 @@ final class RecordingNavigationController: UINavigationController {
         didPopViewController = true
         popAnimated = animated
         return nil
+    }
+}
+
+final class RecordingDismissViewController: UIViewController {
+    var dismissAnimated: Bool?
+
+    override func dismiss(animated flag: Bool, completion: (() -> Void)? = nil) {
+        dismissAnimated = flag
+        completion?()
+    }
+}
+
+final class RecordingLogDelegate: NSObject, IterableLogDelegate {
+    struct Entry {
+        let level: LogLevel
+        let message: String
+    }
+
+    private(set) var entries = [Entry]()
+
+    func log(level: LogLevel, message: String) {
+        entries.append(Entry(level: level, message: message))
+    }
+
+    func entry(containing text: String) -> Entry? {
+        entries.first { $0.message.contains(text) }
     }
 }

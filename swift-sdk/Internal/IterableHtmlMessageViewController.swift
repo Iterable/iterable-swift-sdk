@@ -183,6 +183,10 @@ class IterableHtmlMessageViewController: UIViewController {
     override open func viewWillDisappear(_ animated: Bool) {
         ITBInfo()
         super.viewWillDisappear(animated)
+
+        guard dismissedDueToRenderFailure == false else {
+            return
+        }
         
         guard let messageMetadata = parameters.messageMetadata else {
             return
@@ -227,6 +231,7 @@ class IterableHtmlMessageViewController: UIViewController {
     private var linkClicked = false
     private var clickedLink: String?
     private var webViewDidFinishLoading = false
+    private var dismissedDueToRenderFailure = false
     
     private lazy var webView = webViewProvider()
     private var eventTracker: MessageViewControllerEventTrackerProtocol? {
@@ -406,6 +411,7 @@ extension IterableHtmlMessageViewController: WKNavigationDelegate {
     }
 
     func webViewWebContentProcessDidTerminate(_: WKWebView) {
+        dismissedDueToRenderFailure = true
         ITBError("Unable to render in-app HTML for messageId: \(messageIdForLogging), web content process terminated")
         InAppCalculations.createDismisser(for: self,
                                           isModal: parameters.isModal,
