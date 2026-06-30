@@ -3,6 +3,8 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 ## [Unreleased]
+### Fixed
+- In-app HTML render failures now log the message ID and error, and messages are dismissed if the WKWebView content process terminates.
 
 ## [6.7.3]
 ### Added
