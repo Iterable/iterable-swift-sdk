@@ -16,6 +16,7 @@ tests/business-critical-integration/screenshots
 .claude
 
 *~
+Gemfile.lock
 Podfile.lock
 Pods/
 
