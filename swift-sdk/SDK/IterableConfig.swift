@@ -102,6 +102,13 @@ public struct IterableAPIMobileFrameworkInfo: Codable {
 /// The delegate for getting the UserId once unknown user session tracked
 @objc public protocol IterableUnknownUserHandler: AnyObject {
     @objc func onUnknownUserCreated(userId: String)
+
+    /// Called when the SDK fetches unknown user activation criteria successfully.
+    /// Fires after the criteria response has been persisted to local storage, so it is safe to call track, trackPurchase, etc. from this callback and have those events evaluated against the just-arrived criteria set. Fires on every criteria fetch, implementation should take that into consideration.
+    @objc optional func onCriteriaReceived(criteria: [AnyHashable: Any])
+
+    /// Called when the unknown user activation criteria fetch fails.
+    @objc optional func onCriteriaFetchFailed(reason: String)
 }
 
 /// Iterable Configuration Object. Use this when initializing the API.

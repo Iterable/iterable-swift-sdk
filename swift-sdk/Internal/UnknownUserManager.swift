@@ -188,12 +188,21 @@ public class UnknownUserManager: UnknownUserManagerProtocol {
         
         IterableAPI.implementation?.getCriteriaData { returnedData in
             self.localStorage.criteriaData = returnedData
-        };
+            if let criteria = self.criteria(from: returnedData) {
+                self.config.unknownUserHandler?.onCriteriaReceived?(criteria: criteria)
+            }
+        } onFailure: { reason in
+            self.config.unknownUserHandler?.onCriteriaFetchFailed?(reason: reason)
+        }
     }
 
     @available(*, deprecated, renamed: "getUnknownCriteria()")
     public func getUnknownUserCriteria() {
         getUnknownCriteria()
+    }
+
+    private func criteria(from data: Data) -> [AnyHashable: Any]? {
+        try? JSONSerialization.jsonObject(with: data, options: []) as? [AnyHashable: Any]
     }
     
     /// Gets the last criteria fetch time in milliseconds
