@@ -23,6 +23,8 @@ final class IterableSDKStatusView: UIView {
     }()
     
     private let initializationStatusView = StatusRowView(title: "SDK Initialized")
+    private let environmentStatusView = StatusRowView(title: "Environment")
+    private let endpointStatusView = StatusRowView(title: "Endpoint")
     private let jwtAuthStatusView = StatusRowView(title: "JWT Auth")
     private let emailStatusView = StatusRowView(title: "Email")
     private let userIdStatusView = StatusRowView(title: "User ID")
@@ -59,6 +61,8 @@ final class IterableSDKStatusView: UIView {
         
         containerStackView.addArrangedSubview(titleLabel)
         containerStackView.addArrangedSubview(initializationStatusView)
+        containerStackView.addArrangedSubview(environmentStatusView)
+        containerStackView.addArrangedSubview(endpointStatusView)
         containerStackView.addArrangedSubview(jwtAuthStatusView)
         containerStackView.addArrangedSubview(emailStatusView)
         containerStackView.addArrangedSubview(userIdStatusView)
@@ -66,6 +70,8 @@ final class IterableSDKStatusView: UIView {
         // Add accessibility identifiers for testing
         initializationStatusView.accessibilityIdentifier = "sdk-initialization-status"
         initializationStatusView.setValueAccessibilityIdentifier("sdk-ready-indicator")
+        environmentStatusView.accessibilityIdentifier = "sdk-environment-status"
+        endpointStatusView.accessibilityIdentifier = "sdk-endpoint-status"
         emailStatusView.accessibilityIdentifier = "sdk-email-status"
         emailStatusView.setValueAccessibilityIdentifier("sdk-email-value")
         userIdStatusView.accessibilityIdentifier = "sdk-user-id-status"
@@ -109,6 +115,9 @@ final class IterableSDKStatusView: UIView {
         // SDK Initialization status
         initializationStatusView.setValue(isInitialized ? "✓" : "✗",
                                         color: isInitialized ? .systemGreen : .systemRed)
+
+        environmentStatusView.setValue(AppDelegate.selectedEnvironment.title, color: .systemBlue)
+        endpointStatusView.setValue(AppDelegate.loadDataRegionFromConfig(logWarnings: false), color: .systemBlue)
 
         // JWT Auth status
         let hasJWTAuth = AppDelegate.mockAuthDelegate != nil

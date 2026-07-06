@@ -15,6 +15,8 @@
 		8A7281E22F4DDF50003F0EFC /* IterableSDK in Frameworks */ = {isa = PBXBuildFile; productRef = 8A24D33B2E44F30600B53850 /* IterableSDK */; };
 		8A8CA9A82E5333C600BF3385 /* test-config.json in Resources */ = {isa = PBXBuildFile; fileRef = 8A8CA9A62E5333C600BF3385 /* test-config.json */; };
 		8A8CA9A92E53432200BF3385 /* test-config.json in Resources */ = {isa = PBXBuildFile; fileRef = 8A8CA9A62E5333C600BF3385 /* test-config.json */; };
+		8A8CA9AA2E53432200BF3385 /* test-config-staging.json in Resources */ = {isa = PBXBuildFile; fileRef = 8A8CA9AC2E53432200BF3385 /* test-config-staging.json */; };
+		8A8CA9AB2E53432200BF3385 /* test-config-staging.json in Resources */ = {isa = PBXBuildFile; fileRef = 8A8CA9AC2E53432200BF3385 /* test-config-staging.json */; };
 		8AB716912E311CA0004AAB74 /* IterableAppExtensions in Frameworks */ = {isa = PBXBuildFile; productRef = 8AB716902E311CA0004AAB74 /* IterableAppExtensions */; };
 		8AB716932E311CA0004AAB74 /* IterableSDK in Frameworks */ = {isa = PBXBuildFile; productRef = 8AB716922E311CA0004AAB74 /* IterableSDK */; };
 /* End PBXBuildFile section */
@@ -31,6 +33,7 @@
 
 /* Begin PBXFileReference section */
 		8A8CA9A62E5333C600BF3385 /* test-config.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "test-config.json"; sourceTree = "<group>"; };
+		8A8CA9AC2E53432200BF3385 /* test-config-staging.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "test-config-staging.json"; sourceTree = "<group>"; };
 		8AB716122E3119A3004AAB74 /* IterableSDK-Integration-Tester.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "IterableSDK-Integration-Tester.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		8AB716322E3119A3004AAB74 /* IterableSDK-Integration-TesterUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "IterableSDK-Integration-TesterUITests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
@@ -112,6 +115,7 @@
 			isa = PBXGroup;
 			children = (
 				8A8CA9A62E5333C600BF3385 /* test-config.json */,
+				8A8CA9AC2E53432200BF3385 /* test-config-staging.json */,
 			);
 			path = config;
 			sourceTree = "<group>";
@@ -237,6 +241,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				8A8CA9A82E5333C600BF3385 /* test-config.json in Resources */,
+				8A8CA9AA2E53432200BF3385 /* test-config-staging.json in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -245,6 +250,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				8A8CA9A92E53432200BF3385 /* test-config.json in Resources */,
+				8A8CA9AB2E53432200BF3385 /* test-config-staging.json in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

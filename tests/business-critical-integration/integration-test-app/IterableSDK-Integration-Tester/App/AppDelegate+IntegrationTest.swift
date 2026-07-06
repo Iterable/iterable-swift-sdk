@@ -6,92 +6,147 @@ import IterableSDK
 // MARK: - AppDelegate Integration Test Extensions
 
 extension AppDelegate {
-    
-    static func loadApiKeyFromConfig() -> String {
-        guard let path = Bundle.main.path(forResource: "test-config", ofType: "json"),
-              let data = try? Data(contentsOf: URL(fileURLWithPath: path)),
-              let json = try? JSONSerialization.jsonObject(with: data) as? [String: Any],
-              let apiKey = json["mobileApiKey"] as? String,
-              !apiKey.isEmpty else {
-            fatalError("❌ Could not load API key from test-config.json")
+
+    enum IntegrationEnvironment: String, CaseIterable {
+        case prod
+        case staging
+
+        var title: String {
+            switch self {
+            case .prod:
+                return "Prod"
+            case .staging:
+                return "Staging (US)"
+            }
         }
-        print("✅ Loaded API key from test-config.json")
+
+        var configFileName: String {
+            switch self {
+            case .prod:
+                return "test-config.json"
+            case .staging:
+                return "test-config-staging.json"
+            }
+        }
+
+        var configResourceName: String {
+            (configFileName as NSString).deletingPathExtension
+        }
+    }
+
+    private static let selectedEnvironmentKey = "bcit_selected_environment"
+
+    static var selectedEnvironment: IntegrationEnvironment {
+        get {
+            let storedValue = UserDefaults.standard.string(forKey: selectedEnvironmentKey)
+            return IntegrationEnvironment(rawValue: storedValue ?? "") ?? .prod
+        }
+        set {
+            UserDefaults.standard.set(newValue.rawValue, forKey: selectedEnvironmentKey)
+        }
+    }
+
+    static var activeConfigFileName: String {
+        selectedEnvironment.configFileName
+    }
+
+    static func loadApiKeyFromConfig() -> String {
+        guard let apiKey = loadStringFromConfig("mobileApiKey") else {
+            fatalError("❌ Could not load API key from \(activeConfigFileName)")
+        }
         return apiKey
     }
     
     static func loadTestUserEmailFromConfig() -> String? {
-        guard let path = Bundle.main.path(forResource: "test-config", ofType: "json"),
-              let data = try? Data(contentsOf: URL(fileURLWithPath: path)),
-              let json = try? JSONSerialization.jsonObject(with: data) as? [String: Any],
-              let email = json["testUserEmail"] as? String,
-              !email.isEmpty else {
-            fatalError("❌ Could not load test user email from test-config.json")
+        guard let email = loadStringFromConfig("testUserEmail") else {
+            fatalError("❌ Could not load test user email from \(activeConfigFileName)")
         }
-        print("✅ Loaded test user email from test-config.json")
         return email
     }
     
     static func loadServerKeyFromConfig() -> String {
-        guard let path = Bundle.main.path(forResource: "test-config", ofType: "json"),
-              let data = try? Data(contentsOf: URL(fileURLWithPath: path)),
-              let json = try? JSONSerialization.jsonObject(with: data) as? [String: Any],
-              let serverKey = json["serverApiKey"] as? String,
-              !serverKey.isEmpty else {
-            fatalError("❌ Could not load server key from test-config.json")
+        guard let serverKey = loadStringFromConfig("serverApiKey") else {
+            fatalError("❌ Could not load server key from \(activeConfigFileName)")
         }
-        print("✅ Loaded server key from test-config.json")
         return serverKey
     }
 
     static func loadJWTApiKeyFromConfig() -> String? {
-        guard let path = Bundle.main.path(forResource: "test-config", ofType: "json"),
-              let data = try? Data(contentsOf: URL(fileURLWithPath: path)),
-              let json = try? JSONSerialization.jsonObject(with: data) as? [String: Any],
-              let jwtKey = json["jwtApiKey"] as? String,
-              !jwtKey.isEmpty else {
-            print("⚠️ No JWT API key found in test-config.json — will use regular API key for JWT testing")
+        guard let jwtKey = loadStringFromConfig("jwtApiKey", allowPlaceholder: false) else {
+            print("⚠️ No JWT API key found in \(activeConfigFileName), will use regular API key for JWT testing")
             return nil
         }
-        print("✅ Loaded JWT API key from test-config.json")
         return jwtKey
     }
 
     static func loadJWTSecretFromConfig() -> String? {
-        guard let path = Bundle.main.path(forResource: "test-config", ofType: "json"),
-              let data = try? Data(contentsOf: URL(fileURLWithPath: path)),
-              let json = try? JSONSerialization.jsonObject(with: data) as? [String: Any],
-              let jwtSecret = json["jwtSecret"] as? String,
-              !jwtSecret.isEmpty else {
-            print("⚠️ No JWT secret found in test-config.json")
+        guard let jwtSecret = loadStringFromConfig("jwtSecret", allowPlaceholder: false) else {
+            print("⚠️ No JWT secret found in \(activeConfigFileName)")
             return nil
         }
-        print("✅ Loaded JWT secret from test-config.json")
         return jwtSecret
     }
     
     static func loadProjectIdFromConfig() -> String {
-        guard let path = Bundle.main.path(forResource: "test-config", ofType: "json"),
-              let data = try? Data(contentsOf: URL(fileURLWithPath: path)),
-              let json = try? JSONSerialization.jsonObject(with: data) as? [String: Any],
-              let projectId = json["projectId"] as? String,
-              !projectId.isEmpty else {
-            fatalError("❌ Could not load project ID from test-config.json")
+        guard let projectId = loadStringFromConfig("projectId") else {
+            fatalError("❌ Could not load project ID from \(activeConfigFileName)")
         }
-        print("✅ Loaded project ID from test-config.json: \(projectId)")
         return projectId
     }
     
     static func loadCIModeFromConfig() -> Bool {
-        guard let path = Bundle.main.path(forResource: "test-config", ofType: "json"),
-              let data = try? Data(contentsOf: URL(fileURLWithPath: path)),
-              let json = try? JSONSerialization.jsonObject(with: data) as? [String: Any],
+        guard let json = loadConfigJSON(),
               let testing = json["testing"] as? [String: Any],
               let ciMode = testing["ciMode"] as? Bool else {
-            print("⚠️ Could not load ciMode from test-config.json, defaulting to false")
+            print("⚠️ Could not load ciMode from \(activeConfigFileName), defaulting to false")
             return false
         }
-        print("✅ Loaded CI mode from test-config.json: \(ciMode)")
+        print("✅ Loaded CI mode from \(activeConfigFileName): \(ciMode)")
         return ciMode
+    }
+
+    static func loadDataRegionFromConfig(logWarnings: Bool = true) -> String {
+        guard let baseUrl = loadStringFromConfig("baseUrl",
+                                                allowPlaceholder: false,
+                                                logWarnings: logWarnings) else {
+            return IterableDataRegion.US
+        }
+        return baseUrl.trimmingCharacters(in: CharacterSet(charactersIn: "/")) + "/api/"
+    }
+
+    private static func loadConfigJSON(logWarnings: Bool = true) -> [String: Any]? {
+        let environment = selectedEnvironment
+        guard let path = Bundle.main.path(forResource: environment.configResourceName, ofType: "json"),
+              let data = try? Data(contentsOf: URL(fileURLWithPath: path)),
+              let json = try? JSONSerialization.jsonObject(with: data) as? [String: Any] else {
+            if logWarnings {
+                let message = "⚠️ Could not load \(environment.configFileName)"
+                print(message)
+                LogStore.shared.log(message)
+            }
+            return nil
+        }
+        return json
+    }
+
+    private static func loadStringFromConfig(_ key: String,
+                                             allowPlaceholder: Bool = true,
+                                             logWarnings: Bool = true) -> String? {
+        guard let json = loadConfigJSON(logWarnings: logWarnings),
+              let value = json[key] as? String,
+              !value.isEmpty else {
+            return nil
+        }
+        if value.hasPrefix("REPLACE_WITH") {
+            if logWarnings {
+                let message = "⚠️ \(key) in \(activeConfigFileName) is still a placeholder"
+                print(message)
+                LogStore.shared.log(message)
+            }
+            return allowPlaceholder ? value : nil
+        }
+        print("✅ Loaded \(key) from \(activeConfigFileName)")
+        return value
     }
         
     static func initializeIterableSDK() {
@@ -117,11 +172,14 @@ extension AppDelegate {
         config.allowedProtocols = ["tester", "https", "http"]  // Allow custom tester:// and https:// deep link schemes
         config.enableEmbeddedMessaging = true
         config.logDelegate = SDKLogCapture.shared
+        config.dataRegion = loadDataRegionFromConfig()
 
         print("✅ [SDK INIT] Config created with delegates:")
         print("   - URL delegate: \(String(describing: config.urlDelegate))")
         print("   - Custom action delegate: \(String(describing: config.customActionDelegate))")
         print("   - Allowed protocols: \(config.allowedProtocols ?? [])")
+        print("   - Environment: \(selectedEnvironment.title)")
+        print("   - Endpoint: \(config.dataRegion)")
         
         let apiKey = loadApiKeyFromConfig()
         print("🔑 [SDK INIT] API key loaded: \(apiKey.prefix(8))...")
@@ -134,6 +192,7 @@ extension AppDelegate {
         print("✅ [SDK INIT] SDK initialized for testing")
         print("✅ [SDK INIT] Initialization complete")
         LogStore.shared.log("✅ SDK initialized")
+        LogStore.shared.log("🌐 Environment: \(selectedEnvironment.title), endpoint: \(config.dataRegion)")
 
         // Log remote config values after they've been fetched (async)
         DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {
@@ -187,7 +246,7 @@ extension AppDelegate {
         }
 
         guard let jwtSecret = loadJWTSecretFromConfig(), !jwtSecret.isEmpty else {
-            print("[SDK INIT] No JWT secret in test-config.json — cannot generate tokens")
+            print("[SDK INIT] No JWT secret in \(activeConfigFileName), cannot generate tokens")
             return
         }
 
@@ -200,6 +259,7 @@ extension AppDelegate {
         config.enableEmbeddedMessaging = true
         config.expiringAuthTokenRefreshPeriod = 1.0 // refresh 1s before expiry
         config.logDelegate = SDKLogCapture.shared
+        config.dataRegion = loadDataRegionFromConfig()
 
         // Set up auth delegate that generates real JWTs locally
         let authDelegate = MockAuthDelegate(jwtSecret: jwtSecret)
@@ -226,6 +286,7 @@ extension AppDelegate {
 
         print("[SDK INIT] Reinitialized with JWT auth (secret: \(jwtSecret.prefix(4))...)")
         LogStore.shared.log("✅ SDK initialized with JWT auth")
+        LogStore.shared.log("🌐 Environment: \(selectedEnvironment.title), endpoint: \(config.dataRegion)")
 
         DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {
             let offlineMode = UserDefaults.standard.bool(forKey: "itbl_offline_mode")

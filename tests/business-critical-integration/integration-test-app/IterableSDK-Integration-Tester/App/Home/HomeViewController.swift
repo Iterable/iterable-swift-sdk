@@ -6,6 +6,13 @@ final class HomeViewController: UIViewController, UITextFieldDelegate {
     
     private let statusView = IterableSDKStatusView()
 
+    private let environmentControl: UISegmentedControl = {
+        let control = UISegmentedControl(items: AppDelegate.IntegrationEnvironment.allCases.map { $0.title })
+        control.accessibilityIdentifier = "environment-toggle"
+        control.heightAnchor.constraint(equalToConstant: 36).isActive = true
+        return control
+    }()
+
     private let initializeButton: UIButton = {
         let button = UIButton(type: .system)
         button.setTitle("Initialize SDK", for: .normal)
@@ -271,6 +278,8 @@ final class HomeViewController: UIViewController, UITextFieldDelegate {
         // Setup network monitoring
         NetworkMonitor.shared.startMonitoring()
 
+        environmentControl.selectedSegmentIndex = AppDelegate.IntegrationEnvironment.allCases.firstIndex(of: AppDelegate.selectedEnvironment) ?? 0
+        environmentControl.addTarget(self, action: #selector(environmentChanged), for: .valueChanged)
         initializeButton.addTarget(self, action: #selector(initializeSDK), for: .touchUpInside)
         userIdField.delegate = self
         emailField.delegate = self
@@ -286,7 +295,8 @@ final class HomeViewController: UIViewController, UITextFieldDelegate {
         scrollView.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(scrollView)
 
-        let stack = UIStackView(arrangedSubviews: [initializeButton,
+        let stack = UIStackView(arrangedSubviews: [environmentControl,
+                                                   initializeButton,
                                                    userIdField,
                                                    registerUserIdButton,
                                                    emailField,
@@ -323,6 +333,24 @@ final class HomeViewController: UIViewController, UITextFieldDelegate {
 
     @objc private func initializeSDK() {
         AppDelegate.initializeIterableSDK()
+        updateButtonStates()
+    }
+
+    @objc private func environmentChanged() {
+        let environments = AppDelegate.IntegrationEnvironment.allCases
+        let selectedIndex = environmentControl.selectedSegmentIndex
+        guard environments.indices.contains(selectedIndex) else { return }
+
+        let environment = environments[selectedIndex]
+        guard environment != AppDelegate.selectedEnvironment else { return }
+
+        AppDelegate.selectedEnvironment = environment
+        LogStore.shared.log("🌐 Environment switched to \(environment.title)")
+        AppDelegate.logoutFromIterableSDK()
+        AppDelegate.reinitializeSDKWithCurrentMode()
+        if let configEmail = AppDelegate.loadTestUserEmailFromConfig() {
+            emailField.text = configEmail
+        }
         updateButtonStates()
     }
 
