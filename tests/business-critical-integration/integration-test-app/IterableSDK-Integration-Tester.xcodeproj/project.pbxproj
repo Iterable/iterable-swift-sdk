@@ -9,6 +9,8 @@
 /* Begin PBXBuildFile section */
 		8A24D33A2E44F30600B53850 /* IterableAppExtensions in Frameworks */ = {isa = PBXBuildFile; productRef = 8A24D3392E44F30600B53850 /* IterableAppExtensions */; };
 		8A24D33C2E44F30600B53850 /* IterableSDK in Frameworks */ = {isa = PBXBuildFile; productRef = 8A24D33B2E44F30600B53850 /* IterableSDK */; };
+		FB00FC300000000000000003 /* FirebaseMessaging in Frameworks */ = {isa = PBXBuildFile; productRef = FB00FC300000000000000002 /* FirebaseMessaging */; };
+		FB00FC300000000000000005 /* FirebaseAnalytics in Frameworks */ = {isa = PBXBuildFile; productRef = FB00FC300000000000000004 /* FirebaseAnalytics */; };
 		8A7281DF2F4DDF50003F0EFC /* (null) in Frameworks */ = {isa = PBXBuildFile; };
 		8A7281E02F4DDF50003F0EFC /* (null) in Frameworks */ = {isa = PBXBuildFile; };
 		8A7281E12F4DDF50003F0EFC /* IterableAppExtensions in Frameworks */ = {isa = PBXBuildFile; productRef = 8A24D3392E44F30600B53850 /* IterableAppExtensions */; };
@@ -94,6 +96,8 @@
 				8A24D33C2E44F30600B53850 /* IterableSDK in Frameworks */,
 				8AB716912E311CA0004AAB74 /* IterableAppExtensions in Frameworks */,
 				8AB716932E311CA0004AAB74 /* IterableSDK in Frameworks */,
+				FB00FC300000000000000003 /* FirebaseMessaging in Frameworks */,
+				FB00FC300000000000000005 /* FirebaseAnalytics in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -163,6 +167,8 @@
 				8AB716922E311CA0004AAB74 /* IterableSDK */,
 				8A24D3392E44F30600B53850 /* IterableAppExtensions */,
 				8A24D33B2E44F30600B53850 /* IterableSDK */,
+				FB00FC300000000000000002 /* FirebaseMessaging */,
+				FB00FC300000000000000004 /* FirebaseAnalytics */,
 			);
 			productName = "IterableSDK-Integration-Tester";
 			productReference = 8AB716122E3119A3004AAB74 /* IterableSDK-Integration-Tester.app */;
@@ -224,6 +230,7 @@
 			minimizedProjectReferenceProxies = 1;
 			packageReferences = (
 				8A24D3382E44F30600B53850 /* XCLocalSwiftPackageReference "../../../" */,
+				FB00FC300000000000000001 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */,
 			);
 			productRefGroup = 8AB716132E3119A3004AAB74 /* Products */;
 			projectDirPath = "";
@@ -528,7 +535,28 @@
 		};
 /* End XCLocalSwiftPackageReference section */
 
+/* Begin XCRemoteSwiftPackageReference section */
+		FB00FC300000000000000001 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/firebase/firebase-ios-sdk";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 11.0.0;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
 /* Begin XCSwiftPackageProductDependency section */
+		FB00FC300000000000000002 /* FirebaseMessaging */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = FB00FC300000000000000001 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseMessaging;
+		};
+		FB00FC300000000000000004 /* FirebaseAnalytics */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = FB00FC300000000000000001 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseAnalytics;
+		};
 		8A24D3392E44F30600B53850 /* IterableAppExtensions */ = {
 			isa = XCSwiftPackageProductDependency;
 			productName = IterableAppExtensions;

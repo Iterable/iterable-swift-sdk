@@ -18,6 +18,17 @@ final class PushNotificationTestViewController: UIViewController {
         return button
     }()
     
+    private let registerViaFcmButton: UIButton = {
+        let button = UIButton(type: .system)
+        button.setTitle("Register for Push via FCM", for: .normal)
+        button.backgroundColor = .systemPurple
+        button.setTitleColor(.white, for: .normal)
+        button.layer.cornerRadius = 8
+        button.heightAnchor.constraint(equalToConstant: 44).isActive = true
+        button.accessibilityIdentifier = "register-push-via-fcm-button"
+        return button
+    }()
+
     private let openSettingsButton: UIButton = {
         let button = UIButton(type: .system)
         button.setTitle("Open Notification Settings", for: .normal)
@@ -67,6 +78,7 @@ final class PushNotificationTestViewController: UIViewController {
         
         let stack = UIStackView(arrangedSubviews: [
             registerButton,
+            registerViaFcmButton,
             openSettingsButton,
             testPushButton,
             backToHomeButton,
@@ -87,6 +99,7 @@ final class PushNotificationTestViewController: UIViewController {
     
     private func setupActions() {
         registerButton.addTarget(self, action: #selector(registerForNotifications), for: .touchUpInside)
+        registerViaFcmButton.addTarget(self, action: #selector(registerViaFcm), for: .touchUpInside)
         openSettingsButton.addTarget(self, action: #selector(openNotificationSettings), for: .touchUpInside)
         testPushButton.addTarget(self, action: #selector(testLocalNotification), for: .touchUpInside)
         backToHomeButton.addTarget(self, action: #selector(backToHomeScreen), for: .touchUpInside)
@@ -101,6 +114,13 @@ final class PushNotificationTestViewController: UIViewController {
         print("📱 Push notification permission requested")
     }
     
+    @objc private func registerViaFcm() {
+        print("📱 FCM push registration requested")
+        FCMRegistrationManager.shared.registerViaFCM { [weak self] success, message in
+            self?.showAlert(title: success ? "Registered via FCM" : "FCM Registration Failed", message: message)
+        }
+    }
+
     @objc private func openNotificationSettings() {
         print("⚙️ Opening notification settings...")
         

@@ -396,7 +396,22 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
     func register(token: String,
                   onSuccess: OnSuccessHandler? = nil,
                   onFailure: OnFailureHandler? = nil) {
-        
+        register(token: token, pushServicePlatform: config.pushPlatform, onSuccess: onSuccess, onFailure: onFailure)
+    }
+
+    /// Registers an FCM registration token for this device (iOS via Firebase Cloud Messaging).
+    /// The device is registered with platform GCM regardless of `config.pushPlatform`.
+    func register(fcmToken: String,
+                  onSuccess: OnSuccessHandler? = nil,
+                  onFailure: OnFailureHandler? = nil) {
+        register(token: fcmToken, pushServicePlatform: .fcm, onSuccess: onSuccess, onFailure: onFailure)
+    }
+
+    private func register(token: String,
+                          pushServicePlatform: PushServicePlatform,
+                          onSuccess: OnSuccessHandler? = nil,
+                          onFailure: OnFailureHandler? = nil) {
+
         guard let appName = pushIntegrationName else {
             let errorMessage = "Not registering device token - appName must not be nil"
             ITBError(errorMessage)
@@ -419,7 +434,7 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
         
         let registerTokenInfo = RegisterTokenInfo(hexToken: token,
                                                 appName: appName,
-                                                pushServicePlatform: config.pushPlatform,
+                                                pushServicePlatform: pushServicePlatform,
                                                 apnsType: dependencyContainer.apnsTypeChecker.apnsType,
                                                 deviceId: deviceId,
                                                 deviceAttributes: deviceAttributes,
@@ -843,6 +858,8 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
                 return sandboxPushIntegrationName
             case .auto:
                 return dependencyContainer.apnsTypeChecker.apnsType == .sandbox ? sandboxPushIntegrationName : pushIntegrationName
+            case .fcm:
+                return pushIntegrationName
             }
         } else if let pushIntegrationName = config.pushIntegrationName {
             return pushIntegrationName

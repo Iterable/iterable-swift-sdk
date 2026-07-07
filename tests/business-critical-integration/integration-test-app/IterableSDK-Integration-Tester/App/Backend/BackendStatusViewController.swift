@@ -158,7 +158,20 @@ final class BackendStatusViewController: UIViewController {
         button.translatesAutoresizingMaskIntoConstraints = false
         return button
     }()
-    
+
+    private let copyLastPayloadButton: UIButton = {
+        let button = UIButton(type: .system)
+        button.setTitle("Copy Last Push Payload", for: .normal)
+        button.backgroundColor = .systemBlue
+        button.setTitleColor(.white, for: .normal)
+        button.layer.cornerRadius = 8
+        button.translatesAutoresizingMaskIntoConstraints = false
+        button.accessibilityIdentifier = "copy-last-push-payload-button"
+        button.isEnabled = false
+        button.alpha = 0.5
+        return button
+    }()
+
     private let showDisabledDevicesSwitch: UISwitch = {
         let toggle = UISwitch()
         toggle.isOn = false
@@ -230,6 +243,7 @@ final class BackendStatusViewController: UIViewController {
         contentView.addSubview(sendSilentPushButton)
         contentView.addSubview(resetDevicesButton)
         contentView.addSubview(reenableDevicesButton)
+        contentView.addSubview(copyLastPayloadButton)
         contentView.addSubview(activityIndicator)
         
         NSLayoutConstraint.activate([
@@ -323,8 +337,14 @@ final class BackendStatusViewController: UIViewController {
             reenableDevicesButton.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 20),
             reenableDevicesButton.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -20),
             reenableDevicesButton.heightAnchor.constraint(equalToConstant: 44),
-            reenableDevicesButton.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -20),
-            
+
+            // Copy last push payload button
+            copyLastPayloadButton.topAnchor.constraint(equalTo: reenableDevicesButton.bottomAnchor, constant: 12),
+            copyLastPayloadButton.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 20),
+            copyLastPayloadButton.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -20),
+            copyLastPayloadButton.heightAnchor.constraint(equalToConstant: 44),
+            copyLastPayloadButton.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -20),
+
             // Activity indicator
             activityIndicator.centerXAnchor.constraint(equalTo: refreshButton.centerXAnchor),
             activityIndicator.centerYAnchor.constraint(equalTo: refreshButton.centerYAnchor)
@@ -345,6 +365,9 @@ final class BackendStatusViewController: UIViewController {
         resetDevicesButton.addTarget(self, action: #selector(resetUserDevices), for: .touchUpInside)
         reenableDevicesButton.addTarget(self, action: #selector(reenableUserDevices), for: .touchUpInside)
         showDisabledDevicesSwitch.addTarget(self, action: #selector(toggleShowDisabledDevices), for: .valueChanged)
+        copyLastPayloadButton.addTarget(self, action: #selector(copyLastPushPayload), for: .touchUpInside)
+        NotificationCenter.default.addObserver(self, selector: #selector(lastPushPayloadUpdated), name: .bcitLastPushPayloadUpdated, object: nil)
+        updateCopyLastPayloadButtonState()
     }
     
     @objc private func toggleShowDisabledDevices() {
@@ -691,6 +714,37 @@ final class BackendStatusViewController: UIViewController {
         userDetailsTableView.isHidden = false
     }
     
+    @objc private func copyLastPushPayload() {
+        guard let payload = AppDelegate.lastReceivedPushPayload else {
+            showAlert(title: "No Push Yet", message: "No push notification has been received in this session.")
+            return
+        }
+
+        let text: String
+        if JSONSerialization.isValidJSONObject(payload),
+           let data = try? JSONSerialization.data(withJSONObject: payload, options: [.prettyPrinted, .sortedKeys]),
+           let json = String(data: data, encoding: .utf8) {
+            text = json
+        } else {
+            text = String(describing: payload)
+        }
+
+        UIPasteboard.general.string = text
+        showAlert(title: "Copied", message: "Last push payload copied to clipboard.")
+    }
+
+    @objc private func lastPushPayloadUpdated() {
+        DispatchQueue.main.async { [weak self] in
+            self?.updateCopyLastPayloadButtonState()
+        }
+    }
+
+    private func updateCopyLastPayloadButtonState() {
+        let hasPayload = AppDelegate.lastReceivedPushPayload != nil
+        copyLastPayloadButton.isEnabled = hasPayload
+        copyLastPayloadButton.alpha = hasPayload ? 1.0 : 0.5
+    }
+
     private func showAlert(title: String, message: String, completion: (() -> Void)? = nil) {
         let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
         alert.addAction(UIAlertAction(title: "OK", style: .default) { _ in

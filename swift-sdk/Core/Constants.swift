@@ -387,6 +387,7 @@ enum JsonValue {
     static let applicationJson = "application/json"
     static let apnsSandbox = "APNS_SANDBOX"
     static let apnsProduction = "APNS"
+    static let gcm = "GCM"
     static let iOS = "iOS"
     static let bearer = "Bearer"
 
@@ -526,6 +527,8 @@ enum MobileDeviceType: String, Codable {
     case production
     /** Detect automatically */
     case auto
+    /** Firebase Cloud Messaging - registers the device with platform GCM so sends are delivered via FCM */
+    case fcm
 }
 
 // These are custom action for "iterable://delete" etc.

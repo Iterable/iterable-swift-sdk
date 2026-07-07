@@ -114,6 +114,15 @@ extension AppDelegate {
         return baseUrl.trimmingCharacters(in: CharacterSet(charactersIn: "/")) + "/api/"
     }
 
+    static func loadBackendBaseURLFromConfig() -> String {
+        guard let baseUrl = loadStringFromConfig("baseUrl",
+                                                allowPlaceholder: false,
+                                                logWarnings: false) else {
+            return "https://api.iterable.com"
+        }
+        return baseUrl.trimmingCharacters(in: CharacterSet(charactersIn: "/"))
+    }
+
     private static func loadConfigJSON(logWarnings: Bool = true) -> [String: Any]? {
         let environment = selectedEnvironment
         guard let path = Bundle.main.path(forResource: environment.configResourceName, ofType: "json"),
@@ -173,6 +182,10 @@ extension AppDelegate {
         config.enableEmbeddedMessaging = true
         config.logDelegate = SDKLogCapture.shared
         config.dataRegion = loadDataRegionFromConfig()
+        if FCMRegistrationManager.shared.isFcmModeEnabled {
+            // FCM path registers against a separate Iterable integration entry (GCM credential).
+            config.pushIntegrationName = FCMRegistrationManager.fcmIntegrationName
+        }
 
         print("✅ [SDK INIT] Config created with delegates:")
         print("   - URL delegate: \(String(describing: config.urlDelegate))")
@@ -260,6 +273,9 @@ extension AppDelegate {
         config.expiringAuthTokenRefreshPeriod = 1.0 // refresh 1s before expiry
         config.logDelegate = SDKLogCapture.shared
         config.dataRegion = loadDataRegionFromConfig()
+        if FCMRegistrationManager.shared.isFcmModeEnabled {
+            config.pushIntegrationName = FCMRegistrationManager.fcmIntegrationName
+        }
 
         // Set up auth delegate that generates real JWTs locally
         let authDelegate = MockAuthDelegate(jwtSecret: jwtSecret)
@@ -397,11 +413,17 @@ extension AppDelegate {
         
         // Mark that we received a token in this session
         hasReceivedTokenInCurrentSession = true
-        
-        // Register with Iterable SDK
-            IterableAPI.register(token: deviceToken)
 
-        print("✅ Device token registered and saved: \(tokenString)")
+        if FCMRegistrationManager.shared.isFcmModeEnabled {
+            // FCM mode: hand the APNS token to Firebase; the resulting FCM token is
+            // registered with Iterable (platform GCM) by FCMRegistrationManager.
+            FCMRegistrationManager.shared.handleApnsToken(deviceToken)
+            print("✅ Device token saved; forwarded to Firebase for FCM registration: \(tokenString)")
+        } else {
+            // Register with Iterable SDK
+            IterableAPI.register(token: deviceToken)
+            print("✅ Device token registered and saved: \(tokenString)")
+        }
     }
     
     static func getRegisteredDeviceToken() -> String? {

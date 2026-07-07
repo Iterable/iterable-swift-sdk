@@ -7,7 +7,7 @@ import UserNotifications
 
 struct NotificationContentParser {
     static func getIterableMetadata(from content: UNNotificationContent) -> [AnyHashable: Any]? {
-        content.userInfo[JsonKey.Payload.metadata] as? [AnyHashable: Any]
+        getIterableMetadata(from: content.userInfo)
     }
 
     static func getIterableMessageId(from content: UNNotificationContent) -> String? {
@@ -36,6 +36,25 @@ struct NotificationContentParser {
             #endif
         }
         return jsonArray
+    }
+
+    private static func getIterableMetadata(from userInfo: [AnyHashable: Any]) -> [AnyHashable: Any]? {
+        guard let metadata = userInfo[JsonKey.Payload.metadata] else {
+            return nil
+        }
+
+        if let metadata = metadata as? [AnyHashable: Any] {
+            return metadata
+        }
+
+        guard let metadataString = metadata as? String,
+              let metadataData = metadataString.data(using: .utf8),
+              let jsonObject = try? JSONSerialization.jsonObject(with: metadataData),
+              let jsonDictionary = jsonObject as? [String: Any] else {
+            return nil
+        }
+
+        return Dictionary(uniqueKeysWithValues: jsonDictionary.map { (AnyHashable($0.key), $0.value) })
     }
 
     private static func createNotificationActionButton(from json: [AnyHashable: Any]) -> UNNotificationAction? {
@@ -164,4 +183,3 @@ struct NotificationContentParser {
         }
     }
 }
-

@@ -321,7 +321,42 @@ import UIKit
         guard let implementation, implementation.isSDKInitialized() else { return }
         implementation.register(token: token, onSuccess: onSuccess, onFailure: onFailure)
     }
-    
+
+    /// Register this device's FCM registration token with Iterable (iOS via Firebase Cloud Messaging)
+    ///
+    /// The device is registered with platform `GCM`, so Iterable delivers pushes to it through FCM
+    /// instead of directly through APNS. Requires a Firebase Cloud Messaging push integration for this
+    /// app in Iterable. The integration name is `IterableConfig.pushIntegrationName`, falling back to
+    /// the app's bundle identifier; `IterableConfig.pushPlatform` is ignored for this call.
+    ///
+    /// - Parameters:
+    ///    - fcmToken: The FCM registration token obtained from Firebase Messaging
+    ///
+    /// - SeeAlso: IterableConfig
+    @objc(registerFcmToken:)
+    public static func register(fcmToken: String) {
+        register(fcmToken: fcmToken, onSuccess: nil, onFailure: nil)
+    }
+
+    /// Register this device's FCM registration token with Iterable (iOS via Firebase Cloud Messaging)
+    ///
+    /// The device is registered with platform `GCM`, so Iterable delivers pushes to it through FCM
+    /// instead of directly through APNS. Requires a Firebase Cloud Messaging push integration for this
+    /// app in Iterable. The integration name is `IterableConfig.pushIntegrationName`, falling back to
+    /// the app's bundle identifier; `IterableConfig.pushPlatform` is ignored for this call.
+    ///
+    /// - Parameters:
+    ///    - fcmToken: The FCM registration token obtained from Firebase Messaging
+    ///    - onSuccess: `OnSuccessHandler` to invoke if token registration is successful
+    ///    - onFailure: `OnFailureHandler` to invoke if token registration fails
+    ///
+    /// - SeeAlso: IterableConfig, OnSuccessHandler, OnFailureHandler
+    @objc(registerFcmToken:onSuccess:OnFailure:)
+    public static func register(fcmToken: String, onSuccess: OnSuccessHandler? = nil, onFailure: OnFailureHandler? = nil) {
+        guard let implementation, implementation.isSDKInitialized() else { return }
+        implementation.register(fcmToken: fcmToken, onSuccess: onSuccess, onFailure: onFailure)
+    }
+
     @objc(pauseAuthRetries:)
     public static func pauseAuthRetries(_ pauseRetry: Bool) {
         implementation?.authManager.pauseAuthRetries(pauseRetry)

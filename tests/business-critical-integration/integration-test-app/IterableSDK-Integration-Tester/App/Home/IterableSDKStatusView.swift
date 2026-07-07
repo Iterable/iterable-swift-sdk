@@ -23,6 +23,7 @@ final class IterableSDKStatusView: UIView {
     }()
     
     private let initializationStatusView = StatusRowView(title: "SDK Initialized")
+    private let sdkVersionStatusView = StatusRowView(title: "SDK Version")
     private let environmentStatusView = StatusRowView(title: "Environment")
     private let endpointStatusView = StatusRowView(title: "Endpoint")
     private let jwtAuthStatusView = StatusRowView(title: "JWT Auth")
@@ -61,6 +62,7 @@ final class IterableSDKStatusView: UIView {
         
         containerStackView.addArrangedSubview(titleLabel)
         containerStackView.addArrangedSubview(initializationStatusView)
+        containerStackView.addArrangedSubview(sdkVersionStatusView)
         containerStackView.addArrangedSubview(environmentStatusView)
         containerStackView.addArrangedSubview(endpointStatusView)
         containerStackView.addArrangedSubview(jwtAuthStatusView)
@@ -70,6 +72,7 @@ final class IterableSDKStatusView: UIView {
         // Add accessibility identifiers for testing
         initializationStatusView.accessibilityIdentifier = "sdk-initialization-status"
         initializationStatusView.setValueAccessibilityIdentifier("sdk-ready-indicator")
+        sdkVersionStatusView.accessibilityIdentifier = "sdk-version-status"
         environmentStatusView.accessibilityIdentifier = "sdk-environment-status"
         endpointStatusView.accessibilityIdentifier = "sdk-endpoint-status"
         emailStatusView.accessibilityIdentifier = "sdk-email-status"
@@ -115,6 +118,8 @@ final class IterableSDKStatusView: UIView {
         // SDK Initialization status
         initializationStatusView.setValue(isInitialized ? "✓" : "✗",
                                         color: isInitialized ? .systemGreen : .systemRed)
+
+        sdkVersionStatusView.setValue(IterableAPI.sdkVersion, color: .label)
 
         environmentStatusView.setValue(AppDelegate.selectedEnvironment.title, color: .systemBlue)
         endpointStatusView.setValue(AppDelegate.loadDataRegionFromConfig(logWarnings: false), color: .systemBlue)

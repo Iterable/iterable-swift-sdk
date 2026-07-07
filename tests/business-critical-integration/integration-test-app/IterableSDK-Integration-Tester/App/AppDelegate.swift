@@ -11,9 +11,23 @@ import UserNotifications
 
 import IterableSDK
 
+extension Notification.Name {
+    /// Posted whenever the app records a freshly received push payload.
+    static let bcitLastPushPayloadUpdated = Notification.Name("bcitLastPushPayloadUpdated")
+}
+
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
     var window: UIWindow?
+
+    // MARK: - Last received push payload
+    // Captured on every push delivery so the Backend tab can copy it for inspection.
+    static var lastReceivedPushPayload: [AnyHashable: Any]?
+
+    static func recordReceivedPushPayload(_ userInfo: [AnyHashable: Any]) {
+        lastReceivedPushPayload = userInfo
+        NotificationCenter.default.post(name: .bcitLastPushPayloadUpdated, object: nil)
+    }
     
     // MARK: - AppDelegate Lifecycle
     
@@ -25,6 +39,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         window?.makeKeyAndVisible()
 
         LogStore.shared.log("🚀 App started")
+
+        // Configure Firebase before push registration when FCM mode is persisted on,
+        // so the startup APNS token reaches FCM (see FCMRegistrationManager).
+        FCMRegistrationManager.shared.configureAtLaunchIfNeeded()
 
         setupNotifications()
         setupTestModeUI()
@@ -97,7 +115,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     func application(_ application: UIApplication, didReceiveRemoteNotification userInfo: [AnyHashable: Any], fetchCompletionHandler completionHandler: @escaping (UIBackgroundFetchResult) -> Void) {
         print("🔕 [APP] Silent push notification received")
         print("🔕 [APP] Silent push payload: \(userInfo)")
-        
+        AppDelegate.recordReceivedPushPayload(userInfo)
+
         // Log Iterable-specific data if present
         if let iterableData = userInfo["itbl"] as? [String: Any] {
             print("🔕 [APP] Iterable-specific data in silent push: \(iterableData)")
@@ -338,6 +357,7 @@ extension AppDelegate: UNUserNotificationCenterDelegate {
     public func userNotificationCenter(_ center: UNUserNotificationCenter, willPresent notification: UNNotification, withCompletionHandler completionHandler: @escaping (UNNotificationPresentationOptions) -> Void) {
         print("🔔 [APP] Push notification received while app is in foreground")
         print("🔔 [APP] Notification payload: \(notification.request.content.userInfo)")
+        AppDelegate.recordReceivedPushPayload(notification.request.content.userInfo)
         print("🔔 [APP] Notification title: \(notification.request.content.title)")
         print("🔔 [APP] Notification body: \(notification.request.content.body)")
         
@@ -391,6 +411,7 @@ extension AppDelegate: UNUserNotificationCenterDelegate {
     public func userNotificationCenter(_ center: UNUserNotificationCenter, didReceive response: UNNotificationResponse, withCompletionHandler completionHandler: @escaping () -> Void) {
         print("🔔 [APP] Push notification tapped - processing with Iterable SDK")
         print("🔔 [APP] Full notification payload: \(response.notification.request.content.userInfo)")
+        AppDelegate.recordReceivedPushPayload(response.notification.request.content.userInfo)
         print("🔔 [APP] Notification title: \(response.notification.request.content.title)")
         print("🔔 [APP] Notification body: \(response.notification.request.content.body)")
         

@@ -734,6 +734,8 @@ struct RequestCreator {
             return JsonValue.apnsSandbox
         case .auto:
             return apnsType == .sandbox ? JsonValue.apnsSandbox : JsonValue.apnsProduction
+        case .fcm:
+            return JsonValue.gcm
         }
     }
     

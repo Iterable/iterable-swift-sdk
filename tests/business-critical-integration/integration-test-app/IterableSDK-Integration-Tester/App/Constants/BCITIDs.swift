@@ -17,33 +17,40 @@ import Foundation
 /// IDs of campaigns provisioned in the Mobile SDK Testing project that BCIT
 /// triggers or whose payloads it stamps onto simulated pushes in CI.
 enum BCITCampaign {
+    /// True when the app is pointed at staging, read from the same UserDefaults key the
+    /// environment toggle writes (`AppDelegate.IntegrationEnvironment`, default prod).
+    /// Campaign IDs differ per environment: prod lives in project 1226, staging in project 2.
+    private static var isStaging: Bool {
+        UserDefaults.standard.string(forKey: "bcit_selected_environment") == "staging"
+    }
+
     /// Basic push campaign — used as the `itbl.campaignId` stamp on simulated
     /// pushes in CI and as the campaignId on backend-sent standard pushes.
-    static let basicPush = 17966885
+    static var basicPush: Int { isStaging ? 1491853 : 17966885 }
 
     /// Deep link push campaign — payload contains a `defaultAction` URL.
-    static let deepLinkPush = 17967053
+    static var deepLinkPush: Int { isStaging ? 1491854 : 17967053 }
 
     /// Silent push campaign — content-available only, no UI.
-    static let silentPush = 17967055
+    static var silentPush: Int { isStaging ? 1491855 : 17967055 }
 
     /// In-app display campaign — basic in-app message rendering.
-    static let inAppDisplay = 17967060
+    static var inAppDisplay: Int { isStaging ? 1491857 : 17967060 }
 
     /// In-app deep link campaign — message contains a deep link.
-    static let inAppDeepLink = 17967062
+    static var inAppDeepLink: Int { isStaging ? 1491858 : 17967062 }
 
     /// Full-screen in-app campaign (SDK-31 regression).
-    static let inAppFullScreen = 17967063
+    static var inAppFullScreen: Int { isStaging ? 1491859 : 17967063 }
 
     /// Bottom-position in-app campaign (SDK-92 regression).
-    static let inAppBottomPosition = 17967064
+    static var inAppBottomPosition: Int { isStaging ? 1491860 : 17967064 }
 
     /// Top-position in-app campaign (SDK-92 regression).
-    static let inAppTopPosition = 17967065
+    static var inAppTopPosition: Int { isStaging ? 1491861 : 17967065 }
 
     /// Silent push campaign for embedded message sync (notificationType = UpdateEmbedded).
-    static let embeddedSilentPush = 17967057
+    static var embeddedSilentPush: Int { isStaging ? 1491856 : 17967057 }
 }
 
 /// IDs of message templates provisioned in the Mobile SDK Testing project.
