@@ -1158,7 +1158,8 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
                 let jsonData = try JSONSerialization.data(withJSONObject: data, options: [])
                 completion(jsonData)
             } catch {
-                print("Error converting dictionary to data: \(error)")
+                ITBError("Error converting dictionary to data: \(error.localizedDescription)")
+                onFailure(error.localizedDescription)
             }
         }.onError { error in
             onFailure(error.reason ?? error.localizedDescription)

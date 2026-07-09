@@ -189,10 +189,14 @@ public class UnknownUserManager: UnknownUserManagerProtocol {
         IterableAPI.implementation?.getCriteriaData { returnedData in
             self.localStorage.criteriaData = returnedData
             if let criteria = self.criteria(from: returnedData) {
-                self.config.unknownUserHandler?.onCriteriaReceived?(criteria: criteria)
+                DispatchQueue.main.async {
+                    self.config.unknownUserHandler?.onCriteriaReceived?(criteria: criteria)
+                }
             }
         } onFailure: { reason in
-            self.config.unknownUserHandler?.onCriteriaFetchFailed?(reason: reason)
+            DispatchQueue.main.async {
+                self.config.unknownUserHandler?.onCriteriaFetchFailed?(reason: reason)
+            }
         }
     }
 

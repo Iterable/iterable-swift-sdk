@@ -191,6 +191,46 @@ class IterableApiCriteriaFetchTests: XCTestCase {
 
         wait(for: [expectation1], timeout: testExpectationTimeout)
     }
+
+    func testCriteriaFetchSuccessInvokesUnknownUserHandlerOnEveryFetch() {
+        let expectation1 = expectation(description: "Criteria received twice")
+        expectation1.expectedFulfillmentCount = 2
+        let localStorage = MockLocalStorage()
+        let criteriaPayload: [AnyHashable: Any] = [
+            JsonKey.criteriaSets: [
+                [JsonKey.CriteriaItem.criteriaId: "123"]
+            ]
+        ]
+        let handler = MockUnknownUserHandler()
+        var receivedCount = 0
+        handler.onCriteriaReceivedCallback = { _ in
+            receivedCount += 1
+            XCTAssertTrue(Thread.isMainThread)
+            expectation1.fulfill()
+        }
+
+        mockNetworkSession.responseCallback = { url in
+            if url.absoluteString.contains(Const.Path.getCriteria) == true {
+                return MockNetworkSession.MockResponse(statusCode: 200, data: criteriaPayload.toJsonData())
+            }
+            return MockNetworkSession.MockResponse(statusCode: 200)
+        }
+
+        let config = IterableConfig()
+        config.unknownUserHandler = handler
+
+        IterableAPI.initializeForTesting(apiKey: IterableApiCriteriaFetchTests.apiKey,
+                                         config: config,
+                                         networkSession: mockNetworkSession,
+                                         localStorage: localStorage)
+        defer { IterableAPI.implementation = nil }
+
+        IterableAPI.implementation?.unknownUserManager.getUnknownCriteria()
+        IterableAPI.implementation?.unknownUserManager.getUnknownCriteria()
+
+        wait(for: [expectation1], timeout: testExpectationTimeout)
+        XCTAssertEqual(receivedCount, 2)
+    }
     
     func testForegroundCriteriaFetchWithCooldown() {
         let expectation1 = expectation(description: "First criteria fetch")
