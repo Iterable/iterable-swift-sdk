@@ -1152,16 +1152,19 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
         }
     }
     
-    func getCriteriaData(completion: @escaping (Data) -> Void) {
+    func getCriteriaData(completion: @escaping (Data) -> Void, onFailure: @escaping (String) -> Void) {
         apiClient.getCriteria().onSuccess { data in
             do {
                 let jsonData = try JSONSerialization.data(withJSONObject: data, options: [])
                 completion(jsonData)
             } catch {
-                print("Error converting dictionary to data: \(error)")
+                ITBError("Error converting dictionary to data: \(error.localizedDescription)")
+                onFailure(error.localizedDescription)
             }
+        }.onError { error in
+            onFailure(error.reason ?? error.localizedDescription)
         }
-	}
+    }
 
     private func createDefaultMobileFrameworkInfo() -> IterableAPIMobileFrameworkInfo {
         let frameworkType = IterableAPIMobileFrameworkDetector.frameworkType()

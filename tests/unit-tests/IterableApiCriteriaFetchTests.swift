@@ -112,6 +112,125 @@ class IterableApiCriteriaFetchTests: XCTestCase {
         
         wait(for: [expectation1], timeout: testExpectationTimeout)
     }
+
+    func testCriteriaFetchSuccessInvokesUnknownUserHandlerAfterPersistingCriteria() {
+        let expectation1 = expectation(description: "Criteria received")
+        let localStorage = MockLocalStorage()
+        let criteriaPayload: [AnyHashable: Any] = [
+            JsonKey.criteriaSets: [
+                [JsonKey.CriteriaItem.criteriaId: "123"]
+            ]
+        ]
+        let handler = MockUnknownUserHandler()
+        handler.onCriteriaReceivedCallback = { criteria in
+            let storedCriteria = localStorage.criteriaData?.json()
+            let storedCriteriaSets = storedCriteria?[JsonKey.criteriaSets] as? [[String: Any]]
+            let receivedCriteriaSets = criteria[JsonKey.criteriaSets] as? [[String: Any]]
+
+            XCTAssertEqual(storedCriteriaSets?.first?[JsonKey.CriteriaItem.criteriaId] as? String, "123")
+            XCTAssertEqual(receivedCriteriaSets?.first?[JsonKey.CriteriaItem.criteriaId] as? String, "123")
+            expectation1.fulfill()
+        }
+        handler.onCriteriaFetchFailedCallback = { reason in
+            XCTFail("Unexpected criteria fetch failure: \(reason)")
+        }
+
+        mockNetworkSession.responseCallback = { url in
+            if url.absoluteString.contains(Const.Path.getCriteria) == true {
+                return MockNetworkSession.MockResponse(statusCode: 200, data: criteriaPayload.toJsonData())
+            }
+            return MockNetworkSession.MockResponse(statusCode: 200)
+        }
+
+        let config = IterableConfig()
+        config.unknownUserHandler = handler
+
+        IterableAPI.initializeForTesting(apiKey: IterableApiCriteriaFetchTests.apiKey,
+                                         config: config,
+                                         networkSession: mockNetworkSession,
+                                         localStorage: localStorage)
+        defer { IterableAPI.implementation = nil }
+
+        IterableAPI.implementation?.unknownUserManager.getUnknownCriteria()
+
+        wait(for: [expectation1], timeout: testExpectationTimeout)
+    }
+
+    func testCriteriaFetchFailureInvokesUnknownUserHandler() {
+        let expectation1 = expectation(description: "Criteria fetch failed")
+        let localStorage = MockLocalStorage()
+        let failureReason = "criteria fetch failed"
+        let handler = MockUnknownUserHandler()
+        handler.onCriteriaReceivedCallback = { _ in
+            XCTFail("Unexpected criteria received callback")
+        }
+        handler.onCriteriaFetchFailedCallback = { reason in
+            XCTAssertEqual(reason, failureReason)
+            XCTAssertNil(localStorage.criteriaData)
+            expectation1.fulfill()
+        }
+
+        mockNetworkSession.responseCallback = { url in
+            if url.absoluteString.contains(Const.Path.getCriteria) == true {
+                return MockNetworkSession.MockResponse(statusCode: 500,
+                                                       data: ["msg": failureReason].toJsonData())
+            }
+            return MockNetworkSession.MockResponse(statusCode: 200)
+        }
+
+        let config = IterableConfig()
+        config.unknownUserHandler = handler
+
+        IterableAPI.initializeForTesting(apiKey: IterableApiCriteriaFetchTests.apiKey,
+                                         config: config,
+                                         networkSession: mockNetworkSession,
+                                         localStorage: localStorage)
+        defer { IterableAPI.implementation = nil }
+
+        IterableAPI.implementation?.unknownUserManager.getUnknownCriteria()
+
+        wait(for: [expectation1], timeout: testExpectationTimeout)
+    }
+
+    func testCriteriaFetchSuccessInvokesUnknownUserHandlerOnEveryFetch() {
+        let expectation1 = expectation(description: "Criteria received twice")
+        expectation1.expectedFulfillmentCount = 2
+        let localStorage = MockLocalStorage()
+        let criteriaPayload: [AnyHashable: Any] = [
+            JsonKey.criteriaSets: [
+                [JsonKey.CriteriaItem.criteriaId: "123"]
+            ]
+        ]
+        let handler = MockUnknownUserHandler()
+        var receivedCount = 0
+        handler.onCriteriaReceivedCallback = { _ in
+            receivedCount += 1
+            XCTAssertTrue(Thread.isMainThread)
+            expectation1.fulfill()
+        }
+
+        mockNetworkSession.responseCallback = { url in
+            if url.absoluteString.contains(Const.Path.getCriteria) == true {
+                return MockNetworkSession.MockResponse(statusCode: 200, data: criteriaPayload.toJsonData())
+            }
+            return MockNetworkSession.MockResponse(statusCode: 200)
+        }
+
+        let config = IterableConfig()
+        config.unknownUserHandler = handler
+
+        IterableAPI.initializeForTesting(apiKey: IterableApiCriteriaFetchTests.apiKey,
+                                         config: config,
+                                         networkSession: mockNetworkSession,
+                                         localStorage: localStorage)
+        defer { IterableAPI.implementation = nil }
+
+        IterableAPI.implementation?.unknownUserManager.getUnknownCriteria()
+        IterableAPI.implementation?.unknownUserManager.getUnknownCriteria()
+
+        wait(for: [expectation1], timeout: testExpectationTimeout)
+        XCTAssertEqual(receivedCount, 2)
+    }
     
     func testForegroundCriteriaFetchWithCooldown() {
         let expectation1 = expectation(description: "First criteria fetch")
@@ -178,5 +297,20 @@ class IterableApiCriteriaFetchTests: XCTestCase {
         mockNotificationCenter.post(name: UIApplication.didBecomeActiveNotification, object: nil, userInfo: nil)
         
         wait(for: [expectation1, expectation2, expectation3], timeout: testExpectationTimeout)
+    }
+}
+
+private final class MockUnknownUserHandler: NSObject, IterableUnknownUserHandler {
+    var onCriteriaReceivedCallback: (([AnyHashable: Any]) -> Void)?
+    var onCriteriaFetchFailedCallback: ((String) -> Void)?
+
+    func onUnknownUserCreated(userId: String) {}
+
+    func onCriteriaReceived(criteria: [AnyHashable: Any]) {
+        onCriteriaReceivedCallback?(criteria)
+    }
+
+    func onCriteriaFetchFailed(reason: String) {
+        onCriteriaFetchFailedCallback?(reason)
     }
 }
