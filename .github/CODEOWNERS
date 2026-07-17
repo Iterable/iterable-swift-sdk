@@ -1,0 +1,4 @@
+# https://docs.github.com/articles/about-code-owners
+# Require review from the SDK team on every PR.
+
+* @Iterable/sdk-team
