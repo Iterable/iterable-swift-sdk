@@ -62,6 +62,38 @@ class NotificationExtensionTests: XCTestCase {
         
         wait(for: [condition1], timeout: timeout)
     }
+
+    func testNotificationContentParserReadsActionButtonsFromStringItbl() {
+        let content = UNMutableNotificationContent()
+        let messageId = UUID().uuidString
+        content.userInfo = [
+            "itbl": jsonString(from: [
+                "messageId": messageId,
+                "actionButtons": [[
+                    "identifier": "openAppButton",
+                    "title": "Open App",
+                    "action": [:],
+                ] as [String : Any]]
+            ])
+        ]
+
+        let actions = NotificationContentParser.getNotificationActions(from: content)
+
+        XCTAssertEqual(NotificationContentParser.getIterableMessageId(from: content), messageId)
+        XCTAssertEqual(actions.count, 1)
+        XCTAssertEqual(actions.first?.identifier, "openAppButton")
+        XCTAssertEqual(actions.first?.title, "Open App")
+    }
+
+    func testNotificationContentParserIgnoresMalformedStringItbl() {
+        let content = UNMutableNotificationContent()
+        content.userInfo = [
+            "itbl": "{\"messageId\":\"12345\""
+        ]
+
+        XCTAssertNil(NotificationContentParser.getIterableMessageId(from: content))
+        XCTAssertTrue(NotificationContentParser.getNotificationActions(from: content).isEmpty)
+    }
     
     @available(iOS 14.0, *)
     func testPushImageAttachment() {
@@ -493,5 +525,10 @@ class NotificationExtensionTests: XCTestCase {
         }
         
         wait(for: [expectation1], timeout: timeout)
+    }
+
+    private func jsonString(from json: [String: Any]) -> String {
+        let data = try! JSONSerialization.data(withJSONObject: json)
+        return String(data: data, encoding: .utf8)!
     }
 }

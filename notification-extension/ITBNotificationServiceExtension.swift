@@ -52,7 +52,7 @@ public protocol ITBNotificationServiceExtensionDelegate {
     // MARK: - Private
     
     private func retrieveAttachment(from content: UNNotificationContent) {
-        guard let metadata = content.userInfo[JsonKey.Payload.metadata] as? [AnyHashable: Any],
+        guard let metadata = NotificationContentParser.getIterableMetadata(from: content),
               let attachmentUrlString = metadata[JsonKey.Payload.attachmentUrl] as? String,
               let url = URL(string: attachmentUrlString) else {
             attachmentRetrievalFinished = true
