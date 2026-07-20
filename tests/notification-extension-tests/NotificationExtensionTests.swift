@@ -128,7 +128,43 @@ class NotificationExtensionTests: XCTestCase {
 
         wait(for: [condition1], timeout: timeout)
     }
-    
+
+    @available(iOS 14.0, *)
+    func testPushImageAttachmentFromStringItbl() {
+        // iOS-via-FCM delivers itbl as a JSON string; confirm the extension still retrieves
+        // the attachment end-to-end, not just that the parser reads the metadata.
+        let condition1 = expectation(description: "image attachment didn't function as expected")
+
+        let content = UNMutableNotificationContent()
+        let messageId = UUID().uuidString
+
+        content.userInfo = [
+            "itbl": jsonString(from: [
+                "messageId": messageId,
+                "attachment-url": "https://github.com/Iterable/swift-sdk/raw/master/images/Iterable-Logo.png"
+            ])
+        ]
+
+        let request = UNNotificationRequest(identifier: "request", content: content, trigger: nil)
+
+        appExtension.didReceive(request) { content in
+            XCTAssertEqual(content.attachments.count, 1)
+
+            guard let firstAttachment = content.attachments.first else {
+                XCTFail("attachment doesn't exist")
+                return
+            }
+
+            XCTAssertNotNil(firstAttachment.url)
+            XCTAssertEqual(firstAttachment.url.scheme, "file")
+            XCTAssertEqual(firstAttachment.type, UTType.png.identifier)
+
+            condition1.fulfill()
+        }
+
+        wait(for: [condition1], timeout: timeout)
+    }
+
     @available(iOS 14.0, *)
     func testPushVideoAttachment() {
         let condition1 = expectation(description: "video attachment didn't function as expected")
