@@ -3,6 +3,8 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 ## [Unreleased]
+
+## [6.7.4]
 ### Added
 - Added optional `onCriteriaReceived(criteria:)` and `onCriteriaFetchFailed(reason:)` callbacks to `IterableUnknownUserHandler` for unknown user activation criteria fetch results. These callbacks are invoked on the main thread and may fire on every criteria fetch, including initialization, foreground fetches, and when visitor usage tracking is enabled.
 
