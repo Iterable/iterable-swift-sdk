@@ -88,6 +88,29 @@ class TaskProcessorTests: XCTestCase {
         wait(for: [expectation1], timeout: 15.0)
     }
 
+    func testUsesCurrentAuthTokenWhenProcessingPersistedTask() throws {
+        let persistedToken = "token-a"
+        let currentToken = "token-b"
+        let task = try createSampleTask(authToken: persistedToken)!
+        let authManager = MockAuthManager()
+        authManager.token = currentToken
+
+        let requestExpectation = expectation(description: #function)
+        let networkSession = MockNetworkSession(statusCode: 200)
+        networkSession.requestCallback = { request in
+            XCTAssertEqual(request.value(forHTTPHeaderField: JsonKey.Header.authorization), "Bearer \(currentToken)")
+            requestExpectation.fulfill()
+        }
+
+        let processor = IterableAPICallTaskProcessor(networkSession: networkSession,
+                                                     authManager: authManager)
+        try processor.process(task: task)
+
+        wait(for: [requestExpectation], timeout: 5.0)
+        try persistenceProvider.mainQueueContext().delete(task: task)
+        try persistenceProvider.mainQueueContext().save()
+    }
+
     func testNetworkUnavailable() throws {
         let expectation1 = expectation(description: #function)
         let task = try createSampleTask()!
@@ -306,7 +329,9 @@ class TaskProcessorTests: XCTestCase {
         wait(for: [expectation1], timeout: 5.0)
     }
 
-    private func createSampleTask(scheduledAt: Date = Date(), requestedAt: Date = Date()) throws -> IterableTask? {
+    private func createSampleTask(scheduledAt: Date = Date(),
+                                  requestedAt: Date = Date(),
+                                  authToken: String? = nil) throws -> IterableTask? {
         let apiKey = "test-api-key"
         let email = "user@example.com"
         let eventName = "CustomEvent1"
@@ -322,7 +347,7 @@ class TaskProcessorTests: XCTestCase {
         
         let apiCallRequest = IterableAPICallRequest(apiKey: apiKey,
                                                     endpoint: Endpoint.api,
-                                                    authToken: auth.authToken,
+                                                    authToken: authToken,
                                                     deviceMetadata: deviceMetadata,
                                                     iterableRequest: trackEventRequest)
         let data = try JSONEncoder().encode(apiCallRequest)
