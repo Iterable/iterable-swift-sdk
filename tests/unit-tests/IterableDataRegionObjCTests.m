@@ -8,6 +8,17 @@
 #import <XCTest/XCTest.h>
 @import IterableSDK;
 
+@interface LegacyInAppDelegate : NSObject <IterableInAppDelegate>
+@end
+
+@implementation LegacyInAppDelegate
+
+- (enum InAppShowResponse)onNewMessage:(IterableInAppMessage * _Nonnull)message {
+    return InAppShowResponseShow;
+}
+
+@end
+
 @interface IterableDataRegionObjCTests : XCTestCase
 
 @end
@@ -27,4 +38,10 @@
     XCTAssertEqualObjects(config.dataRegion, @"https://api.eu.iterable.com/api/");
 }
 
-@end 
+- (void)testLegacyInAppDelegateConformanceRemainsValid {
+    IterableConfig *config = [[IterableConfig alloc] init];
+    config.inAppDelegate = [[LegacyInAppDelegate alloc] init];
+    XCTAssertNotNil(config.inAppDelegate);
+}
+
+@end

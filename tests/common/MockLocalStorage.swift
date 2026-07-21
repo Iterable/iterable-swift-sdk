@@ -41,6 +41,8 @@ class MockLocalStorage: LocalStorageProtocol {
     var isNotificationsEnabled: Bool = false
     
     var hasStoredNotificationSetting: Bool = false
+
+    var jsonOnlyMessageQueueData: Data?
     
     func getAttributionInfo(currentDate: Date) -> IterableAttributionInfo? {
         guard !MockLocalStorage.isExpired(expiration: attributionInfoExpiration, currentDate: currentDate) else {

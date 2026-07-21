@@ -75,6 +75,11 @@ public struct IterableAPIMobileFrameworkInfo: Codable {
     /// - Returns:Return `show` to show the in-app or `skip` to skip this.
     @objc(onNewMessage:)
     func onNew(message: IterableInAppMessage) -> InAppShowResponse
+
+    /// Called on the main thread when a JSON-only message is available locally.
+    /// This may be called more than once until the message is marked as handled.
+    @objc(onJsonOnlyMessageAvailable:)
+    optional func onJsonOnlyMessageAvailable(message: IterableInAppMessage)
 }
 
 /// The protocol for adjusting logging

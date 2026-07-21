@@ -11,6 +11,10 @@ protocol InAppDisplayChecker {
 
 protocol IterableInternalInAppManagerProtocol: IterableInAppManagerProtocol, InAppNotifiable, InAppDisplayChecker {
     func start() -> Pending<Bool, Error>
+
+    func getUnhandledJsonOnlyMessages() -> [IterableInAppMessage]
+    func markJsonOnlyMessageHandled(messageId: String) -> Bool
+    func clearUnhandledJsonOnlyMessages()
     
     /// Use this method to handle clicks in InApp Messages
     /// - parameter clickedUrl: The url that is clicked.
@@ -51,6 +55,7 @@ class InAppManager: NSObject, IterableInternalInAppManagerProtocol {
          applicationStateProvider: ApplicationStateProviderProtocol,
          notificationCenter: NotificationCenterProtocol,
          dateProvider: DateProviderProtocol,
+         jsonOnlyMessageStore: JsonOnlyMessageStore,
          moveToForegroundSyncInterval: Double) {
         ITBInfo()
         
@@ -68,6 +73,7 @@ class InAppManager: NSObject, IterableInternalInAppManagerProtocol {
         self.applicationStateProvider = applicationStateProvider
         self.notificationCenter = notificationCenter
         self.dateProvider = dateProvider
+        self.jsonOnlyMessageStore = jsonOnlyMessageStore
         self.moveToForegroundSyncInterval = moveToForegroundSyncInterval
         
         super.init()
@@ -116,6 +122,18 @@ class InAppManager: NSObject, IterableInternalInAppManagerProtocol {
     
     func getUnreadInboxMessagesCount() -> Int {
         getInboxMessages().filter { $0.read == false }.count
+    }
+
+    func getUnhandledJsonOnlyMessages() -> [IterableInAppMessage] {
+        jsonOnlyMessageStore.getMessages()
+    }
+
+    func markJsonOnlyMessageHandled(messageId: String) -> Bool {
+        jsonOnlyMessageStore.remove(messageId: messageId)
+    }
+
+    func clearUnhandledJsonOnlyMessages() {
+        jsonOnlyMessageStore.clear()
     }
     
     func show(message: IterableInAppMessage) {
@@ -192,7 +210,9 @@ class InAppManager: NSObject, IterableInternalInAppManagerProtocol {
             }
         }
         
-        return scheduleSync()
+        return replayUnhandledJsonOnlyMessages().flatMap { [weak self] _ in
+            self?.scheduleSync() ?? Fulfill<Bool, Error>(value: true)
+        }
     }
     
     func handleClick(clickedUrl url: URL?, forMessage message: IterableInAppMessage, location: InAppLocation, inboxSessionId: String?) {
@@ -227,6 +247,14 @@ class InAppManager: NSObject, IterableInternalInAppManagerProtocol {
     
     @objc private func onAppEnteredForeground(notification _: Notification) {
         ITBInfo()
+
+        replayUnhandledJsonOnlyMessages().onSuccess { [weak self] _ in
+            self?.processForegroundMessages()
+        }
+    }
+
+    private func processForegroundMessages() {
+        ITBInfo()
         
         let waitTime = InAppManager.getWaitTimeInterval(fromLastTime: lastSyncTime, currentTime: dateProvider.currentDate, gap: moveToForegroundSyncInterval)
         
@@ -246,8 +274,8 @@ class InAppManager: NSObject, IterableInternalInAppManagerProtocol {
             .map { [weak self] in
                 self?.mergeMessages($0) ?? MergeMessagesResult(inboxChanged: false, messagesMap: [:], deliveredMessages: [])
             }
-            .map { [weak self] in
-                self?.processMergedMessages(appIsReady: appIsReady, mergeMessagesResult: $0) ?? true
+            .flatMap { [weak self] in
+                self?.processMergedMessages(appIsReady: appIsReady, mergeMessagesResult: $0) ?? Fulfill<Bool, Error>(value: true)
             }
     }
     
@@ -256,23 +284,26 @@ class InAppManager: NSObject, IterableInternalInAppManagerProtocol {
         MessagesObtainedHandler(messagesMap: messagesMap, messages: messages).handle()
     }
     
-    private func processMergedMessages(appIsReady: Bool, mergeMessagesResult: MergeMessagesResult) -> Bool {
+    private func processMergedMessages(appIsReady: Bool, mergeMessagesResult: MergeMessagesResult) -> Pending<Bool, Error> {
+        let processingResult: Pending<Bool, Error>
         if appIsReady {
-            processAndShowMessage(messagesMap: mergeMessagesResult.messagesMap)
+            processingResult = processAndShowMessage(messagesMap: mergeMessagesResult.messagesMap)
         } else {
             messagesMap = mergeMessagesResult.messagesMap
+            persistEligibleJsonOnlyMessages()
+            processingResult = Fulfill<Bool, Error>(value: true)
         }
-        
-        // track in-app delivery
-        mergeMessagesResult.deliveredMessages.forEach {
-            requestHandler?.track(inAppDelivery: $0,
-                                  onSuccess: nil,
-                                  onFailure: nil)
+
+        return processingResult.map { [weak self] _ in
+            mergeMessagesResult.deliveredMessages.forEach {
+                self?.requestHandler?.track(inAppDelivery: $0,
+                                            onSuccess: nil,
+                                            onFailure: nil)
+            }
+
+            self?.finishSync(inboxChanged: mergeMessagesResult.inboxChanged)
+            return true
         }
-        
-        finishSync(inboxChanged: mergeMessagesResult.inboxChanged)
-        
-        return true
     }
     
     private func finishSync(inboxChanged: Bool) {
@@ -294,6 +325,8 @@ class InAppManager: NSObject, IterableInternalInAppManagerProtocol {
             return messagesMap
         case .show(message: _, messagesMap: let messagesMap):
             return messagesMap
+        case .jsonOnly(message: _, messagesMap: let messagesMap):
+            return messagesMap
         }
     }
     
@@ -307,19 +340,22 @@ class InAppManager: NSObject, IterableInternalInAppManagerProtocol {
         }
     }
     
-    private func processAndShowMessage(messagesMap: OrderedDictionary<String, IterableInAppMessage>) {
+    private func processAndShowMessage(messagesMap: OrderedDictionary<String, IterableInAppMessage>) -> Pending<Bool, Error> {
         var processor = MessagesProcessor(inAppDelegate: inAppDelegate, inAppDisplayChecker: self, messagesMap: messagesMap)
         let messagesProcessorResult = processor.processMessages()
         self.messagesMap = getMessagesMap(fromMessagesProcessorResult: messagesProcessorResult)
         
-        if case let .noShow(message, _) = messagesProcessorResult,
-            let message = message, message.isJsonOnly {
-            requestHandler?.inAppConsume(message.messageId,
-                                       onSuccess: nil,
-                                       onFailure: nil)
+        if case let .jsonOnly(message, _) = messagesProcessorResult {
+            return deliverJsonOnlyMessage(message, consumeOnReplay: true).flatMap { [weak self] processed in
+                guard processed, let self = self else {
+                    return Fulfill<Bool, Error>(value: true)
+                }
+                return self.processAndShowMessage(messagesMap: self.messagesMap)
+            }
         }
         
         showMessage(fromMessagesProcessorResult: messagesProcessorResult)
+        return Fulfill<Bool, Error>(value: true)
     }
     
     private func showInternal(message: IterableInAppMessage,
@@ -372,10 +408,15 @@ class InAppManager: NSObject, IterableInternalInAppManagerProtocol {
     }
     
     private func processExistingMessages() {
-        _ = InAppManager.getAppIsReady(applicationStateProvider: applicationStateProvider, displayer: displayer).map { [weak self] appIsActive in
-            if appIsActive, let messagesMap = self?.messagesMap {
-                self?.processAndShowMessage(messagesMap: messagesMap)
-                self?.persister.persist(messagesMap.values)
+        _ = InAppManager.getAppIsReady(applicationStateProvider: applicationStateProvider, displayer: displayer).flatMap { [weak self] appIsActive in
+            guard appIsActive, let self = self else {
+                return Fulfill<Bool, Error>(value: true)
+            }
+            return self.processAndShowMessage(messagesMap: self.messagesMap).map { [weak self] _ in
+                if let messagesMap = self?.messagesMap {
+                    self?.persister.persist(messagesMap.values)
+                }
+                return true
             }
         }
     }
@@ -506,6 +547,112 @@ class InAppManager: NSObject, IterableInternalInAppManagerProtocol {
             messagesMap[message.messageId] = message
         }
     }
+
+    private func persistEligibleJsonOnlyMessages() {
+        messagesMap.values
+            .filter { $0.isJsonOnly && !$0.didProcessTrigger && !$0.consumed && !$0.read && $0.trigger.type == .immediate }
+            .forEach { jsonOnlyMessageStore.enqueue($0) }
+    }
+
+    private func replayUnhandledJsonOnlyMessages() -> Pending<Bool, Error> {
+        guard applicationStateProvider.applicationState == .active else {
+            return Fulfill<Bool, Error>(value: true)
+        }
+
+        return jsonOnlyMessageStore.getMessages().reduce(Fulfill<Bool, Error>(value: true) as Pending<Bool, Error>) { pending, message in
+            pending.flatMap { [weak self] _ in
+                self?.deliverJsonOnlyMessage(message, consumeOnReplay: false) ?? Fulfill<Bool, Error>(value: true)
+            }
+        }
+    }
+
+    private func deliverJsonOnlyMessage(_ message: IterableInAppMessage, consumeOnReplay: Bool) -> Pending<Bool, Error> {
+        let result = Fulfill<Bool, Error>()
+
+        guard jsonOnlyMessageStore.enqueue(message) else {
+            if consumeOnReplay && !jsonOnlyMessageStore.hasCurrentIdentity {
+                deliverJsonOnlyMessageWithoutAvailability(message, result: result)
+            } else {
+                result.resolve(with: false)
+            }
+            return result
+        }
+
+        let deliver = { [weak self] in
+            guard let self = self else {
+                result.resolve(with: false)
+                return
+            }
+
+            guard self.applicationStateProvider.applicationState == .active,
+                  let delivery = self.jsonOnlyMessageStore.prepareDelivery(for: message) else {
+                result.resolve(with: false)
+                return
+            }
+
+            if delivery.isInitial {
+                _ = self.inAppDelegate.onNew(message: delivery.message)
+            }
+            self.inAppDelegate.onJsonOnlyMessageAvailable?(message: delivery.message)
+            self.notificationCenter.post(name: .iterableJsonOnlyInAppMessageAvailable,
+                                         object: delivery.message,
+                                         userInfo: nil)
+
+            guard delivery.isInitial || consumeOnReplay else {
+                result.resolve(with: true)
+                return
+            }
+
+            self.updateQueue.async { [weak self] in
+                guard let self = self else {
+                    result.resolve(with: false)
+                    return
+                }
+                self.updateMessageSync(message, didProcessTrigger: true, consumed: true)
+                self.requestHandler?.inAppConsume(message.messageId,
+                                                  onSuccess: nil,
+                                                  onFailure: nil)
+                result.resolve(with: true)
+            }
+        }
+
+        if Thread.isMainThread {
+            deliver()
+        } else {
+            DispatchQueue.main.async(execute: deliver)
+        }
+
+        return result
+    }
+
+    private func deliverJsonOnlyMessageWithoutAvailability(_ message: IterableInAppMessage,
+                                                           result: Fulfill<Bool, Error>) {
+        let deliver = { [weak self] in
+            guard let self = self else {
+                result.resolve(with: false)
+                return
+            }
+
+            _ = self.inAppDelegate.onNew(message: message)
+            self.updateQueue.async { [weak self] in
+                guard let self = self else {
+                    result.resolve(with: false)
+                    return
+                }
+                self.updateMessageSync(message, didProcessTrigger: true, consumed: true)
+                self.requestHandler?.inAppConsume(message.messageId,
+                                                  onSuccess: nil,
+                                                  onFailure: nil)
+                result.resolve(with: true)
+            }
+        }
+
+        if Thread.isMainThread {
+            deliver()
+        } else {
+            DispatchQueue.main.async(execute: deliver)
+        }
+    }
     
     // From client side
     private func removePrivate(message: IterableInAppMessage,
@@ -572,6 +719,7 @@ class InAppManager: NSObject, IterableInternalInAppManagerProtocol {
     private let notificationCenter: NotificationCenterProtocol
     
     private let persister: InAppPersistenceProtocol
+    private let jsonOnlyMessageStore: JsonOnlyMessageStore
     private var messagesMap = OrderedDictionary<String, IterableInAppMessage>()
     private let dateProvider: DateProviderProtocol
     private var lastDismissedTime: Date?

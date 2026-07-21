@@ -3,6 +3,9 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 ## [Unreleased]
+### Added
+- Added at least once delivery for JSON-only in-app messages through `IterableInAppDelegate.onJsonOnlyMessageAvailable(message:)` and `iterableJsonOnlyInAppMessageAvailable`. Unhandled messages remain available through `IterableAPI.getUnhandledJsonOnlyMessages()` until acknowledged with `markJsonOnlyMessageHandled(messageId:)`.
+
 ### Fixed
 - Public `inAppConsume` APIs now remove messages locally and post `iterableInboxChanged` after the local state is updated. The notification fires only when an inbox message changes, so removing popups or JSON-only messages no longer announces an inbox change.
 

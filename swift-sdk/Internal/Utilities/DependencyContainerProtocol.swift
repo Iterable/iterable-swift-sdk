@@ -34,22 +34,29 @@ extension DependencyContainerProtocol {
                             apiClient: ApiClientProtocol,
                             requestHandler: RequestHandlerProtocol,
                             deviceMetadata: DeviceMetadata,
+                            authProvider: AuthProvider,
                             authManager: IterableAuthManagerProtocol?) -> IterableInternalInAppManagerProtocol {
-        InAppManager(requestHandler: requestHandler,
-                     deviceMetadata: deviceMetadata,
-                     fetcher: createInAppFetcher(apiClient: apiClient, authManager: authManager),
-                     displayer: inAppDisplayer,
-                     persister: inAppPersister,
-                     inAppDelegate: config.inAppDelegate,
-                     inAppDisplayDelegate: config.inAppDisplayDelegate,
-                     urlDelegate: config.urlDelegate,
-                     customActionDelegate: config.customActionDelegate,
-                     urlOpener: urlOpener,
-                     allowedProtocols: config.allowedProtocols,
-                     applicationStateProvider: applicationStateProvider,
-                     notificationCenter: notificationCenter,
-                     dateProvider: dateProvider,
-                     moveToForegroundSyncInterval: config.inAppDisplayInterval)
+        let jsonOnlyMessageStore = JsonOnlyMessageStore(localStorage: localStorage,
+                                                        dateProvider: dateProvider,
+                                                        identityProvider: { [weak authProvider] in
+                                                            UserIdentitySnapshot(auth: authProvider?.auth)
+                                                        })
+        return InAppManager(requestHandler: requestHandler,
+                            deviceMetadata: deviceMetadata,
+                            fetcher: createInAppFetcher(apiClient: apiClient, authManager: authManager),
+                            displayer: inAppDisplayer,
+                            persister: inAppPersister,
+                            inAppDelegate: config.inAppDelegate,
+                            inAppDisplayDelegate: config.inAppDisplayDelegate,
+                            urlDelegate: config.urlDelegate,
+                            customActionDelegate: config.customActionDelegate,
+                            urlOpener: urlOpener,
+                            allowedProtocols: config.allowedProtocols,
+                            applicationStateProvider: applicationStateProvider,
+                            notificationCenter: notificationCenter,
+                            dateProvider: dateProvider,
+                            jsonOnlyMessageStore: jsonOnlyMessageStore,
+                            moveToForegroundSyncInterval: config.inAppDisplayInterval)
     }
     
     func createAuthManager(config: IterableConfig) -> IterableAuthManagerProtocol {

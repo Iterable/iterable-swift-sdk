@@ -388,6 +388,178 @@ protocol InAppPersistenceProtocol {
     func clear()
 }
 
+final class JsonOnlyMessageStore {
+    struct Delivery {
+        let message: IterableInAppMessage
+        let isInitial: Bool
+    }
+
+    init(localStorage: LocalStorageProtocol,
+         dateProvider: DateProviderProtocol,
+         identityProvider: @escaping () -> UserIdentitySnapshot?) {
+        self.localStorage = localStorage
+        self.dateProvider = dateProvider
+        self.identityProvider = identityProvider
+    }
+
+    @discardableResult
+    func enqueue(_ message: IterableInAppMessage) -> Bool {
+        stateQueue.sync {
+            guard var state = loadCurrentState() else { return false }
+
+            if state.entries.contains(where: { $0.message.messageId == message.messageId }) {
+                return true
+            }
+
+            state.entries.append(Entry(message: message,
+                                       storedAt: dateProvider.currentDate,
+                                       didBeginInitialDelivery: false))
+            state.entries = Array(state.entries.suffix(Self.maximumRecordCount))
+            return persist(state)
+        }
+    }
+
+    func prepareDelivery(for message: IterableInAppMessage) -> Delivery? {
+        stateQueue.sync {
+            guard var state = loadCurrentState() else { return nil }
+
+            if let index = state.entries.firstIndex(where: { $0.message.messageId == message.messageId }) {
+                let isInitial = !state.entries[index].didBeginInitialDelivery
+                if isInitial {
+                    state.entries[index].didBeginInitialDelivery = true
+                    guard persist(state) else { return nil }
+                }
+                return Delivery(message: state.entries[index].message, isInitial: isInitial)
+            }
+
+            state.entries.append(Entry(message: message,
+                                       storedAt: dateProvider.currentDate,
+                                       didBeginInitialDelivery: true))
+            state.entries = Array(state.entries.suffix(Self.maximumRecordCount))
+            guard persist(state) else { return nil }
+            return Delivery(message: message, isInitial: true)
+        }
+    }
+
+    func getMessages() -> [IterableInAppMessage] {
+        stateQueue.sync {
+            loadCurrentState()?.entries.map(\.message) ?? []
+        }
+    }
+
+    var hasCurrentIdentity: Bool {
+        stateQueue.sync {
+            identityProvider() != nil
+        }
+    }
+
+    @discardableResult
+    func remove(messageId: String) -> Bool {
+        stateQueue.sync {
+            guard var state = loadCurrentState(),
+                  let index = state.entries.firstIndex(where: { $0.message.messageId == messageId }) else {
+                return false
+            }
+
+            state.entries.remove(at: index)
+            return persist(state)
+        }
+    }
+
+    func clear() {
+        stateQueue.sync {
+            localStorage.jsonOnlyMessageQueueData = nil
+        }
+    }
+
+    private struct StoredIdentity: Codable, Equatable {
+        enum Kind: String, Codable {
+            case email
+            case userId
+        }
+
+        let kind: Kind
+        let value: String
+
+        init(_ snapshot: UserIdentitySnapshot) {
+            switch snapshot {
+            case let .email(email):
+                kind = .email
+                value = email
+            case let .userId(userId):
+                kind = .userId
+                value = userId
+            }
+        }
+    }
+
+    private struct Entry: Codable {
+        let message: IterableInAppMessage
+        let storedAt: Date
+        var didBeginInitialDelivery: Bool
+    }
+
+    private struct State: Codable {
+        let identity: StoredIdentity
+        var entries: [Entry]
+    }
+
+    private func loadCurrentState() -> State? {
+        guard let snapshot = identityProvider() else { return nil }
+
+        let identity = StoredIdentity(snapshot)
+        var state: State
+        if let data = localStorage.jsonOnlyMessageQueueData {
+            do {
+                state = try JSONDecoder().decode(State.self, from: data)
+            } catch {
+                ITBError("Unable to decode unhandled JSON-only messages: \(error.localizedDescription)")
+                state = State(identity: identity, entries: [])
+            }
+        } else {
+            state = State(identity: identity, entries: [])
+        }
+
+        if state.identity != identity {
+            state = State(identity: identity, entries: [])
+        }
+
+        let currentDate = dateProvider.currentDate
+        let retainedEntries = state.entries.filter { entry in
+            if let expiresAt = entry.message.expiresAt {
+                return expiresAt > currentDate
+            }
+            return entry.storedAt.addingTimeInterval(Self.fallbackRetentionPeriod) > currentDate
+        }
+
+        if retainedEntries.count != state.entries.count {
+            state.entries = retainedEntries
+        }
+
+        guard persist(state) else { return nil }
+        return state
+    }
+
+    private func persist(_ state: State) -> Bool {
+        do {
+            localStorage.jsonOnlyMessageQueueData = try JSONEncoder().encode(state)
+            return true
+        } catch {
+            ITBError("Unable to persist unhandled JSON-only messages: \(error.localizedDescription)")
+            return false
+        }
+    }
+
+    // Product defaults pending confirmation.
+    private static let fallbackRetentionPeriod: TimeInterval = 30 * 24 * 60 * 60
+    private static let maximumRecordCount = 100
+
+    private var localStorage: LocalStorageProtocol
+    private let dateProvider: DateProviderProtocol
+    private let identityProvider: () -> UserIdentitySnapshot?
+    private let stateQueue = DispatchQueue(label: "JsonOnlyMessageStore")
+}
+
 class InAppInMemoryPersister: InAppPersistenceProtocol {
     func getMessages() -> [IterableInAppMessage] {
         []

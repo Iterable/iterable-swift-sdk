@@ -7,6 +7,7 @@ import Foundation
 enum MessagesProcessorResult {
     case show(message: IterableInAppMessage, messagesMap: OrderedDictionary<String, IterableInAppMessage>)
     case noShow(message: IterableInAppMessage?, messagesMap: OrderedDictionary<String, IterableInAppMessage>)
+    case jsonOnly(message: IterableInAppMessage, messagesMap: OrderedDictionary<String, IterableInAppMessage>)
 }
 
 struct MessagesProcessor {
@@ -33,6 +34,8 @@ struct MessagesProcessor {
         case let .skipAndConsume(message):
             updateMessage(message, didProcessTrigger: true, consumed: true)
             return .noShow(message: message, messagesMap: messagesMap)
+        case let .jsonOnly(message):
+            return .jsonOnly(message: message, messagesMap: messagesMap)
         case .none, .wait:
             return .noShow(message: nil, messagesMap: messagesMap)
         }
@@ -42,6 +45,7 @@ struct MessagesProcessor {
         case show(IterableInAppMessage)
         case skip(IterableInAppMessage)
         case skipAndConsume(IterableInAppMessage)
+        case jsonOnly(IterableInAppMessage)
         case none
         case wait
     }
@@ -63,10 +67,11 @@ struct MessagesProcessor {
         
         ITBDebug("isOkToShowNow")
         
-        let returnValue = inAppDelegate.onNew(message: message)
         if message.isJsonOnly {
-            return .skipAndConsume(message)
+            return .jsonOnly(message)
         }
+
+        let returnValue = inAppDelegate.onNew(message: message)
         if returnValue == .show {
             ITBDebug("delegate returned show")
             return .show(message)

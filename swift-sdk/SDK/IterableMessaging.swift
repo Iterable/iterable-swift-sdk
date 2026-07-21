@@ -17,6 +17,9 @@ import UIKit
 public extension Notification.Name {
     /// This is fired when in app inbox changes.
     static let iterableInboxChanged = Notification.Name(rawValue: "itbl_inbox_changed")
+
+    /// This is fired when a JSON-only in-app message is available locally.
+    static let iterableJsonOnlyInAppMessageAvailable = Notification.Name(rawValue: "itbl_json_only_in_app_message_available")
 }
 
 @objcMembers open class DefaultInAppDelegate: IterableInAppDelegate {

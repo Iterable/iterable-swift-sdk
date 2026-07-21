@@ -937,6 +937,26 @@ import UIKit
         
         implementation.inAppManager.remove(message: message, location: location, source: source)
     }
+
+    /// Returns JSON-only messages for the current user that have not been marked as handled.
+    @objc
+    public static func getUnhandledJsonOnlyMessages() -> [IterableInAppMessage] {
+        guard let implementation, implementation.isSDKInitialized() else { return [] }
+
+        return implementation.getUnhandledJsonOnlyMessages()
+    }
+
+    /// Marks a JSON-only message as handled locally. This does not send an `inAppConsume` request.
+    ///
+    /// - Parameter messageId: The ID of the message to remove from the unhandled queue.
+    /// - Returns: `true` when an unhandled message was removed.
+    @objc(markJsonOnlyMessageHandled:)
+    @discardableResult
+    public static func markJsonOnlyMessageHandled(messageId: String) -> Bool {
+        guard let implementation, implementation.isSDKInitialized() else { return false }
+
+        return implementation.markJsonOnlyMessageHandled(messageId: messageId)
+    }
     
     /// Tracks analytics data from a session of using an inbox UI
     /// NOTE: this is not normally used publicly, but is needed for our React Native SDK implementation

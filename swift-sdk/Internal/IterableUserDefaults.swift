@@ -211,6 +211,14 @@ class IterableUserDefaults {
             save(bool: newValue, withKey: .hasStoredNotificationSetting)
         }
     }
+
+    var jsonOnlyMessageQueueData: Data? {
+        get {
+            userDefaults.data(forKey: UserDefaultsKey.jsonOnlyMessageQueue.value)
+        } set {
+            userDefaults.set(newValue, forKey: UserDefaultsKey.jsonOnlyMessageQueue.value)
+        }
+    }
     
     func getAttributionInfo(currentDate: Date) -> IterableAttributionInfo? {
         (try? codable(withKey: .attributionInfo, currentDate: currentDate)) ?? nil
@@ -389,6 +397,7 @@ class IterableUserDefaults {
 
         static let isNotificationsEnabled = UserDefaultsKey(value: Const.UserDefault.isNotificationsEnabled)
         static let hasStoredNotificationSetting = UserDefaultsKey(value: Const.UserDefault.hasStoredNotificationSetting)
+        static let jsonOnlyMessageQueue = UserDefaultsKey(value: Const.UserDefault.jsonOnlyMessageQueue)
     }
     private struct Envelope: Codable {
         let payload: Data

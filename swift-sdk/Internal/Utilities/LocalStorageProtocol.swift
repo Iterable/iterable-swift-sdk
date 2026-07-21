@@ -38,6 +38,8 @@ protocol LocalStorageProtocol {
     var isNotificationsEnabled: Bool { get set }
     
     var hasStoredNotificationSetting: Bool { get set }
+
+    var jsonOnlyMessageQueueData: Data? { get set }
     
     func getAttributionInfo(currentDate: Date) -> IterableAttributionInfo?
     
@@ -49,6 +51,11 @@ protocol LocalStorageProtocol {
 }
 
 extension LocalStorageProtocol {
+    var jsonOnlyMessageQueueData: Data? {
+        get { nil }
+        set {}
+    }
+
     func upgrade() {
     }
 

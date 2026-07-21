@@ -88,6 +88,7 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
                                                     apiClient: self.apiClient,
                                                     requestHandler: self.requestHandler,
                                                     deviceMetadata: deviceMetadata,
+                                                    authProvider: self,
                                                     authManager: self.authManager)
     }()
     
@@ -263,6 +264,8 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
         if config.autoPushRegistration {
             disableDeviceForCurrentUser(withOnSuccess: onSuccess, onFailure: onFailure)
         }
+
+        inAppManager.clearUnhandledJsonOnlyMessages()
 
         _email = nil
         _userId = nil
@@ -747,6 +750,14 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
                                     inboxSessionId: inboxSessionId,
                                     onSuccess: onSuccess,
                                     onFailure: onFailure)
+    }
+
+    func getUnhandledJsonOnlyMessages() -> [IterableInAppMessage] {
+        inAppManager.getUnhandledJsonOnlyMessages()
+    }
+
+    func markJsonOnlyMessageHandled(messageId: String) -> Bool {
+        inAppManager.markJsonOnlyMessageHandled(messageId: messageId)
     }
     
     @discardableResult
