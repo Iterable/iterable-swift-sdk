@@ -1123,8 +1123,6 @@ class InAppTests: XCTestCase {
     }
     
     func testInboxChangedIsCalledWhenInAppIsRemovedInServer() {
-        let expectation1 = expectation(description: "testInboxChangedIsCalledWhenInAppIsRemovedInServer")
-        
         let notification = """
         {
             "itbl" : {
@@ -1135,17 +1133,34 @@ class InAppTests: XCTestCase {
             "messageId" : "messageId"
         }
         """.toJsonDict()
-        
+
+        let message = IterableInAppMessage(messageId: "messageId",
+                                           campaignId: 1,
+                                           trigger: IterableInAppTrigger(dict: [JsonKey.InApp.type: "never"]),
+                                           content: IterableHtmlInAppContent(edgeInsets: .zero, html: ""),
+                                           saveToInbox: true)
+        let mockInAppFetcher = MockInAppFetcher()
         let mockNotificationCenter = MockNotificationCenter()
-        let reference = mockNotificationCenter.addCallback(forNotification: .iterableInboxChanged) { _ in
-            expectation1.fulfill()
-        }
-        
-        XCTAssertNotNil(reference)
-        
         let config = IterableConfig()
-        let internalApi = InternalIterableAPI.initializeForTesting(config: config, notificationCenter: mockNotificationCenter)
-        
+        let internalApi = InternalIterableAPI.initializeForTesting(config: config,
+                                                                   inAppFetcher: mockInAppFetcher,
+                                                                   notificationCenter: mockNotificationCenter)
+
+        let initialInboxExpectation = expectation(description: "initial inbox load")
+        let initialReference = mockNotificationCenter.addCallback(forNotification: .iterableInboxChanged) { _ in
+            initialInboxExpectation.fulfill()
+        }
+        mockInAppFetcher.mockMessagesAvailableFromServer(internalApi: internalApi, messages: [message])
+        wait(for: [initialInboxExpectation], timeout: testExpectationTimeout)
+        mockNotificationCenter.removeCallbacks(withIds: initialReference.callbackId)
+        XCTAssertEqual(internalApi.inAppManager.getInboxMessages().count, 1)
+
+        let removalExpectation = expectation(description: "inbox changed after server removal")
+        removalExpectation.assertForOverFulfill = true
+        let removalReference = mockNotificationCenter.addCallback(forNotification: .iterableInboxChanged) { _ in
+            XCTAssertEqual(internalApi.inAppManager.getInboxMessages().count, 0)
+            removalExpectation.fulfill()
+        }
         let appIntegrationInternal = InternalIterableAppIntegration(tracker: internalApi,
                                                                     urlDelegate: config.urlDelegate,
                                                                     customActionDelegate: config.customActionDelegate,
@@ -1155,7 +1170,8 @@ class InAppTests: XCTestCase {
         
         appIntegrationInternal.application(MockApplicationStateProvider(applicationState: .background), didReceiveRemoteNotification: notification, fetchCompletionHandler: nil)
         
-        wait(for: [expectation1], timeout: testExpectationTimeout)
+        wait(for: [removalExpectation], timeout: testExpectationTimeout)
+        mockNotificationCenter.removeCallbacks(withIds: removalReference.callbackId)
     }
     
     func testSyncIsCalledOnLogin() {

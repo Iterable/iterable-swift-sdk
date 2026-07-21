@@ -515,16 +515,17 @@ class InAppManager: NSObject, IterableInternalInAppManagerProtocol {
                                successHandler: OnSuccessHandler? = nil,
                                failureHandler: OnFailureHandler? = nil) {
         ITBInfo()
-        updateMessage(message, didProcessTrigger: true, consumed: true)
+        updateMessage(message, didProcessTrigger: true, consumed: true).onSuccess { [weak self] _ in
+            self?.callbackQueue.async { [weak self] in
+                self?.notificationCenter.post(name: .iterableInboxChanged, object: self, userInfo: nil)
+            }
+        }
         requestHandler?.inAppConsume(message: message,
                                      location: location,
                                      source: source,
                                      inboxSessionId: inboxSessionId,
                                      onSuccess: successHandler,
                                      onFailure: failureHandler)
-        callbackQueue.async { [weak self] in
-            self?.notificationCenter.post(name: .iterableInboxChanged, object: self, userInfo: nil)
-        }
     }
     
     private static func isExpired(message: IterableInAppMessage, currentDate: Date) -> Bool {
@@ -631,10 +632,9 @@ extension InAppManager: InAppNotifiable {
                     self?.persister.persist(messagesMap.values)
                 }
             }
-        }
-        
-        callbackQueue.async { [weak self] in
-            self?.notificationCenter.post(name: .iterableInboxChanged, object: self, userInfo: nil)
+            self?.callbackQueue.async { [weak self] in
+                self?.notificationCenter.post(name: .iterableInboxChanged, object: self, userInfo: nil)
+            }
         }
     }
     

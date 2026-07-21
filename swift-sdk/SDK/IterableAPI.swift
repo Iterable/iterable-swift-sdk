@@ -922,7 +922,7 @@ import UIKit
     public static func inAppConsume(message: IterableInAppMessage, location: InAppLocation = .inApp) {
         guard let implementation, implementation.isSDKInitialized() else { return }
         
-        implementation.inAppConsume(message: message, location: location)
+        implementation.inAppManager.remove(message: message, location: location)
     }
     
     /// Consumes the notification and removes it from the list of in-app messages
@@ -935,7 +935,7 @@ import UIKit
     public static func inAppConsume(message: IterableInAppMessage, location: InAppLocation = .inApp, source: InAppDeleteSource) {
         guard let implementation, implementation.isSDKInitialized() else { return }
         
-        implementation.inAppConsume(message: message, location: location, source: source)
+        implementation.inAppManager.remove(message: message, location: location, source: source)
     }
     
     /// Tracks analytics data from a session of using an inbox UI
