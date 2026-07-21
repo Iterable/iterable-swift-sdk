@@ -220,6 +220,31 @@ class InboxTests: XCTestCase {
         wait(for: [removalExpectation], timeout: testExpectationTimeout)
         mockNotificationCenter.removeCallbacks(withIds: removalReference.callbackId)
     }
+
+    func testRemoveNonInboxMessageDoesNotPostInboxChanged() {
+        let message = IterableInAppMessage(messageId: "message1",
+                                           campaignId: 1,
+                                           trigger: IterableInAppTrigger(dict: [JsonKey.InApp.type: "never"]),
+                                           content: IterableHtmlInAppContent(edgeInsets: .zero, html: ""),
+                                           saveToInbox: false)
+        let mockInAppFetcher = MockInAppFetcher(messages: [message])
+        let mockNotificationCenter = MockNotificationCenter()
+        let internalAPI = InternalIterableAPI.initializeForTesting(inAppFetcher: mockInAppFetcher,
+                                                                   notificationCenter: mockNotificationCenter)
+        XCTAssertEqual(internalAPI.inAppManager.getMessages().count, 1)
+
+        let notificationExpectation = expectation(description: "no inbox change for non-inbox removal")
+        notificationExpectation.isInverted = true
+        let notificationReference = mockNotificationCenter.addCallback(forNotification: .iterableInboxChanged) { _ in
+            notificationExpectation.fulfill()
+        }
+
+        internalAPI.inAppManager.remove(message: message, location: .inApp)
+
+        wait(for: [notificationExpectation], timeout: testExpectationTimeoutForInverted)
+        XCTAssertEqual(internalAPI.inAppManager.getMessages().count, 0)
+        mockNotificationCenter.removeCallbacks(withIds: notificationReference.callbackId)
+    }
     
     func testShowInboxMessage() {
         let expectation1 = expectation(description: "testShowInboxMessage")

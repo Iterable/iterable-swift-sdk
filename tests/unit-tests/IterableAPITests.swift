@@ -1152,6 +1152,54 @@ class IterableAPITests: XCTestCase {
         XCTAssertEqual(networkSession.requests.filter { $0.url?.absoluteString.contains(Const.Path.inAppConsume) == true }.count, 1)
         mockNotificationCenter.removeCallbacks(withIds: notificationReference.callbackId)
     }
+
+    func testInAppConsumeNonInboxMessageDoesNotPostInboxChanged() {
+        let messageId = "message1"
+        let message = IterableInAppMessage(messageId: messageId,
+                                           campaignId: 1,
+                                           trigger: IterableInAppTrigger(dict: [JsonKey.InApp.type: "never"]),
+                                           content: IterableHtmlInAppContent(edgeInsets: .zero, html: ""),
+                                           saveToInbox: false)
+        let mockInAppFetcher = MockInAppFetcher(messages: [message])
+        let mockNotificationCenter = MockNotificationCenter()
+        let networkSession = MockNetworkSession(statusCode: 200)
+        let internalAPI = InternalIterableAPI.initializeForTesting(apiKey: IterableAPITests.apiKey,
+                                                                   networkSession: networkSession,
+                                                                   inAppFetcher: mockInAppFetcher,
+                                                                   notificationCenter: mockNotificationCenter)
+        internalAPI.email = IterableAPITests.email
+        let oldImplementation = IterableAPI.implementation
+        IterableAPI.implementation = internalAPI
+        defer { IterableAPI.implementation = oldImplementation }
+
+        XCTAssertEqual(internalAPI.inAppManager.getMessages().count, 1)
+
+        let requestExpectation = expectation(description: "in-app consume request")
+        networkSession.requestCallback = { request in
+            guard request.url?.absoluteString.contains(Const.Path.inAppConsume) == true else { return }
+            let body = request.httpBody!.json() as! [String: Any]
+            TestUtils.validateMessageContext(messageId: messageId,
+                                             email: IterableAPITests.email,
+                                             saveToInbox: false,
+                                             silentInbox: false,
+                                             location: .inApp,
+                                             inBody: body)
+            requestExpectation.fulfill()
+        }
+
+        let notificationExpectation = expectation(description: "no inbox change for non-inbox consume")
+        notificationExpectation.isInverted = true
+        let notificationReference = mockNotificationCenter.addCallback(forNotification: .iterableInboxChanged) { _ in
+            notificationExpectation.fulfill()
+        }
+
+        IterableAPI.inAppConsume(message: message, location: .inApp)
+
+        wait(for: [requestExpectation, notificationExpectation], timeout: testExpectationTimeoutForInverted)
+        XCTAssertEqual(internalAPI.inAppManager.getMessages().count, 0)
+        XCTAssertEqual(networkSession.requests.filter { $0.url?.absoluteString.contains(Const.Path.inAppConsume) == true }.count, 1)
+        mockNotificationCenter.removeCallbacks(withIds: notificationReference.callbackId)
+    }
     
     func testUpdateSubscriptions() {
         let expectation1 = expectation(description: "update subscriptions")

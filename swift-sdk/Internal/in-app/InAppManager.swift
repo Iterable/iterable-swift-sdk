@@ -516,6 +516,7 @@ class InAppManager: NSObject, IterableInternalInAppManagerProtocol {
                                failureHandler: OnFailureHandler? = nil) {
         ITBInfo()
         updateMessage(message, didProcessTrigger: true, consumed: true).onSuccess { [weak self] _ in
+            guard message.saveToInbox else { return }
             self?.callbackQueue.async { [weak self] in
                 self?.notificationCenter.post(name: .iterableInboxChanged, object: self, userInfo: nil)
             }
@@ -626,13 +627,11 @@ extension InAppManager: InAppNotifiable {
         ITBInfo()
         
         updateQueue.async { [weak self] in
-            if let _ = self?.messagesMap.filter({ $0.key == messageId }).first {
-                if let messagesMap = self?.messagesMap {
-                    self?.messagesMap.removeValue(forKey: messageId)
-                    self?.persister.persist(messagesMap.values)
-                }
-            }
-            self?.callbackQueue.async { [weak self] in
+            guard let self = self, let message = self.messagesMap[messageId] else { return }
+            self.messagesMap.removeValue(forKey: messageId)
+            self.persister.persist(self.messagesMap.values)
+            guard message.saveToInbox else { return }
+            self.callbackQueue.async { [weak self] in
                 self?.notificationCenter.post(name: .iterableInboxChanged, object: self, userInfo: nil)
             }
         }

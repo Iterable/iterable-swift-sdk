@@ -1173,6 +1173,50 @@ class InAppTests: XCTestCase {
         wait(for: [removalExpectation], timeout: testExpectationTimeout)
         mockNotificationCenter.removeCallbacks(withIds: removalReference.callbackId)
     }
+
+    func testInboxChangedIsNotCalledWhenNonInboxMessageIsRemovedInServer() {
+        let notification = """
+        {
+            "itbl" : {
+                "messageId" : "background_notification",
+                "isGhostPush" : true
+            },
+            "notificationType" : "InAppRemove",
+            "messageId" : "messageId"
+        }
+        """.toJsonDict()
+
+        let message = IterableInAppMessage(messageId: "messageId",
+                                           campaignId: 1,
+                                           trigger: IterableInAppTrigger(dict: [JsonKey.InApp.type: "never"]),
+                                           content: IterableHtmlInAppContent(edgeInsets: .zero, html: ""),
+                                           saveToInbox: false)
+        let mockInAppFetcher = MockInAppFetcher(messages: [message])
+        let mockNotificationCenter = MockNotificationCenter()
+        let config = IterableConfig()
+        let internalApi = InternalIterableAPI.initializeForTesting(config: config,
+                                                                   inAppFetcher: mockInAppFetcher,
+                                                                   notificationCenter: mockNotificationCenter)
+        XCTAssertEqual(internalApi.inAppManager.getMessages().count, 1)
+
+        let notificationExpectation = expectation(description: "no inbox change for non-inbox server removal")
+        notificationExpectation.isInverted = true
+        let notificationReference = mockNotificationCenter.addCallback(forNotification: .iterableInboxChanged) { _ in
+            notificationExpectation.fulfill()
+        }
+        let appIntegrationInternal = InternalIterableAppIntegration(tracker: internalApi,
+                                                                    urlDelegate: config.urlDelegate,
+                                                                    customActionDelegate: config.customActionDelegate,
+                                                                    urlOpener: MockUrlOpener(),
+                                                                    inAppNotifiable: internalApi.inAppManager,
+                                                                    embeddedNotifiable: internalApi.embeddedManager)
+
+        appIntegrationInternal.application(MockApplicationStateProvider(applicationState: .background), didReceiveRemoteNotification: notification, fetchCompletionHandler: nil)
+
+        wait(for: [notificationExpectation], timeout: testExpectationTimeoutForInverted)
+        XCTAssertEqual(internalApi.inAppManager.getMessages().count, 0)
+        mockNotificationCenter.removeCallbacks(withIds: notificationReference.callbackId)
+    }
     
     func testSyncIsCalledOnLogin() {
         let expectation1 = expectation(description: "testSyncIsCalledOnLogin")

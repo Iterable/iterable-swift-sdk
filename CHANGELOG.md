@@ -4,7 +4,7 @@ All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 ## [Unreleased]
 ### Fixed
-- Public `inAppConsume` APIs now remove messages locally and post `iterableInboxChanged`. Inbox change notifications now fire after the local state is updated.
+- Public `inAppConsume` APIs now remove messages locally and post `iterableInboxChanged` after the local state is updated. The notification fires only when an inbox message changes, so removing popups or JSON-only messages no longer announces an inbox change.
 
 ## [6.7.4]
 ### Added
