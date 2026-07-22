@@ -2228,13 +2228,63 @@ final class JsonOnlyMessageAvailabilityTests: XCTestCase {
         XCTAssertTrue(expiringStore.getMessages().isEmpty)
     }
 
+    func testStoreDropsAlreadyExpiredMessage() {
+        let localStorage = MockLocalStorage()
+        let dateProvider = MockDateProvider()
+        let auth = Auth(userId: nil, email: Self.email, authToken: nil, userIdUnknownUser: nil)
+        let store = JsonOnlyMessageStore(localStorage: localStorage,
+                                         dateProvider: dateProvider,
+                                         identityProvider: { UserIdentitySnapshot(auth: auth) })
+        let message = makeJsonOnlyMessage(id: "expired", expiresAt: dateProvider.currentDate)
+
+        XCTAssertFalse(store.enqueue(message))
+        XCTAssertTrue(store.getMessages().isEmpty)
+        XCTAssertNil(store.prepareDelivery(for: message))
+        XCTAssertTrue(store.getMessages().isEmpty)
+    }
+
+    func testMessageExpiredBeforeForegroundReplayIsNotSignaled() {
+        let noDelegateExpectation = expectation(description: "no delegate signal for expired message")
+        noDelegateExpectation.isInverted = true
+        let noNotificationExpectation = expectation(description: "no notification for expired message")
+        noNotificationExpectation.isInverted = true
+        let dateProvider = MockDateProvider()
+        let applicationState = MockApplicationStateProvider(applicationState: .background)
+        let notificationCenter = MockNotificationCenter()
+        let delegate = MockInAppDelegate()
+        let fetcher = MockInAppFetcher()
+        let message = makeJsonOnlyMessage(id: "expiring",
+                                          expiresAt: dateProvider.currentDate.addingTimeInterval(1))
+
+        delegate.onJsonOnlyMessageAvailableCallback = { _ in noDelegateExpectation.fulfill() }
+        let notificationReference = notificationCenter.addCallback(forNotification: .iterableJsonOnlyInAppMessageAvailable) { _ in
+            noNotificationExpectation.fulfill()
+        }
+        let internalAPI = initialize(fetcher: fetcher,
+                                     delegate: delegate,
+                                     applicationState: applicationState,
+                                     notificationCenter: notificationCenter,
+                                     dateProvider: dateProvider)
+        fetch([message], with: fetcher, internalAPI: internalAPI)
+        XCTAssertEqual(IterableAPI.getUnhandledJsonOnlyMessages().map(\.messageId), [message.messageId])
+
+        dateProvider.currentDate = dateProvider.currentDate.addingTimeInterval(2)
+        applicationState.applicationState = .active
+        notificationCenter.post(name: UIApplication.didBecomeActiveNotification, object: nil, userInfo: nil)
+
+        wait(for: [noDelegateExpectation, noNotificationExpectation], timeout: testExpectationTimeoutForInverted)
+        XCTAssertTrue(IterableAPI.getUnhandledJsonOnlyMessages().isEmpty)
+        notificationCenter.removeCallbacks(withIds: notificationReference.callbackId)
+    }
+
     private func initialize(localStorage: MockLocalStorage = MockLocalStorage(),
                             fetcher: MockInAppFetcher,
                             persister: InAppPersistenceProtocol = MockInAppPersister(),
                             delegate: IterableInAppDelegate = MockInAppDelegate(),
                             networkSession: MockNetworkSession = MockNetworkSession(),
                             applicationState: MockApplicationStateProvider = MockApplicationStateProvider(applicationState: .active),
-                            notificationCenter: MockNotificationCenter = MockNotificationCenter()) -> InternalIterableAPI {
+                            notificationCenter: MockNotificationCenter = MockNotificationCenter(),
+                            dateProvider: DateProviderProtocol = SystemDateProvider()) -> InternalIterableAPI {
         if localStorage.email == nil && localStorage.userId == nil {
             localStorage.email = Self.email
         }
@@ -2243,6 +2293,7 @@ final class JsonOnlyMessageAvailabilityTests: XCTestCase {
         config.inAppDisplayInterval = 0
         config.inAppDelegate = delegate
         IterableAPI.initializeForTesting(config: config,
+                                         dateProvider: dateProvider,
                                          networkSession: networkSession,
                                          localStorage: localStorage,
                                          inAppFetcher: fetcher,

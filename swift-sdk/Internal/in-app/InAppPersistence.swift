@@ -406,13 +406,15 @@ final class JsonOnlyMessageStore {
     func enqueue(_ message: IterableInAppMessage) -> Bool {
         stateQueue.sync {
             guard var state = loadCurrentState() else { return false }
+            let currentDate = dateProvider.currentDate
+            guard !Self.isExpired(message, at: currentDate) else { return false }
 
             if state.entries.contains(where: { $0.message.messageId == message.messageId }) {
                 return true
             }
 
             state.entries.append(Entry(message: message,
-                                       storedAt: dateProvider.currentDate,
+                                       storedAt: currentDate,
                                        didBeginInitialDelivery: false))
             state.entries = Array(state.entries.suffix(Self.maximumRecordCount))
             return persist(state)
@@ -422,8 +424,10 @@ final class JsonOnlyMessageStore {
     func prepareDelivery(for message: IterableInAppMessage) -> Delivery? {
         stateQueue.sync {
             guard var state = loadCurrentState() else { return nil }
+            let currentDate = dateProvider.currentDate
 
             if let index = state.entries.firstIndex(where: { $0.message.messageId == message.messageId }) {
+                guard !Self.isExpired(state.entries[index].message, at: currentDate) else { return nil }
                 let isInitial = !state.entries[index].didBeginInitialDelivery
                 if isInitial {
                     state.entries[index].didBeginInitialDelivery = true
@@ -432,8 +436,9 @@ final class JsonOnlyMessageStore {
                 return Delivery(message: state.entries[index].message, isInitial: isInitial)
             }
 
+            guard !Self.isExpired(message, at: currentDate) else { return nil }
             state.entries.append(Entry(message: message,
-                                       storedAt: dateProvider.currentDate,
+                                       storedAt: currentDate,
                                        didBeginInitialDelivery: true))
             state.entries = Array(state.entries.suffix(Self.maximumRecordCount))
             guard persist(state) else { return nil }
@@ -504,6 +509,11 @@ final class JsonOnlyMessageStore {
         var entries: [Entry]
     }
 
+    private static func isExpired(_ message: IterableInAppMessage, at currentDate: Date) -> Bool {
+        guard let expiresAt = message.expiresAt else { return false }
+        return expiresAt <= currentDate
+    }
+
     private func loadCurrentState() -> State? {
         guard let snapshot = identityProvider() else { return nil }
 
@@ -526,8 +536,8 @@ final class JsonOnlyMessageStore {
 
         let currentDate = dateProvider.currentDate
         let retainedEntries = state.entries.filter { entry in
-            if let expiresAt = entry.message.expiresAt {
-                return expiresAt > currentDate
+            if entry.message.expiresAt != nil {
+                return !Self.isExpired(entry.message, at: currentDate)
             }
             return entry.storedAt.addingTimeInterval(Self.fallbackRetentionPeriod) > currentDate
         }
