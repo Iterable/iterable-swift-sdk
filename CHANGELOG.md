@@ -4,10 +4,11 @@ All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 ## [Unreleased]
 ### Added
-- Added at least once delivery for JSON-only in-app messages through `IterableInAppDelegate.onJsonOnlyMessageAvailable(message:)` and `iterableJsonOnlyInAppMessageAvailable`. Unhandled messages remain available through `IterableAPI.getUnhandledJsonOnlyMessages()` until acknowledged with `markJsonOnlyMessageHandled(messageId:)`.
+- Added at least once delivery for JSON-only in-app messages through `IterableInAppDelegate.onJsonOnlyMessageAvailable(message:)` and `iterableJsonOnlyInAppMessageAvailable` (Objective-C: `IterableAPI.jsonOnlyInAppMessageAvailableNotification`). Messages are saved to local storage before signaling and replay on foreground until acknowledged. Unhandled messages remain available through `IterableAPI.getUnhandledJsonOnlyMessages()` until acknowledged with `markJsonOnlyMessageHandled(messageId:)`; acknowledgement records a payload fingerprint so the same message ID with a changed payload is delivered again. These callbacks run inside an SDK identity critical section; see the API documentation for the cross-thread wait restriction.
 
 ### Fixed
 - Public `inAppConsume` APIs now remove messages locally and post `iterableInboxChanged` after the local state is updated. The notification fires only when an inbox message changes, so removing popups or JSON-only messages no longer announces an inbox change.
+- In-app fetch, delivery, and merge are now scoped to the user identity that started them, so a login or logout during processing can no longer deliver or persist the previous user's messages.
 
 ## [6.7.4]
 ### Added
