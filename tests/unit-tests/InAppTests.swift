@@ -1967,6 +1967,34 @@ private final class LegacySwiftInAppDelegate: NSObject, IterableInAppDelegate {
     }
 }
 
+private final class BlockingInAppFetcher: InAppFetcherProtocol {
+    func blockNextFetch(with messages: [IterableInAppMessage]) {
+        blockedMessages = messages
+    }
+
+    func fetch() -> Pending<[IterableInAppMessage], Error> {
+        guard let messages = blockedMessages else {
+            if didCompleteBlockedFetch {
+                subsequentFetchStarted.signal()
+            }
+            return Fulfill(value: [])
+        }
+
+        blockedMessages = nil
+        blockedFetchStarted.signal()
+        continueBlockedFetch.wait()
+        didCompleteBlockedFetch = true
+        return Fulfill(value: messages)
+    }
+
+    let blockedFetchStarted = DispatchSemaphore(value: 0)
+    let continueBlockedFetch = DispatchSemaphore(value: 0)
+    let subsequentFetchStarted = DispatchSemaphore(value: 0)
+
+    private var blockedMessages: [IterableInAppMessage]?
+    private var didCompleteBlockedFetch = false
+}
+
 final class JsonOnlyMessageAvailabilityTests: XCTestCase {
     override func tearDown() {
         IterableAPI.implementation = nil
@@ -2115,6 +2143,47 @@ final class JsonOnlyMessageAvailabilityTests: XCTestCase {
         wait(for: [identitySwitchedExpectation, fetchCompletedExpectation], timeout: testExpectationTimeout)
         wait(for: [noOnNewExpectation, noAvailabilityExpectation, noNotificationExpectation], timeout: testExpectationTimeoutForInverted)
         XCTAssertTrue(IterableAPI.getUnhandledJsonOnlyMessages().isEmpty)
+        notificationCenter.removeCallbacks(withIds: notificationReference.callbackId)
+    }
+
+    func testIdentitySwitchWhileFetchIsInFlightDiscardsResponse() {
+        let noOnNewExpectation = expectation(description: "no onNew for stale response")
+        noOnNewExpectation.isInverted = true
+        let noAvailabilityExpectation = expectation(description: "no availability for stale response")
+        noAvailabilityExpectation.isInverted = true
+        let noNotificationExpectation = expectation(description: "no notification for stale response")
+        noNotificationExpectation.isInverted = true
+        let settledExpectation = expectation(description: "syncs settled")
+        let localStorage = MockLocalStorage()
+        localStorage.email = Self.email
+        let notificationCenter = MockNotificationCenter()
+        let fetcher = BlockingInAppFetcher()
+        let delegate = MockInAppDelegate()
+        let message = makeJsonOnlyMessage(id: "message-a")
+
+        delegate.onNewMessageCallback = { _ in noOnNewExpectation.fulfill() }
+        delegate.onJsonOnlyMessageAvailableCallback = { _ in noAvailabilityExpectation.fulfill() }
+        let notificationReference = notificationCenter.addCallback(forNotification: .iterableJsonOnlyInAppMessageAvailable) { _ in
+            noNotificationExpectation.fulfill()
+        }
+        let internalAPI = initialize(localStorage: localStorage,
+                                     fetcher: fetcher,
+                                     delegate: delegate,
+                                     notificationCenter: notificationCenter)
+        fetcher.blockNextFetch(with: [message])
+        _ = internalAPI.inAppManager.scheduleSync()
+        defer { fetcher.continueBlockedFetch.signal() }
+        XCTAssertEqual(fetcher.blockedFetchStarted.wait(timeout: .now() + testExpectationTimeout), .success)
+
+        internalAPI.setUserId("user-b")
+        fetcher.continueBlockedFetch.signal()
+        XCTAssertEqual(fetcher.subsequentFetchStarted.wait(timeout: .now() + testExpectationTimeout), .success)
+        internalAPI.inAppManager.scheduleSync().onSuccess { _ in settledExpectation.fulfill() }
+
+        wait(for: [settledExpectation], timeout: testExpectationTimeout)
+        wait(for: [noOnNewExpectation, noAvailabilityExpectation, noNotificationExpectation], timeout: testExpectationTimeoutForInverted)
+        XCTAssertTrue(IterableAPI.getUnhandledJsonOnlyMessages().isEmpty)
+        XCTAssertFalse(internalAPI.inAppManager.getMessages().contains(where: { $0.messageId == message.messageId }))
         notificationCenter.removeCallbacks(withIds: notificationReference.callbackId)
     }
 
@@ -2369,7 +2438,7 @@ final class JsonOnlyMessageAvailabilityTests: XCTestCase {
     }
 
     private func initialize(localStorage: MockLocalStorage = MockLocalStorage(),
-                            fetcher: MockInAppFetcher,
+                            fetcher: InAppFetcherProtocol,
                             persister: InAppPersistenceProtocol = MockInAppPersister(),
                             delegate: IterableInAppDelegate = MockInAppDelegate(),
                             networkSession: MockNetworkSession = MockNetworkSession(),

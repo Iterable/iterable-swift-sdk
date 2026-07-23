@@ -270,23 +270,35 @@ class InAppManager: NSObject, IterableInternalInAppManagerProtocol {
     private func synchronize(appIsReady: Bool) -> Pending<Bool, Error> {
         ITBInfo()
         
+        let identityScope = jsonOnlyMessageStore.identityScope
         return fetcher.fetch()
-            .map { [weak self] in
-                self?.mergeMessages($0) ?? MergeMessagesResult(inboxChanged: false, messagesMap: [:], deliveredMessages: [])
+            .map { [weak self] messages in
+                self?.mergeMessages(messages, identityScope: identityScope)
             }
-            .flatMap { [weak self] in
-                self?.processMergedMessages(appIsReady: appIsReady, mergeMessagesResult: $0) ?? Fulfill<Bool, Error>(value: true)
+            .flatMap { [weak self] mergeMessagesResult in
+                guard let self = self, let mergeMessagesResult = mergeMessagesResult else {
+                    return Fulfill<Bool, Error>(value: true)
+                }
+                return self.processMergedMessages(appIsReady: appIsReady,
+                                                  mergeMessagesResult: mergeMessagesResult,
+                                                  identityScope: identityScope)
             }
     }
     
     /// `messages` are new messages coming from the server
-    private func mergeMessages(_ messages: [IterableInAppMessage]) -> MergeMessagesResult {
-        MessagesObtainedHandler(messagesMap: messagesMap, messages: messages).handle()
+    private func mergeMessages(_ messages: [IterableInAppMessage],
+                               identityScope: UserIdentitySnapshot?) -> MergeMessagesResult? {
+        guard identityScope == jsonOnlyMessageStore.identityScope else { return nil }
+        return MessagesObtainedHandler(messagesMap: messagesMap, messages: messages).handle()
     }
     
-    private func processMergedMessages(appIsReady: Bool, mergeMessagesResult: MergeMessagesResult) -> Pending<Bool, Error> {
+    private func processMergedMessages(appIsReady: Bool,
+                                       mergeMessagesResult: MergeMessagesResult,
+                                       identityScope: UserIdentitySnapshot?) -> Pending<Bool, Error> {
+        guard identityScope == jsonOnlyMessageStore.identityScope else {
+            return Fulfill<Bool, Error>(value: true)
+        }
         messagesMap = mergeMessagesResult.messagesMap
-        let identityScope = jsonOnlyMessageStore.identityScope
         persistEligibleJsonOnlyMessages(identityScope: identityScope)
 
         let processingResult: Pending<Bool, Error>

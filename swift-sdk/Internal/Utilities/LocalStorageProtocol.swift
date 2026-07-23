@@ -51,11 +51,6 @@ protocol LocalStorageProtocol {
 }
 
 extension LocalStorageProtocol {
-    var jsonOnlyMessageQueueData: Data? {
-        get { nil }
-        set {}
-    }
-
     func upgrade() {
     }
 

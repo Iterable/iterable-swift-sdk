@@ -529,12 +529,14 @@ final class JsonOnlyMessageStore {
 
         let identity = StoredIdentity(snapshot)
         var state: State
+        var stateChanged = false
         if let data = localStorage.jsonOnlyMessageQueueData {
             do {
                 state = try JSONDecoder().decode(State.self, from: data)
             } catch {
                 ITBError("Unable to decode unhandled JSON-only messages: \(error.localizedDescription)")
                 state = State(identity: identity, entries: [])
+                stateChanged = true
             }
         } else {
             state = State(identity: identity, entries: [])
@@ -542,6 +544,7 @@ final class JsonOnlyMessageStore {
 
         if state.identity != identity {
             state = State(identity: identity, entries: [])
+            stateChanged = true
         }
 
         let currentDate = dateProvider.currentDate
@@ -554,9 +557,10 @@ final class JsonOnlyMessageStore {
 
         if retainedEntries.count != state.entries.count {
             state.entries = retainedEntries
+            stateChanged = true
         }
 
-        guard persist(state) else { return nil }
+        if stateChanged, !persist(state) { return nil }
         return state
     }
 
