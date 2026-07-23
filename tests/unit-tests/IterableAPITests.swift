@@ -1040,13 +1040,15 @@ class IterableAPITests: XCTestCase {
             initialInboxExpectation.fulfill()
         }
         let networkSession = MockNetworkSession(statusCode: 200)
+        let localStorage = MockLocalStorage()
+        localStorage.email = IterableAPITests.email
         let config = IterableConfig()
         let internalAPI = InternalIterableAPI.initializeForTesting(apiKey: IterableAPITests.apiKey,
                                                                    config: config,
                                                                    networkSession: networkSession,
+                                                                   localStorage: localStorage,
                                                                    inAppFetcher: mockInAppFetcher,
                                                                    notificationCenter: mockNotificationCenter)
-        internalAPI.email = "user@example.com"
         let oldImplementation = IterableAPI.implementation
         IterableAPI.implementation = internalAPI
         defer { IterableAPI.implementation = oldImplementation }
@@ -1108,11 +1110,13 @@ class IterableAPITests: XCTestCase {
             initialInboxExpectation.fulfill()
         }
         let networkSession = MockNetworkSession(statusCode: 200)
+        let localStorage = MockLocalStorage()
+        localStorage.email = IterableAPITests.email
         let internalAPI = InternalIterableAPI.initializeForTesting(apiKey: IterableAPITests.apiKey,
                                                                    networkSession: networkSession,
+                                                                   localStorage: localStorage,
                                                                    inAppFetcher: mockInAppFetcher,
                                                                    notificationCenter: mockNotificationCenter)
-        internalAPI.email = IterableAPITests.email
         let oldImplementation = IterableAPI.implementation
         IterableAPI.implementation = internalAPI
         defer { IterableAPI.implementation = oldImplementation }
@@ -1163,11 +1167,13 @@ class IterableAPITests: XCTestCase {
         let mockInAppFetcher = MockInAppFetcher(messages: [message])
         let mockNotificationCenter = MockNotificationCenter()
         let networkSession = MockNetworkSession(statusCode: 200)
+        let localStorage = MockLocalStorage()
+        localStorage.email = IterableAPITests.email
         let internalAPI = InternalIterableAPI.initializeForTesting(apiKey: IterableAPITests.apiKey,
                                                                    networkSession: networkSession,
+                                                                   localStorage: localStorage,
                                                                    inAppFetcher: mockInAppFetcher,
                                                                    notificationCenter: mockNotificationCenter)
-        internalAPI.email = IterableAPITests.email
         let oldImplementation = IterableAPI.implementation
         IterableAPI.implementation = internalAPI
         defer { IterableAPI.implementation = oldImplementation }

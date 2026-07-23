@@ -19,7 +19,13 @@ public extension Notification.Name {
     static let iterableInboxChanged = Notification.Name(rawValue: "itbl_inbox_changed")
 
     /// This is fired when a JSON-only in-app message is available locally.
+    /// Notification observers run inside an SDK identity critical section and may call SDK identity APIs on the same thread. They must not synchronously wait on another thread that makes any Iterable SDK call that reads or changes identity or message state, including request-sending APIs, because doing so can deadlock.
     static let iterableJsonOnlyInAppMessageAvailable = Notification.Name(rawValue: "itbl_json_only_in_app_message_available")
+}
+
+public extension IterableAPI {
+    /// Objective-C name for the JSON-only availability notification.
+    @objc static let jsonOnlyInAppMessageAvailableNotification = Notification.Name.iterableJsonOnlyInAppMessageAvailable
 }
 
 @objcMembers open class DefaultInAppDelegate: IterableInAppDelegate {

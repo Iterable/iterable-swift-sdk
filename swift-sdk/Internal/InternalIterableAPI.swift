@@ -18,7 +18,7 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
 
     var email: String? {
         get {
-            _email
+            identityValues().email
         } set {
             setEmail(newValue)
         }
@@ -26,7 +26,7 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
     
     var userId: String? {
         get {
-            _userId
+            identityValues().userId
         } set {
             setUserId(newValue)
         }
@@ -78,7 +78,11 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
     }
     
     var auth: Auth {
-        Auth(userId: userId, email: email, authToken: authManager.getAuthToken(), userIdUnknownUser: localStorage.userIdUnknownUser)
+        let identity = identityValues()
+        return Auth(userId: identity.userId,
+                    email: identity.email,
+                    authToken: authManager.getAuthToken(),
+                    userIdUnknownUser: localStorage.userIdUnknownUser)
     }
 
     var dependencyContainer: DependencyContainerProtocol
@@ -89,6 +93,7 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
                                                     requestHandler: self.requestHandler,
                                                     deviceMetadata: deviceMetadata,
                                                     authProvider: self,
+                                                    identityCoordinator: self.identityCoordinator,
                                                     authManager: self.authManager)
     }()
     
@@ -146,21 +151,25 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
     }
     
     func setEmail(_ email: String?, authToken: String? = nil, successHandler: OnSuccessHandler? = nil, failureHandler: OnFailureHandler? = nil, identityResolution: IterableIdentityResolution? = nil) {
+        identityCoordinator.beginPublication()
         
         ITBInfo()
-        if self._email == email && email != nil {
+        let currentEmail = identityValues().email
+        if currentEmail == email && email != nil {
+            identityCoordinator.endPublication()
             self.checkAndUpdateAuthToken(authToken)
             return
         }
 
-        if self._email == email {
+        if currentEmail == email {
+            identityCoordinator.endPublication()
             return
         }
         
         self.logoutPreviousUser()
 
-        self._email = email
-        self._userId = nil
+        setIdentity(email: email, userId: nil)
+        identityCoordinator.endPublication()
 
         self.onLogin(authToken) { [weak self] in
             guard let config = self?.config else {
@@ -195,21 +204,26 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
     }
     
     func setUserId(_ userId: String?, authToken: String? = nil, successHandler: OnSuccessHandler? = nil, failureHandler: OnFailureHandler? = nil, isUnknownUser: Bool = false, identityResolution: IterableIdentityResolution? = nil) {
+        identityCoordinator.beginPublication()
+
         ITBInfo()
 
-        if self._userId == userId && userId != nil {
+        let currentUserId = identityValues().userId
+        if currentUserId == userId && userId != nil {
+            identityCoordinator.endPublication()
             self.checkAndUpdateAuthToken(authToken)
             return
         }
 
-        if self._userId == userId {
+        if currentUserId == userId {
+            identityCoordinator.endPublication()
             return
         }
 
         self.logoutPreviousUser()
 
-        self._email = nil
-        self._userId = userId
+        setIdentity(email: nil, userId: userId)
+        identityCoordinator.endPublication()
         
         self.onLogin(authToken) { [weak self] in
             guard let config = self?.config else {
@@ -254,9 +268,12 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
 
     func logoutUser(withOnSuccess onSuccess: OnSuccessHandler?,
                     onFailure: OnFailureHandler?) {
+        identityCoordinator.beginPublication()
+
         ITBInfo()
 
         guard isSDKInitialized() else {
+            identityCoordinator.endPublication()
             onFailure?("Iterable SDK is not initialized", nil)
             return
         }
@@ -265,10 +282,10 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
             disableDeviceForCurrentUser(withOnSuccess: onSuccess, onFailure: onFailure)
         }
 
-        inAppManager.clearUnhandledJsonOnlyMessages()
+        setIdentity(email: nil, userId: nil)
+        identityCoordinator.endPublication()
 
-        _email = nil
-        _userId = nil
+        inAppManager.clearUnhandledJsonOnlyMessages()
 
         storeIdentifierData()
 
@@ -810,6 +827,7 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
     private var _email: String?
     private var _payloadData: [AnyHashable: Any]?
     private var _userId: String?
+    private let identityCoordinator = IdentityCoordinator()
     private var _successCallback: OnSuccessHandler? = nil
     private var _failureCallback: OnFailureHandler? = nil
     
@@ -874,11 +892,13 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
     }
     
     public func isEitherUserIdOrEmailSet() -> Bool {
-        IterableUtil.isNotNullOrEmpty(string: _email) || IterableUtil.isNotNullOrEmpty(string: _userId)
+        let identity = identityValues()
+        return IterableUtil.isNotNullOrEmpty(string: identity.email) || IterableUtil.isNotNullOrEmpty(string: identity.userId)
     }
     
     public func noUserLoggedIn() -> Bool {
-        IterableUtil.isNullOrEmpty(string: _email) && IterableUtil.isNullOrEmpty(string: _userId)
+        let identity = identityValues()
+        return IterableUtil.isNullOrEmpty(string: identity.email) && IterableUtil.isNullOrEmpty(string: identity.userId)
     }
     
     public func isUnknownUserSet() -> Bool {
@@ -886,17 +906,14 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
     }
     
     private func logoutPreviousUser() {
-        // Delegates to logoutUser(withOnSuccess:onFailure:) so the logout cleanup
-        // sequence has a single source of truth. The user-switch paths (setEmail/
-        // setUserId) pass no handlers: a nil onFailure keeps the not-initialized
-        // guard a silent no-op, and a nil onSuccess makes the auto-push-off
-        // completion a no-op, matching this method's previous behavior.
+        // Preserve the existing no-handler behavior for internal user switches.
         logoutUser(withOnSuccess: nil, onFailure: nil)
     }
     
     private func storeIdentifierData() {
-        localStorage.email = _email
-        localStorage.userId = _userId
+        let identity = identityValues()
+        localStorage.email = identity.email
+        localStorage.userId = identity.userId
     }
     
     private func onLogin(_ authToken: String? = nil, onloginSuccess onloginSuccessCallBack: (()->())? = nil) {
@@ -952,8 +969,18 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
     }
     
     private func retrieveIdentifierData() {
-        _email = localStorage.email
-        _userId = localStorage.userId
+        setIdentity(email: localStorage.email, userId: localStorage.userId)
+    }
+
+    private func identityValues() -> (email: String?, userId: String?) {
+        identityCoordinator.withCriticalSection { (_email, _userId) }
+    }
+
+    private func setIdentity(email: String?, userId: String?) {
+        identityCoordinator.publish {
+            _email = email
+            _userId = userId
+        }
     }
     
     private func save(pushPayload payload: [AnyHashable: Any]) {
@@ -1192,5 +1219,4 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
     }
     
 }
-
 

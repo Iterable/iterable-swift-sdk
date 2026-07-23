@@ -8,6 +8,76 @@ protocol AuthProvider: AnyObject {
     var auth: Auth { get }
 }
 
+struct UserIdentityContext: Equatable {
+    let identity: UserIdentitySnapshot?
+    let generation: UInt64
+}
+
+final class IdentityCoordinator {
+    func capture(identityProvider: () -> UserIdentitySnapshot?) -> UserIdentityContext {
+        withCriticalSection {
+            UserIdentityContext(identity: identityProvider(), generation: generation)
+        }
+    }
+
+    @discardableResult
+    func performIfCurrent(_ context: UserIdentityContext,
+                          identityProvider: () -> UserIdentitySnapshot?,
+                          _ block: () -> Void) -> Bool {
+        withCriticalSection {
+            guard context.generation == generation,
+                  context.identity == identityProvider(),
+                  !hasPendingPublication else {
+                return false
+            }
+            block()
+            return context.generation == generation &&
+                context.identity == identityProvider() &&
+                !hasPendingPublication
+        }
+    }
+
+    func publish(_ block: () -> Void) {
+        beginPublication()
+        withCriticalSection {
+            block()
+            generation &+= 1
+            endPublication()
+        }
+    }
+
+    func beginPublication() {
+        pendingPublicationLock.lock()
+        pendingPublicationCount += 1
+        pendingPublicationLock.unlock()
+    }
+
+    func endPublication() {
+        pendingPublicationLock.lock()
+        pendingPublicationCount -= 1
+        pendingPublicationLock.unlock()
+    }
+
+    func withCriticalSection<T>(_ block: () -> T) -> T {
+        lock.lock()
+        defer { lock.unlock() }
+        return block()
+    }
+
+    private var hasPendingPublication: Bool {
+        pendingPublicationLock.lock()
+        defer { pendingPublicationLock.unlock() }
+        return pendingPublicationCount > 0
+    }
+
+    // Lock order is manager queue, identity section, then JSON store queue. Identity
+    // holders may call customers but must never synchronously wait on manager queues.
+    private let lock = NSRecursiveLock()
+    private let pendingPublicationLock = NSLock()
+    private var generation: UInt64 = 0
+    private var pendingPublicationCount = 0
+}
+
 struct Auth {
     let userId: String?
     let email: String?

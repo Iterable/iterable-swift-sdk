@@ -38,6 +38,23 @@ class InAppMessageProcessorTests: XCTestCase {
                                              messages: newMessages).handle()
         XCTAssertEqual(result.deliveredMessages.count, 1)
     }
+
+    func testServerReadStateDoesNotClearLocalConsumeState() {
+        let messageId = "msg-1"
+        let localMessage = Self.makeEmptyInboxMessage(messageId)
+        localMessage.consumed = true
+        localMessage.didProcessTrigger = true
+        let serverMessage = Self.makeEmptyInboxMessage(messageId)
+        serverMessage.read = true
+
+        let result = MessagesObtainedHandler(messagesMap: [messageId: localMessage],
+                                             messages: [serverMessage]).handle()
+        let mergedMessage = result.messagesMap[messageId]
+
+        XCTAssertTrue(mergedMessage?.read == true)
+        XCTAssertTrue(mergedMessage?.consumed == true)
+        XCTAssertTrue(mergedMessage?.didProcessTrigger == true)
+    }
     
     private static let emptyInAppContent = IterableHtmlInAppContent(edgeInsets: .zero, html: "")
     

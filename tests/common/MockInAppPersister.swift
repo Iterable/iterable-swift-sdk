@@ -7,6 +7,8 @@ import Foundation
 @testable import IterableSDK
 
 class MockInAppPersister: InAppPersistenceProtocol {
+    var onPersist: (() -> Void)?
+
     private var messages = [IterableInAppMessage]()
     
     func getMessages() -> [IterableInAppMessage] {
@@ -15,6 +17,8 @@ class MockInAppPersister: InAppPersistenceProtocol {
     
     func persist(_ messages: [IterableInAppMessage]) {
         self.messages = messages
+        let callback = onPersist
+        callback?()
     }
     
     func clear() {

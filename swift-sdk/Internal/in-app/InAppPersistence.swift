@@ -396,93 +396,190 @@ final class JsonOnlyMessageStore {
 
     init(localStorage: LocalStorageProtocol,
          dateProvider: DateProviderProtocol,
-         identityProvider: @escaping () -> UserIdentitySnapshot?) {
+         identityProvider: @escaping () -> UserIdentitySnapshot?,
+         identityCoordinator: IdentityCoordinator = IdentityCoordinator()) {
         self.localStorage = localStorage
         self.dateProvider = dateProvider
         self.identityProvider = identityProvider
+        self.identityCoordinator = identityCoordinator
     }
 
-    var identityScope: UserIdentitySnapshot? {
-        stateQueue.sync {
-            identityProvider()
-        }
+    var identityContext: UserIdentityContext {
+        identityCoordinator.capture(identityProvider: identityProvider)
     }
 
     @discardableResult
     func enqueue(_ message: IterableInAppMessage) -> Bool {
-        guard let identityScope = identityScope else { return false }
-        return enqueue(message, identityScope: identityScope)
+        enqueue(message, identityContext: identityContext)
     }
 
     @discardableResult
-    func enqueue(_ message: IterableInAppMessage, identityScope: UserIdentitySnapshot) -> Bool {
-        stateQueue.sync {
-            guard var state = loadCurrentState(expectedIdentity: identityScope) else { return false }
-            let currentDate = dateProvider.currentDate
-            guard !Self.isExpired(message, at: currentDate) else { return false }
-
-            if state.entries.contains(where: { $0.message.messageId == message.messageId }) {
-                return true
+    func enqueue(_ message: IterableInAppMessage, identityContext: UserIdentityContext) -> Bool {
+        guard let identity = identityContext.identity else { return false }
+        var result = false
+        guard identityCoordinator.performIfCurrent(identityContext, identityProvider: identityProvider, {
+            result = stateQueue.sync {
+                guard var state = loadCurrentState(currentIdentity: identity) else { return false }
+                let currentDate = dateProvider.currentDate
+                guard !Self.isExpired(message, at: currentDate) else { return false }
+                if state.entries.contains(where: { $0.message.messageId == message.messageId }) {
+                    return true
+                }
+                guard !state.discardedUnacknowledgedMessageIds.contains(message.messageId) else { return false }
+                guard !isAcknowledgedUnchanged(message, in: state) else { return false }
+                state.acknowledgements.removeAll { $0.messageId == message.messageId }
+                state.entries.append(Entry(message: message,
+                                           storedAt: currentDate,
+                                           didBeginInitialDelivery: false))
+                trimEntries(&state)
+                return persist(state)
             }
+        }) else { return false }
+        return result
+    }
 
-            state.entries.append(Entry(message: message,
-                                       storedAt: currentDate,
-                                       didBeginInitialDelivery: false))
-            state.entries = Array(state.entries.suffix(Self.maximumRecordCount))
-            return persist(state)
-        }
+    @discardableResult
+    func enqueue(_ messages: [IterableInAppMessage], identityContext: UserIdentityContext) -> Bool {
+        guard let identity = identityContext.identity else { return false }
+        var result = false
+        guard identityCoordinator.performIfCurrent(identityContext, identityProvider: identityProvider, {
+            result = stateQueue.sync {
+                guard var state = loadCurrentState(currentIdentity: identity) else { return false }
+                let currentDate = dateProvider.currentDate
+                var didChange = false
+
+                messages.forEach { message in
+                    guard !Self.isExpired(message, at: currentDate),
+                          !state.entries.contains(where: { $0.message.messageId == message.messageId }),
+                          !state.discardedUnacknowledgedMessageIds.contains(message.messageId),
+                          !isAcknowledgedUnchanged(message, in: state) else {
+                        return
+                    }
+                    state.acknowledgements.removeAll { $0.messageId == message.messageId }
+                    state.entries.append(Entry(message: message,
+                                               storedAt: currentDate,
+                                               didBeginInitialDelivery: false))
+                    didChange = true
+                }
+
+                guard didChange else { return true }
+                trimEntries(&state)
+                return persist(state)
+            }
+        }) else { return false }
+        return result
     }
 
     func prepareDelivery(for message: IterableInAppMessage) -> Delivery? {
-        guard let identityScope = identityScope else { return nil }
-        return prepareDelivery(for: message, identityScope: identityScope)
+        prepareDelivery(for: message, identityContext: identityContext)
     }
 
-    func prepareDelivery(for message: IterableInAppMessage, identityScope: UserIdentitySnapshot) -> Delivery? {
-        stateQueue.sync {
-            guard var state = loadCurrentState(expectedIdentity: identityScope),
-                  let index = state.entries.firstIndex(where: { $0.message.messageId == message.messageId }) else {
-                return nil
+    func prepareDelivery(for message: IterableInAppMessage, identityContext: UserIdentityContext) -> Delivery? {
+        guard let identity = identityContext.identity else { return nil }
+        var result: Delivery?
+        guard identityCoordinator.performIfCurrent(identityContext, identityProvider: identityProvider, {
+            result = stateQueue.sync {
+                guard var state = loadCurrentState(currentIdentity: identity),
+                      let index = state.entries.firstIndex(where: { $0.message.messageId == message.messageId }) else {
+                    return nil
+                }
+                let currentDate = dateProvider.currentDate
+                guard !Self.isExpired(state.entries[index].message, at: currentDate) else { return nil }
+                let isInitial = !state.entries[index].didBeginInitialDelivery
+                if isInitial {
+                    state.entries[index].didBeginInitialDelivery = true
+                    guard persist(state) else { return nil }
+                }
+                return Delivery(message: state.entries[index].message, isInitial: isInitial)
             }
-            let currentDate = dateProvider.currentDate
-            guard !Self.isExpired(state.entries[index].message, at: currentDate) else { return nil }
-            let isInitial = !state.entries[index].didBeginInitialDelivery
-            if isInitial {
-                state.entries[index].didBeginInitialDelivery = true
-                guard persist(state) else { return nil }
-            }
-            return Delivery(message: state.entries[index].message, isInitial: isInitial)
-        }
+        }) else { return nil }
+        return result
     }
 
     func getMessages() -> [IterableInAppMessage] {
-        stateQueue.sync {
-            loadCurrentState()?.entries.map(\.message) ?? []
-        }
+        getMessages(identityContext: identityContext)
     }
 
-    func getMessages(identityScope: UserIdentitySnapshot) -> [IterableInAppMessage] {
-        stateQueue.sync {
-            loadCurrentState(expectedIdentity: identityScope)?.entries.map(\.message) ?? []
+    func getMessages(identityContext: UserIdentityContext) -> [IterableInAppMessage] {
+        guard let identity = identityContext.identity else { return [] }
+        var result = [IterableInAppMessage]()
+        guard identityCoordinator.performIfCurrent(identityContext, identityProvider: identityProvider, {
+            result = stateQueue.sync {
+                loadCurrentState(currentIdentity: identity)?.entries.map(\.message) ?? []
+            }
+        }) else { return [] }
+        return result
+    }
+
+    struct AcknowledgementStatus {
+        let unchangedMessageIds: Set<String>
+        let changedMessageIds: Set<String>
+    }
+
+    func acknowledgementStatus(for messages: [IterableInAppMessage],
+                               identityContext: UserIdentityContext) -> AcknowledgementStatus {
+        guard let identity = identityContext.identity else {
+            return AcknowledgementStatus(unchangedMessageIds: [], changedMessageIds: [])
         }
+        var result = AcknowledgementStatus(unchangedMessageIds: [], changedMessageIds: [])
+        guard identityCoordinator.performIfCurrent(identityContext, identityProvider: identityProvider, {
+            result = stateQueue.sync {
+                guard let state = loadCurrentState(currentIdentity: identity) else { return result }
+                var unchangedMessageIds = Set<String>()
+                var changedMessageIds = Set<String>()
+                messages.forEach { message in
+                    guard message.isJsonOnly else { return }
+                    if state.discardedUnacknowledgedMessageIds.contains(message.messageId) {
+                        unchangedMessageIds.insert(message.messageId)
+                        return
+                    }
+                    guard let acknowledgement = state.acknowledgements.last(where: { $0.messageId == message.messageId }) else {
+                        return
+                    }
+                    if let acknowledgedFingerprint = acknowledgement.payloadFingerprint,
+                       let messageFingerprint = Self.payloadFingerprint(for: message),
+                       acknowledgedFingerprint == messageFingerprint {
+                        unchangedMessageIds.insert(message.messageId)
+                    } else {
+                        changedMessageIds.insert(message.messageId)
+                    }
+                }
+                return AcknowledgementStatus(unchangedMessageIds: unchangedMessageIds,
+                                             changedMessageIds: changedMessageIds)
+            }
+        }) else { return AcknowledgementStatus(unchangedMessageIds: [], changedMessageIds: []) }
+        return result
     }
 
     @discardableResult
     func remove(messageId: String) -> Bool {
-        stateQueue.sync {
-            guard var state = loadCurrentState(),
-                  let index = state.entries.firstIndex(where: { $0.message.messageId == messageId }) else {
-                return false
-            }
+        let context = identityContext
+        guard let identity = context.identity else { return false }
+        var result = false
+        guard identityCoordinator.performIfCurrent(context, identityProvider: identityProvider, {
+            result = stateQueue.sync {
+                guard var state = loadCurrentState(currentIdentity: identity),
+                      let index = state.entries.firstIndex(where: { $0.message.messageId == messageId }) else {
+                    return false
+                }
 
-            state.entries.remove(at: index)
-            return persist(state)
-        }
+                let message = state.entries.remove(at: index).message
+                state.discardedUnacknowledgedMessageIds.removeAll { $0 == messageId }
+                state.acknowledgements.removeAll { $0.messageId == messageId }
+                state.acknowledgements.append(Acknowledgement(messageId: messageId,
+                                                              payloadFingerprint: Self.payloadFingerprint(for: message)))
+                state.acknowledgements = Array(state.acknowledgements.suffix(Self.maximumAcknowledgementCount))
+                return persist(state)
+            }
+        }) else { return false }
+        return result
     }
 
     func clear() {
-        stateQueue.sync {
-            localStorage.jsonOnlyMessageQueueData = nil
+        identityCoordinator.withCriticalSection {
+            stateQueue.sync {
+                localStorage.jsonOnlyMessageQueueData = nil
+            }
         }
     }
 
@@ -513,9 +610,35 @@ final class JsonOnlyMessageStore {
         var didBeginInitialDelivery: Bool
     }
 
+    private struct Acknowledgement: Codable {
+        let messageId: String
+        let payloadFingerprint: Data?
+    }
+
     private struct State: Codable {
         let identity: StoredIdentity
         var entries: [Entry]
+        var acknowledgements: [Acknowledgement]
+        var discardedUnacknowledgedMessageIds: [String]
+
+        init(identity: StoredIdentity,
+             entries: [Entry],
+             acknowledgements: [Acknowledgement] = [],
+             discardedUnacknowledgedMessageIds: [String] = []) {
+            self.identity = identity
+            self.entries = entries
+            self.acknowledgements = acknowledgements
+            self.discardedUnacknowledgedMessageIds = discardedUnacknowledgedMessageIds
+        }
+
+        init(from decoder: Decoder) throws {
+            let container = try decoder.container(keyedBy: CodingKeys.self)
+            identity = try container.decode(StoredIdentity.self, forKey: .identity)
+            entries = try container.decode([Entry].self, forKey: .entries)
+            acknowledgements = try container.decodeIfPresent([Acknowledgement].self, forKey: .acknowledgements) ?? []
+            discardedUnacknowledgedMessageIds = try container.decodeIfPresent([String].self,
+                                                                               forKey: .discardedUnacknowledgedMessageIds) ?? []
+        }
     }
 
     private static func isExpired(_ message: IterableInAppMessage, at currentDate: Date) -> Bool {
@@ -523,11 +646,8 @@ final class JsonOnlyMessageStore {
         return expiresAt <= currentDate
     }
 
-    private func loadCurrentState(expectedIdentity: UserIdentitySnapshot? = nil) -> State? {
-        guard let snapshot = identityProvider() else { return nil }
-        if let expectedIdentity = expectedIdentity, snapshot != expectedIdentity { return nil }
-
-        let identity = StoredIdentity(snapshot)
+    private func loadCurrentState(currentIdentity: UserIdentitySnapshot) -> State? {
+        let identity = StoredIdentity(currentIdentity)
         var state: State
         var stateChanged = false
         if let data = localStorage.jsonOnlyMessageQueueData {
@@ -548,20 +668,74 @@ final class JsonOnlyMessageStore {
         }
 
         let currentDate = dateProvider.currentDate
-        let retainedEntries = state.entries.filter { entry in
+        let expiredEntries = state.entries.filter { entry in
             if entry.message.expiresAt != nil {
-                return !Self.isExpired(entry.message, at: currentDate)
+                return Self.isExpired(entry.message, at: currentDate)
             }
-            return entry.storedAt.addingTimeInterval(Self.fallbackRetentionPeriod) > currentDate
+            return entry.storedAt.addingTimeInterval(Self.fallbackRetentionPeriod) <= currentDate
         }
 
-        if retainedEntries.count != state.entries.count {
-            state.entries = retainedEntries
+        if !expiredEntries.isEmpty {
+            state.discardedUnacknowledgedMessageIds.append(contentsOf: expiredEntries.map { $0.message.messageId })
+            state.discardedUnacknowledgedMessageIds = Array(state.discardedUnacknowledgedMessageIds.suffix(Self.maximumDiscardedMessageCount))
+            let expiredMessageIds = Set(expiredEntries.map { $0.message.messageId })
+            state.entries.removeAll { expiredMessageIds.contains($0.message.messageId) }
             stateChanged = true
         }
 
         if stateChanged, !persist(state) { return nil }
         return state
+    }
+
+    private func isAcknowledgedUnchanged(_ message: IterableInAppMessage, in state: State) -> Bool {
+        guard let messageFingerprint = Self.payloadFingerprint(for: message) else { return false }
+        return state.acknowledgements.contains {
+            $0.messageId == message.messageId && $0.payloadFingerprint == messageFingerprint
+        }
+    }
+
+    private func trimEntries(_ state: inout State) {
+        let overflow = state.entries.count - Self.maximumRecordCount
+        guard overflow > 0 else { return }
+        state.discardedUnacknowledgedMessageIds.append(contentsOf: state.entries.prefix(overflow).map { $0.message.messageId })
+        state.discardedUnacknowledgedMessageIds = Array(state.discardedUnacknowledgedMessageIds.suffix(Self.maximumDiscardedMessageCount))
+        state.entries = Array(state.entries.suffix(Self.maximumRecordCount))
+    }
+
+    private static func payloadFingerprint(for message: IterableInAppMessage) -> Data? {
+        guard let customPayload = message.customPayload,
+              let canonicalPayload = canonicalJson(customPayload) else { return nil }
+        return canonicalPayload.data(using: .utf8)
+    }
+
+    private static func canonicalJson(_ value: Any) -> String? {
+        if let dictionary = value as? [AnyHashable: Any] {
+            var entries = [(String, Any)]()
+            for (key, value) in dictionary {
+                guard let key = key as? String else { return nil }
+                entries.append((key, value))
+            }
+            entries.sort { $0.0 < $1.0 }
+            var encodedEntries = [String]()
+            for (key, value) in entries {
+                guard let encodedKey = canonicalJson(key),
+                      let encodedValue = canonicalJson(value) else { return nil }
+                encodedEntries.append("\(encodedKey):\(encodedValue)")
+            }
+            return "{\(encodedEntries.joined(separator: ","))}"
+        }
+        if let array = value as? [Any] {
+            var encodedValues = [String]()
+            for value in array {
+                guard let encodedValue = canonicalJson(value) else { return nil }
+                encodedValues.append(encodedValue)
+            }
+            return "[\(encodedValues.joined(separator: ","))]"
+        }
+        guard JSONSerialization.isValidJSONObject([value]),
+              let data = try? JSONSerialization.data(withJSONObject: [value], options: []),
+              let encodedArray = String(data: data, encoding: .utf8) else { return nil }
+        return String(encodedArray.dropFirst().dropLast())
     }
 
     private func persist(_ state: State) -> Bool {
@@ -577,10 +751,13 @@ final class JsonOnlyMessageStore {
     // Product defaults pending confirmation.
     private static let fallbackRetentionPeriod: TimeInterval = 30 * 24 * 60 * 60
     private static let maximumRecordCount = 100
+    private static let maximumAcknowledgementCount = 100
+    private static let maximumDiscardedMessageCount = 100
 
     private var localStorage: LocalStorageProtocol
     private let dateProvider: DateProviderProtocol
     private let identityProvider: () -> UserIdentitySnapshot?
+    private let identityCoordinator: IdentityCoordinator
     private let stateQueue = DispatchQueue(label: "JsonOnlyMessageStore")
 }
 

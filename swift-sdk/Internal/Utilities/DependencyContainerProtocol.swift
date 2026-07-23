@@ -35,12 +35,15 @@ extension DependencyContainerProtocol {
                             requestHandler: RequestHandlerProtocol,
                             deviceMetadata: DeviceMetadata,
                             authProvider: AuthProvider,
+                            identityCoordinator: IdentityCoordinator,
                             authManager: IterableAuthManagerProtocol?) -> IterableInternalInAppManagerProtocol {
+        let identityProvider = { [weak authProvider] in
+            UserIdentitySnapshot(auth: authProvider?.auth)
+        }
         let jsonOnlyMessageStore = JsonOnlyMessageStore(localStorage: localStorage,
                                                         dateProvider: dateProvider,
-                                                        identityProvider: { [weak authProvider] in
-                                                            UserIdentitySnapshot(auth: authProvider?.auth)
-                                                        })
+                                                        identityProvider: identityProvider,
+                                                        identityCoordinator: identityCoordinator)
         return InAppManager(requestHandler: requestHandler,
                             deviceMetadata: deviceMetadata,
                             fetcher: createInAppFetcher(apiClient: apiClient, authManager: authManager),
@@ -56,6 +59,8 @@ extension DependencyContainerProtocol {
                             notificationCenter: notificationCenter,
                             dateProvider: dateProvider,
                             jsonOnlyMessageStore: jsonOnlyMessageStore,
+                            identityCoordinator: identityCoordinator,
+                            identityProvider: identityProvider,
                             moveToForegroundSyncInterval: config.inAppDisplayInterval)
     }
     

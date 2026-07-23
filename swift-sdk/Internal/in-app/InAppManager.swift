@@ -56,6 +56,8 @@ class InAppManager: NSObject, IterableInternalInAppManagerProtocol {
          notificationCenter: NotificationCenterProtocol,
          dateProvider: DateProviderProtocol,
          jsonOnlyMessageStore: JsonOnlyMessageStore,
+         identityCoordinator: IdentityCoordinator,
+         identityProvider: @escaping () -> UserIdentitySnapshot?,
          moveToForegroundSyncInterval: Double) {
         ITBInfo()
         
@@ -74,11 +76,14 @@ class InAppManager: NSObject, IterableInternalInAppManagerProtocol {
         self.notificationCenter = notificationCenter
         self.dateProvider = dateProvider
         self.jsonOnlyMessageStore = jsonOnlyMessageStore
+        self.identityCoordinator = identityCoordinator
+        self.identityProvider = identityProvider
         self.moveToForegroundSyncInterval = moveToForegroundSyncInterval
         
         super.init()
         
         initializeMessagesMap()
+        messagesIdentityContext = identityCoordinator.capture(identityProvider: identityProvider)
         
         self.notificationCenter.addObserver(self,
                                             selector: #selector(onAppEnteredForeground(notification:)),
@@ -110,14 +115,30 @@ class InAppManager: NSObject, IterableInternalInAppManagerProtocol {
     
     func getMessages() -> [IterableInAppMessage] {
         ITBInfo()
-        
-        return Array(messagesMap.values.filter { InAppManager.isValid(message: $0, currentDate: self.dateProvider.currentDate) })
+
+        var messages = [IterableInAppMessage]()
+        let didRead = identityCoordinator.withCriticalSection {
+            guard let context = messagesIdentityContext else { return false }
+            return identityCoordinator.performIfCurrent(context, identityProvider: identityProvider) {
+                messages = Array(messagesMap.values.filter { InAppManager.isValid(message: $0, currentDate: self.dateProvider.currentDate) })
+            }
+        }
+        guard didRead else { return [] }
+        return messages
     }
     
     func getInboxMessages() -> [IterableInAppMessage] {
         ITBInfo()
-        
-        return Array(messagesMap.values.filter { InAppManager.isValid(message: $0, currentDate: self.dateProvider.currentDate) && $0.saveToInbox })
+
+        var messages = [IterableInAppMessage]()
+        let didRead = identityCoordinator.withCriticalSection {
+            guard let context = messagesIdentityContext else { return false }
+            return identityCoordinator.performIfCurrent(context, identityProvider: identityProvider) {
+                messages = Array(messagesMap.values.filter { InAppManager.isValid(message: $0, currentDate: self.dateProvider.currentDate) && $0.saveToInbox })
+            }
+        }
+        guard didRead else { return [] }
+        return messages
     }
     
     func getUnreadInboxMessagesCount() -> Int {
@@ -196,7 +217,15 @@ class InAppManager: NSObject, IterableInternalInAppManagerProtocol {
     }
     
     func getMessage(withId id: String) -> IterableInAppMessage? {
-        messagesMap[id]
+        var message: IterableInAppMessage?
+        let didRead = identityCoordinator.withCriticalSection {
+            guard let context = messagesIdentityContext else { return false }
+            return identityCoordinator.performIfCurrent(context, identityProvider: identityProvider) {
+                message = messagesMap[id]
+            }
+        }
+        guard didRead else { return nil }
+        return message
     }
     
     // MARK: - IterableInternalInAppManagerProtocol
@@ -270,54 +299,87 @@ class InAppManager: NSObject, IterableInternalInAppManagerProtocol {
     private func synchronize(appIsReady: Bool) -> Pending<Bool, Error> {
         ITBInfo()
         
-        let identityScope = jsonOnlyMessageStore.identityScope
+        let identityContext = identityCoordinator.capture(identityProvider: identityProvider)
         return fetcher.fetch()
-            .map { [weak self] messages in
-                self?.mergeMessages(messages, identityScope: identityScope)
+            .flatMap { [weak self] messages in
+                self?.processFetchedMessages(messages,
+                                             appIsReady: appIsReady,
+                                             identityContext: identityContext) ?? Fulfill<Bool, Error>(value: true)
             }
-            .flatMap { [weak self] mergeMessagesResult in
-                guard let self = self, let mergeMessagesResult = mergeMessagesResult else {
-                    return Fulfill<Bool, Error>(value: true)
+    }
+
+    private func processFetchedMessages(_ messages: [IterableInAppMessage],
+                                        appIsReady: Bool,
+                                        identityContext: UserIdentityContext) -> Pending<Bool, Error> {
+        let result = Fulfill<Bool, Error>()
+
+        syncQueue.async { [weak self] in
+            guard let self = self else {
+                result.resolve(with: true)
+                return
+            }
+
+            var mergeResult: MergeMessagesResult?
+            var processingRevision: UInt64?
+            let committed = self.identityCoordinator.performIfCurrent(identityContext,
+                                                                       identityProvider: self.identityProvider) {
+                let acknowledgementStatus = self.jsonOnlyMessageStore.acknowledgementStatus(for: messages,
+                                                                                             identityContext: identityContext)
+                let merged = MessagesObtainedHandler(messagesMap: self.messagesMap,
+                                                      messages: messages,
+                                                      acknowledgedJsonOnlyMessageIds: acknowledgementStatus.unchangedMessageIds,
+                                                      readmittedJsonOnlyMessageIds: acknowledgementStatus.changedMessageIds).handle()
+                self.messagesMap = merged.messagesMap
+                self.messagesIdentityContext = identityContext
+                processingRevision = self.messagesRevision
+                self.persistEligibleJsonOnlyMessages(messagesMap: merged.messagesMap,
+                                                     identityContext: identityContext)
+                mergeResult = merged
+            }
+            guard committed,
+                  let mergeResult = mergeResult,
+                  let processingRevision = processingRevision else {
+                result.resolve(with: true)
+                return
+            }
+
+            self.processingQueue.async { [weak self] in
+                guard let self = self else {
+                    result.resolve(with: true)
+                    return
                 }
-                return self.processMergedMessages(appIsReady: appIsReady,
-                                                  mergeMessagesResult: mergeMessagesResult,
-                                                  identityScope: identityScope)
+                let processingResult = appIsReady
+                    ? self.processAndShowMessage(messagesMap: mergeResult.messagesMap,
+                                                 identityContext: identityContext,
+                                                 processingRevision: processingRevision)
+                    : Fulfill<Bool, Error>(value: true)
+                processingResult.onSuccess { [weak self] _ in
+                    guard let self = self else {
+                        result.resolve(with: true)
+                        return
+                    }
+                    self.syncQueue.async {
+                        guard self.identityCoordinator.performIfCurrent(identityContext,
+                                                                        identityProvider: self.identityProvider, {
+                            mergeResult.deliveredMessages.forEach {
+                                self.requestHandler?.track(inAppDelivery: $0,
+                                                           onSuccess: nil,
+                                                           onFailure: nil)
+                            }
+                            self.finishSync(inboxChanged: mergeResult.inboxChanged)
+                        }) else {
+                            result.resolve(with: true)
+                            return
+                        }
+                        result.resolve(with: true)
+                    }
+                }.onError { error in
+                    result.reject(with: error)
+                }
             }
-    }
-    
-    /// `messages` are new messages coming from the server
-    private func mergeMessages(_ messages: [IterableInAppMessage],
-                               identityScope: UserIdentitySnapshot?) -> MergeMessagesResult? {
-        guard identityScope == jsonOnlyMessageStore.identityScope else { return nil }
-        return MessagesObtainedHandler(messagesMap: messagesMap, messages: messages).handle()
-    }
-    
-    private func processMergedMessages(appIsReady: Bool,
-                                       mergeMessagesResult: MergeMessagesResult,
-                                       identityScope: UserIdentitySnapshot?) -> Pending<Bool, Error> {
-        guard identityScope == jsonOnlyMessageStore.identityScope else {
-            return Fulfill<Bool, Error>(value: true)
-        }
-        messagesMap = mergeMessagesResult.messagesMap
-        persistEligibleJsonOnlyMessages(identityScope: identityScope)
-
-        let processingResult: Pending<Bool, Error>
-        if appIsReady {
-            processingResult = processAndShowMessage(messagesMap: messagesMap, identityScope: identityScope)
-        } else {
-            processingResult = Fulfill<Bool, Error>(value: true)
         }
 
-        return processingResult.map { [weak self] _ in
-            mergeMessagesResult.deliveredMessages.forEach {
-                self?.requestHandler?.track(inAppDelivery: $0,
-                                            onSuccess: nil,
-                                            onFailure: nil)
-            }
-
-            self?.finishSync(inboxChanged: mergeMessagesResult.inboxChanged)
-            return true
-        }
+        return result
     }
     
     private func finishSync(inboxChanged: Bool) {
@@ -355,22 +417,65 @@ class InAppManager: NSObject, IterableInternalInAppManagerProtocol {
     }
     
     private func processAndShowMessage(messagesMap: OrderedDictionary<String, IterableInAppMessage>,
-                                       identityScope: UserIdentitySnapshot?) -> Pending<Bool, Error> {
-        var processor = MessagesProcessor(inAppDelegate: inAppDelegate, inAppDisplayChecker: self, messagesMap: messagesMap)
+                                       identityContext: UserIdentityContext,
+                                       processingRevision: UInt64) -> Pending<Bool, Error> {
+        guard canProcessMessages(identityContext: identityContext,
+                                 processingRevision: processingRevision) else {
+            return Fulfill<Bool, Error>(value: true)
+        }
+
+        var processor = MessagesProcessor(inAppDelegate: inAppDelegate,
+                                          inAppDisplayChecker: self,
+                                          messagesMap: messagesMap,
+                                          currentDate: dateProvider.currentDate,
+                                          isContextCurrent: { [weak self] in
+                                              self?.canProcessMessages(identityContext: identityContext,
+                                                                       processingRevision: processingRevision) ?? false
+                                          })
         let messagesProcessorResult = processor.processMessages()
-        self.messagesMap = getMessagesMap(fromMessagesProcessorResult: messagesProcessorResult)
-        
-        if case let .jsonOnly(message, _) = messagesProcessorResult {
-            return deliverJsonOnlyMessage(message, consumeOnReplay: true, identityScope: identityScope).flatMap { [weak self] processed in
-                guard processed, let self = self else {
-                    return Fulfill<Bool, Error>(value: true)
-                }
-                return self.processAndShowMessage(messagesMap: self.messagesMap, identityScope: identityScope)
-            }
+        let updatedMessagesMap = getMessagesMap(fromMessagesProcessorResult: messagesProcessorResult)
+        var didCommit = false
+        guard identityCoordinator.performIfCurrent(identityContext, identityProvider: identityProvider, {
+            guard processingRevision == self.messagesRevision else { return }
+            self.messagesMap = updatedMessagesMap
+            self.messagesIdentityContext = identityContext
+            didCommit = true
+        }), didCommit else {
+            return Fulfill<Bool, Error>(value: true)
         }
         
-        showMessage(fromMessagesProcessorResult: messagesProcessorResult)
+        if case let .jsonOnly(message, _) = messagesProcessorResult {
+            return deliverJsonOnlyMessage(message, consumeOnReplay: true, identityContext: identityContext).flatMap { [weak self] processed in
+                guard let self = self,
+                      processed || InAppManager.isExpired(message: message, currentDate: self.dateProvider.currentDate) else {
+                    return Fulfill<Bool, Error>(value: true)
+                }
+                var nextMessagesMap = OrderedDictionary<String, IterableInAppMessage>()
+                guard self.identityCoordinator.performIfCurrent(identityContext,
+                                                                identityProvider: self.identityProvider, {
+                    nextMessagesMap = self.messagesMap
+                }) else {
+                    return Fulfill<Bool, Error>(value: true)
+                }
+                return self.processAndShowMessage(messagesMap: nextMessagesMap,
+                                                  identityContext: identityContext,
+                                                  processingRevision: processingRevision)
+            }
+        }
+
+        _ = identityCoordinator.performIfCurrent(identityContext, identityProvider: identityProvider) {
+            self.showMessage(fromMessagesProcessorResult: messagesProcessorResult)
+        }
         return Fulfill<Bool, Error>(value: true)
+    }
+
+    private func canProcessMessages(identityContext: UserIdentityContext,
+                                    processingRevision: UInt64) -> Bool {
+        var canProcess = false
+        guard identityCoordinator.performIfCurrent(identityContext, identityProvider: identityProvider, {
+            canProcess = processingRevision == self.messagesRevision
+        }) else { return false }
+        return canProcess
     }
     
     private func showInternal(message: IterableInAppMessage,
@@ -427,11 +532,23 @@ class InAppManager: NSObject, IterableInternalInAppManagerProtocol {
             guard appIsActive, let self = self else {
                 return Fulfill<Bool, Error>(value: true)
             }
-            let identityScope = self.jsonOnlyMessageStore.identityScope
-            self.persistEligibleJsonOnlyMessages(identityScope: identityScope)
-            return self.processAndShowMessage(messagesMap: self.messagesMap, identityScope: identityScope).map { [weak self] _ in
-                if let messagesMap = self?.messagesMap {
-                    self?.persister.persist(messagesMap.values)
+            let identityContext = self.identityCoordinator.capture(identityProvider: self.identityProvider)
+            var messagesMap = OrderedDictionary<String, IterableInAppMessage>()
+            var processingRevision: UInt64 = 0
+            guard self.identityCoordinator.performIfCurrent(identityContext, identityProvider: self.identityProvider, {
+                messagesMap = self.messagesMap
+                processingRevision = self.messagesRevision
+                self.persistEligibleJsonOnlyMessages(messagesMap: messagesMap,
+                                                     identityContext: identityContext)
+            }) else {
+                return Fulfill<Bool, Error>(value: true)
+            }
+            return self.processAndShowMessage(messagesMap: messagesMap,
+                                              identityContext: identityContext,
+                                              processingRevision: processingRevision).map { [weak self] _ in
+                guard let self = self else { return true }
+                _ = self.identityCoordinator.performIfCurrent(identityContext, identityProvider: self.identityProvider) {
+                    self.persister.persist(self.messagesMap.values)
                 }
                 return true
             }
@@ -565,32 +682,38 @@ class InAppManager: NSObject, IterableInternalInAppManagerProtocol {
         }
     }
 
-    private func persistEligibleJsonOnlyMessages(identityScope: UserIdentitySnapshot?) {
-        guard let identityScope = identityScope else { return }
-        messagesMap.values
-            .filter { $0.isJsonOnly && !$0.didProcessTrigger && !$0.consumed && !$0.read && $0.trigger.type == .immediate }
-            .forEach { jsonOnlyMessageStore.enqueue($0, identityScope: identityScope) }
+    private func persistEligibleJsonOnlyMessages(messagesMap: OrderedDictionary<String, IterableInAppMessage>,
+                                                 identityContext: UserIdentityContext) {
+        guard identityContext.identity != nil else { return }
+        let messages = messagesMap.values.filter {
+            $0.isJsonOnly && !$0.didProcessTrigger && !$0.consumed && !$0.read && $0.trigger.type == .immediate
+        }
+        guard !messages.isEmpty else { return }
+        jsonOnlyMessageStore.enqueue(messages, identityContext: identityContext)
     }
 
     private func replayUnhandledJsonOnlyMessages() -> Pending<Bool, Error> {
+        let identityContext = jsonOnlyMessageStore.identityContext
         guard applicationStateProvider.applicationState == .active,
-              let identityScope = jsonOnlyMessageStore.identityScope else {
+              identityContext.identity != nil else {
             return Fulfill<Bool, Error>(value: true)
         }
 
-        return jsonOnlyMessageStore.getMessages(identityScope: identityScope).reduce(Fulfill<Bool, Error>(value: true) as Pending<Bool, Error>) { pending, message in
+        return jsonOnlyMessageStore.getMessages(identityContext: identityContext).reduce(Fulfill<Bool, Error>(value: true) as Pending<Bool, Error>) { pending, message in
             pending.flatMap { [weak self] _ in
-                self?.deliverJsonOnlyMessage(message, consumeOnReplay: false, identityScope: identityScope) ?? Fulfill<Bool, Error>(value: true)
+                self?.deliverJsonOnlyMessage(message,
+                                             consumeOnReplay: false,
+                                             identityContext: identityContext) ?? Fulfill<Bool, Error>(value: true)
             }
         }
     }
 
     private func deliverJsonOnlyMessage(_ message: IterableInAppMessage,
                                         consumeOnReplay: Bool,
-                                        identityScope: UserIdentitySnapshot?) -> Pending<Bool, Error> {
+                                        identityContext: UserIdentityContext) -> Pending<Bool, Error> {
         let result = Fulfill<Bool, Error>()
 
-        guard let identityScope = identityScope else {
+        guard identityContext.identity != nil else {
             if consumeOnReplay {
                 deliverJsonOnlyMessageWithoutAvailability(message, result: result)
             } else {
@@ -599,7 +722,7 @@ class InAppManager: NSObject, IterableInternalInAppManagerProtocol {
             return result
         }
 
-        guard jsonOnlyMessageStore.enqueue(message, identityScope: identityScope) else {
+        guard jsonOnlyMessageStore.enqueue(message, identityContext: identityContext) else {
             result.resolve(with: false)
             return result
         }
@@ -611,18 +734,37 @@ class InAppManager: NSObject, IterableInternalInAppManagerProtocol {
             }
 
             guard self.applicationStateProvider.applicationState == .active,
-                  let delivery = self.jsonOnlyMessageStore.prepareDelivery(for: message, identityScope: identityScope) else {
+                  let delivery = self.jsonOnlyMessageStore.prepareDelivery(for: message,
+                                                                            identityContext: identityContext) else {
                 result.resolve(with: false)
                 return
             }
 
             if delivery.isInitial {
-                _ = self.inAppDelegate.onNew(message: delivery.message)
+                guard self.identityCoordinator.performIfCurrent(identityContext,
+                                                                identityProvider: self.identityProvider, {
+                    _ = self.inAppDelegate.onNew(message: delivery.message)
+                }) else {
+                    result.resolve(with: false)
+                    return
+                }
             }
-            self.inAppDelegate.onJsonOnlyMessageAvailable?(message: delivery.message)
-            self.notificationCenter.post(name: .iterableJsonOnlyInAppMessageAvailable,
-                                         object: delivery.message,
-                                         userInfo: nil)
+            guard self.identityCoordinator.performIfCurrent(identityContext,
+                                                            identityProvider: self.identityProvider, {
+                self.inAppDelegate.onJsonOnlyMessageAvailable?(message: delivery.message)
+            }) else {
+                result.resolve(with: false)
+                return
+            }
+            guard self.identityCoordinator.performIfCurrent(identityContext,
+                                                            identityProvider: self.identityProvider, {
+                self.notificationCenter.post(name: .iterableJsonOnlyInAppMessageAvailable,
+                                             object: delivery.message,
+                                             userInfo: nil)
+            }) else {
+                result.resolve(with: false)
+                return
+            }
 
             guard delivery.isInitial || consumeOnReplay else {
                 result.resolve(with: true)
@@ -630,14 +772,17 @@ class InAppManager: NSObject, IterableInternalInAppManagerProtocol {
             }
 
             self.updateQueue.async { [weak self] in
-                guard let self = self else {
+                guard let self = self,
+                      self.identityCoordinator.performIfCurrent(identityContext,
+                                                                identityProvider: self.identityProvider, {
+                    self.updateMessageSync(message, didProcessTrigger: true, consumed: true)
+                    self.requestHandler?.inAppConsume(message.messageId,
+                                                      onSuccess: nil,
+                                                      onFailure: nil)
+                }) else {
                     result.resolve(with: false)
                     return
                 }
-                self.updateMessageSync(message, didProcessTrigger: true, consumed: true)
-                self.requestHandler?.inAppConsume(message.messageId,
-                                                  onSuccess: nil,
-                                                  onFailure: nil)
                 result.resolve(with: true)
             }
         }
@@ -746,7 +891,11 @@ class InAppManager: NSObject, IterableInternalInAppManagerProtocol {
     
     private let persister: InAppPersistenceProtocol
     private let jsonOnlyMessageStore: JsonOnlyMessageStore
+    private let identityCoordinator: IdentityCoordinator
+    private let identityProvider: () -> UserIdentitySnapshot?
     private var messagesMap = OrderedDictionary<String, IterableInAppMessage>()
+    private var messagesIdentityContext: UserIdentityContext?
+    private var messagesRevision: UInt64 = 0
     private let dateProvider: DateProviderProtocol
     private var lastDismissedTime: Date?
     private var lastDisplayTime: Date?
@@ -755,6 +904,7 @@ class InAppManager: NSObject, IterableInternalInAppManagerProtocol {
     private let scheduleQueue = DispatchQueue(label: "ScheduleQueue")
     private let callbackQueue = DispatchQueue(label: "CallbackQueue")
     private let syncQueue = DispatchQueue(label: "SyncQueue")
+    private let processingQueue = DispatchQueue(label: "InAppProcessingQueue")
     
     private var syncResult: Pending<Bool, Error>?
     private var lastSyncTime: Date?
@@ -817,13 +967,17 @@ extension InAppManager: InAppNotifiable {
         let result = Fulfill<Bool, Error>()
         
         syncQueue.async { [weak self] in
-            self?.messagesMap.reset()
-            if let messagesMap = self?.messagesMap {
-                self?.persister.persist(messagesMap.values)
+            guard let self = self else { return }
+            self.identityCoordinator.withCriticalSection {
+                let identityContext = self.identityCoordinator.capture(identityProvider: self.identityProvider)
+                self.messagesRevision &+= 1
+                self.messagesMap.reset()
+                self.messagesIdentityContext = identityContext
+                self.persister.persist(self.messagesMap.values)
             }
             
-            self?.callbackQueue.async {
-                self?.notificationCenter.post(name: .iterableInboxChanged, object: self, userInfo: nil)
+            self.callbackQueue.async {
+                self.notificationCenter.post(name: .iterableInboxChanged, object: self, userInfo: nil)
                 result.resolve(with: true)
             }
         }
