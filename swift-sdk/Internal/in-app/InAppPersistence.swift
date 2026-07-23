@@ -402,10 +402,22 @@ final class JsonOnlyMessageStore {
         self.identityProvider = identityProvider
     }
 
+    var identityScope: UserIdentitySnapshot? {
+        stateQueue.sync {
+            identityProvider()
+        }
+    }
+
     @discardableResult
     func enqueue(_ message: IterableInAppMessage) -> Bool {
+        guard let identityScope = identityScope else { return false }
+        return enqueue(message, identityScope: identityScope)
+    }
+
+    @discardableResult
+    func enqueue(_ message: IterableInAppMessage, identityScope: UserIdentitySnapshot) -> Bool {
         stateQueue.sync {
-            guard var state = loadCurrentState() else { return false }
+            guard var state = loadCurrentState(expectedIdentity: identityScope) else { return false }
             let currentDate = dateProvider.currentDate
             guard !Self.isExpired(message, at: currentDate) else { return false }
 
@@ -422,27 +434,24 @@ final class JsonOnlyMessageStore {
     }
 
     func prepareDelivery(for message: IterableInAppMessage) -> Delivery? {
+        guard let identityScope = identityScope else { return nil }
+        return prepareDelivery(for: message, identityScope: identityScope)
+    }
+
+    func prepareDelivery(for message: IterableInAppMessage, identityScope: UserIdentitySnapshot) -> Delivery? {
         stateQueue.sync {
-            guard var state = loadCurrentState() else { return nil }
-            let currentDate = dateProvider.currentDate
-
-            if let index = state.entries.firstIndex(where: { $0.message.messageId == message.messageId }) {
-                guard !Self.isExpired(state.entries[index].message, at: currentDate) else { return nil }
-                let isInitial = !state.entries[index].didBeginInitialDelivery
-                if isInitial {
-                    state.entries[index].didBeginInitialDelivery = true
-                    guard persist(state) else { return nil }
-                }
-                return Delivery(message: state.entries[index].message, isInitial: isInitial)
+            guard var state = loadCurrentState(expectedIdentity: identityScope),
+                  let index = state.entries.firstIndex(where: { $0.message.messageId == message.messageId }) else {
+                return nil
             }
-
-            guard !Self.isExpired(message, at: currentDate) else { return nil }
-            state.entries.append(Entry(message: message,
-                                       storedAt: currentDate,
-                                       didBeginInitialDelivery: true))
-            state.entries = Array(state.entries.suffix(Self.maximumRecordCount))
-            guard persist(state) else { return nil }
-            return Delivery(message: message, isInitial: true)
+            let currentDate = dateProvider.currentDate
+            guard !Self.isExpired(state.entries[index].message, at: currentDate) else { return nil }
+            let isInitial = !state.entries[index].didBeginInitialDelivery
+            if isInitial {
+                state.entries[index].didBeginInitialDelivery = true
+                guard persist(state) else { return nil }
+            }
+            return Delivery(message: state.entries[index].message, isInitial: isInitial)
         }
     }
 
@@ -452,9 +461,9 @@ final class JsonOnlyMessageStore {
         }
     }
 
-    var hasCurrentIdentity: Bool {
+    func getMessages(identityScope: UserIdentitySnapshot) -> [IterableInAppMessage] {
         stateQueue.sync {
-            identityProvider() != nil
+            loadCurrentState(expectedIdentity: identityScope)?.entries.map(\.message) ?? []
         }
     }
 
@@ -514,8 +523,9 @@ final class JsonOnlyMessageStore {
         return expiresAt <= currentDate
     }
 
-    private func loadCurrentState() -> State? {
+    private func loadCurrentState(expectedIdentity: UserIdentitySnapshot? = nil) -> State? {
         guard let snapshot = identityProvider() else { return nil }
+        if let expectedIdentity = expectedIdentity, snapshot != expectedIdentity { return nil }
 
         let identity = StoredIdentity(snapshot)
         var state: State

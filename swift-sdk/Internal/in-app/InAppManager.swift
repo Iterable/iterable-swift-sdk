@@ -285,12 +285,14 @@ class InAppManager: NSObject, IterableInternalInAppManagerProtocol {
     }
     
     private func processMergedMessages(appIsReady: Bool, mergeMessagesResult: MergeMessagesResult) -> Pending<Bool, Error> {
+        messagesMap = mergeMessagesResult.messagesMap
+        let identityScope = jsonOnlyMessageStore.identityScope
+        persistEligibleJsonOnlyMessages(identityScope: identityScope)
+
         let processingResult: Pending<Bool, Error>
         if appIsReady {
-            processingResult = processAndShowMessage(messagesMap: mergeMessagesResult.messagesMap)
+            processingResult = processAndShowMessage(messagesMap: messagesMap, identityScope: identityScope)
         } else {
-            messagesMap = mergeMessagesResult.messagesMap
-            persistEligibleJsonOnlyMessages()
             processingResult = Fulfill<Bool, Error>(value: true)
         }
 
@@ -340,17 +342,18 @@ class InAppManager: NSObject, IterableInternalInAppManagerProtocol {
         }
     }
     
-    private func processAndShowMessage(messagesMap: OrderedDictionary<String, IterableInAppMessage>) -> Pending<Bool, Error> {
+    private func processAndShowMessage(messagesMap: OrderedDictionary<String, IterableInAppMessage>,
+                                       identityScope: UserIdentitySnapshot?) -> Pending<Bool, Error> {
         var processor = MessagesProcessor(inAppDelegate: inAppDelegate, inAppDisplayChecker: self, messagesMap: messagesMap)
         let messagesProcessorResult = processor.processMessages()
         self.messagesMap = getMessagesMap(fromMessagesProcessorResult: messagesProcessorResult)
         
         if case let .jsonOnly(message, _) = messagesProcessorResult {
-            return deliverJsonOnlyMessage(message, consumeOnReplay: true).flatMap { [weak self] processed in
+            return deliverJsonOnlyMessage(message, consumeOnReplay: true, identityScope: identityScope).flatMap { [weak self] processed in
                 guard processed, let self = self else {
                     return Fulfill<Bool, Error>(value: true)
                 }
-                return self.processAndShowMessage(messagesMap: self.messagesMap)
+                return self.processAndShowMessage(messagesMap: self.messagesMap, identityScope: identityScope)
             }
         }
         
@@ -412,7 +415,9 @@ class InAppManager: NSObject, IterableInternalInAppManagerProtocol {
             guard appIsActive, let self = self else {
                 return Fulfill<Bool, Error>(value: true)
             }
-            return self.processAndShowMessage(messagesMap: self.messagesMap).map { [weak self] _ in
+            let identityScope = self.jsonOnlyMessageStore.identityScope
+            self.persistEligibleJsonOnlyMessages(identityScope: identityScope)
+            return self.processAndShowMessage(messagesMap: self.messagesMap, identityScope: identityScope).map { [weak self] _ in
                 if let messagesMap = self?.messagesMap {
                     self?.persister.persist(messagesMap.values)
                 }
@@ -548,33 +553,42 @@ class InAppManager: NSObject, IterableInternalInAppManagerProtocol {
         }
     }
 
-    private func persistEligibleJsonOnlyMessages() {
+    private func persistEligibleJsonOnlyMessages(identityScope: UserIdentitySnapshot?) {
+        guard let identityScope = identityScope else { return }
         messagesMap.values
             .filter { $0.isJsonOnly && !$0.didProcessTrigger && !$0.consumed && !$0.read && $0.trigger.type == .immediate }
-            .forEach { jsonOnlyMessageStore.enqueue($0) }
+            .forEach { jsonOnlyMessageStore.enqueue($0, identityScope: identityScope) }
     }
 
     private func replayUnhandledJsonOnlyMessages() -> Pending<Bool, Error> {
-        guard applicationStateProvider.applicationState == .active else {
+        guard applicationStateProvider.applicationState == .active,
+              let identityScope = jsonOnlyMessageStore.identityScope else {
             return Fulfill<Bool, Error>(value: true)
         }
 
-        return jsonOnlyMessageStore.getMessages().reduce(Fulfill<Bool, Error>(value: true) as Pending<Bool, Error>) { pending, message in
+        return jsonOnlyMessageStore.getMessages(identityScope: identityScope).reduce(Fulfill<Bool, Error>(value: true) as Pending<Bool, Error>) { pending, message in
             pending.flatMap { [weak self] _ in
-                self?.deliverJsonOnlyMessage(message, consumeOnReplay: false) ?? Fulfill<Bool, Error>(value: true)
+                self?.deliverJsonOnlyMessage(message, consumeOnReplay: false, identityScope: identityScope) ?? Fulfill<Bool, Error>(value: true)
             }
         }
     }
 
-    private func deliverJsonOnlyMessage(_ message: IterableInAppMessage, consumeOnReplay: Bool) -> Pending<Bool, Error> {
+    private func deliverJsonOnlyMessage(_ message: IterableInAppMessage,
+                                        consumeOnReplay: Bool,
+                                        identityScope: UserIdentitySnapshot?) -> Pending<Bool, Error> {
         let result = Fulfill<Bool, Error>()
 
-        guard jsonOnlyMessageStore.enqueue(message) else {
-            if consumeOnReplay && !jsonOnlyMessageStore.hasCurrentIdentity {
+        guard let identityScope = identityScope else {
+            if consumeOnReplay {
                 deliverJsonOnlyMessageWithoutAvailability(message, result: result)
             } else {
                 result.resolve(with: false)
             }
+            return result
+        }
+
+        guard jsonOnlyMessageStore.enqueue(message, identityScope: identityScope) else {
+            result.resolve(with: false)
             return result
         }
 
@@ -585,7 +599,7 @@ class InAppManager: NSObject, IterableInternalInAppManagerProtocol {
             }
 
             guard self.applicationStateProvider.applicationState == .active,
-                  let delivery = self.jsonOnlyMessageStore.prepareDelivery(for: message) else {
+                  let delivery = self.jsonOnlyMessageStore.prepareDelivery(for: message, identityScope: identityScope) else {
                 result.resolve(with: false)
                 return
             }

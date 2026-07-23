@@ -82,10 +82,9 @@ struct MessagesProcessor {
     }
     
     private func getFirstProcessableTriggeredMessage() -> IterableInAppMessage? {
-        messagesMap.values
-            .filter(MessagesProcessor.isProcessableTriggeredMessage)
-            .sorted { $0.priorityLevel < $1.priorityLevel }
-            .first
+        let processableMessages = messagesMap.values.filter(MessagesProcessor.isProcessableTriggeredMessage)
+        return processableMessages.first(where: { $0.isJsonOnly })
+            ?? processableMessages.sorted { $0.priorityLevel < $1.priorityLevel }.first
     }
     
     private static func isProcessableTriggeredMessage(_ message: IterableInAppMessage) -> Bool {
