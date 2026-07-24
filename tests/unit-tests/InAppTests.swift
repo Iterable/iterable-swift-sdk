@@ -2311,70 +2311,15 @@ final class JsonOnlyMessageAvailabilityTests: XCTestCase {
     }
 
     func testConcurrentIdentitySwitchDuringOnNewStopsLaterDeliverySteps() {
-        let onNewStarted = DispatchSemaphore(value: 0)
-        let releaseOnNew = DispatchSemaphore(value: 0)
-        let switchStarted = DispatchSemaphore(value: 0)
-        let switchCompleted = DispatchSemaphore(value: 0)
-        let coordinationCompleted = expectation(description: "identity switch coordinated")
-        let fetchCompleted = expectation(description: "fetch completed")
-        let noAvailability = expectation(description: "no availability")
-        noAvailability.isInverted = true
-        let noNotification = expectation(description: "no notification")
-        noNotification.isInverted = true
-        let noConsume = expectation(description: "no consume")
-        noConsume.isInverted = true
-        let fetcher = MockInAppFetcher()
-        let notificationCenter = MockNotificationCenter()
-        let networkSession = MockNetworkSession()
-        let delegate = MockInAppDelegate()
-        let message = makeJsonOnlyMessage(id: "message-a")
+        assertConcurrentIdentitySwitchDuringDelivery(at: .onNew)
+    }
 
-        delegate.onNewMessageCallback = { _ in
-            onNewStarted.signal()
-            releaseOnNew.wait()
-        }
-        delegate.onJsonOnlyMessageAvailableCallback = { _ in noAvailability.fulfill() }
-        let notificationReference = notificationCenter.addCallback(forNotification: .iterableJsonOnlyInAppMessageAvailable) { _ in
-            noNotification.fulfill()
-        }
-        networkSession.requestCallback = { request in
-            if request.url?.path.contains(Const.Path.inAppConsume) == true {
-                noConsume.fulfill()
-            }
-        }
-        let internalAPI = initialize(fetcher: fetcher,
-                                     delegate: delegate,
-                                     networkSession: networkSession,
-                                     notificationCenter: notificationCenter)
-        DispatchQueue.global().async {
-            guard onNewStarted.wait(timeout: .now() + testExpectationTimeout) == .success else {
-                XCTFail("onNew did not start")
-                releaseOnNew.signal()
-                coordinationCompleted.fulfill()
-                return
-            }
-            fetcher.mockMessagesAvailableFromServer(internalApi: nil, messages: [])
-            DispatchQueue.global().async {
-                switchStarted.signal()
-                internalAPI.setUserId("user-b")
-                switchCompleted.signal()
-            }
-            XCTAssertEqual(switchStarted.wait(timeout: .now() + testExpectationTimeout), .success)
-            XCTAssertEqual(switchCompleted.wait(timeout: .now() + 0.1), .timedOut)
-            releaseOnNew.signal()
-            XCTAssertEqual(switchCompleted.wait(timeout: .now() + testExpectationTimeout), .success)
-            coordinationCompleted.fulfill()
-        }
-        fetcher.add(message: message)
-        internalAPI.inAppManager.scheduleSync().onSuccess { _ in fetchCompleted.fulfill() }
+    func testConcurrentIdentitySwitchDuringAvailabilityDelegateStopsLaterDeliverySteps() {
+        assertConcurrentIdentitySwitchDuringDelivery(at: .delegate)
+    }
 
-        wait(for: [coordinationCompleted, fetchCompleted], timeout: testExpectationTimeout)
-        wait(for: [noAvailability, noNotification, noConsume], timeout: testExpectationTimeoutForInverted)
-        XCTAssertTrue(IterableAPI.getUnhandledJsonOnlyMessages().isEmpty)
-        XCTAssertFalse(internalAPI.inAppManager.getMessages().contains { $0.messageId == message.messageId })
-        XCTAssertFalse(message.didProcessTrigger)
-        XCTAssertFalse(message.consumed)
-        notificationCenter.removeCallbacks(withIds: notificationReference.callbackId)
+    func testConcurrentIdentitySwitchDuringNotificationStopsLaterDeliverySteps() {
+        assertConcurrentIdentitySwitchDuringDelivery(at: .notification)
     }
 
     func testIdentitySwitchBeforeMainDeliveryDoesNotLeakMessage() {
@@ -3077,6 +3022,81 @@ final class JsonOnlyMessageAvailabilityTests: XCTestCase {
         case onNew
         case delegate
         case notification
+    }
+
+    private func assertConcurrentIdentitySwitchDuringDelivery(at stage: IdentitySwitchStage) {
+        let surfaceStarted = DispatchSemaphore(value: 0)
+        let releaseSurface = DispatchSemaphore(value: 0)
+        let switchCompleted = DispatchSemaphore(value: 0)
+        let coordinationCompleted = expectation(description: "identity switch coordinated")
+        let fetchCompleted = expectation(description: "fetch completed")
+        let noNetworkSideEffect = expectation(description: "no consume or delivery tracking")
+        noNetworkSideEffect.isInverted = true
+        let fetcher = MockInAppFetcher()
+        let notificationCenter = MockNotificationCenter()
+        let networkSession = MockNetworkSession()
+        let delegate = MockInAppDelegate()
+        let message = makeJsonOnlyMessage(id: "message-a")
+        var onNewCount = 0
+        var delegateCount = 0
+        var notificationCount = 0
+
+        let pauseIfNeeded = { (callbackStage: IdentitySwitchStage) in
+            guard stage == callbackStage else { return }
+            surfaceStarted.signal()
+            releaseSurface.wait()
+        }
+        delegate.onNewMessageCallback = { _ in
+            onNewCount += 1
+            pauseIfNeeded(.onNew)
+        }
+        delegate.onJsonOnlyMessageAvailableCallback = { _ in
+            delegateCount += 1
+            pauseIfNeeded(.delegate)
+        }
+        let notificationReference = notificationCenter.addCallback(forNotification: .iterableJsonOnlyInAppMessageAvailable) { _ in
+            notificationCount += 1
+            pauseIfNeeded(.notification)
+        }
+        networkSession.requestCallback = { request in
+            if request.url?.path.contains(Const.Path.inAppConsume) == true ||
+                request.url?.path.contains(Const.Path.trackInAppDelivery) == true {
+                noNetworkSideEffect.fulfill()
+            }
+        }
+        let internalAPI = initialize(fetcher: fetcher,
+                                     delegate: delegate,
+                                     networkSession: networkSession,
+                                     notificationCenter: notificationCenter)
+        DispatchQueue.global().async {
+            guard surfaceStarted.wait(timeout: .now() + testExpectationTimeout) == .success else {
+                XCTFail("Delivery surface did not start")
+                releaseSurface.signal()
+                coordinationCompleted.fulfill()
+                return
+            }
+            fetcher.mockMessagesAvailableFromServer(internalApi: nil, messages: [])
+            DispatchQueue.global().async {
+                internalAPI.setUserId("user-b")
+                switchCompleted.signal()
+            }
+            XCTAssertEqual(switchCompleted.wait(timeout: .now() + testExpectationTimeout), .success)
+            releaseSurface.signal()
+            coordinationCompleted.fulfill()
+        }
+        fetcher.add(message: message)
+        internalAPI.inAppManager.scheduleSync().onSuccess { _ in fetchCompleted.fulfill() }
+
+        wait(for: [coordinationCompleted, fetchCompleted], timeout: testExpectationTimeout)
+        wait(for: [noNetworkSideEffect], timeout: testExpectationTimeoutForInverted)
+        XCTAssertEqual(onNewCount, 1)
+        XCTAssertEqual(delegateCount, stage == .onNew ? 0 : 1)
+        XCTAssertEqual(notificationCount, stage == .notification ? 1 : 0)
+        XCTAssertTrue(IterableAPI.getUnhandledJsonOnlyMessages().isEmpty)
+        XCTAssertFalse(internalAPI.inAppManager.getMessages().contains { $0.messageId == message.messageId })
+        XCTAssertFalse(message.didProcessTrigger)
+        XCTAssertFalse(message.consumed)
+        notificationCenter.removeCallbacks(withIds: notificationReference.callbackId)
     }
 
     private func assertIdentitySwitchDuringDelivery(at stage: IdentitySwitchStage) {

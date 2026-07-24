@@ -20,6 +20,15 @@ final class IdentityCoordinator {
         }
     }
 
+    func isCurrent(_ context: UserIdentityContext,
+                   identityProvider: () -> UserIdentitySnapshot?) -> Bool {
+        withCriticalSection {
+            context.generation == generation &&
+                context.identity == identityProvider() &&
+                !hasPendingPublication
+        }
+    }
+
     @discardableResult
     func performIfCurrent(_ context: UserIdentityContext,
                           identityProvider: () -> UserIdentitySnapshot?,
@@ -71,7 +80,7 @@ final class IdentityCoordinator {
     }
 
     // Lock order is manager queue, identity section, then JSON store queue. Identity
-    // holders may call customers but must never synchronously wait on manager queues.
+    // holders must not call customer code or synchronously wait on manager queues.
     private let lock = NSRecursiveLock()
     private let pendingPublicationLock = NSLock()
     private var generation: UInt64 = 0

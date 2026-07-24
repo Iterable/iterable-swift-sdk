@@ -736,27 +736,34 @@ class InAppManager: NSObject, IterableInternalInAppManagerProtocol {
             }
 
             if delivery.isInitial {
-                guard self.identityCoordinator.performIfCurrent(identityContext,
-                                                                identityProvider: self.identityProvider, {
-                    _ = self.inAppDelegate.onNew(message: delivery.message)
-                }) else {
+                guard self.identityCoordinator.isCurrent(identityContext,
+                                                         identityProvider: self.identityProvider) else {
+                    result.resolve(with: false)
+                    return
+                }
+                _ = self.inAppDelegate.onNew(message: delivery.message)
+                guard self.identityCoordinator.isCurrent(identityContext,
+                                                         identityProvider: self.identityProvider) else {
                     result.resolve(with: false)
                     return
                 }
             }
-            guard self.identityCoordinator.performIfCurrent(identityContext,
-                                                            identityProvider: self.identityProvider, {
-                self.inAppDelegate.onJsonOnlyMessageAvailable?(message: delivery.message)
-            }) else {
+            guard self.identityCoordinator.isCurrent(identityContext,
+                                                     identityProvider: self.identityProvider) else {
                 result.resolve(with: false)
                 return
             }
-            guard self.identityCoordinator.performIfCurrent(identityContext,
-                                                            identityProvider: self.identityProvider, {
-                self.notificationCenter.post(name: .iterableJsonOnlyInAppMessageAvailable,
-                                             object: delivery.message,
-                                             userInfo: nil)
-            }) else {
+            self.inAppDelegate.onJsonOnlyMessageAvailable?(message: delivery.message)
+            guard self.identityCoordinator.isCurrent(identityContext,
+                                                     identityProvider: self.identityProvider) else {
+                result.resolve(with: false)
+                return
+            }
+            self.notificationCenter.post(name: .iterableJsonOnlyInAppMessageAvailable,
+                                         object: delivery.message,
+                                         userInfo: nil)
+            guard self.identityCoordinator.isCurrent(identityContext,
+                                                     identityProvider: self.identityProvider) else {
                 result.resolve(with: false)
                 return
             }
