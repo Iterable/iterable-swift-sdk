@@ -315,7 +315,7 @@ struct InternalIterableAppIntegration {
     // Normally itblValue would be the value stored in "itbl" key inside of userInfo.
     // But it is possible to save them at root level for debugging purpose.
     private static func itblValue(fromUserInfo userInfo: [AnyHashable: Any]) -> [AnyHashable: Any]? {
-        let itbl = userInfo[JsonKey.Payload.metadata] as? [AnyHashable: Any]
+        let itbl = NotificationHelper.itblElement(from: userInfo)
         
         #if DEBUG
             guard let value = itbl else {
