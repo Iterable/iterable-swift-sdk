@@ -125,7 +125,8 @@ extension DependencyContainerProtocol {
                                                                                           healthMonitor: healthMonitor!),
                                                        taskRunner: createTaskRunner(persistenceContextProvider: persistenceContextProvider,
                                                                                     healthMonitor: healthMonitor!,
-                                                                                    autoRetry: localStorage.autoRetry),
+                                                                                    autoRetry: localStorage.autoRetry,
+                                                                                    authManager: authManager),
                                                        notificationCenter: notificationCenter)
             
             
@@ -174,13 +175,15 @@ extension DependencyContainerProtocol {
     
     private func createTaskRunner(persistenceContextProvider: IterablePersistenceContextProvider,
                                   healthMonitor: HealthMonitor,
-                                  autoRetry: Bool = false) -> IterableTaskRunner {
+                                  autoRetry: Bool = false,
+                                  authManager: IterableAuthManagerProtocol? = nil) -> IterableTaskRunner {
         IterableTaskRunner(networkSession: networkSession,
                            persistenceContextProvider: persistenceContextProvider,
                            healthMonitor: healthMonitor,
                            notificationCenter: notificationCenter,
                            connectivityManager: NetworkConnectivityManager(),
-                           autoRetry: autoRetry)
+                           autoRetry: autoRetry,
+                           authManager: authManager)
     }
     
     func createUnknownUserMerge(apiClient: ApiClient, unknownUserManager: UnknownUserManagerProtocol, localStorage: LocalStorageProtocol) -> UnknownUserMergeProtocol {

@@ -80,6 +80,39 @@ class NotificationMetadataTests: XCTestCase {
         XCTAssertFalse(metadata.isTestPush())
         XCTAssertTrue(metadata.isRealCampaignNotification())
     }
+
+    func testValidStringItblPayload() {
+        let campaignId = NSNumber(value: 1491853)
+        let templateId = NSNumber(value: 1629044)
+        let messageId = "46f1bb38f8c2467eafbfe08764732e3f"
+        let payload = [
+            "itbl": "{\"templateId\":1629044,\"campaignId\":1491853,\"messageId\":\"\(messageId)\",\"isGhostPush\":false}"
+        ]
+
+        guard case let NotificationInfo.iterable(metadata) = NotificationHelper.inspect(notification: payload) else {
+            XCTFail()
+            return
+        }
+
+        XCTAssertEqual(metadata.campaignId, campaignId)
+        XCTAssertEqual(metadata.templateId, templateId)
+        XCTAssertEqual(metadata.messageId, messageId)
+        XCTAssertFalse(metadata.isGhostPush)
+        XCTAssertTrue(metadata.isRealCampaignNotification())
+    }
+
+    func testMalformedStringItblPayload() {
+        let payload = [
+            "itbl": "{\"templateId\":1629044"
+        ]
+
+        guard case NotificationInfo.other = NotificationHelper.inspect(notification: payload) else {
+            XCTFail()
+            return
+        }
+
+        XCTAssertNil(IterablePushNotificationMetadata.metadata(fromLaunchOptions: payload))
+    }
     
     func testValidProofPayload() {
         let campaignId = NSNumber(value: 0)

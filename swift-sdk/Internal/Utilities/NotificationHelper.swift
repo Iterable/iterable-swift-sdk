@@ -40,7 +40,7 @@ struct ITBLSilentPushNotificationInfo {
 
 struct NotificationHelper {
     static func inspect(notification: [AnyHashable: Any]) -> NotificationInfo {
-        guard let itblElement = notification[Keys.itbl.rawValue] as? [AnyHashable: Any], let isGhostPush = itblElement[Keys.isGhostPush.rawValue] as? Bool else {
+        guard let itblElement = itblElement(from: notification), let isGhostPush = itblElement[Keys.isGhostPush.rawValue] as? Bool else {
             return .other
         }
         
@@ -53,6 +53,25 @@ struct NotificationHelper {
         } else {
             return tryCreateIterablePushNotificationMetadata(itblElement: itblElement, isGhostPush: false)
         }
+    }
+
+    static func itblElement(from notification: [AnyHashable: Any]) -> [AnyHashable: Any]? {
+        guard let itblElement = notification[Keys.itbl.rawValue] else {
+            return nil
+        }
+
+        if let itblElement = itblElement as? [AnyHashable: Any] {
+            return itblElement
+        }
+
+        guard let itblString = itblElement as? String,
+              let itblData = itblString.data(using: .utf8),
+              let jsonObject = try? JSONSerialization.jsonObject(with: itblData),
+              let jsonDictionary = jsonObject as? [String: Any] else {
+            return nil
+        }
+
+        return Dictionary(uniqueKeysWithValues: jsonDictionary.map { (AnyHashable($0.key), $0.value) })
     }
     
     fileprivate static func tryCreateIterablePushNotificationMetadata(itblElement: [AnyHashable: Any], isGhostPush: Bool) -> NotificationInfo {
