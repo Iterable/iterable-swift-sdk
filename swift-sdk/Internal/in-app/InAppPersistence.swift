@@ -397,7 +397,7 @@ final class JsonOnlyMessageStore {
     init(localStorage: LocalStorageProtocol,
          dateProvider: DateProviderProtocol,
          identityProvider: @escaping () -> UserIdentitySnapshot?,
-         identityCoordinator: IdentityCoordinator = IdentityCoordinator()) {
+         identityCoordinator: IdentityCoordinator) {
         self.localStorage = localStorage
         self.dateProvider = dateProvider
         self.identityProvider = identityProvider
@@ -406,11 +406,6 @@ final class JsonOnlyMessageStore {
 
     var identityContext: UserIdentityContext {
         identityCoordinator.capture(identityProvider: identityProvider)
-    }
-
-    @discardableResult
-    func enqueue(_ message: IterableInAppMessage) -> Bool {
-        enqueue(message, identityContext: identityContext)
     }
 
     @discardableResult
@@ -468,10 +463,6 @@ final class JsonOnlyMessageStore {
             }
         }) else { return false }
         return result
-    }
-
-    func prepareDelivery(for message: IterableInAppMessage) -> Delivery? {
-        prepareDelivery(for: message, identityContext: identityContext)
     }
 
     func prepareDelivery(for message: IterableInAppMessage, identityContext: UserIdentityContext) -> Delivery? {

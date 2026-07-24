@@ -35,9 +35,6 @@ struct MessagesProcessor {
         case let .skip(message):
             updateMessage(message, didProcessTrigger: true)
             return processMessages()
-        case let .skipAndConsume(message):
-            updateMessage(message, didProcessTrigger: true, consumed: true)
-            return .noShow(message: message, messagesMap: messagesMap)
         case let .jsonOnly(message):
             return .jsonOnly(message: message, messagesMap: messagesMap)
         case .none, .wait:
@@ -48,7 +45,6 @@ struct MessagesProcessor {
     private enum ProcessNextMessageResult {
         case show(IterableInAppMessage)
         case skip(IterableInAppMessage)
-        case skipAndConsume(IterableInAppMessage)
         case jsonOnly(IterableInAppMessage)
         case none
         case wait

@@ -2626,7 +2626,8 @@ final class JsonOnlyMessageAvailabilityTests: XCTestCase {
         let auth = Auth(userId: nil, email: Self.email, authToken: nil, userIdUnknownUser: nil)
         let store = JsonOnlyMessageStore(localStorage: localStorage,
                                          dateProvider: dateProvider,
-                                         identityProvider: { UserIdentitySnapshot(auth: auth) })
+                                         identityProvider: { UserIdentitySnapshot(auth: auth) },
+                                         identityCoordinator: IdentityCoordinator())
         let identityContext = store.identityContext
         let first = makeJsonOnlyMessage(id: "message-1", payloadId: "first")
         let second = makeJsonOnlyMessage(id: "message-1", payloadId: "second")
@@ -2635,16 +2636,17 @@ final class JsonOnlyMessageAvailabilityTests: XCTestCase {
         XCTAssertEqual(store.getMessages().first?.customPayload?["id"] as? String, "first")
 
         XCTAssertTrue(store.remove(messageId: first.messageId))
-        XCTAssertTrue(store.enqueue(second))
+        XCTAssertTrue(store.enqueue(second, identityContext: identityContext))
         XCTAssertEqual(store.getMessages().first?.customPayload?["id"] as? String, "second")
     }
 
     func testAcknowledgedMessageIdCanBeReadmittedWithNewPayload() {
         let availabilityExpectation = expectation(description: "readmitted availability")
+        let initialDeliveryTrackExpectation = expectation(description: "initial delivery tracked")
         let deliveryTrackExpectation = expectation(description: "readmitted delivery tracked")
         let fetcher = MockInAppFetcher()
         let delegate = MockInAppDelegate()
-        let networkSession = MockNetworkSession()
+        let networkSession = MockNetworkSession(delay: 0.05)
         let applicationState = MockApplicationStateProvider(applicationState: .background)
         let notificationCenter = MockNotificationCenter()
         let first = makeJsonOnlyMessage(id: "message-1", payloadId: "first")
@@ -2660,7 +2662,12 @@ final class JsonOnlyMessageAvailabilityTests: XCTestCase {
                                      applicationState: applicationState,
                                      notificationCenter: notificationCenter)
 
+        networkSession.requestCallback = { request in
+            guard request.url?.path.contains(Const.Path.trackInAppDelivery) == true else { return }
+            initialDeliveryTrackExpectation.fulfill()
+        }
         fetch([first], with: fetcher, internalAPI: internalAPI)
+        wait(for: [initialDeliveryTrackExpectation], timeout: testExpectationTimeout)
         XCTAssertTrue(IterableAPI.markJsonOnlyMessageHandled(messageId: first.messageId))
         networkSession.requestCallback = { request in
             guard request.url?.path.contains(Const.Path.trackInAppDelivery) == true else { return }
@@ -2899,7 +2906,8 @@ final class JsonOnlyMessageAvailabilityTests: XCTestCase {
         let auth = Auth(userId: nil, email: Self.email, authToken: nil, userIdUnknownUser: nil)
         let store = JsonOnlyMessageStore(localStorage: localStorage,
                                          dateProvider: dateProvider,
-                                         identityProvider: { UserIdentitySnapshot(auth: auth) })
+                                         identityProvider: { UserIdentitySnapshot(auth: auth) },
+                                         identityCoordinator: IdentityCoordinator())
 
         let identityContext = store.identityContext
         let messages = (0...100).map { makeJsonOnlyMessage(id: "message-\($0)") }
@@ -2918,9 +2926,12 @@ final class JsonOnlyMessageAvailabilityTests: XCTestCase {
         let expiringDateProvider = MockDateProvider()
         let expiringStore = JsonOnlyMessageStore(localStorage: expiringLocalStorage,
                                                  dateProvider: expiringDateProvider,
-                                                 identityProvider: { UserIdentitySnapshot(auth: auth) })
+                                                 identityProvider: { UserIdentitySnapshot(auth: auth) },
+                                                 identityCoordinator: IdentityCoordinator())
+        let expiringIdentityContext = expiringStore.identityContext
         expiringStore.enqueue(makeJsonOnlyMessage(id: "expiring",
-                                                  expiresAt: expiringDateProvider.currentDate.addingTimeInterval(1)))
+                                                  expiresAt: expiringDateProvider.currentDate.addingTimeInterval(1)),
+                               identityContext: expiringIdentityContext)
         expiringDateProvider.currentDate = expiringDateProvider.currentDate.addingTimeInterval(2)
         XCTAssertTrue(expiringStore.getMessages().isEmpty)
     }
@@ -2931,7 +2942,8 @@ final class JsonOnlyMessageAvailabilityTests: XCTestCase {
         let auth = Auth(userId: nil, email: Self.email, authToken: nil, userIdUnknownUser: nil)
         let store = JsonOnlyMessageStore(localStorage: localStorage,
                                          dateProvider: dateProvider,
-                                         identityProvider: { UserIdentitySnapshot(auth: auth) })
+                                         identityProvider: { UserIdentitySnapshot(auth: auth) },
+                                         identityCoordinator: IdentityCoordinator())
         let identityContext = store.identityContext
         let messages = (0...100).map { makeJsonOnlyMessage(id: "message-\($0)", payloadId: "first") }
         XCTAssertTrue(store.enqueue(messages, identityContext: identityContext))
@@ -2951,7 +2963,8 @@ final class JsonOnlyMessageAvailabilityTests: XCTestCase {
         let auth = Auth(userId: nil, email: Self.email, authToken: nil, userIdUnknownUser: nil)
         let store = JsonOnlyMessageStore(localStorage: localStorage,
                                          dateProvider: dateProvider,
-                                         identityProvider: { UserIdentitySnapshot(auth: auth) })
+                                         identityProvider: { UserIdentitySnapshot(auth: auth) },
+                                         identityCoordinator: IdentityCoordinator())
         let identityContext = store.identityContext
         let first = makeJsonOnlyMessage(id: "message-1", customPayload: [
             "nested": ["b": NSNumber(value: 2), "a": NSNumber(value: true)]
@@ -3015,12 +3028,14 @@ final class JsonOnlyMessageAvailabilityTests: XCTestCase {
         let auth = Auth(userId: nil, email: Self.email, authToken: nil, userIdUnknownUser: nil)
         let store = JsonOnlyMessageStore(localStorage: localStorage,
                                          dateProvider: dateProvider,
-                                         identityProvider: { UserIdentitySnapshot(auth: auth) })
+                                         identityProvider: { UserIdentitySnapshot(auth: auth) },
+                                         identityCoordinator: IdentityCoordinator())
+        let identityContext = store.identityContext
         let message = makeJsonOnlyMessage(id: "expired", expiresAt: dateProvider.currentDate)
 
-        XCTAssertFalse(store.enqueue(message))
+        XCTAssertFalse(store.enqueue(message, identityContext: identityContext))
         XCTAssertTrue(store.getMessages().isEmpty)
-        XCTAssertNil(store.prepareDelivery(for: message))
+        XCTAssertNil(store.prepareDelivery(for: message, identityContext: identityContext))
         XCTAssertTrue(store.getMessages().isEmpty)
     }
 

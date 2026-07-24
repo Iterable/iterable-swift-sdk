@@ -419,11 +419,6 @@ class InAppManager: NSObject, IterableInternalInAppManagerProtocol {
     private func processAndShowMessage(messagesMap: OrderedDictionary<String, IterableInAppMessage>,
                                        identityContext: UserIdentityContext,
                                        processingRevision: UInt64) -> Pending<Bool, Error> {
-        guard canProcessMessages(identityContext: identityContext,
-                                 processingRevision: processingRevision) else {
-            return Fulfill<Bool, Error>(value: true)
-        }
-
         var processor = MessagesProcessor(inAppDelegate: inAppDelegate,
                                           inAppDisplayChecker: self,
                                           messagesMap: messagesMap,
@@ -443,7 +438,7 @@ class InAppManager: NSObject, IterableInternalInAppManagerProtocol {
         }), didCommit else {
             return Fulfill<Bool, Error>(value: true)
         }
-        
+
         if case let .jsonOnly(message, _) = messagesProcessorResult {
             return deliverJsonOnlyMessage(message, consumeOnReplay: true, identityContext: identityContext).flatMap { [weak self] processed in
                 guard let self = self,
