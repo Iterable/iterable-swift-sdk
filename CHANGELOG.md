@@ -3,6 +3,8 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 ## [Unreleased]
+### Fixed
+- Fixed offline-queued requests replaying an expired JWT forever. Tasks persisted while the token was expired kept the stale token in their payload, so they failed with a 401 on every retry even after a successful refresh, and could block the rest of the offline queue. The task processor now stamps the current auth token at execution time, matching online behavior, which also heals tasks already stuck in the queue.
 
 ## [6.7.4]
 ### Added

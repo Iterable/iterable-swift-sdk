@@ -9,7 +9,7 @@ import Foundation
 struct IterableAPICallRequest {
     let apiKey: String
     let endpoint: String
-    let authToken: String?
+    var authToken: String?
     let deviceMetadata: DeviceMetadata
     let iterableRequest: IterableRequest
     

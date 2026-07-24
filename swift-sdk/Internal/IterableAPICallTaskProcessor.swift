@@ -10,10 +10,12 @@ struct IterableAPICallTaskProcessor: IterableTaskProcessor {
 
     init(networkSession: NetworkSessionProtocol,
          dateProvider: DateProviderProtocol = SystemDateProvider(),
-         autoRetry: Bool = false) {
+         autoRetry: Bool = false,
+         authManager: IterableAuthManagerProtocol? = nil) {
         self.networkSession = networkSession
         self.dateProvider = dateProvider
         self.autoRetry = autoRetry
+        self.authManager = authManager
     }
 
     func process(task: IterableTask) throws -> Pending<IterableTaskResult, IterableTaskError> {
@@ -22,7 +24,10 @@ struct IterableAPICallTaskProcessor: IterableTaskProcessor {
             return IterableTaskError.createErroredFuture(reason: "expecting data")
         }
 
-        let decodedIterableRequest = try JSONDecoder().decode(IterableAPICallRequest.self, from: data)
+        var decodedIterableRequest = try JSONDecoder().decode(IterableAPICallRequest.self, from: data)
+        if let authToken = authManager?.getAuthToken() {
+            decodedIterableRequest.authToken = authToken
+        }
         let iterableRequest = decodedIterableRequest.addingCreatedAt(task.scheduledAt)
 
         guard let urlRequest = iterableRequest.convertToURLRequest(sentAt: dateProvider.currentDate, processorType: .offline) else {
@@ -52,6 +57,7 @@ struct IterableAPICallTaskProcessor: IterableTaskProcessor {
     }
 
     private let dateProvider: DateProviderProtocol
+    private let authManager: IterableAuthManagerProtocol?
     
     /// Returns true for permanent client errors (4xx, excluding 429) that should NOT be retried.
     /// Network-level errors (no HTTP status), server errors (5xx), and 429 (rate limit) are transient.
