@@ -688,17 +688,19 @@ class InAppManager: NSObject, IterableInternalInAppManagerProtocol {
     }
 
     private func replayUnhandledJsonOnlyMessages() -> Pending<Bool, Error> {
-        let identityContext = jsonOnlyMessageStore.identityContext
-        guard applicationStateProvider.applicationState == .active,
-              identityContext.identity != nil else {
-            return Fulfill<Bool, Error>(value: true)
-        }
+        InAppManager.getApplicationIsActive(applicationStateProvider: applicationStateProvider).flatMap { [weak self] appIsActive in
+            guard let self = self else { return Fulfill<Bool, Error>(value: true) }
+            let identityContext = self.jsonOnlyMessageStore.identityContext
+            guard appIsActive, identityContext.identity != nil else {
+                return Fulfill<Bool, Error>(value: true)
+            }
 
-        return jsonOnlyMessageStore.getMessages(identityContext: identityContext).reduce(Fulfill<Bool, Error>(value: true) as Pending<Bool, Error>) { pending, message in
-            pending.flatMap { [weak self] _ in
-                self?.deliverJsonOnlyMessage(message,
-                                             consumeOnReplay: false,
-                                             identityContext: identityContext) ?? Fulfill<Bool, Error>(value: true)
+            return self.jsonOnlyMessageStore.getMessages(identityContext: identityContext).reduce(Fulfill<Bool, Error>(value: true) as Pending<Bool, Error>) { pending, message in
+                pending.flatMap { [weak self] _ in
+                    self?.deliverJsonOnlyMessage(message,
+                                                 consumeOnReplay: false,
+                                                 identityContext: identityContext) ?? Fulfill<Bool, Error>(value: true)
+                }
             }
         }
     }
@@ -877,7 +879,21 @@ class InAppManager: NSObject, IterableInternalInAppManagerProtocol {
             return result
         }
     }
-    
+
+    private static func getApplicationIsActive(applicationStateProvider: ApplicationStateProviderProtocol) -> Fulfill<Bool, Error> {
+        if Thread.isMainThread {
+            return Fulfill(value: applicationStateProvider.applicationState == .active)
+        } else {
+            let result = Fulfill<Bool, Error>()
+
+            DispatchQueue.main.async {
+                result.resolve(with: applicationStateProvider.applicationState == .active)
+            }
+
+            return result
+        }
+    }
+
     private weak var requestHandler: RequestHandlerProtocol?
     private let deviceMetadata: DeviceMetadata
     private let fetcher: InAppFetcherProtocol

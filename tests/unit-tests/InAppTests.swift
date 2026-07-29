@@ -2003,10 +2003,29 @@ private final class BlockingInAppFetcher: InAppFetcherProtocol {
     private var didCompleteBlockedFetch = false
 }
 
+private final class MainThreadCheckingApplicationStateProvider: NSObject, ApplicationStateProviderProtocol {
+    var applicationState: UIApplication.State {
+        XCTAssertTrue(Thread.isMainThread)
+        return .active
+    }
+}
+
 final class JsonOnlyMessageAvailabilityTests: XCTestCase {
     override func tearDown() {
         IterableAPI.implementation = nil
         super.tearDown()
+    }
+
+    func testStartReadsApplicationStateOnMainThread() {
+        let startExpectation = expectation(description: "SDK start")
+        let applicationStateProvider = MainThreadCheckingApplicationStateProvider()
+
+        DispatchQueue.global().async {
+            IterableAPI.initializeForTesting(applicationStateProvider: applicationStateProvider)
+            startExpectation.fulfill()
+        }
+
+        wait(for: [startExpectation], timeout: testExpectationTimeout)
     }
 
     func testAvailabilityPersistsBeforeOrderedMainThreadSignals() {

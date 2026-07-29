@@ -454,8 +454,8 @@ class InboxTests: XCTestCase {
     }
     
     func testInboxAndInAppCallbacksTogether() {
-        let expectation1 = expectation(description: "call inbox callback")
-        expectation1.expectedFulfillmentCount = 2
+        let firstInboxObserved = expectation(description: "first inbox callback")
+        let secondInboxObserved = expectation(description: "second inbox callback")
         let expectation2 = expectation(description: "call inApp callback")
         expectation2.expectedFulfillmentCount = 2
         let expectation3 = expectation(description: "payload 1 processed")
@@ -484,11 +484,12 @@ class InboxTests: XCTestCase {
                 if inboxCallbackCount == 0 {
                     XCTAssertEqual(messages.count, 1, "inboxMessages: \(internalAPI.inAppManager.getInboxMessages())")
                     XCTAssertEqual(messages[0].messageId, "message0")
+                    firstInboxObserved.fulfill()
                 } else {
                     XCTAssertEqual(messages.count, 2)
                     XCTAssertEqual(messages[1].messageId, "message1")
+                    secondInboxObserved.fulfill()
                 }
-                expectation1.fulfill()
                 inboxCallbackCount += 1
             }
         }
@@ -530,7 +531,7 @@ class InboxTests: XCTestCase {
         mockInAppFetcher.mockInAppPayloadFromServer(internalApi: internalAPI, payload).onSuccess { _ in
             expectation3.fulfill()
         }
-        wait(for: [expectation3], timeout: testExpectationTimeout)
+        wait(for: [expectation3, firstInboxObserved], timeout: testExpectationTimeout)
         
         let payload2 = """
         {"inAppMessages":
@@ -575,7 +576,7 @@ class InboxTests: XCTestCase {
             expectation4.fulfill()
         }
         
-        wait(for: [expectation4, expectation1, expectation2], timeout: testExpectationTimeout)
+        wait(for: [expectation4, secondInboxObserved, expectation2], timeout: testExpectationTimeout)
     }
     
     func testShowNowAndInboxMessage() {
