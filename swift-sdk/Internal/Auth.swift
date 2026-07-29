@@ -47,6 +47,7 @@ final class IdentityCoordinator {
     }
 
     func publish(_ block: () -> Void) {
+        // Announce before waiting for the identity lock so stale in-flight checks fail while publication is queued.
         beginPublication()
         withCriticalSection {
             block()

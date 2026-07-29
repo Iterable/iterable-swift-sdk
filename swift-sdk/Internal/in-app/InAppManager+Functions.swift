@@ -60,6 +60,7 @@ struct MessagesProcessor {
         
         ITBDebug("processing message with id: \(message.messageId)")
         
+        // JSON-only availability intentionally bypasses the HTML display pause and cooldown.
         if message.isJsonOnly {
             return .jsonOnly(message)
         }
@@ -87,6 +88,7 @@ struct MessagesProcessor {
     
     private func getFirstProcessableTriggeredMessage() -> IterableInAppMessage? {
         let processableMessages = messagesMap.values.filter(isProcessableTriggeredMessage)
+        // Select JSON-only records before applying HTML priority ordering.
         return processableMessages.first(where: { $0.isJsonOnly })
             ?? processableMessages.sorted { $0.priorityLevel < $1.priorityLevel }.first
     }
@@ -154,6 +156,7 @@ struct MessagesObtainedHandler {
         messages.forEach { serverMessage in
             let messageId = serverMessage.messageId
             if let existingMessage = messagesMap[messageId] {
+                // Handle acknowledged HTML-to-JSON transitions before generic type replacement to avoid readmission.
                 if !existingMessage.isJsonOnly,
                    serverMessage.isJsonOnly,
                    acknowledgedJsonOnlyMessageIds.contains(messageId) {

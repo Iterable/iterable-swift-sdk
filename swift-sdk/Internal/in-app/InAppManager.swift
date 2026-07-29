@@ -309,6 +309,8 @@ class InAppManager: NSObject, IterableInternalInAppManagerProtocol {
             }
     }
 
+    // Merge on syncQueue, process customer/display work off it, then return for guarded tracking and persistence.
+    // messagesRevision prevents stale processing results from overwriting a reset.
     private func processFetchedMessages(_ messages: [IterableInAppMessage],
                                         appIsReady: Bool,
                                         identityContext: UserIdentityContext) -> Pending<Bool, Error> {
@@ -441,7 +443,7 @@ class InAppManager: NSObject, IterableInternalInAppManagerProtocol {
         }
 
         if case let .jsonOnly(message, _) = messagesProcessorResult {
-            return deliverJsonOnlyMessage(message, consumeOnReplay: true, identityContext: identityContext).flatMap { [weak self] processed in
+            return deliverJsonOnlyMessage(message, consumePreviouslyDelivered: true, identityContext: identityContext).flatMap { [weak self] processed in
                 guard let self = self,
                       processed || InAppManager.isExpired(message: message, currentDate: self.dateProvider.currentDate) else {
                     return Fulfill<Bool, Error>(value: true)
@@ -699,7 +701,7 @@ class InAppManager: NSObject, IterableInternalInAppManagerProtocol {
             return self.jsonOnlyMessageStore.getMessages(identityContext: identityContext).reduce(Fulfill<Bool, Error>(value: true) as Pending<Bool, Error>) { pending, message in
                 pending.flatMap { [weak self] _ in
                     self?.deliverJsonOnlyMessage(message,
-                                                 consumeOnReplay: false,
+                                                 consumePreviouslyDelivered: false,
                                                  identityContext: identityContext) ?? Fulfill<Bool, Error>(value: true)
                 }
             }
@@ -707,12 +709,12 @@ class InAppManager: NSObject, IterableInternalInAppManagerProtocol {
     }
 
     private func deliverJsonOnlyMessage(_ message: IterableInAppMessage,
-                                        consumeOnReplay: Bool,
+                                        consumePreviouslyDelivered: Bool,
                                         identityContext: UserIdentityContext) -> Pending<Bool, Error> {
         let result = Fulfill<Bool, Error>()
 
         guard identityContext.identity != nil else {
-            if consumeOnReplay {
+            if consumePreviouslyDelivered {
                 deliverJsonOnlyMessageWithoutAvailability(message, result: result)
             } else {
                 result.resolve(with: false)
@@ -738,6 +740,8 @@ class InAppManager: NSObject, IterableInternalInAppManagerProtocol {
                 return
             }
 
+            // Customer callbacks run outside the identity section. Revalidate each boundary so an identity switch
+            // stops later signals and mutation; these checks must not be deduplicated.
             if delivery.isInitial {
                 guard self.identityCoordinator.isCurrent(identityContext,
                                                          identityProvider: self.identityProvider) else {
@@ -771,7 +775,7 @@ class InAppManager: NSObject, IterableInternalInAppManagerProtocol {
                 return
             }
 
-            guard delivery.isInitial || consumeOnReplay else {
+            guard delivery.isInitial || consumePreviouslyDelivered else {
                 result.resolve(with: true)
                 return
             }

@@ -470,6 +470,7 @@ final class JsonOnlyMessageStore {
         var result: Delivery?
         guard identityCoordinator.performIfCurrent(identityContext, identityProvider: identityProvider, {
             result = stateQueue.sync {
+                // Absence can mean retention/capacity discard or identity clearing, so never recreate a missing entry.
                 guard var state = loadCurrentState(currentIdentity: identity),
                       let index = state.entries.firstIndex(where: { $0.message.messageId == message.messageId }) else {
                     return nil
@@ -699,6 +700,7 @@ final class JsonOnlyMessageStore {
         return canonicalPayload.data(using: .utf8)
     }
 
+    // This encoding is persisted acknowledgement state; stability across SDK upgrades is part of its contract.
     private static func canonicalJson(_ value: Any) -> String? {
         if let dictionary = value as? [AnyHashable: Any] {
             var entries = [(String, Any)]()

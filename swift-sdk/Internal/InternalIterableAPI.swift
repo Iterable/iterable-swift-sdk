@@ -151,6 +151,7 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
     }
     
     func setEmail(_ email: String?, authToken: String? = nil, successHandler: OnSuccessHandler? = nil, failureHandler: OnFailureHandler? = nil, identityResolution: IterableIdentityResolution? = nil) {
+        // Span previous-user logout/reset and replacement identity publication so stale work cannot commit between them.
         identityCoordinator.beginPublication()
         
         ITBInfo()
@@ -204,6 +205,7 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
     }
     
     func setUserId(_ userId: String?, authToken: String? = nil, successHandler: OnSuccessHandler? = nil, failureHandler: OnFailureHandler? = nil, isUnknownUser: Bool = false, identityResolution: IterableIdentityResolution? = nil) {
+        // Span previous-user logout/reset and replacement identity publication so stale work cannot commit between them.
         identityCoordinator.beginPublication()
 
         ITBInfo()
@@ -268,6 +270,7 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
 
     func logoutUser(withOnSuccess onSuccess: OnSuccessHandler?,
                     onFailure: OnFailureHandler?) {
+        // Announce logout before waiting for the identity lock so stale work stops while publication is queued.
         identityCoordinator.beginPublication()
 
         ITBInfo()
