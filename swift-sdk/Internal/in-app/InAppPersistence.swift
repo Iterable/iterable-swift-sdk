@@ -739,7 +739,6 @@ final class JsonOnlyMessageStore {
         }
     }
 
-    // Product defaults pending confirmation.
     private static let fallbackRetentionPeriod: TimeInterval = 30 * 24 * 60 * 60
     private static let maximumRecordCount = 100
     private static let maximumAcknowledgementCount = 100

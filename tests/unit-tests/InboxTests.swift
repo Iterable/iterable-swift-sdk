@@ -72,14 +72,15 @@ class InboxTests: XCTestCase {
     }
     
     func testSetRead() {
-        let expectation1 = expectation(description: "testSetRead")
         let mockInAppFetcher = MockInAppFetcher()
+        let mockNotificationCenter = MockNotificationCenter()
         let config = IterableConfig()
         config.logDelegate = AllLogDelegate()
         
         let internalAPI = InternalIterableAPI.initializeForTesting(
             config: config,
-            inAppFetcher: mockInAppFetcher
+            inAppFetcher: mockInAppFetcher,
+            notificationCenter: mockNotificationCenter
         )
         
         let payload = """
@@ -104,26 +105,54 @@ class InboxTests: XCTestCase {
         ]
         }
         """.toJsonDict()
-        
-        mockInAppFetcher.mockInAppPayloadFromServer(internalApi: internalAPI, payload).onSuccess { _ in
-            let messages = internalAPI.inAppManager.getInboxMessages()
-            XCTAssertEqual(messages.count, 2)
-            
-            internalAPI.inAppManager.set(read: true, forMessage: messages[1])
-            
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.05) {
-                XCTAssertEqual(messages[0].read, false)
-                XCTAssertEqual(messages[1].read, true)
-                
-                let unreadMessages = internalAPI.inAppManager.getInboxMessages().filter { $0.read == false }
-                XCTAssertEqual(internalAPI.inAppManager.getUnreadInboxMessagesCount(), 1)
-                XCTAssertEqual(unreadMessages.count, 1)
-                XCTAssertEqual(unreadMessages[0].read, false)
-                expectation1.fulfill()
-            }
+
+        let initialInboxExpectation = expectation(description: "initial inbox load")
+        let initialReference = mockNotificationCenter.addCallback(forNotification: .iterableInboxChanged) { _ in
+            initialInboxExpectation.fulfill()
         }
-        
-        wait(for: [expectation1], timeout: testExpectationTimeout)
+        mockInAppFetcher.mockInAppPayloadFromServer(internalApi: internalAPI, payload)
+        wait(for: [initialInboxExpectation], timeout: testExpectationTimeout)
+        mockNotificationCenter.removeCallbacks(withIds: initialReference.callbackId)
+
+        let messages = internalAPI.inAppManager.getInboxMessages()
+        XCTAssertEqual(messages.count, 2)
+
+        let readExpectation = expectation(description: "inbox changed after read")
+        let readReference = mockNotificationCenter.addCallback(forNotification: .iterableInboxChanged) { _ in
+            XCTAssertTrue(messages[1].read)
+            readExpectation.fulfill()
+        }
+        internalAPI.inAppManager.set(read: true, forMessage: messages[1])
+        wait(for: [readExpectation], timeout: testExpectationTimeout)
+        mockNotificationCenter.removeCallbacks(withIds: readReference.callbackId)
+
+        XCTAssertFalse(messages[0].read)
+        XCTAssertEqual(internalAPI.inAppManager.getUnreadInboxMessagesCount(), 1)
+        let unreadMessages = internalAPI.inAppManager.getInboxMessages().filter { !$0.read }
+        XCTAssertEqual(unreadMessages.count, 1)
+        XCTAssertFalse(unreadMessages[0].read)
+    }
+
+    func testSetReadNonInboxMessageDoesNotPostInboxChanged() {
+        let message = IterableInAppMessage(messageId: "message1",
+                                           campaignId: 1,
+                                           trigger: IterableInAppTrigger(dict: [JsonKey.InApp.type: "never"]),
+                                           content: IterableHtmlInAppContent(edgeInsets: .zero, html: ""),
+                                           saveToInbox: false)
+        let mockNotificationCenter = MockNotificationCenter()
+        let internalAPI = InternalIterableAPI.initializeForTesting(inAppFetcher: MockInAppFetcher(messages: [message]),
+                                                                   notificationCenter: mockNotificationCenter)
+        let notificationExpectation = expectation(description: "no inbox change after non-inbox read")
+        notificationExpectation.isInverted = true
+        let notificationReference = mockNotificationCenter.addCallback(forNotification: .iterableInboxChanged) { _ in
+            notificationExpectation.fulfill()
+        }
+
+        internalAPI.inAppManager.set(read: true, forMessage: message)
+
+        wait(for: [notificationExpectation], timeout: testExpectationTimeoutForInverted)
+        XCTAssertTrue(message.read)
+        mockNotificationCenter.removeCallbacks(withIds: notificationReference.callbackId)
     }
     
     func testReceiveReadMessage() {
