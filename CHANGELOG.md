@@ -3,7 +3,12 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 ## [Unreleased]
+### Added
+- Added at least once delivery for JSON-only in-app messages through `IterableInAppDelegate.onJsonOnlyMessageAvailable(message:)` and `iterableJsonOnlyInAppMessageAvailable` (Objective-C: `IterableAPI.jsonOnlyInAppMessageAvailableNotification`). Messages are saved to local storage before signaling and replay on foreground until acknowledged. Unhandled messages remain available through `IterableAPI.getUnhandledJsonOnlyMessages()` until acknowledged with `markJsonOnlyMessageHandled(messageId:)`; acknowledgement records a payload fingerprint (bounded to the latest 100 per user) so the same message ID with a changed payload is delivered again. Callbacks are invoked without SDK locks held; see the API documentation for the identity overlap contract.
+
 ### Fixed
+- Public `inAppConsume` APIs now remove messages locally and post `iterableInboxChanged` after the local state is updated. The notification fires only when an inbox message changes, so removing popups or JSON-only messages no longer announces an inbox change.
+- In-app fetch, delivery, and merge are now scoped to the user identity that started them, so a login or logout during processing can no longer deliver or persist the previous user's messages.
 - Fixed offline-queued requests replaying an expired JWT forever. Tasks persisted while the token was expired kept the stale token in their payload, so they failed with a 401 on every retry even after a successful refresh, and could block the rest of the offline queue. The task processor now stamps the current auth token at execution time, matching online behavior, which also heals tasks already stuck in the queue.
 
 ## [6.7.4]

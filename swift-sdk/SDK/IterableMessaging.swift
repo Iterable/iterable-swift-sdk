@@ -17,6 +17,16 @@ import UIKit
 public extension Notification.Name {
     /// This is fired when in app inbox changes.
     static let iterableInboxChanged = Notification.Name(rawValue: "itbl_inbox_changed")
+
+    /// This is fired when a JSON-only in-app message is available locally.
+    /// Observers run on the main thread without SDK locks held. An observer selected for a previous user may complete after a concurrent identity switch; the SDK revalidates afterward and stops later delivery steps, state changes, and consumption.
+    static let iterableJsonOnlyInAppMessageAvailable = Notification.Name(rawValue: "itbl_json_only_in_app_message_available")
+}
+
+public extension IterableAPI {
+    /// Objective-C name for the JSON-only availability notification.
+    /// Observers run on the main thread without SDK locks held. An observer selected for a previous user may complete after a concurrent identity switch; the SDK revalidates afterward and stops later delivery steps, state changes, and consumption.
+    @objc static let jsonOnlyInAppMessageAvailableNotification = Notification.Name.iterableJsonOnlyInAppMessageAvailable
 }
 
 @objcMembers open class DefaultInAppDelegate: IterableInAppDelegate {

@@ -8,6 +8,7 @@ import Foundation
 
 class MockInAppDelegate: IterableInAppDelegate {
     var onNewMessageCallback: ((IterableInAppMessage) -> Void)?
+    var onJsonOnlyMessageAvailableCallback: ((IterableInAppMessage) -> Void)?
     
     init(showInApp: InAppShowResponse = .show) {
         self.showInApp = showInApp
@@ -16,6 +17,10 @@ class MockInAppDelegate: IterableInAppDelegate {
     func onNew(message: IterableInAppMessage) -> InAppShowResponse {
         onNewMessageCallback?(message)
         return showInApp
+    }
+
+    func onJsonOnlyMessageAvailable(message: IterableInAppMessage) {
+        onJsonOnlyMessageAvailableCallback?(message)
     }
     
     private let showInApp: InAppShowResponse

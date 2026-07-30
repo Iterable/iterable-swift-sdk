@@ -1115,7 +1115,17 @@ class TaskRunnerTests: XCTestCase {
 
     func testMixedQueueOnlyUnauthenticatedExecuteDuringAuthPause() throws {
         let jwtErrorData = ["code": "InvalidJwtPayload"].toJsonData()
-        let networkSession = MockNetworkSession(statusCode: 401, data: jwtErrorData)
+        let responseLock = NSLock()
+        var authFailureSent = false
+        let networkSession = MockNetworkSession(responseCallback: { url in
+            responseLock.lock()
+            defer { responseLock.unlock() }
+            guard url.path.contains(Const.Path.trackEvent), !authFailureSent else {
+                return nil
+            }
+            authFailureSent = true
+            return MockNetworkSession.MockResponse(statusCode: 401, data: jwtErrorData)
+        })
 
         let notificationCenter = MockNotificationCenter()
 
@@ -1128,9 +1138,10 @@ class TaskRunnerTests: XCTestCase {
         let scheduler = IterableTaskScheduler(persistenceContextProvider: persistenceContextProvider,
                                               notificationCenter: notificationCenter,
                                               healthMonitor: healthMonitor)
-        let _ = try scheduleSampleTask(scheduler: scheduler)
-        let _ = try scheduleUnauthenticatedTask(scheduler: scheduler)
-        let _ = try scheduleUnauthenticatedTask(scheduler: scheduler)
+        let scheduledAt = Date(timeIntervalSince1970: 0)
+        let _ = try scheduleSampleTask(scheduler: scheduler, scheduledAt: scheduledAt)
+        let _ = try scheduleUnauthenticatedTask(scheduler: scheduler, scheduledAt: scheduledAt.addingTimeInterval(1))
+        let _ = try scheduleUnauthenticatedTask(scheduler: scheduler, scheduledAt: scheduledAt.addingTimeInterval(2))
 
         // Wait for all 3 tasks to persist
         let scheduledPredicate = NSPredicate { _, _ in
@@ -1145,6 +1156,13 @@ class TaskRunnerTests: XCTestCase {
         }
         XCTAssertNotNil(retryRef)
 
+        let unauthSuccessExpectation = expectation(description: "unauthenticated tasks processed")
+        unauthSuccessExpectation.expectedFulfillmentCount = 2
+        let successRef = notificationCenter.addCallback(forNotification: .iterableTaskFinishedWithSuccess) { _ in
+            unauthSuccessExpectation.fulfill()
+        }
+        XCTAssertNotNil(successRef)
+
         let taskRunner = IterableTaskRunner(networkSession: networkSession,
                                             persistenceContextProvider: persistenceContextProvider,
                                             healthMonitor: healthMonitor,
@@ -1157,17 +1175,7 @@ class TaskRunnerTests: XCTestCase {
         wait(for: [retryExpectation], timeout: 5.0)
         notificationCenter.removeCallbacks(withIds: retryRef.callbackId)
 
-        // Fix network so unauthenticated tasks succeed
-        networkSession.responseCallback = nil
-
         // Wait for the 2 unauthenticated tasks to be processed
-        let unauthSuccessExpectation = expectation(description: "unauthenticated tasks processed")
-        unauthSuccessExpectation.expectedFulfillmentCount = 2
-        let successRef = notificationCenter.addCallback(forNotification: .iterableTaskFinishedWithSuccess) { _ in
-            unauthSuccessExpectation.fulfill()
-        }
-        XCTAssertNotNil(successRef)
-
         wait(for: [unauthSuccessExpectation], timeout: 10.0)
         notificationCenter.removeCallbacks(withIds: successRef.callbackId)
 
@@ -1538,7 +1546,8 @@ class TaskRunnerTests: XCTestCase {
     }
     
     private func scheduleSampleTask(scheduler: IterableTaskScheduler,
-                                    authToken: String? = nil) throws -> Pending<String, IterableTaskError> {
+                                    authToken: String? = nil,
+                                    scheduledAt: Date? = nil) throws -> Pending<String, IterableTaskError> {
         let apiKey = "zee-api-key"
         let eventName = "CustomEvent1"
         let dataFields = ["var1": "val1", "var2": "val2"]
@@ -1553,11 +1562,12 @@ class TaskRunnerTests: XCTestCase {
                                                     authToken: authToken,
                                                     deviceMetadata: deviceMetadata,
                                                     iterableRequest: trackEventRequest)
-        return scheduler.schedule(apiCallRequest: apiCallRequest)
+        return scheduler.schedule(apiCallRequest: apiCallRequest, scheduledAt: scheduledAt)
     }
 
     /// Schedules a task with an unauthenticated API path (disableDevice) for bypass testing.
-    private func scheduleUnauthenticatedTask(scheduler: IterableTaskScheduler) throws -> Pending<String, IterableTaskError> {
+    private func scheduleUnauthenticatedTask(scheduler: IterableTaskScheduler,
+                                             scheduledAt: Date? = nil) throws -> Pending<String, IterableTaskError> {
         let apiKey = "zee-api-key"
         let iterableRequest = IterableRequest.post(PostRequest(path: Const.Path.disableDevice,
                                                                args: nil,
@@ -1567,7 +1577,7 @@ class TaskRunnerTests: XCTestCase {
                                                     authToken: nil,
                                                     deviceMetadata: deviceMetadata,
                                                     iterableRequest: iterableRequest)
-        return scheduler.schedule(apiCallRequest: apiCallRequest)
+        return scheduler.schedule(apiCallRequest: apiCallRequest, scheduledAt: scheduledAt)
     }
 
     private func verifyNoTaskIsExecuted(_ notificationCenter: MockNotificationCenter, forInterval interval: TimeInterval) {

@@ -154,6 +154,14 @@ struct LocalStorage: LocalStorageProtocol {
             iterableUserDefaults.hasStoredNotificationSetting = newValue
         }
     }
+
+    var jsonOnlyMessageQueueData: Data? {
+        get {
+            iterableUserDefaults.jsonOnlyMessageQueueData
+        } set {
+            iterableUserDefaults.jsonOnlyMessageQueueData = newValue
+        }
+    }
     
     func getAttributionInfo(currentDate: Date) -> IterableAttributionInfo? {
         iterableUserDefaults.getAttributionInfo(currentDate: currentDate)

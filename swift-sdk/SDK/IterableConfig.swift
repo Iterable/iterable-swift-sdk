@@ -68,6 +68,7 @@ public struct IterableAPIMobileFrameworkInfo: Codable {
 @objc public protocol IterableInAppDelegate: AnyObject {
     /// This method is called when new in-app message is available.
     /// The default behavior is to `show` if you don't override this method.
+    /// For JSON-only messages, this callback is invoked without SDK locks held. A callback selected for a previous user may complete after a concurrent identity switch; the SDK revalidates afterward and stops later delivery steps, state changes, and consumption.
     ///
     /// - Parameters:
     ///     - message: `IterableInAppMessage` object containing information regarding in-app to display
@@ -75,6 +76,12 @@ public struct IterableAPIMobileFrameworkInfo: Codable {
     /// - Returns:Return `show` to show the in-app or `skip` to skip this.
     @objc(onNewMessage:)
     func onNew(message: IterableInAppMessage) -> InAppShowResponse
+
+    /// Called on the main thread when a JSON-only message is available locally.
+    /// This may be called more than once until the message is marked as handled.
+    /// This callback is invoked without SDK locks held. A callback selected for a previous user may complete after a concurrent identity switch; the SDK revalidates afterward and stops later delivery steps, state changes, and consumption.
+    @objc(onJsonOnlyMessageAvailable:)
+    optional func onJsonOnlyMessageAvailable(message: IterableInAppMessage)
 }
 
 /// The protocol for adjusting logging
@@ -212,4 +219,3 @@ public class IterableConfig: NSObject {
     /// The type of mobile framework we are using.
     public var mobileFrameworkInfo: IterableAPIMobileFrameworkInfo?
 }
-

@@ -10,6 +10,16 @@ class EmptyInAppManager: IterableInternalInAppManagerProtocol {
     func start() -> Pending<Bool, Error> {
         Fulfill<Bool, Error>(value: true)
     }
+
+    func getUnhandledJsonOnlyMessages() -> [IterableInAppMessage] {
+        []
+    }
+
+    func markJsonOnlyMessageHandled(messageId _: String) -> Bool {
+        false
+    }
+
+    func clearUnhandledJsonOnlyMessages() {}
     
     func handleClick(clickedUrl _: URL?, forMessage _: IterableInAppMessage, location _: InAppLocation, inboxSessionId _: String?) {}
     

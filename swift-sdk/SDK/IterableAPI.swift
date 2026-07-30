@@ -922,7 +922,7 @@ import UIKit
     public static func inAppConsume(message: IterableInAppMessage, location: InAppLocation = .inApp) {
         guard let implementation, implementation.isSDKInitialized() else { return }
         
-        implementation.inAppConsume(message: message, location: location)
+        implementation.inAppManager.remove(message: message, location: location)
     }
     
     /// Consumes the notification and removes it from the list of in-app messages
@@ -935,7 +935,27 @@ import UIKit
     public static func inAppConsume(message: IterableInAppMessage, location: InAppLocation = .inApp, source: InAppDeleteSource) {
         guard let implementation, implementation.isSDKInitialized() else { return }
         
-        implementation.inAppConsume(message: message, location: location, source: source)
+        implementation.inAppManager.remove(message: message, location: location, source: source)
+    }
+
+    /// Returns JSON-only messages for the current user that have not been marked as handled.
+    @objc
+    public static func getUnhandledJsonOnlyMessages() -> [IterableInAppMessage] {
+        guard let implementation, implementation.isSDKInitialized() else { return [] }
+
+        return implementation.getUnhandledJsonOnlyMessages()
+    }
+
+    /// Marks a JSON-only message as handled locally. This does not send an `inAppConsume` request.
+    ///
+    /// - Parameter messageId: The ID of the message to remove from the unhandled queue.
+    /// - Returns: `true` when an unhandled message was removed.
+    @objc(markJsonOnlyMessageHandled:)
+    @discardableResult
+    public static func markJsonOnlyMessageHandled(messageId: String) -> Bool {
+        guard let implementation, implementation.isSDKInitialized() else { return false }
+
+        return implementation.markJsonOnlyMessageHandled(messageId: messageId)
     }
     
     /// Tracks analytics data from a session of using an inbox UI
