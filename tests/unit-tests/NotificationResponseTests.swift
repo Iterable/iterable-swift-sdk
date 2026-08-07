@@ -168,4 +168,58 @@ class NotificationResponseTests: XCTestCase {
         
         XCTAssertEqual(urlOpener.openedUrl?.absoluteString, "https://example.com")
     }
+
+    // iOS-via-FCM delivers itbl as a JSON string rather than a dictionary. These two tests
+    // exercise the full open-handling flow (not just parsing) to confirm tracking and actions
+    // still fire when itbl arrives as a string.
+
+    func testTrackOpenPushFromStringItbl() {
+        let messageId = UUID().uuidString
+        let userInfo: [AnyHashable: Any] = [
+            "itbl": "{\"campaignId\":1234,\"templateId\":4321,\"isGhostPush\":false,\"messageId\":\"\(messageId)\"}",
+        ]
+
+        let response = MockNotificationResponse(userInfo: userInfo, actionIdentifier: UNNotificationDefaultActionIdentifier)
+        let pushTracker = MockPushTracker()
+        let appIntegration = InternalIterableAppIntegration(tracker: pushTracker,
+                                                            urlOpener: MockUrlOpener(),
+                                                            inAppNotifiable: EmptyInAppManager(),
+                                                            embeddedNotifiable: EmptyEmbeddedManager())
+        appIntegration.userNotificationCenter(nil, didReceive: response, withCompletionHandler: nil)
+
+        XCTAssertEqual(pushTracker.campaignId, 1234)
+        XCTAssertEqual(pushTracker.templateId, 4321)
+        XCTAssertEqual(pushTracker.messageId, messageId)
+        XCTAssertEqual(pushTracker.dataFields?[JsonKey.actionIdentifier] as? String, JsonValue.ActionIdentifier.pushOpenDefault)
+    }
+
+    func testCustomActionFromStringItbl() {
+        let messageId = UUID().uuidString
+        let userInfo: [AnyHashable: Any] = [
+            "itbl": "{\"campaignId\":1234,\"templateId\":4321,\"isGhostPush\":false,\"messageId\":\"\(messageId)\",\"defaultAction\":{\"type\":\"customAction\"}}",
+        ]
+
+        let response = MockNotificationResponse(userInfo: userInfo, actionIdentifier: UNNotificationDefaultActionIdentifier)
+        let pushTracker = MockPushTracker()
+        let expection = XCTestExpectation(description: "customActionDelegate is called")
+        let customActionDelegate = MockCustomActionDelegate(returnValue: true)
+        customActionDelegate.callback = { customActionName, _ in
+            XCTAssertEqual(customActionName, "customAction")
+            expection.fulfill()
+        }
+
+        let appIntegration = InternalIterableAppIntegration(tracker: pushTracker,
+                                                            customActionDelegate: customActionDelegate,
+                                                            urlOpener: MockUrlOpener(),
+                                                            inAppNotifiable: EmptyInAppManager(),
+                                                            embeddedNotifiable: EmptyEmbeddedManager())
+        appIntegration.userNotificationCenter(nil, didReceive: response, withCompletionHandler: nil)
+
+        wait(for: [expection], timeout: testExpectationTimeout)
+
+        XCTAssertEqual(pushTracker.campaignId, 1234)
+        XCTAssertEqual(pushTracker.templateId, 4321)
+        XCTAssertEqual(pushTracker.messageId, messageId)
+        XCTAssertEqual(pushTracker.dataFields?[JsonKey.actionIdentifier] as? String, JsonValue.ActionIdentifier.pushOpenDefault)
+    }
 }

@@ -1123,8 +1123,6 @@ class InAppTests: XCTestCase {
     }
     
     func testInboxChangedIsCalledWhenInAppIsRemovedInServer() {
-        let expectation1 = expectation(description: "testInboxChangedIsCalledWhenInAppIsRemovedInServer")
-        
         let notification = """
         {
             "itbl" : {
@@ -1135,17 +1133,34 @@ class InAppTests: XCTestCase {
             "messageId" : "messageId"
         }
         """.toJsonDict()
-        
+
+        let message = IterableInAppMessage(messageId: "messageId",
+                                           campaignId: 1,
+                                           trigger: IterableInAppTrigger(dict: [JsonKey.InApp.type: "never"]),
+                                           content: IterableHtmlInAppContent(edgeInsets: .zero, html: ""),
+                                           saveToInbox: true)
+        let mockInAppFetcher = MockInAppFetcher()
         let mockNotificationCenter = MockNotificationCenter()
-        let reference = mockNotificationCenter.addCallback(forNotification: .iterableInboxChanged) { _ in
-            expectation1.fulfill()
-        }
-        
-        XCTAssertNotNil(reference)
-        
         let config = IterableConfig()
-        let internalApi = InternalIterableAPI.initializeForTesting(config: config, notificationCenter: mockNotificationCenter)
-        
+        let internalApi = InternalIterableAPI.initializeForTesting(config: config,
+                                                                   inAppFetcher: mockInAppFetcher,
+                                                                   notificationCenter: mockNotificationCenter)
+
+        let initialInboxExpectation = expectation(description: "initial inbox load")
+        let initialReference = mockNotificationCenter.addCallback(forNotification: .iterableInboxChanged) { _ in
+            initialInboxExpectation.fulfill()
+        }
+        mockInAppFetcher.mockMessagesAvailableFromServer(internalApi: internalApi, messages: [message])
+        wait(for: [initialInboxExpectation], timeout: testExpectationTimeout)
+        mockNotificationCenter.removeCallbacks(withIds: initialReference.callbackId)
+        XCTAssertEqual(internalApi.inAppManager.getInboxMessages().count, 1)
+
+        let removalExpectation = expectation(description: "inbox changed after server removal")
+        removalExpectation.assertForOverFulfill = true
+        let removalReference = mockNotificationCenter.addCallback(forNotification: .iterableInboxChanged) { _ in
+            XCTAssertEqual(internalApi.inAppManager.getInboxMessages().count, 0)
+            removalExpectation.fulfill()
+        }
         let appIntegrationInternal = InternalIterableAppIntegration(tracker: internalApi,
                                                                     urlDelegate: config.urlDelegate,
                                                                     customActionDelegate: config.customActionDelegate,
@@ -1155,7 +1170,52 @@ class InAppTests: XCTestCase {
         
         appIntegrationInternal.application(MockApplicationStateProvider(applicationState: .background), didReceiveRemoteNotification: notification, fetchCompletionHandler: nil)
         
-        wait(for: [expectation1], timeout: testExpectationTimeout)
+        wait(for: [removalExpectation], timeout: testExpectationTimeout)
+        mockNotificationCenter.removeCallbacks(withIds: removalReference.callbackId)
+    }
+
+    func testInboxChangedIsNotCalledWhenNonInboxMessageIsRemovedInServer() {
+        let notification = """
+        {
+            "itbl" : {
+                "messageId" : "background_notification",
+                "isGhostPush" : true
+            },
+            "notificationType" : "InAppRemove",
+            "messageId" : "messageId"
+        }
+        """.toJsonDict()
+
+        let message = IterableInAppMessage(messageId: "messageId",
+                                           campaignId: 1,
+                                           trigger: IterableInAppTrigger(dict: [JsonKey.InApp.type: "never"]),
+                                           content: IterableHtmlInAppContent(edgeInsets: .zero, html: ""),
+                                           saveToInbox: false)
+        let mockInAppFetcher = MockInAppFetcher(messages: [message])
+        let mockNotificationCenter = MockNotificationCenter()
+        let config = IterableConfig()
+        let internalApi = InternalIterableAPI.initializeForTesting(config: config,
+                                                                   inAppFetcher: mockInAppFetcher,
+                                                                   notificationCenter: mockNotificationCenter)
+        XCTAssertEqual(internalApi.inAppManager.getMessages().count, 1)
+
+        let notificationExpectation = expectation(description: "no inbox change for non-inbox server removal")
+        notificationExpectation.isInverted = true
+        let notificationReference = mockNotificationCenter.addCallback(forNotification: .iterableInboxChanged) { _ in
+            notificationExpectation.fulfill()
+        }
+        let appIntegrationInternal = InternalIterableAppIntegration(tracker: internalApi,
+                                                                    urlDelegate: config.urlDelegate,
+                                                                    customActionDelegate: config.customActionDelegate,
+                                                                    urlOpener: MockUrlOpener(),
+                                                                    inAppNotifiable: internalApi.inAppManager,
+                                                                    embeddedNotifiable: internalApi.embeddedManager)
+
+        appIntegrationInternal.application(MockApplicationStateProvider(applicationState: .background), didReceiveRemoteNotification: notification, fetchCompletionHandler: nil)
+
+        wait(for: [notificationExpectation], timeout: testExpectationTimeoutForInverted)
+        XCTAssertEqual(internalApi.inAppManager.getMessages().count, 0)
+        mockNotificationCenter.removeCallbacks(withIds: notificationReference.callbackId)
     }
     
     func testSyncIsCalledOnLogin() {
@@ -1901,6 +1961,1288 @@ class InAppTests: XCTestCase {
 
 }
 
+private final class LegacySwiftInAppDelegate: NSObject, IterableInAppDelegate {
+    func onNew(message _: IterableInAppMessage) -> InAppShowResponse {
+        .show
+    }
+}
+
+private final class CallbackInAppDisplayDelegate: NSObject, IterableInAppDisplayDelegate {
+    var callback: ((IterableInAppMessage) -> Bool)?
+
+    func isAutoDisplayPaused(for message: IterableInAppMessage) -> Bool {
+        callback?(message) ?? false
+    }
+}
+
+private final class BlockingInAppFetcher: InAppFetcherProtocol {
+    func blockNextFetch(with messages: [IterableInAppMessage]) {
+        blockedMessages = messages
+    }
+
+    func fetch() -> Pending<[IterableInAppMessage], Error> {
+        guard let messages = blockedMessages else {
+            if didCompleteBlockedFetch {
+                subsequentFetchStarted.signal()
+            }
+            return Fulfill(value: [])
+        }
+
+        blockedMessages = nil
+        blockedFetchStarted.signal()
+        continueBlockedFetch.wait()
+        didCompleteBlockedFetch = true
+        return Fulfill(value: messages)
+    }
+
+    let blockedFetchStarted = DispatchSemaphore(value: 0)
+    let continueBlockedFetch = DispatchSemaphore(value: 0)
+    let subsequentFetchStarted = DispatchSemaphore(value: 0)
+
+    private var blockedMessages: [IterableInAppMessage]?
+    private var didCompleteBlockedFetch = false
+}
+
+private final class MainThreadCheckingApplicationStateProvider: NSObject, ApplicationStateProviderProtocol {
+    var applicationState: UIApplication.State {
+        XCTAssertTrue(Thread.isMainThread)
+        return .active
+    }
+}
+
+final class JsonOnlyMessageAvailabilityTests: XCTestCase {
+    override func tearDown() {
+        IterableAPI.implementation = nil
+        super.tearDown()
+    }
+
+    func testStartReadsApplicationStateOnMainThread() {
+        let startExpectation = expectation(description: "SDK start")
+        let applicationStateProvider = MainThreadCheckingApplicationStateProvider()
+
+        DispatchQueue.global().async {
+            IterableAPI.initializeForTesting(applicationStateProvider: applicationStateProvider)
+            startExpectation.fulfill()
+        }
+
+        wait(for: [startExpectation], timeout: testExpectationTimeout)
+    }
+
+    func testAvailabilityPersistsBeforeOrderedMainThreadSignals() {
+        let onNewExpectation = expectation(description: "legacy onNew")
+        let availabilityExpectation = expectation(description: "availability delegate")
+        let notificationExpectation = expectation(description: "availability notification")
+        let consumeExpectation = expectation(description: "consume request")
+        let fetcher = MockInAppFetcher()
+        let notificationCenter = MockNotificationCenter()
+        let networkSession = MockNetworkSession()
+        let delegate = MockInAppDelegate()
+        let message = makeJsonOnlyMessage(id: "message-1")
+        var order = [String]()
+
+        delegate.onNewMessageCallback = { deliveredMessage in
+            XCTAssertTrue(Thread.isMainThread)
+            XCTAssertEqual(IterableAPI.getUnhandledJsonOnlyMessages().map(\.messageId), [deliveredMessage.messageId])
+            order.append("onNew")
+            onNewExpectation.fulfill()
+        }
+        delegate.onJsonOnlyMessageAvailableCallback = { deliveredMessage in
+            XCTAssertTrue(Thread.isMainThread)
+            XCTAssertEqual(deliveredMessage.messageId, message.messageId)
+            order.append("delegate")
+            availabilityExpectation.fulfill()
+        }
+        let notificationReference = notificationCenter.addCallback(forNotification: .iterableJsonOnlyInAppMessageAvailable) { notification in
+            XCTAssertTrue(Thread.isMainThread)
+            XCTAssertEqual((notification.object as? IterableInAppMessage)?.messageId, message.messageId)
+            order.append("notification")
+            notificationExpectation.fulfill()
+        }
+        networkSession.requestCallback = { request in
+            guard request.url?.path.contains(Const.Path.inAppConsume) == true else { return }
+            order.append("consume")
+            consumeExpectation.fulfill()
+        }
+
+        let internalAPI = initialize(fetcher: fetcher,
+                                     delegate: delegate,
+                                     networkSession: networkSession,
+                                     notificationCenter: notificationCenter)
+        fetch([message], with: fetcher, internalAPI: internalAPI)
+
+        wait(for: [onNewExpectation, availabilityExpectation, notificationExpectation, consumeExpectation],
+             timeout: testExpectationTimeout)
+        XCTAssertEqual(order, ["onNew", "delegate", "notification", "consume"])
+        notificationCenter.removeCallbacks(withIds: notificationReference.callbackId)
+    }
+
+    func testPerMessageDeliveryAndIndependentAcknowledgement() {
+        let availabilityExpectation = expectation(description: "per-message availability")
+        availabilityExpectation.expectedFulfillmentCount = 2
+        let fetcher = MockInAppFetcher()
+        let delegate = MockInAppDelegate()
+        let first = makeJsonOnlyMessage(id: "message-1", priorityLevel: 2)
+        let second = makeJsonOnlyMessage(id: "message-2", priorityLevel: 1)
+        var deliveredIds = [String]()
+
+        delegate.onJsonOnlyMessageAvailableCallback = { message in
+            if deliveredIds.isEmpty {
+                XCTAssertEqual(IterableAPI.getUnhandledJsonOnlyMessages().map(\.messageId), [first.messageId, second.messageId])
+            }
+            deliveredIds.append(message.messageId)
+            availabilityExpectation.fulfill()
+        }
+
+        let internalAPI = initialize(fetcher: fetcher, delegate: delegate)
+        fetch([first, second], with: fetcher, internalAPI: internalAPI)
+
+        wait(for: [availabilityExpectation], timeout: testExpectationTimeout)
+        XCTAssertEqual(deliveredIds, [first.messageId, second.messageId])
+        XCTAssertEqual(IterableAPI.getUnhandledJsonOnlyMessages().map(\.messageId), [first.messageId, second.messageId])
+        XCTAssertTrue(IterableAPI.markJsonOnlyMessageHandled(messageId: first.messageId))
+        XCTAssertFalse(IterableAPI.markJsonOnlyMessageHandled(messageId: first.messageId))
+        XCTAssertEqual(IterableAPI.getUnhandledJsonOnlyMessages().map(\.messageId), [second.messageId])
+    }
+
+    func testExpiredJsonOnlyMessageDoesNotBlockRemainingBatch() {
+        let availabilityExpectation = expectation(description: "valid JSON availability")
+        let htmlExpectation = expectation(description: "HTML processed")
+        let dateProvider = MockDateProvider()
+        let fetcher = MockInAppFetcher()
+        let delegate = MockInAppDelegate()
+        let expired = makeJsonOnlyMessage(id: "expired", expiresAt: dateProvider.currentDate)
+        let valid = makeJsonOnlyMessage(id: "valid")
+        let html = makeHtmlMessage(id: "html", triggerType: .immediate)
+
+        delegate.onNewMessageCallback = { message in
+            if message.messageId == html.messageId {
+                htmlExpectation.fulfill()
+            }
+        }
+        delegate.onJsonOnlyMessageAvailableCallback = { message in
+            XCTAssertEqual(message.messageId, valid.messageId)
+            availabilityExpectation.fulfill()
+        }
+
+        let internalAPI = initialize(fetcher: fetcher,
+                                     delegate: delegate,
+                                     dateProvider: dateProvider)
+        fetch([expired, valid, html], with: fetcher, internalAPI: internalAPI)
+
+        wait(for: [availabilityExpectation, htmlExpectation], timeout: testExpectationTimeout)
+        XCTAssertEqual(IterableAPI.getUnhandledJsonOnlyMessages().map(\.messageId), [valid.messageId])
+        XCTAssertTrue(html.didProcessTrigger)
+    }
+
+    func testJsonOnlyAvailabilityIgnoresAutoDisplayPause() {
+        let availabilityExpectation = expectation(description: "JSON availability while paused")
+        let fetcher = MockInAppFetcher()
+        let delegate = MockInAppDelegate()
+        let json = makeJsonOnlyMessage(id: "json")
+        let html = makeHtmlMessage(id: "html", triggerType: .immediate)
+        delegate.onJsonOnlyMessageAvailableCallback = { _ in availabilityExpectation.fulfill() }
+        let internalAPI = initialize(fetcher: fetcher, delegate: delegate)
+        internalAPI.inAppManager.isAutoDisplayPaused = true
+
+        fetch([json, html], with: fetcher, internalAPI: internalAPI)
+
+        wait(for: [availabilityExpectation], timeout: testExpectationTimeout)
+        XCTAssertFalse(html.didProcessTrigger)
+    }
+
+    func testJsonOnlyAvailabilityIgnoresPopupCooldown() {
+        let firstShowExpectation = expectation(description: "first HTML shown")
+        let availabilityExpectation = expectation(description: "JSON availability during cooldown")
+        let dismissalExpectation = expectation(description: "first HTML dismissed")
+        let dateProvider = MockDateProvider()
+        let displayer = MockInAppDisplayer()
+        let fetcher = MockInAppFetcher()
+        let delegate = MockInAppDelegate()
+        let firstHtml = makeHtmlMessage(id: "html-1", triggerType: .immediate)
+        let secondHtml = makeHtmlMessage(id: "html-2", triggerType: .immediate)
+        let json = makeJsonOnlyMessage(id: "json")
+
+        displayer.onShow.onSuccess { _ in
+            displayer.click(url: URL(string: "iterable://dismiss")!)
+            firstShowExpectation.fulfill()
+        }
+        delegate.onJsonOnlyMessageAvailableCallback = { _ in availabilityExpectation.fulfill() }
+        let internalAPI = initialize(fetcher: fetcher,
+                                     displayer: displayer,
+                                     delegate: delegate,
+                                     dateProvider: dateProvider,
+                                     displayInterval: 60)
+        fetch([firstHtml], with: fetcher, internalAPI: internalAPI)
+        wait(for: [firstShowExpectation], timeout: testExpectationTimeout)
+        DispatchQueue.main.async { dismissalExpectation.fulfill() }
+        wait(for: [dismissalExpectation], timeout: testExpectationTimeout)
+
+        fetch([json, secondHtml], with: fetcher, internalAPI: internalAPI)
+
+        wait(for: [availabilityExpectation], timeout: testExpectationTimeout)
+        XCTAssertFalse(secondHtml.didProcessTrigger)
+    }
+
+    func testSlowHtmlCallbackDoesNotBlockReset() {
+        let callbackStarted = DispatchSemaphore(value: 0)
+        let releaseCallback = DispatchSemaphore(value: 0)
+        let resetExpectation = expectation(description: "reset completed")
+        let fetchExpectation = expectation(description: "fetch completed")
+        let fetcher = MockInAppFetcher()
+        let delegate = MockInAppDelegate(showInApp: .skip)
+        let message = makeHtmlMessage(id: "html", triggerType: .immediate)
+        var internalAPI: InternalIterableAPI!
+
+        delegate.onNewMessageCallback = { _ in
+            callbackStarted.signal()
+            internalAPI.inAppManager.reset().onSuccess { _ in resetExpectation.fulfill() }
+            releaseCallback.wait()
+        }
+        internalAPI = initialize(fetcher: fetcher, delegate: delegate)
+        fetcher.add(message: message)
+        internalAPI.inAppManager.scheduleSync().onSuccess { _ in fetchExpectation.fulfill() }
+
+        XCTAssertEqual(callbackStarted.wait(timeout: .now() + testExpectationTimeout), .success)
+        wait(for: [resetExpectation], timeout: testExpectationTimeout)
+        releaseCallback.signal()
+        wait(for: [fetchExpectation], timeout: testExpectationTimeout)
+        XCTAssertFalse(internalAPI.inAppManager.getMessages().contains { $0.messageId == message.messageId })
+    }
+
+    func testQueuedHtmlProcessingSkipsStaleIdentity() {
+        let processingStarted = DispatchSemaphore(value: 0)
+        let releaseProcessing = DispatchSemaphore(value: 0)
+        let fetchCompleted = expectation(description: "fetch completed")
+        let noOnNew = expectation(description: "no stale HTML onNew")
+        noOnNew.isInverted = true
+        let noDisplay = expectation(description: "no stale HTML display")
+        noDisplay.isInverted = true
+        let fetcher = MockInAppFetcher()
+        let displayer = MockInAppDisplayer()
+        let delegate = MockInAppDelegate()
+        let html = makeHtmlMessage(id: "html-a", triggerType: .immediate)
+        let internalAPI = initialize(fetcher: fetcher, displayer: displayer, delegate: delegate)
+        let manager = internalAPI.inAppManager as! InAppManager
+        let processingQueue = Mirror(reflecting: manager).children.first { $0.label == "processingQueue" }?.value as! DispatchQueue
+
+        delegate.onNewMessageCallback = { _ in noOnNew.fulfill() }
+        displayer.onShow.onSuccess { _ in noDisplay.fulfill() }
+        processingQueue.async {
+            processingStarted.signal()
+            releaseProcessing.wait()
+        }
+        XCTAssertEqual(processingStarted.wait(timeout: .now() + testExpectationTimeout), .success)
+
+        fetcher.add(message: html)
+        internalAPI.inAppManager.scheduleSync().onSuccess { _ in fetchCompleted.fulfill() }
+        let deadline = Date().addingTimeInterval(testExpectationTimeout)
+        while !internalAPI.inAppManager.getMessages().contains(where: { $0.messageId == html.messageId }), Date() < deadline {
+            Thread.sleep(forTimeInterval: 0.01)
+        }
+        XCTAssertTrue(internalAPI.inAppManager.getMessages().contains { $0.messageId == html.messageId })
+
+        fetcher.mockMessagesAvailableFromServer(internalApi: nil, messages: [])
+        internalAPI.setUserId("user-b")
+        releaseProcessing.signal()
+
+        wait(for: [fetchCompleted], timeout: testExpectationTimeout)
+        wait(for: [noOnNew, noDisplay], timeout: testExpectationTimeoutForInverted)
+    }
+
+    func testIdentitySwitchInDisplayDelegateStopsOnNew() {
+        let displayCheckExpectation = expectation(description: "display delegate called")
+        let noOnNew = expectation(description: "no stale onNew")
+        noOnNew.isInverted = true
+        let fetcher = MockInAppFetcher()
+        let delegate = MockInAppDelegate()
+        let displayDelegate = CallbackInAppDisplayDelegate()
+        let message = makeHtmlMessage(id: "html-a", triggerType: .immediate)
+        var internalAPI: InternalIterableAPI!
+
+        delegate.onNewMessageCallback = { _ in noOnNew.fulfill() }
+        displayDelegate.callback = { _ in
+            fetcher.mockMessagesAvailableFromServer(internalApi: nil, messages: [])
+            internalAPI.setUserId("user-b")
+            displayCheckExpectation.fulfill()
+            return false
+        }
+        internalAPI = initialize(fetcher: fetcher,
+                                 delegate: delegate,
+                                 displayDelegate: displayDelegate)
+
+        fetch([message], with: fetcher, internalAPI: internalAPI)
+
+        wait(for: [displayCheckExpectation], timeout: testExpectationTimeout)
+        wait(for: [noOnNew], timeout: testExpectationTimeoutForInverted)
+    }
+
+    func testIdentitySwitchInOnNewStopsRecursiveDisplayCheck() {
+        let firstDisplayCheck = expectation(description: "first display check")
+        let firstOnNew = expectation(description: "first onNew")
+        let noSecondDisplayCheck = expectation(description: "no stale second display check")
+        noSecondDisplayCheck.isInverted = true
+        let noSecondOnNew = expectation(description: "no stale second onNew")
+        noSecondOnNew.isInverted = true
+        let fetcher = MockInAppFetcher()
+        let delegate = MockInAppDelegate(showInApp: .skip)
+        let displayDelegate = CallbackInAppDisplayDelegate()
+        let first = makeHtmlMessage(id: "html-a", triggerType: .immediate)
+        let second = makeHtmlMessage(id: "html-b", triggerType: .immediate)
+        var internalAPI: InternalIterableAPI!
+
+        displayDelegate.callback = { message in
+            if message.messageId == first.messageId {
+                firstDisplayCheck.fulfill()
+            } else if message.messageId == second.messageId {
+                noSecondDisplayCheck.fulfill()
+            }
+            return false
+        }
+        delegate.onNewMessageCallback = { message in
+            if message.messageId == first.messageId {
+                fetcher.mockMessagesAvailableFromServer(internalApi: nil, messages: [])
+                internalAPI.setUserId("user-b")
+                firstOnNew.fulfill()
+            } else if message.messageId == second.messageId {
+                noSecondOnNew.fulfill()
+            }
+        }
+        internalAPI = initialize(fetcher: fetcher,
+                                 delegate: delegate,
+                                 displayDelegate: displayDelegate)
+
+        fetch([first, second], with: fetcher, internalAPI: internalAPI)
+
+        wait(for: [firstDisplayCheck, firstOnNew], timeout: testExpectationTimeout)
+        wait(for: [noSecondDisplayCheck, noSecondOnNew], timeout: testExpectationTimeoutForInverted)
+    }
+
+    func testIdentitySwitchInOnNewStopsLaterDeliverySteps() {
+        assertIdentitySwitchDuringDelivery(at: .onNew)
+    }
+
+    func testIdentitySwitchInAvailabilityDelegateStopsLaterDeliverySteps() {
+        assertIdentitySwitchDuringDelivery(at: .delegate)
+    }
+
+    func testIdentitySwitchInNotificationStopsConsume() {
+        assertIdentitySwitchDuringDelivery(at: .notification)
+    }
+
+    func testConcurrentIdentitySwitchDuringOnNewStopsLaterDeliverySteps() {
+        assertConcurrentIdentitySwitchDuringDelivery(at: .onNew)
+    }
+
+    func testConcurrentIdentitySwitchDuringAvailabilityDelegateStopsLaterDeliverySteps() {
+        assertConcurrentIdentitySwitchDuringDelivery(at: .delegate)
+    }
+
+    func testConcurrentIdentitySwitchDuringNotificationStopsLaterDeliverySteps() {
+        assertConcurrentIdentitySwitchDuringDelivery(at: .notification)
+    }
+
+    func testIdentitySwitchBeforeMainDeliveryDoesNotLeakMessage() {
+        let noOnNewExpectation = expectation(description: "no onNew after identity switch")
+        noOnNewExpectation.isInverted = true
+        let noAvailabilityExpectation = expectation(description: "no availability after identity switch")
+        noAvailabilityExpectation.isInverted = true
+        let noNotificationExpectation = expectation(description: "no notification after identity switch")
+        noNotificationExpectation.isInverted = true
+        let identitySwitchedExpectation = expectation(description: "identity switched")
+        let fetchCompletedExpectation = expectation(description: "fetch completed")
+        let fetchStarted = DispatchSemaphore(value: 0)
+        let continueFetch = DispatchSemaphore(value: 0)
+        let mainBlocked = DispatchSemaphore(value: 0)
+        let releaseMain = DispatchSemaphore(value: 0)
+        let localStorage = MockLocalStorage()
+        localStorage.email = Self.email
+        let notificationCenter = MockNotificationCenter()
+        let fetcher = MockInAppFetcher()
+        let delegate = MockInAppDelegate()
+        let message = makeJsonOnlyMessage(id: "message-a")
+
+        delegate.onNewMessageCallback = { _ in noOnNewExpectation.fulfill() }
+        delegate.onJsonOnlyMessageAvailableCallback = { _ in noAvailabilityExpectation.fulfill() }
+        let notificationReference = notificationCenter.addCallback(forNotification: .iterableJsonOnlyInAppMessageAvailable) { _ in
+            noNotificationExpectation.fulfill()
+        }
+        let internalAPI = initialize(localStorage: localStorage,
+                                     fetcher: fetcher,
+                                     delegate: delegate,
+                                     notificationCenter: notificationCenter)
+        fetcher.syncCallback = { [weak fetcher] in
+            fetcher?.syncCallback = nil
+            fetchStarted.signal()
+            continueFetch.wait()
+        }
+        fetcher.add(message: message)
+        internalAPI.inAppManager.scheduleSync().onSuccess { _ in fetchCompletedExpectation.fulfill() }
+        XCTAssertEqual(fetchStarted.wait(timeout: .now() + testExpectationTimeout), .success)
+
+        DispatchQueue.main.async {
+            mainBlocked.signal()
+            _ = releaseMain.wait(timeout: .now() + testExpectationTimeout)
+        }
+        DispatchQueue.global().async {
+            guard mainBlocked.wait(timeout: .now() + testExpectationTimeout) == .success else {
+                continueFetch.signal()
+                releaseMain.signal()
+                return
+            }
+            continueFetch.signal()
+
+            let deadline = Date().addingTimeInterval(testExpectationTimeout)
+            while IterableAPI.getUnhandledJsonOnlyMessages().map(\.messageId) != [message.messageId], Date() < deadline {
+                Thread.sleep(forTimeInterval: 0.01)
+            }
+            XCTAssertEqual(IterableAPI.getUnhandledJsonOnlyMessages().map(\.messageId), [message.messageId])
+
+            fetcher.mockMessagesAvailableFromServer(internalApi: nil, messages: [])
+            internalAPI.setUserId("user-b")
+            XCTAssertTrue(IterableAPI.getUnhandledJsonOnlyMessages().isEmpty)
+            identitySwitchedExpectation.fulfill()
+            releaseMain.signal()
+        }
+
+        wait(for: [identitySwitchedExpectation, fetchCompletedExpectation], timeout: testExpectationTimeout)
+        wait(for: [noOnNewExpectation, noAvailabilityExpectation, noNotificationExpectation], timeout: testExpectationTimeoutForInverted)
+        XCTAssertTrue(IterableAPI.getUnhandledJsonOnlyMessages().isEmpty)
+        notificationCenter.removeCallbacks(withIds: notificationReference.callbackId)
+    }
+
+    func testIdentitySwitchWhileFetchIsInFlightDiscardsResponse() {
+        let noOnNewExpectation = expectation(description: "no onNew for stale response")
+        noOnNewExpectation.isInverted = true
+        let noAvailabilityExpectation = expectation(description: "no availability for stale response")
+        noAvailabilityExpectation.isInverted = true
+        let noNotificationExpectation = expectation(description: "no notification for stale response")
+        noNotificationExpectation.isInverted = true
+        let settledExpectation = expectation(description: "syncs settled")
+        let localStorage = MockLocalStorage()
+        localStorage.email = Self.email
+        let notificationCenter = MockNotificationCenter()
+        let fetcher = BlockingInAppFetcher()
+        let persister = MockInAppPersister()
+        let delegate = MockInAppDelegate()
+        let message = makeJsonOnlyMessage(id: "message-a")
+
+        delegate.onNewMessageCallback = { _ in noOnNewExpectation.fulfill() }
+        delegate.onJsonOnlyMessageAvailableCallback = { _ in noAvailabilityExpectation.fulfill() }
+        let notificationReference = notificationCenter.addCallback(forNotification: .iterableJsonOnlyInAppMessageAvailable) { _ in
+            noNotificationExpectation.fulfill()
+        }
+        let internalAPI = initialize(localStorage: localStorage,
+                                     fetcher: fetcher,
+                                     persister: persister,
+                                     delegate: delegate,
+                                     notificationCenter: notificationCenter)
+        fetcher.blockNextFetch(with: [message])
+        _ = internalAPI.inAppManager.scheduleSync()
+        defer { fetcher.continueBlockedFetch.signal() }
+        XCTAssertEqual(fetcher.blockedFetchStarted.wait(timeout: .now() + testExpectationTimeout), .success)
+
+        internalAPI.setUserId("user-b")
+        fetcher.continueBlockedFetch.signal()
+        XCTAssertEqual(fetcher.subsequentFetchStarted.wait(timeout: .now() + testExpectationTimeout), .success)
+        internalAPI.inAppManager.scheduleSync().onSuccess { _ in settledExpectation.fulfill() }
+
+        wait(for: [settledExpectation], timeout: testExpectationTimeout)
+        wait(for: [noOnNewExpectation, noAvailabilityExpectation, noNotificationExpectation], timeout: testExpectationTimeoutForInverted)
+        XCTAssertTrue(IterableAPI.getUnhandledJsonOnlyMessages().isEmpty)
+        XCTAssertFalse(internalAPI.inAppManager.getMessages().contains(where: { $0.messageId == message.messageId }))
+        XCTAssertFalse(persister.getMessages().contains(where: { $0.messageId == message.messageId }))
+        notificationCenter.removeCallbacks(withIds: notificationReference.callbackId)
+    }
+
+    func testIdentitySwitchDuringFetchCommitDoesNotPersistStaleState() {
+        let commitStarted = DispatchSemaphore(value: 0)
+        let continueCommit = DispatchSemaphore(value: 0)
+        let switchCompleted = DispatchSemaphore(value: 0)
+        let fetchCompleted = expectation(description: "fetch completed")
+        let localStorage = MockLocalStorage()
+        localStorage.email = Self.email
+        let fetcher = MockInAppFetcher()
+        let persister = MockInAppPersister()
+        let message = makeJsonOnlyMessage(id: "message-a")
+        let internalAPI = initialize(localStorage: localStorage,
+                                     fetcher: fetcher,
+                                     persister: persister)
+
+        localStorage.onJsonOnlyMessageQueueDataRead = {
+            localStorage.onJsonOnlyMessageQueueDataRead = nil
+            commitStarted.signal()
+            continueCommit.wait()
+        }
+        fetcher.add(message: message)
+        internalAPI.inAppManager.scheduleSync().onSuccess { _ in fetchCompleted.fulfill() }
+        XCTAssertEqual(commitStarted.wait(timeout: .now() + testExpectationTimeout), .success)
+        fetcher.mockMessagesAvailableFromServer(internalApi: nil, messages: [])
+
+        DispatchQueue.global().async {
+            internalAPI.setUserId("user-b")
+            switchCompleted.signal()
+        }
+        XCTAssertEqual(switchCompleted.wait(timeout: .now() + 0.1), .timedOut)
+        continueCommit.signal()
+        XCTAssertEqual(switchCompleted.wait(timeout: .now() + testExpectationTimeout), .success)
+
+        wait(for: [fetchCompleted], timeout: testExpectationTimeout)
+        XCTAssertTrue(IterableAPI.getUnhandledJsonOnlyMessages().isEmpty)
+        XCTAssertFalse(internalAPI.inAppManager.getMessages().contains { $0.messageId == message.messageId })
+        XCTAssertFalse(persister.getMessages().contains { $0.messageId == message.messageId })
+    }
+
+    func testBackgroundFetchSurvivesRecreationAndDeliversOnForeground() {
+        let localStorage = MockLocalStorage()
+        localStorage.email = Self.email
+        let persister = MockInAppPersister()
+        let notificationCenter = MockNotificationCenter()
+        let applicationState = MockApplicationStateProvider(applicationState: .background)
+        let firstFetcher = MockInAppFetcher()
+        let message = makeJsonOnlyMessage(id: "message-1")
+        var firstAPI: InternalIterableAPI? = initialize(localStorage: localStorage,
+                                                        fetcher: firstFetcher,
+                                                        persister: persister,
+                                                        applicationState: applicationState,
+                                                        notificationCenter: notificationCenter)
+
+        fetch([message], with: firstFetcher, internalAPI: firstAPI!)
+        XCTAssertEqual(IterableAPI.getUnhandledJsonOnlyMessages().map(\.messageId), [message.messageId])
+
+        IterableAPI.implementation = nil
+        firstAPI = nil
+
+        let availabilityExpectation = expectation(description: "foreground replay")
+        let recreatedDelegate = MockInAppDelegate()
+        recreatedDelegate.onJsonOnlyMessageAvailableCallback = { deliveredMessage in
+            XCTAssertEqual(deliveredMessage.messageId, message.messageId)
+            availabilityExpectation.fulfill()
+        }
+        _ = initialize(localStorage: localStorage,
+                       fetcher: MockInAppFetcher(),
+                       persister: persister,
+                       delegate: recreatedDelegate,
+                       applicationState: applicationState,
+                       notificationCenter: notificationCenter)
+
+        XCTAssertEqual(IterableAPI.getUnhandledJsonOnlyMessages().map(\.messageId), [message.messageId])
+        applicationState.applicationState = .active
+        notificationCenter.post(name: UIApplication.didBecomeActiveNotification, object: nil, userInfo: nil)
+
+        wait(for: [availabilityExpectation], timeout: testExpectationTimeout)
+    }
+
+    func testForegroundReplayContinuesUntilAcknowledged() {
+        let replayExpectation = expectation(description: "initial delivery and two replays")
+        replayExpectation.expectedFulfillmentCount = 3
+        let noReplayExpectation = expectation(description: "no replay after acknowledgement")
+        noReplayExpectation.isInverted = true
+        let fetcher = MockInAppFetcher()
+        let notificationCenter = MockNotificationCenter()
+        let applicationState = MockApplicationStateProvider(applicationState: .active)
+        let delegate = MockInAppDelegate()
+        let message = makeJsonOnlyMessage(id: "message-1")
+        var availabilityCount = 0
+        var onNewCount = 0
+
+        delegate.onNewMessageCallback = { _ in onNewCount += 1 }
+        delegate.onJsonOnlyMessageAvailableCallback = { _ in
+            availabilityCount += 1
+            replayExpectation.fulfill()
+        }
+
+        let internalAPI = initialize(fetcher: fetcher,
+                                     delegate: delegate,
+                                     applicationState: applicationState,
+                                     notificationCenter: notificationCenter)
+        fetch([message], with: fetcher, internalAPI: internalAPI)
+        notificationCenter.post(name: UIApplication.didBecomeActiveNotification, object: nil, userInfo: nil)
+        notificationCenter.post(name: UIApplication.didBecomeActiveNotification, object: nil, userInfo: nil)
+
+        wait(for: [replayExpectation], timeout: testExpectationTimeout)
+        XCTAssertEqual(onNewCount, 1)
+        XCTAssertTrue(IterableAPI.markJsonOnlyMessageHandled(messageId: message.messageId))
+
+        delegate.onJsonOnlyMessageAvailableCallback = { _ in noReplayExpectation.fulfill() }
+        notificationCenter.post(name: UIApplication.didBecomeActiveNotification, object: nil, userInfo: nil)
+        wait(for: [noReplayExpectation], timeout: testExpectationTimeoutForInverted)
+        XCTAssertEqual(availabilityCount, 3)
+    }
+
+    func testDuplicateMessageIdProducesOneUnhandledRecord() {
+        let fetcher = MockInAppFetcher()
+        let delegate = MockInAppDelegate()
+        var availabilityCount = 0
+        delegate.onJsonOnlyMessageAvailableCallback = { _ in availabilityCount += 1 }
+        let internalAPI = initialize(fetcher: fetcher, delegate: delegate)
+
+        fetch([makeJsonOnlyMessage(id: "message-1", payloadId: "first")], with: fetcher, internalAPI: internalAPI)
+        fetch([makeJsonOnlyMessage(id: "message-1", payloadId: "second")], with: fetcher, internalAPI: internalAPI)
+
+        XCTAssertEqual(IterableAPI.getUnhandledJsonOnlyMessages().map(\.messageId), ["message-1"])
+        XCTAssertEqual(IterableAPI.getUnhandledJsonOnlyMessages().first?.customPayload?["id"] as? String, "first")
+        XCTAssertEqual(availabilityCount, 1)
+    }
+
+    func testDuplicateMessageIdKeepsFirstPayloadUntilAcknowledged() {
+        let localStorage = MockLocalStorage()
+        let dateProvider = MockDateProvider()
+        let auth = Auth(userId: nil, email: Self.email, authToken: nil, userIdUnknownUser: nil)
+        let store = JsonOnlyMessageStore(localStorage: localStorage,
+                                         dateProvider: dateProvider,
+                                         identityProvider: { UserIdentitySnapshot(auth: auth) },
+                                         identityCoordinator: IdentityCoordinator())
+        let identityContext = store.identityContext
+        let first = makeJsonOnlyMessage(id: "message-1", payloadId: "first")
+        let second = makeJsonOnlyMessage(id: "message-1", payloadId: "second")
+
+        XCTAssertTrue(store.enqueue([first, second], identityContext: identityContext))
+        XCTAssertEqual(store.getMessages().first?.customPayload?["id"] as? String, "first")
+
+        XCTAssertTrue(store.remove(messageId: first.messageId))
+        XCTAssertTrue(store.enqueue(second, identityContext: identityContext))
+        XCTAssertEqual(store.getMessages().first?.customPayload?["id"] as? String, "second")
+    }
+
+    func testAcknowledgedMessageIdCanBeReadmittedWithNewPayload() {
+        let availabilityExpectation = expectation(description: "readmitted availability")
+        let initialDeliveryTrackExpectation = expectation(description: "initial delivery tracked")
+        let deliveryTrackExpectation = expectation(description: "readmitted delivery tracked")
+        let fetcher = MockInAppFetcher()
+        let delegate = MockInAppDelegate()
+        let networkSession = MockNetworkSession(delay: 0.05)
+        let applicationState = MockApplicationStateProvider(applicationState: .background)
+        let notificationCenter = MockNotificationCenter()
+        let first = makeJsonOnlyMessage(id: "message-1", payloadId: "first")
+        let second = makeJsonOnlyMessage(id: "message-1", payloadId: "second")
+        var payloadIds = [String]()
+        delegate.onJsonOnlyMessageAvailableCallback = { message in
+            payloadIds.append(message.customPayload?["id"] as! String)
+            availabilityExpectation.fulfill()
+        }
+        let internalAPI = initialize(fetcher: fetcher,
+                                     delegate: delegate,
+                                     networkSession: networkSession,
+                                     applicationState: applicationState,
+                                     notificationCenter: notificationCenter)
+
+        networkSession.requestCallback = { request in
+            guard request.url?.path.contains(Const.Path.trackInAppDelivery) == true else { return }
+            initialDeliveryTrackExpectation.fulfill()
+        }
+        fetch([first], with: fetcher, internalAPI: internalAPI)
+        wait(for: [initialDeliveryTrackExpectation], timeout: testExpectationTimeout)
+        XCTAssertTrue(IterableAPI.markJsonOnlyMessageHandled(messageId: first.messageId))
+        networkSession.requestCallback = { request in
+            guard request.url?.path.contains(Const.Path.trackInAppDelivery) == true else { return }
+            let body = request.httpBody?.json() as? [String: Any]
+            XCTAssertEqual(body?[JsonKey.messageId] as? String, second.messageId)
+            deliveryTrackExpectation.fulfill()
+        }
+        fetch([second], with: fetcher, internalAPI: internalAPI)
+        wait(for: [deliveryTrackExpectation], timeout: testExpectationTimeout)
+        networkSession.requestCallback = nil
+
+        applicationState.applicationState = .active
+        notificationCenter.post(name: UIApplication.didBecomeActiveNotification, object: nil, userInfo: nil)
+
+        wait(for: [availabilityExpectation], timeout: testExpectationTimeout)
+        XCTAssertEqual(payloadIds, ["second"])
+        XCTAssertEqual(IterableAPI.getUnhandledJsonOnlyMessages().first?.customPayload?["id"] as? String, "second")
+    }
+
+    func testAcknowledgedJsonIdDoesNotSuppressSameIdHtmlMessage() {
+        let onNewExpectation = expectation(description: "HTML onNew")
+        let displayExpectation = expectation(description: "HTML displayed")
+        let deliveryTrackExpectation = expectation(description: "HTML delivery tracked")
+        let inboxChangedExpectation = expectation(description: "inbox changed")
+        let fetcher = MockInAppFetcher()
+        let delegate = MockInAppDelegate()
+        let displayer = MockInAppDisplayer()
+        let networkSession = MockNetworkSession()
+        let notificationCenter = MockNotificationCenter()
+        let applicationState = MockApplicationStateProvider(applicationState: .background)
+        let json = makeJsonOnlyMessage(id: "shared", payloadId: "payload")
+        let html = makeHtmlMessage(id: "shared",
+                                   triggerType: .immediate,
+                                   saveToInbox: true,
+                                   customPayload: ["id": "payload"])
+        delegate.onNewMessageCallback = { message in
+            guard !message.isJsonOnly else { return }
+            onNewExpectation.fulfill()
+        }
+        displayer.onShow.onSuccess { message in
+            XCTAssertEqual(message.messageId, html.messageId)
+            displayExpectation.fulfill()
+        }
+        let internalAPI = initialize(fetcher: fetcher,
+                                     displayer: displayer,
+                                     delegate: delegate,
+                                     networkSession: networkSession,
+                                     applicationState: applicationState,
+                                     notificationCenter: notificationCenter)
+
+        fetch([json], with: fetcher, internalAPI: internalAPI)
+        XCTAssertTrue(IterableAPI.markJsonOnlyMessageHandled(messageId: json.messageId))
+        var didObserveDeliveryTrack = false
+        networkSession.requestCallback = { request in
+            guard request.url?.path.contains(Const.Path.trackInAppDelivery) == true,
+                  !didObserveDeliveryTrack else { return }
+            didObserveDeliveryTrack = true
+            let body = request.httpBody?.json() as? [String: Any]
+            XCTAssertEqual(body?[JsonKey.messageId] as? String, html.messageId)
+            deliveryTrackExpectation.fulfill()
+        }
+        var didObserveInboxChanged = false
+        let notificationReference = notificationCenter.addCallback(forNotification: .iterableInboxChanged) { _ in
+            guard !didObserveInboxChanged else { return }
+            didObserveInboxChanged = true
+            inboxChangedExpectation.fulfill()
+        }
+        applicationState.applicationState = .active
+        fetch([html], with: fetcher, internalAPI: internalAPI)
+
+        wait(for: [onNewExpectation, displayExpectation, deliveryTrackExpectation, inboxChangedExpectation],
+             timeout: testExpectationTimeout)
+        XCTAssertTrue(internalAPI.inAppManager.getInboxMessages().contains {
+            $0.messageId == html.messageId && !$0.isJsonOnly
+        })
+        notificationCenter.removeCallbacks(withIds: notificationReference.callbackId)
+    }
+
+    func testAcknowledgedJsonTypeRoundTripDoesNotBlockLaterHtml() {
+        let laterHtmlExpectation = expectation(description: "later HTML processed")
+        let fetcher = MockInAppFetcher()
+        let delegate = MockInAppDelegate(showInApp: .skip)
+        let applicationState = MockApplicationStateProvider(applicationState: .background)
+        let json = makeJsonOnlyMessage(id: "shared", payloadId: "payload")
+        let historicalHtml = makeHtmlMessage(id: "shared",
+                                             triggerType: .never,
+                                             customPayload: ["id": "payload"])
+        let laterHtml = makeHtmlMessage(id: "later", triggerType: .immediate)
+        delegate.onNewMessageCallback = { message in
+            if message.messageId == laterHtml.messageId {
+                laterHtmlExpectation.fulfill()
+            }
+        }
+        let internalAPI = initialize(fetcher: fetcher,
+                                     delegate: delegate,
+                                     applicationState: applicationState)
+
+        fetch([json], with: fetcher, internalAPI: internalAPI)
+        XCTAssertTrue(IterableAPI.markJsonOnlyMessageHandled(messageId: json.messageId))
+        fetch([historicalHtml], with: fetcher, internalAPI: internalAPI)
+        applicationState.applicationState = .active
+
+        fetch([json, laterHtml], with: fetcher, internalAPI: internalAPI)
+
+        wait(for: [laterHtmlExpectation], timeout: testExpectationTimeout)
+        XCTAssertTrue(internalAPI.inAppManager.getMessages().contains { $0.messageId == laterHtml.messageId })
+    }
+
+    func testTombstonedJsonTypeRoundTripDoesNotBlockLaterHtml() {
+        let laterHtmlExpectation = expectation(description: "later HTML processed")
+        let dateProvider = MockDateProvider()
+        let fetcher = MockInAppFetcher()
+        let delegate = MockInAppDelegate(showInApp: .skip)
+        let applicationState = MockApplicationStateProvider(applicationState: .background)
+        let json = makeJsonOnlyMessage(id: "shared", payloadId: "payload")
+        let historicalHtml = makeHtmlMessage(id: "shared",
+                                             triggerType: .never,
+                                             customPayload: ["id": "payload"])
+        let laterHtml = makeHtmlMessage(id: "later", triggerType: .immediate)
+        delegate.onNewMessageCallback = { message in
+            if message.messageId == laterHtml.messageId {
+                laterHtmlExpectation.fulfill()
+            }
+        }
+        let internalAPI = initialize(fetcher: fetcher,
+                                     delegate: delegate,
+                                     applicationState: applicationState,
+                                     dateProvider: dateProvider)
+
+        fetch([json], with: fetcher, internalAPI: internalAPI)
+        dateProvider.currentDate = dateProvider.currentDate.addingTimeInterval(30 * 24 * 60 * 60 + 1)
+        XCTAssertTrue(IterableAPI.getUnhandledJsonOnlyMessages().isEmpty)
+        fetch([historicalHtml], with: fetcher, internalAPI: internalAPI)
+        applicationState.applicationState = .active
+
+        fetch([json, laterHtml], with: fetcher, internalAPI: internalAPI)
+
+        wait(for: [laterHtmlExpectation], timeout: testExpectationTimeout)
+        XCTAssertTrue(internalAPI.inAppManager.getMessages().contains { $0.messageId == laterHtml.messageId })
+    }
+
+    func testRetentionDiscardedUnacknowledgedMessageIsNotReadmitted() {
+        let noAvailability = expectation(description: "no availability after retention discard")
+        noAvailability.isInverted = true
+        let localStorage = MockLocalStorage()
+        let dateProvider = MockDateProvider()
+        let applicationState = MockApplicationStateProvider(applicationState: .background)
+        let notificationCenter = MockNotificationCenter()
+        let fetcher = MockInAppFetcher()
+        let delegate = MockInAppDelegate()
+        let first = makeJsonOnlyMessage(id: "message-1", payloadId: "first")
+        let second = makeJsonOnlyMessage(id: "message-1", payloadId: "second")
+        delegate.onJsonOnlyMessageAvailableCallback = { _ in noAvailability.fulfill() }
+        let internalAPI = initialize(localStorage: localStorage,
+                                     fetcher: fetcher,
+                                     delegate: delegate,
+                                     applicationState: applicationState,
+                                     notificationCenter: notificationCenter,
+                                     dateProvider: dateProvider)
+
+        fetch([first], with: fetcher, internalAPI: internalAPI)
+        dateProvider.currentDate = dateProvider.currentDate.addingTimeInterval(30 * 24 * 60 * 60 + 1)
+        XCTAssertTrue(IterableAPI.getUnhandledJsonOnlyMessages().isEmpty)
+        fetch([second], with: fetcher, internalAPI: internalAPI)
+        XCTAssertTrue(IterableAPI.getUnhandledJsonOnlyMessages().isEmpty)
+
+        applicationState.applicationState = .active
+        notificationCenter.post(name: UIApplication.didBecomeActiveNotification, object: nil, userInfo: nil)
+        wait(for: [noAvailability], timeout: testExpectationTimeoutForInverted)
+        XCTAssertTrue(IterableAPI.getUnhandledJsonOnlyMessages().isEmpty)
+    }
+
+    func testIdentitySwitchClearsUnhandledMessages() {
+        let fetcher = MockInAppFetcher()
+        let internalAPI = initialize(fetcher: fetcher)
+        fetch([makeJsonOnlyMessage(id: "message-1")], with: fetcher, internalAPI: internalAPI)
+        XCTAssertEqual(IterableAPI.getUnhandledJsonOnlyMessages().count, 1)
+
+        fetch([], with: fetcher, internalAPI: internalAPI)
+        IterableAPI.setUserId("user-b")
+        XCTAssertTrue(IterableAPI.getUnhandledJsonOnlyMessages().isEmpty)
+
+        IterableAPI.setEmail(Self.email)
+        XCTAssertTrue(IterableAPI.getUnhandledJsonOnlyMessages().isEmpty)
+    }
+
+    func testConsumeFailureKeepsUnhandledRecord() {
+        let consumeExpectation = expectation(description: "failed consume request")
+        let networkSession = MockNetworkSession(statusCode: 500)
+        var didObserveConsume = false
+        networkSession.requestCallback = { request in
+            guard request.url?.path.contains(Const.Path.inAppConsume) == true, !didObserveConsume else { return }
+            didObserveConsume = true
+            consumeExpectation.fulfill()
+        }
+        let fetcher = MockInAppFetcher()
+        let internalAPI = initialize(fetcher: fetcher, networkSession: networkSession)
+        let message = makeJsonOnlyMessage(id: "message-1")
+
+        fetch([message], with: fetcher, internalAPI: internalAPI)
+
+        wait(for: [consumeExpectation], timeout: testExpectationTimeout)
+        XCTAssertEqual(IterableAPI.getUnhandledJsonOnlyMessages().map(\.messageId), [message.messageId])
+    }
+
+    func testIneligibleMessagesDoNotFireAvailability() {
+        let noAvailabilityExpectation = expectation(description: "no JSON availability")
+        noAvailabilityExpectation.isInverted = true
+        let delegate = MockInAppDelegate(showInApp: .skip)
+        delegate.onJsonOnlyMessageAvailableCallback = { _ in noAvailabilityExpectation.fulfill() }
+        let fetcher = MockInAppFetcher()
+        let internalAPI = initialize(fetcher: fetcher, delegate: delegate)
+        let html = makeHtmlMessage(id: "html", triggerType: .immediate)
+        let inbox = makeHtmlMessage(id: "inbox", triggerType: .never, saveToInbox: true)
+        let eventJson = makeJsonOnlyMessage(id: "event-json", triggerType: .event)
+
+        fetch([html, inbox, eventJson], with: fetcher, internalAPI: internalAPI)
+
+        wait(for: [noAvailabilityExpectation], timeout: testExpectationTimeoutForInverted)
+        XCTAssertTrue(IterableAPI.getUnhandledJsonOnlyMessages().isEmpty)
+    }
+
+    func testPublicAPIsBeforeInitializationAndLegacySwiftConformance() {
+        IterableAPI.implementation = nil
+        XCTAssertTrue(IterableAPI.getUnhandledJsonOnlyMessages().isEmpty)
+        XCTAssertFalse(IterableAPI.markJsonOnlyMessageHandled(messageId: "message-1"))
+
+        let config = IterableConfig()
+        config.inAppDelegate = LegacySwiftInAppDelegate()
+        XCTAssertNotNil(config.inAppDelegate)
+    }
+
+    func testStoreEnforcesCapacityAndRetention() {
+        let localStorage = MockLocalStorage()
+        let dateProvider = MockDateProvider()
+        let auth = Auth(userId: nil, email: Self.email, authToken: nil, userIdUnknownUser: nil)
+        let store = JsonOnlyMessageStore(localStorage: localStorage,
+                                         dateProvider: dateProvider,
+                                         identityProvider: { UserIdentitySnapshot(auth: auth) },
+                                         identityCoordinator: IdentityCoordinator())
+
+        let identityContext = store.identityContext
+        let messages = (0...100).map { makeJsonOnlyMessage(id: "message-\($0)") }
+        XCTAssertTrue(store.enqueue(messages, identityContext: identityContext))
+        XCTAssertEqual(localStorage.jsonOnlyMessageQueueDataWriteCount, 1)
+
+        let retainedIds = store.getMessages().map(\.messageId)
+        XCTAssertEqual(retainedIds.count, 100)
+        XCTAssertEqual(retainedIds.first, "message-1")
+        XCTAssertEqual(retainedIds.last, "message-100")
+
+        dateProvider.currentDate = dateProvider.currentDate.addingTimeInterval(30 * 24 * 60 * 60 + 1)
+        XCTAssertTrue(store.getMessages().isEmpty)
+
+        let expiringLocalStorage = MockLocalStorage()
+        let expiringDateProvider = MockDateProvider()
+        let expiringStore = JsonOnlyMessageStore(localStorage: expiringLocalStorage,
+                                                 dateProvider: expiringDateProvider,
+                                                 identityProvider: { UserIdentitySnapshot(auth: auth) },
+                                                 identityCoordinator: IdentityCoordinator())
+        let expiringIdentityContext = expiringStore.identityContext
+        expiringStore.enqueue(makeJsonOnlyMessage(id: "expiring",
+                                                  expiresAt: expiringDateProvider.currentDate.addingTimeInterval(1)),
+                               identityContext: expiringIdentityContext)
+        expiringDateProvider.currentDate = expiringDateProvider.currentDate.addingTimeInterval(2)
+        XCTAssertTrue(expiringStore.getMessages().isEmpty)
+    }
+
+    func testCapacityDiscardedUnacknowledgedMessageIsNotReadmitted() {
+        let localStorage = MockLocalStorage()
+        let dateProvider = MockDateProvider()
+        let auth = Auth(userId: nil, email: Self.email, authToken: nil, userIdUnknownUser: nil)
+        let store = JsonOnlyMessageStore(localStorage: localStorage,
+                                         dateProvider: dateProvider,
+                                         identityProvider: { UserIdentitySnapshot(auth: auth) },
+                                         identityCoordinator: IdentityCoordinator())
+        let identityContext = store.identityContext
+        let messages = (0...100).map { makeJsonOnlyMessage(id: "message-\($0)", payloadId: "first") }
+        XCTAssertTrue(store.enqueue(messages, identityContext: identityContext))
+        XCTAssertFalse(store.getMessages().contains { $0.messageId == "message-0" })
+
+        let changedMessage = makeJsonOnlyMessage(id: "message-0", payloadId: "second")
+        let status = store.acknowledgementStatus(for: [changedMessage], identityContext: identityContext)
+        XCTAssertEqual(status.unchangedMessageIds, [changedMessage.messageId])
+        XCTAssertTrue(status.changedMessageIds.isEmpty)
+        XCTAssertFalse(store.enqueue(changedMessage, identityContext: identityContext))
+        XCTAssertFalse(store.getMessages().contains { $0.messageId == changedMessage.messageId })
+    }
+
+    func testPayloadFingerprintIsStableForNestedKeyOrderAndBooleanType() {
+        let localStorage = MockLocalStorage()
+        let dateProvider = MockDateProvider()
+        let auth = Auth(userId: nil, email: Self.email, authToken: nil, userIdUnknownUser: nil)
+        let store = JsonOnlyMessageStore(localStorage: localStorage,
+                                         dateProvider: dateProvider,
+                                         identityProvider: { UserIdentitySnapshot(auth: auth) },
+                                         identityCoordinator: IdentityCoordinator())
+        let identityContext = store.identityContext
+        let first = makeJsonOnlyMessage(id: "message-1", customPayload: [
+            "nested": ["b": NSNumber(value: 2), "a": NSNumber(value: true)]
+        ])
+        let reordered = makeJsonOnlyMessage(id: "message-1", customPayload: [
+            "nested": ["a": NSNumber(value: true), "b": NSNumber(value: 2)]
+        ])
+        let booleanChangedToNumber = makeJsonOnlyMessage(id: "message-1", customPayload: [
+            "nested": ["a": NSNumber(value: 1), "b": NSNumber(value: 2)]
+        ])
+
+        XCTAssertTrue(store.enqueue(first, identityContext: identityContext))
+        XCTAssertTrue(store.remove(messageId: first.messageId))
+        let reorderedStatus = store.acknowledgementStatus(for: [reordered],
+                                                          identityContext: identityContext)
+        let changedStatus = store.acknowledgementStatus(for: [booleanChangedToNumber],
+                                                        identityContext: identityContext)
+
+        XCTAssertEqual(reorderedStatus.unchangedMessageIds, [reordered.messageId])
+        XCTAssertTrue(reorderedStatus.changedMessageIds.isEmpty)
+        XCTAssertTrue(changedStatus.unchangedMessageIds.isEmpty)
+        XCTAssertEqual(changedStatus.changedMessageIds, [booleanChangedToNumber.messageId])
+    }
+
+    func testConcurrentMessageGettersWaitForResetStateCommit() {
+        let resetPersistStarted = DispatchSemaphore(value: 0)
+        let releaseResetPersist = DispatchSemaphore(value: 0)
+        let gettersCompleted = DispatchSemaphore(value: 0)
+        let resetCompleted = expectation(description: "reset completed")
+        let fetcher = MockInAppFetcher()
+        let persister = MockInAppPersister()
+        let applicationState = MockApplicationStateProvider(applicationState: .background)
+        let message = makeHtmlMessage(id: "inbox", triggerType: .never, saveToInbox: true)
+        let internalAPI = initialize(fetcher: fetcher,
+                                     persister: persister,
+                                     applicationState: applicationState)
+        fetch([message], with: fetcher, internalAPI: internalAPI)
+        persister.onPersist = {
+            persister.onPersist = nil
+            resetPersistStarted.signal()
+            releaseResetPersist.wait()
+        }
+
+        internalAPI.inAppManager.reset().onSuccess { _ in resetCompleted.fulfill() }
+        XCTAssertEqual(resetPersistStarted.wait(timeout: .now() + testExpectationTimeout), .success)
+        DispatchQueue.global().async {
+            XCTAssertTrue(internalAPI.inAppManager.getMessages().isEmpty)
+            XCTAssertTrue(internalAPI.inAppManager.getInboxMessages().isEmpty)
+            XCTAssertNil(internalAPI.inAppManager.getMessage(withId: message.messageId))
+            gettersCompleted.signal()
+        }
+        XCTAssertEqual(gettersCompleted.wait(timeout: .now() + 0.1), .timedOut)
+        releaseResetPersist.signal()
+        XCTAssertEqual(gettersCompleted.wait(timeout: .now() + testExpectationTimeout), .success)
+        wait(for: [resetCompleted], timeout: testExpectationTimeout)
+    }
+
+    func testStoreDropsAlreadyExpiredMessage() {
+        let localStorage = MockLocalStorage()
+        let dateProvider = MockDateProvider()
+        let auth = Auth(userId: nil, email: Self.email, authToken: nil, userIdUnknownUser: nil)
+        let store = JsonOnlyMessageStore(localStorage: localStorage,
+                                         dateProvider: dateProvider,
+                                         identityProvider: { UserIdentitySnapshot(auth: auth) },
+                                         identityCoordinator: IdentityCoordinator())
+        let identityContext = store.identityContext
+        let message = makeJsonOnlyMessage(id: "expired", expiresAt: dateProvider.currentDate)
+
+        XCTAssertFalse(store.enqueue(message, identityContext: identityContext))
+        XCTAssertTrue(store.getMessages().isEmpty)
+        XCTAssertNil(store.prepareDelivery(for: message, identityContext: identityContext))
+        XCTAssertTrue(store.getMessages().isEmpty)
+    }
+
+    func testMessageExpiredBeforeForegroundReplayIsNotSignaled() {
+        let noDelegateExpectation = expectation(description: "no delegate signal for expired message")
+        noDelegateExpectation.isInverted = true
+        let noNotificationExpectation = expectation(description: "no notification for expired message")
+        noNotificationExpectation.isInverted = true
+        let dateProvider = MockDateProvider()
+        let applicationState = MockApplicationStateProvider(applicationState: .background)
+        let notificationCenter = MockNotificationCenter()
+        let delegate = MockInAppDelegate()
+        let fetcher = MockInAppFetcher()
+        let message = makeJsonOnlyMessage(id: "expiring",
+                                          expiresAt: dateProvider.currentDate.addingTimeInterval(1))
+
+        delegate.onJsonOnlyMessageAvailableCallback = { _ in noDelegateExpectation.fulfill() }
+        let notificationReference = notificationCenter.addCallback(forNotification: .iterableJsonOnlyInAppMessageAvailable) { _ in
+            noNotificationExpectation.fulfill()
+        }
+        let internalAPI = initialize(fetcher: fetcher,
+                                     delegate: delegate,
+                                     applicationState: applicationState,
+                                     notificationCenter: notificationCenter,
+                                     dateProvider: dateProvider)
+        fetch([message], with: fetcher, internalAPI: internalAPI)
+        XCTAssertEqual(IterableAPI.getUnhandledJsonOnlyMessages().map(\.messageId), [message.messageId])
+
+        dateProvider.currentDate = dateProvider.currentDate.addingTimeInterval(2)
+        applicationState.applicationState = .active
+        notificationCenter.post(name: UIApplication.didBecomeActiveNotification, object: nil, userInfo: nil)
+
+        wait(for: [noDelegateExpectation, noNotificationExpectation], timeout: testExpectationTimeoutForInverted)
+        XCTAssertTrue(IterableAPI.getUnhandledJsonOnlyMessages().isEmpty)
+        notificationCenter.removeCallbacks(withIds: notificationReference.callbackId)
+    }
+
+    private enum IdentitySwitchStage: Equatable {
+        case onNew
+        case delegate
+        case notification
+    }
+
+    private func assertConcurrentIdentitySwitchDuringDelivery(at stage: IdentitySwitchStage) {
+        let surfaceStarted = DispatchSemaphore(value: 0)
+        let releaseSurface = DispatchSemaphore(value: 0)
+        let switchCompleted = DispatchSemaphore(value: 0)
+        let coordinationCompleted = expectation(description: "identity switch coordinated")
+        let fetchCompleted = expectation(description: "fetch completed")
+        let noNetworkSideEffect = expectation(description: "no consume or delivery tracking")
+        noNetworkSideEffect.isInverted = true
+        let fetcher = MockInAppFetcher()
+        let notificationCenter = MockNotificationCenter()
+        let networkSession = MockNetworkSession()
+        let delegate = MockInAppDelegate()
+        let message = makeJsonOnlyMessage(id: "message-a")
+        var onNewCount = 0
+        var delegateCount = 0
+        var notificationCount = 0
+
+        let pauseIfNeeded = { (callbackStage: IdentitySwitchStage) in
+            guard stage == callbackStage else { return }
+            surfaceStarted.signal()
+            releaseSurface.wait()
+        }
+        delegate.onNewMessageCallback = { _ in
+            onNewCount += 1
+            pauseIfNeeded(.onNew)
+        }
+        delegate.onJsonOnlyMessageAvailableCallback = { _ in
+            delegateCount += 1
+            pauseIfNeeded(.delegate)
+        }
+        let notificationReference = notificationCenter.addCallback(forNotification: .iterableJsonOnlyInAppMessageAvailable) { _ in
+            notificationCount += 1
+            pauseIfNeeded(.notification)
+        }
+        networkSession.requestCallback = { request in
+            if request.url?.path.contains(Const.Path.inAppConsume) == true ||
+                request.url?.path.contains(Const.Path.trackInAppDelivery) == true {
+                noNetworkSideEffect.fulfill()
+            }
+        }
+        let internalAPI = initialize(fetcher: fetcher,
+                                     delegate: delegate,
+                                     networkSession: networkSession,
+                                     notificationCenter: notificationCenter)
+        DispatchQueue.global().async {
+            guard surfaceStarted.wait(timeout: .now() + testExpectationTimeout) == .success else {
+                XCTFail("Delivery surface did not start")
+                releaseSurface.signal()
+                coordinationCompleted.fulfill()
+                return
+            }
+            fetcher.mockMessagesAvailableFromServer(internalApi: nil, messages: [])
+            DispatchQueue.global().async {
+                internalAPI.setUserId("user-b")
+                switchCompleted.signal()
+            }
+            XCTAssertEqual(switchCompleted.wait(timeout: .now() + testExpectationTimeout), .success)
+            releaseSurface.signal()
+            coordinationCompleted.fulfill()
+        }
+        fetcher.add(message: message)
+        internalAPI.inAppManager.scheduleSync().onSuccess { _ in fetchCompleted.fulfill() }
+
+        wait(for: [coordinationCompleted, fetchCompleted], timeout: testExpectationTimeout)
+        wait(for: [noNetworkSideEffect], timeout: testExpectationTimeoutForInverted)
+        XCTAssertEqual(onNewCount, 1)
+        XCTAssertEqual(delegateCount, stage == .onNew ? 0 : 1)
+        XCTAssertEqual(notificationCount, stage == .notification ? 1 : 0)
+        XCTAssertTrue(IterableAPI.getUnhandledJsonOnlyMessages().isEmpty)
+        XCTAssertFalse(internalAPI.inAppManager.getMessages().contains { $0.messageId == message.messageId })
+        XCTAssertFalse(message.didProcessTrigger)
+        XCTAssertFalse(message.consumed)
+        notificationCenter.removeCallbacks(withIds: notificationReference.callbackId)
+    }
+
+    private func assertIdentitySwitchDuringDelivery(at stage: IdentitySwitchStage) {
+        let identitySwitchExpectation = expectation(description: "identity switched")
+        let noConsumeExpectation = expectation(description: "no consume after identity switch")
+        noConsumeExpectation.isInverted = true
+        let fetcher = MockInAppFetcher()
+        let delegate = MockInAppDelegate()
+        let notificationCenter = MockNotificationCenter()
+        let networkSession = MockNetworkSession()
+        let message = makeJsonOnlyMessage(id: "message-a")
+        var internalAPI: InternalIterableAPI!
+        var onNewCount = 0
+        var delegateCount = 0
+        var notificationCount = 0
+
+        let switchIdentity = {
+            fetcher.mockMessagesAvailableFromServer(internalApi: nil, messages: [])
+            internalAPI.setUserId("user-b")
+            identitySwitchExpectation.fulfill()
+        }
+        delegate.onNewMessageCallback = { _ in
+            onNewCount += 1
+            if stage == .onNew { switchIdentity() }
+        }
+        delegate.onJsonOnlyMessageAvailableCallback = { _ in
+            delegateCount += 1
+            if stage == .delegate { switchIdentity() }
+        }
+        let notificationReference = notificationCenter.addCallback(forNotification: .iterableJsonOnlyInAppMessageAvailable) { _ in
+            notificationCount += 1
+            if stage == .notification { switchIdentity() }
+        }
+        networkSession.requestCallback = { request in
+            if request.url?.path.contains(Const.Path.inAppConsume) == true {
+                noConsumeExpectation.fulfill()
+            }
+        }
+        internalAPI = initialize(fetcher: fetcher,
+                                 delegate: delegate,
+                                 networkSession: networkSession,
+                                 notificationCenter: notificationCenter)
+
+        fetch([message], with: fetcher, internalAPI: internalAPI)
+
+        wait(for: [identitySwitchExpectation], timeout: testExpectationTimeout)
+        wait(for: [noConsumeExpectation], timeout: testExpectationTimeoutForInverted)
+        XCTAssertEqual(onNewCount, 1)
+        XCTAssertEqual(delegateCount, stage == .onNew ? 0 : 1)
+        XCTAssertEqual(notificationCount, stage == .notification ? 1 : 0)
+        XCTAssertFalse(message.didProcessTrigger)
+        XCTAssertFalse(message.consumed)
+        notificationCenter.removeCallbacks(withIds: notificationReference.callbackId)
+    }
+
+    private func initialize(localStorage: MockLocalStorage = MockLocalStorage(),
+                            fetcher: InAppFetcherProtocol,
+                            persister: InAppPersistenceProtocol = MockInAppPersister(),
+                            displayer: InAppDisplayerProtocol = MockInAppDisplayer(),
+                            delegate: IterableInAppDelegate = MockInAppDelegate(),
+                            displayDelegate: IterableInAppDisplayDelegate? = nil,
+                            networkSession: MockNetworkSession = MockNetworkSession(),
+                            applicationState: MockApplicationStateProvider = MockApplicationStateProvider(applicationState: .active),
+                            notificationCenter: MockNotificationCenter = MockNotificationCenter(),
+                            dateProvider: DateProviderProtocol = SystemDateProvider(),
+                            displayInterval: Double = 0) -> InternalIterableAPI {
+        if localStorage.email == nil && localStorage.userId == nil {
+            localStorage.email = Self.email
+        }
+        let config = IterableConfig()
+        config.autoPushRegistration = false
+        config.inAppDisplayInterval = displayInterval
+        config.inAppDelegate = delegate
+        config.inAppDisplayDelegate = displayDelegate
+        IterableAPI.initializeForTesting(config: config,
+                                         dateProvider: dateProvider,
+                                         networkSession: networkSession,
+                                         localStorage: localStorage,
+                                         inAppFetcher: fetcher,
+                                         inAppDisplayer: displayer,
+                                         inAppPersister: persister,
+                                         applicationStateProvider: applicationState,
+                                         notificationCenter: notificationCenter)
+        return IterableAPI.implementation!
+    }
+
+    private func fetch(_ messages: [IterableInAppMessage],
+                       with fetcher: MockInAppFetcher,
+                       internalAPI: InternalIterableAPI) {
+        let fetchExpectation = expectation(description: "in-app fetch")
+        fetcher.mockMessagesAvailableFromServer(internalApi: internalAPI, messages: messages).onSuccess { _ in
+            fetchExpectation.fulfill()
+        }
+        wait(for: [fetchExpectation], timeout: testExpectationTimeout)
+    }
+
+    private func makeJsonOnlyMessage(id: String,
+                                     triggerType: IterableInAppTriggerType = .immediate,
+                                     priorityLevel: Double = 0,
+                                     expiresAt: Date? = nil,
+                                     payloadId: String? = nil,
+                                     customPayload: [AnyHashable: Any]? = nil) -> IterableInAppMessage {
+        IterableInAppMessage(messageId: id,
+                             campaignId: 1,
+                             trigger: .create(withTriggerType: triggerType),
+                             expiresAt: expiresAt,
+                             content: IterableHtmlInAppContent(edgeInsets: .zero, html: ""),
+                             customPayload: customPayload ?? ["id": payloadId ?? id],
+                             priorityLevel: priorityLevel,
+                             jsonOnly: true)
+    }
+
+    private func makeHtmlMessage(id: String,
+                                 triggerType: IterableInAppTriggerType,
+                                 saveToInbox: Bool = false,
+                                 customPayload: [AnyHashable: Any]? = nil) -> IterableInAppMessage {
+        IterableInAppMessage(messageId: id,
+                             campaignId: 1,
+                             trigger: .create(withTriggerType: triggerType),
+                             content: IterableHtmlInAppContent(edgeInsets: .zero, html: "<html></html>"),
+                             saveToInbox: saveToInbox,
+                             customPayload: customPayload)
+    }
+
+    private static let email = "json-only@example.com"
+}
+
 extension IterableInAppTrigger {
     override public var description: String {
         "type: \(type)"
@@ -1942,5 +3284,3 @@ extension IterableInAppMessage {
                               pairSeparator: " = ", separator: "\n")
     }
 }
-
-

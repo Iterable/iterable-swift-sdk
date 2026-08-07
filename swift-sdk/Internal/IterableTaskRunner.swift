@@ -14,7 +14,8 @@ class IterableTaskRunner: NSObject {
          connectivityManager: NetworkConnectivityManager = NetworkConnectivityManager(),
          dateProvider: DateProviderProtocol = SystemDateProvider(),
          autoRetry: Bool = false,
-         connectivityDebounceInterval: TimeInterval = 3.0) {
+         connectivityDebounceInterval: TimeInterval = 3.0,
+         authManager: IterableAuthManagerProtocol? = nil) {
         ITBInfo()
         self.networkSession = networkSession
         self.healthMonitor = healthMonitor
@@ -25,6 +26,7 @@ class IterableTaskRunner: NSObject {
         self.connectivityManager = connectivityManager
         self.persistenceContext = persistenceContextProvider.newBackgroundContext()
         self.autoRetry = autoRetry
+        self.authManager = authManager
 
         super.init()
 
@@ -280,7 +282,10 @@ class IterableTaskRunner: NSObject {
 
         switch task.type {
         case .apiCall:
-            let processor = IterableAPICallTaskProcessor(networkSession: networkSession, dateProvider: dateProvider, autoRetry: autoRetry)
+            let processor = IterableAPICallTaskProcessor(networkSession: networkSession,
+                                                         dateProvider: dateProvider,
+                                                         autoRetry: autoRetry,
+                                                         authManager: authManager)
             return processAPICallTask(processor: processor, task: task)
         }
     }
@@ -425,6 +430,7 @@ class IterableTaskRunner: NSObject {
     private let connectivityManager: NetworkConnectivityManager
     private var running = false
     private(set) var autoRetry: Bool
+    private let authManager: IterableAuthManagerProtocol?
 
     func setAutoRetry(_ value: Bool) {
         persistenceContext.perform { [weak self] in

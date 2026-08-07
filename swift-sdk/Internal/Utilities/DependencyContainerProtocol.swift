@@ -34,22 +34,34 @@ extension DependencyContainerProtocol {
                             apiClient: ApiClientProtocol,
                             requestHandler: RequestHandlerProtocol,
                             deviceMetadata: DeviceMetadata,
+                            authProvider: AuthProvider,
+                            identityCoordinator: IdentityCoordinator,
                             authManager: IterableAuthManagerProtocol?) -> IterableInternalInAppManagerProtocol {
-        InAppManager(requestHandler: requestHandler,
-                     deviceMetadata: deviceMetadata,
-                     fetcher: createInAppFetcher(apiClient: apiClient, authManager: authManager),
-                     displayer: inAppDisplayer,
-                     persister: inAppPersister,
-                     inAppDelegate: config.inAppDelegate,
-                     inAppDisplayDelegate: config.inAppDisplayDelegate,
-                     urlDelegate: config.urlDelegate,
-                     customActionDelegate: config.customActionDelegate,
-                     urlOpener: urlOpener,
-                     allowedProtocols: config.allowedProtocols,
-                     applicationStateProvider: applicationStateProvider,
-                     notificationCenter: notificationCenter,
-                     dateProvider: dateProvider,
-                     moveToForegroundSyncInterval: config.inAppDisplayInterval)
+        let identityProvider = { [weak authProvider] in
+            UserIdentitySnapshot(auth: authProvider?.auth)
+        }
+        let jsonOnlyMessageStore = JsonOnlyMessageStore(localStorage: localStorage,
+                                                        dateProvider: dateProvider,
+                                                        identityProvider: identityProvider,
+                                                        identityCoordinator: identityCoordinator)
+        return InAppManager(requestHandler: requestHandler,
+                            deviceMetadata: deviceMetadata,
+                            fetcher: createInAppFetcher(apiClient: apiClient, authManager: authManager),
+                            displayer: inAppDisplayer,
+                            persister: inAppPersister,
+                            inAppDelegate: config.inAppDelegate,
+                            inAppDisplayDelegate: config.inAppDisplayDelegate,
+                            urlDelegate: config.urlDelegate,
+                            customActionDelegate: config.customActionDelegate,
+                            urlOpener: urlOpener,
+                            allowedProtocols: config.allowedProtocols,
+                            applicationStateProvider: applicationStateProvider,
+                            notificationCenter: notificationCenter,
+                            dateProvider: dateProvider,
+                            jsonOnlyMessageStore: jsonOnlyMessageStore,
+                            identityCoordinator: identityCoordinator,
+                            identityProvider: identityProvider,
+                            moveToForegroundSyncInterval: config.inAppDisplayInterval)
     }
     
     func createAuthManager(config: IterableConfig) -> IterableAuthManagerProtocol {
@@ -113,7 +125,8 @@ extension DependencyContainerProtocol {
                                                                                           healthMonitor: healthMonitor!),
                                                        taskRunner: createTaskRunner(persistenceContextProvider: persistenceContextProvider,
                                                                                     healthMonitor: healthMonitor!,
-                                                                                    autoRetry: localStorage.autoRetry),
+                                                                                    autoRetry: localStorage.autoRetry,
+                                                                                    authManager: authManager),
                                                        notificationCenter: notificationCenter)
             
             
@@ -162,13 +175,15 @@ extension DependencyContainerProtocol {
     
     private func createTaskRunner(persistenceContextProvider: IterablePersistenceContextProvider,
                                   healthMonitor: HealthMonitor,
-                                  autoRetry: Bool = false) -> IterableTaskRunner {
+                                  autoRetry: Bool = false,
+                                  authManager: IterableAuthManagerProtocol? = nil) -> IterableTaskRunner {
         IterableTaskRunner(networkSession: networkSession,
                            persistenceContextProvider: persistenceContextProvider,
                            healthMonitor: healthMonitor,
                            notificationCenter: notificationCenter,
                            connectivityManager: NetworkConnectivityManager(),
-                           autoRetry: autoRetry)
+                           autoRetry: autoRetry,
+                           authManager: authManager)
     }
     
     func createUnknownUserMerge(apiClient: ApiClient, unknownUserManager: UnknownUserManagerProtocol, localStorage: LocalStorageProtocol) -> UnknownUserMergeProtocol {
