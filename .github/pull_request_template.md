@@ -9,6 +9,9 @@
 ## 🧪 How to test?
 > How to test the changes added?
 
+## 🧾 Changelog
+> Add an entry to `CHANGELOG.md`. If this PR has no customer facing changes, write "No customer facing changes" here to skip the changelog check.
+
 ## 📹 Loom recording if applicable
 > If it helps the reviewer, add a short Loom going over the changes or showcasing the change in behavior.
 

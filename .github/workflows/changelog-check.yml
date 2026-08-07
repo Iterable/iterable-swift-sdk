@@ -1,0 +1,42 @@
+name: Changelog Check
+on:
+  pull_request:
+    types: [opened, edited, synchronize, reopened]
+
+permissions:
+  contents: read
+  pull-requests: read
+
+jobs:
+  changelog:
+    name: Verify CHANGELOG update
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check CHANGELOG.md update or opt-out
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const optOut = 'No customer facing changes';
+            const body = context.payload.pull_request.body || '';
+
+            if (body.toLowerCase().includes(optOut.toLowerCase())) {
+              core.info(`PR description contains "${optOut}", skipping CHANGELOG.md check.`);
+              return;
+            }
+
+            const files = await github.paginate(github.rest.pulls.listFiles, {
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              pull_number: context.payload.pull_request.number,
+              per_page: 100,
+            });
+
+            const changed = files.some((f) => f.filename === 'CHANGELOG.md');
+            if (changed) {
+              core.info('CHANGELOG.md was updated.');
+              return;
+            }
+
+            core.setFailed(
+              'CHANGELOG.md was not updated. Add a CHANGELOG.md entry, or if this PR has no customer facing changes, add "No customer facing changes" to the PR description to justify skipping the changelog.'
+            );
