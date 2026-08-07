@@ -3,6 +3,8 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 ## [Unreleased]
+
+## [6.7.5]
 ### Added
 - Added at least once delivery for JSON-only in-app messages through `IterableInAppDelegate.onJsonOnlyMessageAvailable(message:)` and `iterableJsonOnlyInAppMessageAvailable` (Objective-C: `IterableAPI.jsonOnlyInAppMessageAvailableNotification`). Messages are saved to local storage before signaling and replay on foreground until acknowledged. Unhandled messages remain available through `IterableAPI.getUnhandledJsonOnlyMessages()` until acknowledged with `markJsonOnlyMessageHandled(messageId:)`; acknowledgement records a payload fingerprint (bounded to the latest 100 per user) so the same message ID with a changed payload is delivered again. Callbacks are invoked without SDK locks held; see the API documentation for the identity overlap contract.
 
