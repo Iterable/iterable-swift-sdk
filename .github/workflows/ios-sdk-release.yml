@@ -23,11 +23,14 @@ env:
   BRANCH: ${{ github.event.inputs.branch }}
   CHANGELOG_SECTION: ${{ github.event.inputs.changelog_section }}
   OUTPUT_DIR: ./output_dir
-  GITHUB_TOKEN: ${{ secrets.SDK_RELEASE_TOKEN }}
+  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
   RELEASE_BRANCH:
   SET_PRERELEASE: ${{ github.event.inputs.set_prerelease }}
   SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
   COCOAPODS_TRUNK_TOKEN: ${{ secrets.COCOAPODS_TRUNK_TOKEN }}
+
+permissions:
+  contents: write
 
 jobs:
   ios-sdk-release:
@@ -35,6 +38,16 @@ jobs:
 
     steps:
       - uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
+
+      # Fails in seconds instead of after the ~10 min build if the token can't write releases.
+      - name: verify release token can write
+        run: |
+          push=$(gh api "repos/$GITHUB_REPOSITORY" --jq .permissions.push)
+          if [ "$push" != "true" ]; then
+            echo "::error::The release token has no write access to $GITHUB_REPOSITORY (permissions.push=$push). Creating the GitHub release would fail with a 404."
+            exit 1
+          fi
+
       - uses: ruby/setup-ruby@v1
         with:
           ruby-version: "3.2"
