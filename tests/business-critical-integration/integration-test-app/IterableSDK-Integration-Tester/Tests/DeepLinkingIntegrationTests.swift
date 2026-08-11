@@ -43,7 +43,7 @@ class DeepLinkingIntegrationTests: IntegrationTestBase {
         print("🧪 Testing non-app links open in Safari (not app)")
         print("🎯 Links with /u/ pattern or non-AASA paths should open Safari")
         
-        let browserURL = "https://links.tsetester.com/u/click?url=https://iterable.com"
+        let browserURL = "https://links.bcittesting.com/u/click?url=https://iterable.com"
         
         print("🔗 Test URL: \(browserURL)")
         print("✅ Expected: Safari opens (not our app)")
@@ -77,12 +77,15 @@ class DeepLinkingIntegrationTests: IntegrationTestBase {
         try XCTSkipIf(isRunningInCI, "Universal Link tests require AASA and real Safari — skipped on CI")
         print("🧪 Testing deep link from Reminders app with Jena's test link")
         
-        // Jena's test URL - wrapped link that should unwrap to https://tsetester.com/update/hi
+        // TODO(SDK-325): regenerate this wrapped link against the new Mobile SDK Testing
+        // project (post SDK-36). The _t/_m/_e tokens below are tied to the old project and
+        // will 404 against links.bcittesting.com until the link is regenerated.
+        // Wrapped link should unwrap to https://bcittesting.com/update/hi
         // SDK should follow exactly ONE redirect and stop at the first destination
-        let testURL = "https://links.tsetester.com/a/click?_t=5cce074b113d48fa9ef346e4333ed8e8&_m=74aKPNrAjTpuZM4vZTDueu64xMdbHDz5Tn&_e=l6cj19GbssUn6h5qtXjRcC5os6azNW1cqdk9lsvmxxRl4ZTAW8mIB4IHJA97wE1i5f0eRDtm-KpgKI7-tM-Cly6umZo4P8HU8krftMYvL3T2sCpm3uFDBF2iJ5vQ-G6sqNMmae4_8jkE1DU9aKRhraZ1zzUZ3j-dFbQJrxdLt4tb0C7jnXSARVFf27FKFhBKnYSO23taBmf_4G5dTTXKmC_1CGnT9bu1nAwP-WMyYShoQhmjoGO9ppDCrVStSYPsimwub0h5XnC11g4u5yML_WZssgC7LSUOX7qCNOIDr9dLhrx2Rc2TY12k0maESyanjNgNZ4Lr8LMClCMJ3d9TMg%3D%3D"
+        let testURL = "https://links.bcittesting.com/a/click?_t=TODO_REGENERATE_TOKEN&_m=TODO&_e=TODO"
         
         print("🔗 Test URL: \(testURL)")
-        print("🎯 Expected unwrapped destination: https://tsetester.com/update/hi")
+        print("🎯 Expected unwrapped destination: https://bcittesting.com/update/hi")
         
         // Open link from Reminders app
         openLinkFromRemindersApp(url: testURL)
@@ -196,12 +199,15 @@ class DeepLinkingIntegrationTests: IntegrationTestBase {
         print("   to completionHandler, which tells URLSession to STOP following redirects")
         print("   See: swift-sdk/Internal/Network/NetworkSession.swift:136")
         
-        // Using Jena's test link which redirects to tsetester.com/update/hi
+        // TODO(SDK-325): regenerate this wrapped link against the new Mobile SDK Testing
+        // project (post SDK-36). The _t/_m/_e tokens below are tied to the old project and
+        // will 404 against links.bcittesting.com until the link is regenerated.
+        // Link should redirect to bcittesting.com/update/hi
         // If there are multiple redirects after that, SDK should NOT follow them
-        let testURL = "https://links.tsetester.com/a/click?_t=5cce074b113d48fa9ef346e4333ed8e8&_m=74aKPNrAjTpuZM4vZTDueu64xMdbHDz5Tn&_e=l6cj19GbssUn6h5qtXjRcC5os6azNW1cqdk9lsvmxxRl4ZTAW8mIB4IHJA97wE1i5f0eRDtm-KpgKI7-tM-Cly6umZo4P8HU8krftMYvL3T2sCpm3uFDBF2iJ5vQ-G6sqNMmae4_8jkE1DU9aKRhraZ1zzUZ3j-dFbQJrxdLt4tb0C7jnXSARVFf27FKFhBKnYSO23taBmf_4G5dTTXKmC_1CGnT9bu1nAwP-WMyYShoQhmjoGO9ppDCrVStSYPsimwub0h5XnC11g4u5yML_WZssgC7LSUOX7qCNOIDr9dLhrx2Rc2TY12k0maESyanjNgNZ4Lr8LMClCMJ3d9TMg%3D%3D"
+        let testURL = "https://links.bcittesting.com/a/click?_t=TODO_REGENERATE_TOKEN&_m=TODO&_e=TODO"
         
         print("🔗 Test URL: \(testURL)")
-        print("✅ Expected: SDK stops at first redirect (tsetester.com/update/hi)")
+        print("✅ Expected: SDK stops at first redirect (bcittesting.com/update/hi)")
         print("❌ Should NOT follow: Any subsequent redirects beyond the first one")
         
         // Open link from Reminders app
@@ -250,8 +256,8 @@ class DeepLinkingIntegrationTests: IntegrationTestBase {
         let networkMonitorTitle = app.navigationBars["Network Monitor"]
         XCTAssertTrue(networkMonitorTitle.waitForExistence(timeout: standardTimeout), "Network Monitor should open")
         
-        // Look for the wrapped link request (the initial request to links.tsetester.com)
-        let wrappedLinkPredicate = NSPredicate(format: "label CONTAINS[c] 'links.tsetester.com'")
+        // Look for the wrapped link request (the initial request to links.bcittesting.com)
+        let wrappedLinkPredicate = NSPredicate(format: "label CONTAINS[c] 'links.bcittesting.com'")
         let wrappedLinkCell = app.cells.containing(wrappedLinkPredicate).firstMatch
         
         if wrappedLinkCell.waitForExistence(timeout: 5.0) {
@@ -270,7 +276,7 @@ class DeepLinkingIntegrationTests: IntegrationTestBase {
         
         // CRITICAL: Verify we did NOT make a request to any "final destination" domain
         // If there was a multi-hop redirect, we would see requests to intermediate domains
-        // For this test, we're assuming tsetester.com/update/hi is the FIRST redirect
+        // For this test, we're assuming bcittesting.com/update/hi is the FIRST redirect
         // and there should be NO subsequent requests to other domains
         
         // Count how many unique domains we made requests to
@@ -279,10 +285,10 @@ class DeepLinkingIntegrationTests: IntegrationTestBase {
         
         for cell in allCells {
             let cellLabel = cell.staticTexts.firstMatch.label
-            if cellLabel.contains("tsetester.com") {
-                uniqueDomains.insert("tsetester.com")
-            } else if cellLabel.contains("links.tsetester.com") {
-                uniqueDomains.insert("links.tsetester.com")
+            if cellLabel.contains("bcittesting.com") {
+                uniqueDomains.insert("bcittesting.com")
+            } else if cellLabel.contains("links.bcittesting.com") {
+                uniqueDomains.insert("links.bcittesting.com")
             } else if cellLabel.contains("iterable.com") {
                 uniqueDomains.insert("iterable.com")
             }
@@ -292,12 +298,12 @@ class DeepLinkingIntegrationTests: IntegrationTestBase {
         print("🔍 Unique domains in network requests: \(uniqueDomains)")
         
         // We should see:
-        // 1. links.tsetester.com (the wrapped link)
-        // 2. tsetester.com (the first redirect destination)
+        // 1. links.bcittesting.com (the wrapped link)
+        // 2. bcittesting.com (the first redirect destination)
         // We should NOT see any third domain (which would indicate multi-hop)
         
         XCTAssertTrue(uniqueDomains.count <= 3, 
-                     "Should only see links.tsetester.com, tsetester.com, and iterable.com (SDK API calls). Found: \(uniqueDomains)")
+                     "Should only see links.bcittesting.com, bcittesting.com, and iterable.com (SDK API calls). Found: \(uniqueDomains)")
         
         print("✅ Network Monitor validation: Only expected domains found, no multi-hop redirect detected")
         

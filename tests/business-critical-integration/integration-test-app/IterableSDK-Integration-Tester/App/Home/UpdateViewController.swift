@@ -1,6 +1,6 @@
 import UIKit
 
-/// UpdateViewController - Displayed when deep link navigates to tsetester.com/update/*
+/// UpdateViewController - Displayed when deep link navigates to bcittesting.com/update/*
 class UpdateViewController: UIViewController {
     
     // MARK: - Properties
@@ -68,8 +68,8 @@ class UpdateViewController: UIViewController {
         label.text = """
         ✅ Deep Link Flow Complete
         
-        1. Wrapped link: links.tsetester.com/a/click
-        2. SDK unwrapped to: tsetester.com/update/hi
+        1. Wrapped link: links.bcittesting.com/a/click
+        2. SDK unwrapped to: bcittesting.com/update/hi
         3. SDK followed exactly ONE redirect
         4. App received unwrapped URL
         5. App navigated to this Update screen
