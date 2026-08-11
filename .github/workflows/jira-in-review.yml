@@ -1,0 +1,105 @@
+name: Jira — In Review on ready PR
+
+# Moves linked SDK-* tickets to In Review when a non-draft PR is opened
+# or marked ready for review. Replaces the native Jira "PR created" rule
+# so draft PRs no longer jump to In Review.
+#
+# Required repo secrets:
+#   JIRA_BASE_URL    e.g. https://iterable.atlassian.net
+#   JIRA_USER_EMAIL  Atlassian account email for the API token
+#   JIRA_API_TOKEN   Atlassian API token (personal for now; swap to bot later)
+
+on:
+  pull_request:
+    types: [opened, reopened, ready_for_review]
+
+permissions:
+  contents: read
+  pull-requests: read
+
+jobs:
+  transition-to-in-review:
+    if: github.event.pull_request.draft == false
+    runs-on: ubuntu-latest
+    steps:
+      - name: Extract SDK issue key
+        id: issue
+        env:
+          TITLE: ${{ github.event.pull_request.title }}
+          BRANCH: ${{ github.head_ref }}
+          BODY: ${{ github.event.pull_request.body }}
+        run: |
+          set -euo pipefail
+          text="${TITLE} ${BRANCH} ${BODY}"
+          key="$(printf "%s" "$text" | grep -oE "SDK-[0-9]+" | head -n1 || true)"
+          if [ -z "$key" ]; then
+            echo "No SDK-* issue key in title/branch/body; skipping."
+            echo "found=false" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          echo "Found $key"
+          echo "key=$key" >> "$GITHUB_OUTPUT"
+          echo "found=true" >> "$GITHUB_OUTPUT"
+
+      - name: Transition issue to In Review
+        if: steps.issue.outputs.found == 'true'
+        env:
+          JIRA_BASE_URL: ${{ secrets.JIRA_BASE_URL }}
+          JIRA_USER_EMAIL: ${{ secrets.JIRA_USER_EMAIL }}
+          JIRA_API_TOKEN: ${{ secrets.JIRA_API_TOKEN }}
+          ISSUE_KEY: ${{ steps.issue.outputs.key }}
+          TARGET_STATUS: In Review
+        run: |
+          set -euo pipefail
+
+          if [ -z "${JIRA_BASE_URL:-}" ] || [ -z "${JIRA_USER_EMAIL:-}" ] || [ -z "${JIRA_API_TOKEN:-}" ]; then
+            echo "::error::Missing JIRA_BASE_URL / JIRA_USER_EMAIL / JIRA_API_TOKEN secrets."
+            exit 1
+          fi
+
+          auth="$(printf "%s:%s" "$JIRA_USER_EMAIL" "$JIRA_API_TOKEN" | base64 | tr -d "\n")"
+          api="${JIRA_BASE_URL%/}/rest/api/3"
+          auth_header="Authorization: Basic ${auth}"
+
+          current="$(curl -sS -f \
+            -H "$auth_header" \
+            -H "Accept: application/json" \
+            "$api/issue/${ISSUE_KEY}?fields=status" | jq -r ".fields.status.name")"
+          echo "Current status for ${ISSUE_KEY}: ${current}"
+
+          if [ "$current" = "$TARGET_STATUS" ]; then
+            echo "Already in ${TARGET_STATUS}; nothing to do."
+            exit 0
+          fi
+
+          case "$current" in
+            "In Progress"|"Open"|"To Do"|"Selected for Development") ;;
+            *)
+              echo "Status \"${current}\" is not a pre-review state; skipping."
+              exit 0
+              ;;
+          esac
+
+          transitions="$(curl -sS -f \
+            -H "$auth_header" \
+            -H "Accept: application/json" \
+            "$api/issue/${ISSUE_KEY}/transitions")"
+
+          transition_id="$(printf "%s" "$transitions" | jq -r --arg name "$TARGET_STATUS" \
+            ".transitions[] | select(.name == \$name or .to.name == \$name) | .id" | head -n1)"
+
+          if [ -z "$transition_id" ] || [ "$transition_id" = "null" ]; then
+            echo "::error::No transition to \"${TARGET_STATUS}\" available from \"${current}\"."
+            printf "%s\n" "$transitions" | jq .
+            exit 1
+          fi
+
+          curl -sS -f -X POST \
+            -H "$auth_header" \
+            -H "Accept: application/json" \
+            -H "Content-Type: application/json" \
+            --data "{\"transition\":{\"id\":\"${transition_id}\"}}" \
+            "$api/issue/${ISSUE_KEY}/transitions"
+
+          echo "Transitioned ${ISSUE_KEY} → ${TARGET_STATUS}"
+
