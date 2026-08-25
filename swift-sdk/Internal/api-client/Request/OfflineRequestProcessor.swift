@@ -61,7 +61,8 @@ struct OfflineRequestProcessor: RequestProcessorProtocol {
     func disableDeviceForCurrentUser(hexToken: String,
                                      identitySnapshot: UserIdentitySnapshot?,
                                      withOnSuccess onSuccess: OnSuccessHandler?,
-                                     onFailure: OnFailureHandler?) -> Pending<SendRequestValue, SendRequestError> {
+                                     onFailure: OnFailureHandler?,
+                                     onHandoff: ((Bool) -> Void)? = nil) -> Pending<SendRequestValue, SendRequestError> {
         let requestGenerator = { (requestCreator: RequestCreator) in
             requestCreator.createDisableDeviceRequest(forAllUsers: false,
                                                       hexToken: hexToken,
@@ -71,7 +72,8 @@ struct OfflineRequestProcessor: RequestProcessorProtocol {
         return sendIterableRequest(requestGenerator: requestGenerator,
                                    successHandler: onSuccess,
                                    failureHandler: onFailure,
-                                   identifier: RequestIdentifier.disableDevice)
+                                   identifier: RequestIdentifier.disableDevice,
+                                   onHandoff: onHandoff)
     }
 
     @discardableResult
@@ -383,9 +385,9 @@ struct OfflineRequestProcessor: RequestProcessorProtocol {
         taskScheduler.deleteAllTasks()
     }
 
-    func deleteAllTasks(preservingTasksWithName preservedName: String) {
+    func deleteAllTasks(preservingTasksWithName preservedName: String, completion: (() -> Void)? = nil) {
         ITBInfo()
-        taskScheduler.deleteAllTasks(preservingTasksWithName: preservedName)
+        taskScheduler.deleteAllTasks(preservingTasksWithName: preservedName, completion: completion)
     }
     
     private let apiKey: String
@@ -404,13 +406,16 @@ struct OfflineRequestProcessor: RequestProcessorProtocol {
     private func sendIterableRequest(requestGenerator: @escaping (RequestCreator) -> Result<IterableRequest, IterableError>,
                                      successHandler onSuccess: OnSuccessHandler?,
                                      failureHandler onFailure: OnFailureHandler?,
-                                     identifier: String) -> Pending<SendRequestValue, SendRequestError> {
+                                     identifier: String,
+                                     onHandoff: ((Bool) -> Void)? = nil) -> Pending<SendRequestValue, SendRequestError> {
         guard let authProvider = authProvider else {
+            onHandoff?(false)
             return SendRequestError.createErroredFuture(reason: "AuthProvider is missing")
         }
         
         let requestCreator = createRequestCreator(authProvider: authProvider)
         guard case let Result.success(iterableRequest) = requestGenerator(requestCreator) else {
+                onHandoff?(false)
                 return SendRequestError.createErroredFuture(reason: "Could not create request")
         }
         
@@ -422,8 +427,12 @@ struct OfflineRequestProcessor: RequestProcessorProtocol {
         
         return taskScheduler.schedule(apiCallRequest: apiCallRequest,
                                       context: IterableTaskContext(blocking: true)).mapFailure { error in
-            SendRequestError.from(error: error)
+            onHandoff?(false)
+            return SendRequestError.from(error: error)
         }.flatMap { taskId -> Pending<SendRequestValue, SendRequestError> in
+            // The task is on disk by the time the schedule resolves, so it now outlives this
+            // processor and the instance that owns it.
+            onHandoff?(true)
             let pendingTask = notificationListener.futureFromTask(withTaskId: taskId)
             let result = RequestProcessorUtil.apply(successHandler: onSuccess,
                                               andFailureHandler: onFailure,

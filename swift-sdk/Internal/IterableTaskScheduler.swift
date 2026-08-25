@@ -65,7 +65,9 @@ class IterableTaskScheduler {
     // matches `preservedName`. Used by the logout flow so that an in-flight
     // `disableDevice` task — which carries its own identity snapshot and is explicitly
     // meant to run after the user logs out — survives the queue purge.
-    func deleteAllTasks(preservingTasksWithName preservedName: String) {
+    // `completion` runs on the CoreData context queue once the purge has actually been
+    // saved, so a caller that must not race the purge (`switchProject`) can await it.
+    func deleteAllTasks(preservingTasksWithName preservedName: String, completion: (() -> Void)? = nil) {
         ITBInfo()
         let persistenceContext = persistenceContextProvider.newBackgroundContext()
         persistenceContext.perform { [weak self] in
@@ -79,6 +81,7 @@ class IterableTaskScheduler {
                 ITBError("deleteAllTasks(preserving:) failed: \(error.localizedDescription)")
                 self?.healthMonitor.onDeleteAllTasksError()
             }
+            completion?()
         }
     }
 

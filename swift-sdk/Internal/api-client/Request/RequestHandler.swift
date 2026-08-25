@@ -77,7 +77,8 @@ class RequestHandler: RequestHandlerProtocol {
     @discardableResult
     func disableDeviceForCurrentUser(hexToken: String,
                                      withOnSuccess onSuccess: OnSuccessHandler?,
-                                     onFailure: OnFailureHandler?) -> Pending<SendRequestValue, SendRequestError> {
+                                     onFailure: OnFailureHandler?,
+                                     onHandoff: ((Bool) -> Void)? = nil) -> Pending<SendRequestValue, SendRequestError> {
         // Snapshot identity synchronously so that when `sendUsingRequestProcessor` defers
         // request construction (waiting on `HealthMonitor.canSchedule()`), the replayed
         // request still targets the user who was current at call time — not whoever the
@@ -94,13 +95,15 @@ class RequestHandler: RequestHandlerProtocol {
             let reason = "disableDeviceForCurrentUser called without a current user identity"
             ITBError(reason)
             onFailure?(reason, nil)
+            onHandoff?(false)
             return SendRequestError.createErroredFuture(reason: reason)
         }
         return sendUsingRequestProcessor { processor in
             processor.disableDeviceForCurrentUser(hexToken: hexToken,
                                                   identitySnapshot: identitySnapshot,
                                                   withOnSuccess: onSuccess,
-                                                  onFailure: onFailure)
+                                                  onFailure: onFailure,
+                                                  onHandoff: onHandoff)
         }
     }
 
@@ -389,15 +392,24 @@ class RequestHandler: RequestHandlerProtocol {
         onlineProcessor.getRemoteConfiguration()
     }
     
-    func handleLogout() throws {
-        if offlineMode {
-            DispatchQueue.global(qos: .background).async { [weak self] in
-                // Preserve queued `disableDevice` tasks across logout. They carry an
-                // identity snapshot baked in at call time, so they can safely replay
-                // after the current user is cleared — and they're the whole point of
-                // SDK-297 (retry the logout-time device disable if the network fails).
-                self?.offlineProcessor?.deleteAllTasks(preservingTasksWithName: Const.Path.disableDevice)
+    func handleLogout(completion: (() -> Void)?) throws {
+        guard offlineMode else {
+            // Nothing is persisted with offline mode off, so there is no queue to purge.
+            completion?()
+            return
+        }
+
+        DispatchQueue.global(qos: .background).async { [weak self] in
+            guard let offlineProcessor = self?.offlineProcessor else {
+                completion?()
+                return
             }
+            // Preserve queued `disableDevice` tasks across logout. They carry an
+            // identity snapshot baked in at call time, so they can safely replay
+            // after the current user is cleared — and they're the whole point of
+            // SDK-297 (retry the logout-time device disable if the network fails).
+            offlineProcessor.deleteAllTasks(preservingTasksWithName: Const.Path.disableDevice,
+                                            completion: completion)
         }
     }
 

@@ -164,6 +164,8 @@
 		55B37FEE229F59290042F13A /* InAppPersistenceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55B37FED229F59290042F13A /* InAppPersistenceTests.swift */; };
 		55B5498423973B5C00243E87 /* InboxSessionManagerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55B5498323973B5C00243E87 /* InboxSessionManagerTests.swift */; };
 		55B549862397462300243E87 /* InboxImpressionTrackerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55B549852397462300243E87 /* InboxImpressionTrackerTests.swift */; };
+		5D6740010000000000000004 /* SwitchProjectTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D6740010000000000000003 /* SwitchProjectTests.swift */; };
+		5D6740010000000000000008 /* SwitchProjectGateTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D6740010000000000000007 /* SwitchProjectGateTests.swift */; };
 		55B9F15124B3D33700E8198A /* AuthTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55B9F15024B3D33700E8198A /* AuthTests.swift */; };
 		55CC257B2462064F00A77FD5 /* InAppPresenterTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55CC257A2462064F00A77FD5 /* InAppPresenterTests.swift */; };
 		55E02D39253F8D86009DB8BC /* WebViewProtocolTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55E02D38253F8D86009DB8BC /* WebViewProtocolTests.swift */; };
@@ -186,6 +188,7 @@
 		8AAA8BB52D07310600DF8220 /* IterableEmbeddedMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8AAA8B222D07310600DF8220 /* IterableEmbeddedMessage.swift */; };
 		8AAA8BB82D07310600DF8220 /* IterableMessaging.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8AAA8B9C2D07310600DF8220 /* IterableMessaging.swift */; };
 		8AAA8BC32D07310600DF8220 /* IterableInboxViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8AAA8BA52D07310600DF8220 /* IterableInboxViewController.swift */; };
+		5D6740010000000000000002 /* IterableAPI+SwitchProject.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D6740010000000000000001 /* IterableAPI+SwitchProject.swift */; };
 		8AAA8BC42D07310600DF8220 /* IterableAppIntegration.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8AAA8B992D07310600DF8220 /* IterableAppIntegration.swift */; };
 		8AAA8BCD2D07310600DF8220 /* RetryPolicy.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8AAA8B252D07310600DF8220 /* RetryPolicy.swift */; };
 		9313470310D6B94EBF01743D /* AuthTokenValidityState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 54D3BD1417B5702B16498AFF /* AuthTokenValidityState.swift */; };
@@ -330,6 +333,7 @@
 		AC2C668720D3435700D46CC9 /* ActionRunnerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC2C668620D3435700D46CC9 /* ActionRunnerTests.swift */; };
 		AC347B6720E699FA003449CF /* IterableAppExtensions.h in Headers */ = {isa = PBXBuildFile; fileRef = AC347B6620E699D8003449CF /* IterableAppExtensions.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		AC3A2FF0262EDD4C00425435 /* InAppPriorityTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC3A2FEF262EDD4C00425435 /* InAppPriorityTests.swift */; };
+		5D6740010000000000000006 /* SwitchProjectOfflineTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D6740010000000000000005 /* SwitchProjectOfflineTests.swift */; };
 		AC3EFFF02510B8FB007F1330 /* TaskSchedulerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC3EFFEF2510B8FB007F1330 /* TaskSchedulerTests.swift */; };
 		AC43E7FF23A8C2C0008917E2 /* image.jpg in Resources */ = {isa = PBXBuildFile; fileRef = AC74FE1E23A8C0DB004AC442 /* image.jpg */; };
 		AC4BA00224163D8F007359F1 /* IterableHtmlMessageViewControllerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC4BA00124163D8F007359F1 /* IterableHtmlMessageViewControllerTests.swift */; };
@@ -631,6 +635,8 @@
 		55B37FED229F59290042F13A /* InAppPersistenceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InAppPersistenceTests.swift; sourceTree = "<group>"; };
 		55B5498323973B5C00243E87 /* InboxSessionManagerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InboxSessionManagerTests.swift; sourceTree = "<group>"; };
 		55B549852397462300243E87 /* InboxImpressionTrackerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InboxImpressionTrackerTests.swift; sourceTree = "<group>"; };
+		5D6740010000000000000003 /* SwitchProjectTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "SwitchProjectTests.swift"; sourceTree = "<group>"; };
+		5D6740010000000000000007 /* SwitchProjectGateTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "SwitchProjectGateTests.swift"; sourceTree = "<group>"; };
 		55B9F15024B3D33700E8198A /* AuthTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthTests.swift; sourceTree = "<group>"; };
 		55CC257A2462064F00A77FD5 /* InAppPresenterTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InAppPresenterTests.swift; sourceTree = "<group>"; };
 		55E02D38253F8D86009DB8BC /* WebViewProtocolTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WebViewProtocolTests.swift; sourceTree = "<group>"; };
@@ -660,6 +666,7 @@
 		8AAA8B302D07310600DF8220 /* Constants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Constants.swift; sourceTree = "<group>"; };
 		8AAA8B6C2D07310600DF8220 /* IterableSDK.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = IterableSDK.h; sourceTree = "<group>"; };
 		8AAA8B982D07310600DF8220 /* IterableAPI.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IterableAPI.swift; sourceTree = "<group>"; };
+		5D6740010000000000000001 /* IterableAPI+SwitchProject.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "IterableAPI+SwitchProject.swift"; sourceTree = "<group>"; };
 		8AAA8B992D07310600DF8220 /* IterableAppIntegration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IterableAppIntegration.swift; sourceTree = "<group>"; };
 		8AAA8B9A2D07310600DF8220 /* IterableConfig.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IterableConfig.swift; sourceTree = "<group>"; };
 		8AAA8B9B2D07310600DF8220 /* IterableLogging.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IterableLogging.swift; sourceTree = "<group>"; };
@@ -787,6 +794,7 @@
 		AC2C668620D3435700D46CC9 /* ActionRunnerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActionRunnerTests.swift; sourceTree = "<group>"; };
 		AC347B6620E699D8003449CF /* IterableAppExtensions.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = IterableAppExtensions.h; sourceTree = "<group>"; };
 		AC3A2FEF262EDD4C00425435 /* InAppPriorityTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = InAppPriorityTests.swift; sourceTree = "<group>"; };
+		5D6740010000000000000005 /* SwitchProjectOfflineTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "SwitchProjectOfflineTests.swift"; sourceTree = "<group>"; };
 		AC3EFFEF2510B8FB007F1330 /* TaskSchedulerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TaskSchedulerTests.swift; sourceTree = "<group>"; };
 		AC4BA00124163D8F007359F1 /* IterableHtmlMessageViewControllerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IterableHtmlMessageViewControllerTests.swift; sourceTree = "<group>"; };
 		AC50865324C60172001DC132 /* IterableDataModel.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = IterableDataModel.xcdatamodel; sourceTree = "<group>"; };
@@ -1099,6 +1107,7 @@
 			isa = PBXGroup;
 			children = (
 				8AAA8B982D07310600DF8220 /* IterableAPI.swift */,
+				5D6740010000000000000001 /* IterableAPI+SwitchProject.swift */,
 				8AAA8B992D07310600DF8220 /* IterableAppIntegration.swift */,
 				8AAA8B9A2D07310600DF8220 /* IterableConfig.swift */,
 				8AAA8B9B2D07310600DF8220 /* IterableLogging.swift */,
@@ -1495,6 +1504,8 @@
 				AC3A3075262EE26D00425435 /* request-tests */,
 				00B6FACF210E8B10007535CF /* Test Files */,
 				AC2C668620D3435700D46CC9 /* ActionRunnerTests.swift */,
+				5D6740010000000000000003 /* SwitchProjectTests.swift */,
+				5D6740010000000000000007 /* SwitchProjectGateTests.swift */,
 				55B9F15024B3D33700E8198A /* AuthTests.swift */,
 				ACB37AAF240268A60093A8EA /* SampleInboxViewDelegateImplementations.swift */,
 				8A272FD12DD3775900634559 /* unit-tests-Bridging-Header.h */,
@@ -1684,6 +1695,7 @@
 				ACCF274B24F40C85004862D5 /* RequestHandlerTests.swift */,
 				ACC362C424D2C190002C67BA /* TaskProcessorTests.swift */,
 				AC2AED4124EBC60C000EE5F3 /* TaskRunnerTests.swift */,
+				5D6740010000000000000005 /* SwitchProjectOfflineTests.swift */,
 				AC3EFFEF2510B8FB007F1330 /* TaskSchedulerTests.swift */,
 				ACFD5AC524C8216A008E497A /* TasksCRUDTests.swift */,
 				ACB1DFD026369CC300A31597 /* HealthMonitorTests.swift */,
@@ -2222,6 +2234,7 @@
 				8AAA8BB82D07310600DF8220 /* IterableMessaging.swift in Sources */,
 				8AB8D7D22D3805A900DECFE5 /* IterableAPIMobileFrameworkDetector.swift in Sources */,
 				8AAA8BC32D07310600DF8220 /* IterableInboxViewController.swift in Sources */,
+				5D6740010000000000000002 /* IterableAPI+SwitchProject.swift in Sources */,
 				8AAA8BC42D07310600DF8220 /* IterableAppIntegration.swift in Sources */,
 				8AAA8BCD2D07310600DF8220 /* RetryPolicy.swift in Sources */,
 				9313470310D6B94EBF01743D /* AuthTokenValidityState.swift in Sources */,
@@ -2411,6 +2424,8 @@
 				5588DF8128C04494000697D7 /* MockUrlDelegate.swift in Sources */,
 				5585DF8F22A73390000A32B9 /* IterableInboxViewControllerTests.swift in Sources */,
 				18A3520C2C85BAF0007FED53 /* IsOneOfInNotOneOfCriteareaTest.swift in Sources */,
+				5D6740010000000000000004 /* SwitchProjectTests.swift in Sources */,
+				5D6740010000000000000008 /* SwitchProjectGateTests.swift in Sources */,
 				55B9F15124B3D33700E8198A /* AuthTests.swift in Sources */,
 				55B06F3829D5102800C3B1BC /* BlankApiClient.swift in Sources */,
 				5588DFE928C046D7000697D7 /* MockInboxState.swift in Sources */,
@@ -2624,6 +2639,7 @@
 				5588DFBC28C045E3000697D7 /* MockInAppDelegate.swift in Sources */,
 				5588DFB428C045C9000697D7 /* MockInAppDisplayer.swift in Sources */,
 				5588DF8C28C044BE000697D7 /* MockCustomActionDelegate.swift in Sources */,
+				5D6740010000000000000006 /* SwitchProjectOfflineTests.swift in Sources */,
 				AC3EFFF02510B8FB007F1330 /* TaskSchedulerTests.swift in Sources */,
 				5588DFAC28C045AE000697D7 /* MockInAppFetcher.swift in Sources */,
 				AC67AF982507481200C1E974 /* NetworkConnectivityCheckerTests.swift in Sources */,

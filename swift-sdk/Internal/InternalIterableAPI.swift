@@ -70,6 +70,16 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
         get {
             localStorage.getAttributionInfo(currentDate: dateProvider.currentDate)
         } set {
+            // Campaign, template and message IDs belong to this instance's project, and the
+            // store they go to is shared with whatever project comes next. Work this instance
+            // owns can resolve after `switchProject` has cleared them — a universal link
+            // redirect returning, or a push tapped while this instance is still installed —
+            // and writing them back would attribute the new project's first event to a
+            // campaign it has never heard of.
+            guard !hasClearedProjectScopedStorage else {
+                ITBInfo("Not storing attribution, its project has been switched away from")
+                return
+            }
             let expiration = Calendar.current.date(byAdding: .hour,
                                                    value: Const.UserDefault.attributionInfoExpiration,
                                                    to: dateProvider.currentDate)
@@ -129,9 +139,12 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
                                                                    urlOpener: urlOpener,
                                                                    allowedProtocols: config.allowedProtocols)
         
-        pending.onSuccess { attributionInfo in
+        // Weak, because the redirect resolves over the network and a strong capture would keep
+        // this instance alive past a `switchProject` swap. The setter drops the write when this
+        // project has been switched away from.
+        pending.onSuccess { [weak self] attributionInfo in
             if let attributionInfo = attributionInfo {
-                self.attributionInfo = attributionInfo
+                self?.attributionInfo = attributionInfo
             }
         }
         return result
@@ -268,8 +281,16 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
         logoutPreviousUser()
     }
 
+    /// - Parameter onDisableHandoff: forwarded to the device disable this logout issues. Not
+    ///   called when no disable is attempted, so a caller waiting on it has to check
+    ///   `config.autoPushRegistration` and `isSDKInitialized()` for itself.
+    /// - Parameter purgingOfflineQueue: pass `false` when the caller purges the persisted queue
+    ///   itself. Two purges run on separate Core Data contexts over the same rows, and the
+    ///   loser's `save()` can latch a health-monitor delete error that turns offline mode off.
     func logoutUser(withOnSuccess onSuccess: OnSuccessHandler?,
-                    onFailure: OnFailureHandler?) {
+                    onFailure: OnFailureHandler?,
+                    onDisableHandoff: ((Bool) -> Void)? = nil,
+                    purgingOfflineQueue: Bool = true) {
         // Announce logout before waiting for the identity lock so stale work stops while publication is queued.
         identityCoordinator.beginPublication()
 
@@ -282,7 +303,7 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
         }
 
         if config.autoPushRegistration {
-            disableDeviceForCurrentUser(withOnSuccess: onSuccess, onFailure: onFailure)
+            disableDeviceForCurrentUser(withOnSuccess: onSuccess, onFailure: onFailure, onHandoff: onDisableHandoff)
         }
 
         setIdentity(email: nil, userId: nil)
@@ -297,11 +318,172 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
         _ = inAppManager.reset()
         _ = embeddedManager.reset()
 
-        try? requestHandler.handleLogout()
+        if purgingOfflineQueue {
+            try? requestHandler.handleLogout()
+        }
 
         if !config.autoPushRegistration {
             onSuccess?(nil)
         }
+    }
+
+    /// Tears down this instance's project-scoped state ahead of `IterableAPI.switchProject`.
+    ///
+    /// Reuses the existing `logoutUser` path — which disables the push token on the outgoing
+    /// project and resets the in-app and embedded managers — then clears what logout
+    /// deliberately leaves behind, and waits for the offline queue purge to actually land.
+    /// The rest of the per-project state (managers, foreground observers, request handler)
+    /// is rebuilt when the caller replaces this instance.
+    ///
+    /// - Parameter completion: invoked once teardown has finished, with `false` when a step
+    ///   was noisy or no device disable was confirmed for the outgoing project. The switch
+    ///   completes either way; `false` never means it was rolled back. A disable failure
+    ///   that arrives after `completion` has run is logged and not reported retroactively.
+    func tearDownForProjectSwitch(completion: @escaping (Bool) -> Void) {
+        ITBInfo()
+
+        // `logoutUser` reports the outgoing project's `disableDevice` result through its
+        // handlers, and in offline mode that result only arrives when the queued task
+        // actually runs — which may be never. The switch must not block on it, so the
+        // outcome is recorded in a box that is read at the last possible moment instead.
+        let teardownResult = TeardownResult()
+        let wasInitialized = isSDKInitialized()
+        let willDisableDevice = wasInitialized && config.autoPushRegistration
+
+        // A teardown is only clean when a device disable was confirmed for the outgoing
+        // project, matching Android. `logoutUser` returns without attempting a disable at all
+        // when push registration is off or no user was ever identified, and in that case no
+        // hand-off is ever reported, so it is recorded here. Both are expected for an app that
+        // does not use push.
+        if !willDisableDevice {
+            ITBInfo("switchProject: no device disable was attempted for the outgoing project, push registration is off or no user was identified")
+            teardownResult.markNoisy()
+        }
+
+        let disableHandoff = DeviceDisableHandoff()
+
+        if wasInitialized {
+            logoutUser(withOnSuccess: nil,
+                       onFailure: { reason, _ in
+                           ITBError("switchProject: teardown reported \"\(reason ?? "unknown error")\", completing the switch anyway")
+                           teardownResult.markNoisy()
+                       },
+                       onDisableHandoff: { handedOff in disableHandoff.signal(handedOff) },
+                       purgingOfflineQueue: false)
+        }
+
+        // `logoutUser` no-ops without an identified user (unknown-user and anonymous
+        // sessions), so the message caches are cleared unconditionally here. Even when
+        // logout does run, `inAppManager.reset()` only schedules the cache purge on the
+        // manager's serial queue; that queue is FIFO, so awaiting a reset issued here
+        // resolves after any reset logout just issued, and the replacement instance cannot
+        // read project A's messages back off disk.
+        inAppManager.clearUnhandledJsonOnlyMessages()
+        embeddedManager.reset()
+        inAppManager.reset().onCompletion(receiveValue: { [weak self] _ in
+            guard let self = self else { return completion(false) }
+            self.awaitDisableHandoffThenPurge(disableHandoff,
+                                              isAwaited: willDisableDevice,
+                                              teardownResult: teardownResult,
+                                              completion: completion)
+        }, receiveError: { [weak self] _ in
+            teardownResult.markNoisy()
+            guard let self = self else { return completion(false) }
+            self.awaitDisableHandoffThenPurge(disableHandoff,
+                                              isAwaited: willDisableDevice,
+                                              teardownResult: teardownResult,
+                                              completion: completion)
+        })
+    }
+
+    /// The outgoing project's `users/disableDevice` has to reach the request layer before the
+    /// switch releases this instance. In offline mode the request is built behind
+    /// `HealthMonitor.canSchedule()`, and `OfflineRequestProcessor` holds its auth provider
+    /// weakly, so a release that wins that race drops the request without reporting a failure
+    /// and the device stays registered on the project the app has left.
+    ///
+    /// Ordered before the queue purge so the purge is guaranteed to see the disable task and
+    /// preserve it, matching the order Android tears down in.
+    private func awaitDisableHandoffThenPurge(_ disableHandoff: DeviceDisableHandoff,
+                                             isAwaited: Bool,
+                                             teardownResult: TeardownResult,
+                                             completion: @escaping (Bool) -> Void) {
+        guard isAwaited else {
+            purgeOfflineQueueAndClearIdentity(teardownResult: teardownResult, completion: completion)
+            return
+        }
+
+        disableHandoff.await { [weak self] handedOff in
+            if !handedOff {
+                teardownResult.markNoisy()
+            }
+            guard let self = self else { return completion(false) }
+            self.purgeOfflineQueueAndClearIdentity(teardownResult: teardownResult, completion: completion)
+        }
+    }
+
+    /// Thread-safe record of whether every `switchProject` teardown step was clean. Steps
+    /// report into it from whichever queue they finish on; the switch reads it once, after
+    /// the last awaited step.
+    final class TeardownResult {
+        var wasClean: Bool {
+            lock.lock()
+            defer { lock.unlock() }
+            return isClean
+        }
+
+        func markNoisy() {
+            lock.lock()
+            isClean = false
+            lock.unlock()
+        }
+
+        private let lock = NSLock()
+        private var isClean = true
+    }
+
+    private func purgeOfflineQueueAndClearIdentity(teardownResult: TeardownResult, completion: @escaping (Bool) -> Void) {
+        // Purge the persisted offline queue and wait for it to actually land. Queued
+        // `disableDevice` tasks are preserved (SDK-297); `OfflineRequestProcessor` binds the
+        // API key and endpoint per task, so they still reach the project they were created
+        // for after the switch.
+        do {
+            try requestHandler.handleLogout { [weak self] in
+                // A deallocated instance means project A's identity is still in storage for
+                // the replacement to read back, which is never a clean teardown.
+                guard let self = self else { return completion(false) }
+                self.clearProjectScopedStorage()
+                completion(teardownResult.wasClean)
+            }
+        } catch {
+            ITBError("switchProject: offline queue purge failed: \(error.localizedDescription)")
+            clearProjectScopedStorage()
+            completion(false)
+        }
+    }
+
+    /// Identity has to go from memory *and* from persistent storage, otherwise the
+    /// replacement instance's `start()` reloads project A's user straight out of the
+    /// keychain and uses it against project B's API key. The unknown-user caches go with
+    /// it: criteria, unsent visitor events and push attribution are all defined by the
+    /// outgoing project. The device ID is project-agnostic and is deliberately left alone,
+    /// as is visitor consent.
+    private func clearProjectScopedStorage() {
+        hasClearedProjectScopedStorage = true
+        setIdentity(email: nil, userId: nil)
+        localStorage.email = nil
+        localStorage.userId = nil
+        localStorage.userIdUnknownUser = nil
+        localStorage.authToken = nil
+        localStorage.criteriaData = nil
+        localStorage.unknownUserEvents = nil
+        localStorage.unknownUserSessions = nil
+        localStorage.unknownUserUpdate = nil
+        // Campaign, template and message IDs live in the project that sent them, so an
+        // attribution left behind here would attach a campaignId that does not exist in the
+        // new project to the first attributed event after the switch. Writing nil removes
+        // the stored value and its 24 hour expiry together.
+        localStorage.save(attributionInfo: nil, withExpiration: nil)
     }
     
     func attemptAndProcessMerge(merge: Bool, replay: Bool, destinationUser: String?, isEmail: Bool, failureHandler: OnFailureHandler? = nil) {
@@ -485,20 +667,23 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
     
     @discardableResult
     func disableDeviceForCurrentUser(withOnSuccess onSuccess: OnSuccessHandler? = nil,
-                                     onFailure: OnFailureHandler? = nil) -> Pending<SendRequestValue, SendRequestError> {
+                                     onFailure: OnFailureHandler? = nil,
+                                     onHandoff: ((Bool) -> Void)? = nil) -> Pending<SendRequestValue, SendRequestError> {
         guard let hexToken = hexToken else {
             let errorMessage = "no token present"
             onFailure?(errorMessage, nil)
+            onHandoff?(false)
             return SendRequestError.createErroredFuture(reason: errorMessage)
         }
         
         guard isEitherUserIdOrEmailSet() else {
             let errorMessage = "either userId or email must be present"
             onFailure?(errorMessage, nil)
+            onHandoff?(false)
             return SendRequestError.createErroredFuture(reason: errorMessage)
         }
         
-        return requestHandler.disableDeviceForCurrentUser(hexToken: hexToken, withOnSuccess: onSuccess, onFailure: onFailure)
+        return requestHandler.disableDeviceForCurrentUser(hexToken: hexToken, withOnSuccess: onSuccess, onFailure: onFailure, onHandoff: onHandoff)
     }
     
     @discardableResult
@@ -865,6 +1050,10 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
     }()
     
     private var deviceAttributes = [String: String]()
+    
+    /// Set once, by `clearProjectScopedStorage()`. Read by work that can resolve after this
+    /// instance's project has been switched away from.
+    private var hasClearedProjectScopedStorage = false
     
     private var pushIntegrationName: String? {
         if let pushIntegrationName = config.pushIntegrationName, let sandboxPushIntegrationName = config.sandboxPushIntegrationName {
