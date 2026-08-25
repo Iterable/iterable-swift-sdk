@@ -218,10 +218,9 @@ public extension IterableAPI {
     ///         does **not** wait for the network response: a queued disable may not run for
     ///         hours. A disable that fails after the callback has been delivered is logged
     ///         rather than reported retroactively.
-    /// - Note: Calling `setEmail` from inside `callback` still hits the existing auth
-    ///         retry-budget behaviour: if the previous project exhausted the JWT retry
-    ///         budget, the new user's token request can be suppressed until
-    ///         `pauseAuthRetries(false)` is called.
+    /// - Note: The JWT auth retry budget does not carry over. It is state on the `AuthManager`
+    ///         instance, and the switch builds a fresh one along with the rest of the
+    ///         dependency container, so the new project starts with a full budget.
     ///
     /// - SeeAlso: IterableConfig
     @available(iOSApplicationExtension, unavailable)
