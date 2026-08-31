@@ -198,16 +198,17 @@ public extension IterableAPI {
     ///               with. The two are paired in one object so one project's key cannot be
     ///               combined with another project's region or auth delegate.
     ///    - callback: Invoked on the main thread once the SDK is running on the new project.
-    ///                `true` means every teardown step completed cleanly. `false` means the
-    ///                SDK **is** on the new project but at least one cleanup step was noisy,
-    ///                or no device disable was confirmed for the outgoing project. `false`
-    ///                never means the switch failed or was rolled back.
+    ///                `.switchedCleanly` means every teardown step completed cleanly.
+    ///                `.switchedWithWarnings` means the SDK **is** on the new project but at
+    ///                least one cleanup step was noisy, or no device disable was confirmed for
+    ///                the outgoing project. Neither case means the switch failed or was rolled
+    ///                back, so the response to both is the same.
     ///
-    /// The SDK reports `false` when push registration is off, when there is no device token
-    /// to disable, when no user was identified on the outgoing project, or when the
-    /// `disableDevice` request itself fails. For an app that does not use push, `false` is
-    /// therefore expected in normal operation and is not an error: carry on and re-identify
-    /// the user with `setEmail` or `setUserId` exactly as you would after `true`.
+    /// The SDK reports `.switchedWithWarnings` when push registration is off, when there is no
+    /// device token to disable, when no user was identified on the outgoing project, or when the
+    /// `disableDevice` request itself fails. For an app that does not use push it is therefore
+    /// expected in normal operation and is not an error: carry on and re-identify the user with
+    /// `setEmail` or `setUserId` exactly as you would after `.switchedCleanly`.
     ///
     /// - Note: Queued `disableDevice` tasks survive the purge and still reach the project
     ///         they were created for, because each persisted task carries its own API key and
@@ -222,16 +223,18 @@ public extension IterableAPI {
     ///         instance, and the switch builds a fresh one along with the rest of the
     ///         dependency container, so the new project starts with a full budget.
     ///
-    /// - SeeAlso: IterableProject, IterableConfig
+    /// - SeeAlso: IterableProject, IterableProjectSwitchResult, IterableConfig
     @available(iOSApplicationExtension, unavailable)
     @objc(switchProject:callback:)
     static func switchProject(project: IterableProject,
-                              callback: ((Bool) -> Void)? = nil) {
+                              callback: ((IterableProjectSwitchResult) -> Void)? = nil) {
         switchProject(apiKey: project.apiKey,
                       config: project.config,
                       apiEndPointOverride: nil,
                       dependencyContainer: nil,
-                      callback: callback)
+                      callback: callback == nil ? nil : { cleanTeardown in
+                          callback?(.from(cleanTeardown: cleanTeardown))
+                      })
     }
 }
 

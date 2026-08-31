@@ -66,15 +66,23 @@ class SwitchProjectTests: XCTestCase {
         }
 
         let switched = expectation(description: #function)
-        var reported: Bool?
-        IterableAPI.switchProject(project: sameProject) { cleanTeardown in
-            reported = cleanTeardown
+        var reported: IterableProjectSwitchResult?
+        IterableAPI.switchProject(project: sameProject) { result in
+            reported = result
             switched.fulfill()
         }
 
         wait(for: [switched], timeout: testExpectationTimeout)
-        XCTAssertEqual(reported, true, "the key already in use is a no-op reporting true")
+        XCTAssertEqual(reported, .switchedCleanly, "the key already in use is a no-op that switched cleanly")
         XCTAssertTrue(IterableAPI.implementation === projectA, "nothing may be torn down")
+    }
+
+    /// The internal plumbing carries a boolean, so the mapping at the public boundary is the only
+    /// place the two representations meet. Both directions are pinned because getting this backwards
+    /// would invert the meaning of every switch result an app sees.
+    func testResultMapsFromTheInternalTeardownBoolean() {
+        XCTAssertEqual(IterableProjectSwitchResult.from(cleanTeardown: true), .switchedCleanly)
+        XCTAssertEqual(IterableProjectSwitchResult.from(cleanTeardown: false), .switchedWithWarnings)
     }
 
     // MARK: - Public surface
