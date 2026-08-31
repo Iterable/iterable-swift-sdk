@@ -190,13 +190,13 @@ public extension IterableAPI {
     /// - With the API key that is already active, this is a no-op and reports `true`.
     /// - While a switch is already running, the callback joins that switch instead of
     ///   starting a second teardown.
-    /// - With an empty or whitespace-only API key, nothing is torn down, the SDK stays on the
-    ///   project it is on, and the callback reports `false`. Objective-C callers get the same
-    ///   treatment for `nil`, which Swift's non-optional `String` cannot express.
+    /// An unusable API key cannot reach here: `IterableProject` refuses to hold an empty or
+    /// whitespace-only one, so the invalid state is not constructible.
     ///
     /// - Parameters:
-    ///    - apiKey: The Iterable Mobile API key of the project to switch to
-    ///    - config: The `IterableConfig` to use for the new project
+    ///    - project: The project to switch to: its API key together with the config to run it
+    ///               with. The two are paired in one object so one project's key cannot be
+    ///               combined with another project's region or auth delegate.
     ///    - callback: Invoked on the main thread once the SDK is running on the new project.
     ///                `true` means every teardown step completed cleanly. `false` means the
     ///                SDK **is** on the new project but at least one cleanup step was noisy,
@@ -222,14 +222,13 @@ public extension IterableAPI {
     ///         instance, and the switch builds a fresh one along with the rest of the
     ///         dependency container, so the new project starts with a full budget.
     ///
-    /// - SeeAlso: IterableConfig
+    /// - SeeAlso: IterableProject, IterableConfig
     @available(iOSApplicationExtension, unavailable)
-    @objc(switchProject:config:callback:)
-    static func switchProject(apiKey: String,
-                              config: IterableConfig,
+    @objc(switchProject:callback:)
+    static func switchProject(project: IterableProject,
                               callback: ((Bool) -> Void)? = nil) {
-        switchProject(apiKey: apiKey,
-                      config: config,
+        switchProject(apiKey: project.apiKey,
+                      config: project.config,
                       apiEndPointOverride: nil,
                       dependencyContainer: nil,
                       callback: callback)

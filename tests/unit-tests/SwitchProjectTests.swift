@@ -34,6 +34,49 @@ class SwitchProjectTests: XCTestCase {
         super.tearDown()
     }
 
+    // MARK: - IterableProject
+
+    /// A blank key is what a failed region lookup or a missing remote config value produces. It
+    /// cannot reach the switch, because the pair refuses to hold one, which is the point of pairing
+    /// the key with its config: the unusable state is not constructible.
+    func testProjectRefusesABlankApiKey() {
+        XCTAssertNil(IterableProject(apiKey: "", config: configWithoutPush()))
+        XCTAssertNil(IterableProject(apiKey: "   ", config: configWithoutPush()))
+        XCTAssertNil(IterableProject(apiKey: "\n\t ", config: configWithoutPush()))
+    }
+
+    func testProjectExposesItsPairAndMasksTheKeyWhenLogged() {
+        let config = configWithoutPush()
+        guard let project = IterableProject(apiKey: apiKeyB, config: config) else {
+            return XCTFail("a valid key must produce a project")
+        }
+
+        XCTAssertEqual(project.apiKey, apiKeyB)
+        XCTAssertTrue(project.config === config, "the config must be the one it was built with")
+        XCTAssertFalse(project.description.contains(apiKeyB), "description must not leak the key")
+    }
+
+    /// The rest of the suite drives the internal overload so it can inject a dependency container.
+    /// This one goes through the public paired signature, on the no-op path so it needs no
+    /// injection, to prove the pair is actually unwrapped and reaches the implementation.
+    func testPublicPairedSignatureReachesTheImplementation() {
+        let projectA = initializeProjectA(email: emailA)
+        guard let sameProject = IterableProject(apiKey: apiKeyA, config: configWithoutPush()) else {
+            return XCTFail("a valid key must produce a project")
+        }
+
+        let switched = expectation(description: #function)
+        var reported: Bool?
+        IterableAPI.switchProject(project: sameProject) { cleanTeardown in
+            reported = cleanTeardown
+            switched.fulfill()
+        }
+
+        wait(for: [switched], timeout: testExpectationTimeout)
+        XCTAssertEqual(reported, true, "the key already in use is a no-op reporting true")
+        XCTAssertTrue(IterableAPI.implementation === projectA, "nothing may be torn down")
+    }
+
     // MARK: - Public surface
 
     func testSwitchBeforeInitializeBehavesAsInitialize() {

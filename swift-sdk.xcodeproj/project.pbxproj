@@ -189,6 +189,7 @@
 		8AAA8BB82D07310600DF8220 /* IterableMessaging.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8AAA8B9C2D07310600DF8220 /* IterableMessaging.swift */; };
 		8AAA8BC32D07310600DF8220 /* IterableInboxViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8AAA8BA52D07310600DF8220 /* IterableInboxViewController.swift */; };
 		5D6740010000000000000002 /* IterableAPI+SwitchProject.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D6740010000000000000001 /* IterableAPI+SwitchProject.swift */; };
+		5D6740020000000000000002 /* IterableProject.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D6740020000000000000001 /* IterableProject.swift */; };
 		8AAA8BC42D07310600DF8220 /* IterableAppIntegration.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8AAA8B992D07310600DF8220 /* IterableAppIntegration.swift */; };
 		8AAA8BCD2D07310600DF8220 /* RetryPolicy.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8AAA8B252D07310600DF8220 /* RetryPolicy.swift */; };
 		9313470310D6B94EBF01743D /* AuthTokenValidityState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 54D3BD1417B5702B16498AFF /* AuthTokenValidityState.swift */; };
@@ -667,6 +668,7 @@
 		8AAA8B6C2D07310600DF8220 /* IterableSDK.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = IterableSDK.h; sourceTree = "<group>"; };
 		8AAA8B982D07310600DF8220 /* IterableAPI.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IterableAPI.swift; sourceTree = "<group>"; };
 		5D6740010000000000000001 /* IterableAPI+SwitchProject.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "IterableAPI+SwitchProject.swift"; sourceTree = "<group>"; };
+		5D6740020000000000000001 /* IterableProject.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IterableProject.swift; sourceTree = "<group>"; };
 		8AAA8B992D07310600DF8220 /* IterableAppIntegration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IterableAppIntegration.swift; sourceTree = "<group>"; };
 		8AAA8B9A2D07310600DF8220 /* IterableConfig.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IterableConfig.swift; sourceTree = "<group>"; };
 		8AAA8B9B2D07310600DF8220 /* IterableLogging.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IterableLogging.swift; sourceTree = "<group>"; };
@@ -1108,6 +1110,7 @@
 			children = (
 				8AAA8B982D07310600DF8220 /* IterableAPI.swift */,
 				5D6740010000000000000001 /* IterableAPI+SwitchProject.swift */,
+				5D6740020000000000000001 /* IterableProject.swift */,
 				8AAA8B992D07310600DF8220 /* IterableAppIntegration.swift */,
 				8AAA8B9A2D07310600DF8220 /* IterableConfig.swift */,
 				8AAA8B9B2D07310600DF8220 /* IterableLogging.swift */,
@@ -2235,6 +2238,7 @@
 				8AB8D7D22D3805A900DECFE5 /* IterableAPIMobileFrameworkDetector.swift in Sources */,
 				8AAA8BC32D07310600DF8220 /* IterableInboxViewController.swift in Sources */,
 				5D6740010000000000000002 /* IterableAPI+SwitchProject.swift in Sources */,
+				5D6740020000000000000002 /* IterableProject.swift in Sources */,
 				8AAA8BC42D07310600DF8220 /* IterableAppIntegration.swift in Sources */,
 				8AAA8BCD2D07310600DF8220 /* RetryPolicy.swift in Sources */,
 				9313470310D6B94EBF01743D /* AuthTokenValidityState.swift in Sources */,
