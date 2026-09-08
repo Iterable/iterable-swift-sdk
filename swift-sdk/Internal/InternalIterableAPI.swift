@@ -76,6 +76,13 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
             // redirect returning, or a push tapped while this instance is still installed —
             // and writing them back would attribute the new project's first event to a
             // campaign it has never heard of.
+            //
+            // Checked and written under the lock `clearProjectScopedStorage` takes, so the two
+            // cannot interleave. Reading the flag and then writing outside a lock is
+            // check-then-act: a redirect could pass the check, have the switch clear
+            // attribution, and then put the previous project's campaign back.
+            attributionLock.lock()
+            defer { attributionLock.unlock() }
             guard !hasClearedProjectScopedStorage else {
                 ITBInfo("Not storing attribution, its project has been switched away from")
                 return
@@ -469,7 +476,6 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
     /// outgoing project. The device ID is project-agnostic and is deliberately left alone,
     /// as is visitor consent.
     private func clearProjectScopedStorage() {
-        hasClearedProjectScopedStorage = true
         setIdentity(email: nil, userId: nil)
         localStorage.email = nil
         localStorage.userId = nil
@@ -483,7 +489,14 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
         // attribution left behind here would attach a campaignId that does not exist in the
         // new project to the first attributed event after the switch. Writing nil removes
         // the stored value and its 24 hour expiry together.
+        //
+        // Raising the flag and clearing the store happen under one lock, and the
+        // `attributionInfo` setter takes the same one, so a redirect resolving right now
+        // either writes before this and is cleared by it, or sees the flag and stands down.
+        attributionLock.lock()
+        hasClearedProjectScopedStorage = true
         localStorage.save(attributionInfo: nil, withExpiration: nil)
+        attributionLock.unlock()
     }
     
     func attemptAndProcessMerge(merge: Bool, replay: Bool, destinationUser: String?, isEmail: Bool, failureHandler: OnFailureHandler? = nil) {
@@ -1052,8 +1065,12 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
     private var deviceAttributes = [String: String]()
     
     /// Set once, by `clearProjectScopedStorage()`. Read by work that can resolve after this
-    /// instance's project has been switched away from.
+    /// instance's project has been switched away from. Guarded by `attributionLock`.
     private var hasClearedProjectScopedStorage = false
+    
+    /// Serialises the attribution store against the switch that clears it, so a network
+    /// redirect resolving mid-teardown cannot write the outgoing project's campaign back in.
+    private let attributionLock = NSLock()
     
     private var pushIntegrationName: String? {
         if let pushIntegrationName = config.pushIntegrationName, let sandboxPushIntegrationName = config.sandboxPushIntegrationName {

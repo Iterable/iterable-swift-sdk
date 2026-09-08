@@ -7,6 +7,19 @@ import XCTest
 
 @testable import IterableSDK
 
+extension ProjectSwitchGate {
+    /// Raises the gate without running a teardown, for the tests that only exercise what the
+    /// gate holds and releases. `apiKey` matters only where a test drives two destinations.
+    @discardableResult
+    func beginSwitchForTesting(apiKey: String = "gate-test-key") -> Bool {
+        beginSwitch(PendingSwitchRequest(apiKey: apiKey,
+                                         config: IterableConfig(),
+                                         apiEndPointOverride: nil,
+                                         dependencyContainer: nil,
+                                         callbacks: []))
+    }
+}
+
 /// What `ProjectSwitchGate` is allowed to hold, and what it must never hold.
 ///
 /// A call belongs in the gate when replaying it against the new project is what the app
@@ -79,7 +92,7 @@ class SwitchProjectGateTests: XCTestCase {
     /// `UIBackgroundFetchResult` past a Core Data purge.
     func testTheSilentPushCompletionHandlerIsNotHeldForTheSwitch() {
         initializeProjectA(email: emailA)
-        XCTAssertTrue(ProjectSwitchGate.shared.beginSwitch(callback: nil))
+        XCTAssertTrue(ProjectSwitchGate.shared.beginSwitchForTesting())
 
         var fetchResult: UIBackgroundFetchResult?
         IterableAppIntegration.application(UIApplication.shared,
@@ -94,7 +107,7 @@ class SwitchProjectGateTests: XCTestCase {
     func testTheGateHoldsIdentityAndReleasesEverythingProjectScoped() {
         let networkSessionA = MockNetworkSession()
         initializeProjectA(config: configWithPush(), networkSession: networkSessionA, email: emailA)
-        XCTAssertTrue(ProjectSwitchGate.shared.beginSwitch(callback: nil))
+        XCTAssertTrue(ProjectSwitchGate.shared.beginSwitchForTesting())
 
         // Ungated: the payload names project A's campaign, so replaying it against project B
         // would report a campaign that does not exist there.

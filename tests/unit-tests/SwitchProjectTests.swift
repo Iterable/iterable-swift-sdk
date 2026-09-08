@@ -11,6 +11,7 @@ import XCTest
 class SwitchProjectTests: XCTestCase {
     private let apiKeyA = "project-a-key"
     private let apiKeyB = "project-b-key"
+    private let apiKeyC = "project-c-key"
     private let emailA = "user-a@example.com"
     private let emailB = "user-b@example.com"
 
@@ -304,7 +305,7 @@ class SwitchProjectTests: XCTestCase {
     func testTheGateQueuesCallsFIFOAndDrainsThemWhenTheSwitchEnds() {
         var order = [String]()
 
-        XCTAssertTrue(ProjectSwitchGate.shared.beginSwitch(callback: nil))
+        XCTAssertTrue(ProjectSwitchGate.shared.beginSwitchForTesting())
         XCTAssertTrue(ProjectSwitchGate.shared.queueOrExecute("first") { order.append("first") })
         XCTAssertTrue(ProjectSwitchGate.shared.queueOrExecute("second") { order.append("second") })
         XCTAssertEqual(order, [], "nothing may run while the gate is raised")
@@ -314,6 +315,65 @@ class SwitchProjectTests: XCTestCase {
         XCTAssertEqual(order, ["first", "second"], "queued calls must replay in FIFO order")
         XCTAssertFalse(ProjectSwitchGate.shared.queueOrExecute("third") { order.append("third") })
         XCTAssertEqual(order, ["first", "second", "third"], "with the gate down, calls run immediately")
+    }
+
+    /// The gate must stay raised until the replay is finished. Lowering it first lets a call
+    /// arriving as the switch lands run ahead of the calls already waiting behind the gate, so
+    /// a fresh `setEmail` could be overwritten by the older one queued during the switch.
+    func testACallMadeDuringTheReplayDoesNotOvertakeTheQueuedCalls() {
+        var order = [String]()
+
+        XCTAssertTrue(ProjectSwitchGate.shared.beginSwitchForTesting())
+        XCTAssertTrue(ProjectSwitchGate.shared.queueOrExecute("first") {
+            order.append("first")
+            // Stands in for a call arriving from another thread while the replay is running.
+            ProjectSwitchGate.shared.queueOrExecute("arrivedDuringTheReplay") {
+                order.append("arrivedDuringTheReplay")
+            }
+        })
+        XCTAssertTrue(ProjectSwitchGate.shared.queueOrExecute("second") { order.append("second") })
+
+        ProjectSwitchGate.shared.endSwitch(succeeded: true)
+
+        XCTAssertEqual(order, ["first", "second", "arrivedDuringTheReplay"],
+                       "a call made during the replay must queue behind it, not run ahead of it")
+        XCTAssertFalse(ProjectSwitchGate.shared.isSwitchInProgress, "the gate must be down once the replay is done")
+    }
+
+    /// Where the two kinds of second request part ways. Asking again for the project the switch
+    /// is already heading to joins it. Asking for a different one has to be honoured after it,
+    /// because the SDK would otherwise settle on a project the app has already asked to leave.
+    func testTheGateJoinsASameProjectRequestAndQueuesADifferentOne() {
+        XCTAssertTrue(ProjectSwitchGate.shared.beginSwitchForTesting(apiKey: apiKeyB))
+        XCTAssertFalse(ProjectSwitchGate.shared.beginSwitchForTesting(apiKey: apiKeyB))
+        XCTAssertNil(ProjectSwitchGate.shared.endSwitch(succeeded: true),
+                     "a request for the project already being switched to must not queue a second switch")
+
+        XCTAssertTrue(ProjectSwitchGate.shared.beginSwitchForTesting(apiKey: apiKeyB))
+        XCTAssertFalse(ProjectSwitchGate.shared.beginSwitchForTesting(apiKey: apiKeyC))
+        XCTAssertEqual(ProjectSwitchGate.shared.endSwitch(succeeded: true)?.apiKey, apiKeyC,
+                       "a request for a different project must run once the one in flight finishes")
+    }
+
+    /// The gate is handed to a queued request rather than lowered and re-raised. Lowering it in
+    /// between leaves a window in which a brand new `switchProject` takes the gate first and is
+    /// then overtaken by the older queued request, so the SDK settles on the project the app
+    /// asked for second-to-last while both callbacks report success.
+    func testAQueuedSwitchInheritsTheGateSoALaterRequestCannotOvertakeIt() {
+        XCTAssertTrue(ProjectSwitchGate.shared.beginSwitchForTesting(apiKey: apiKeyB))
+        XCTAssertFalse(ProjectSwitchGate.shared.beginSwitchForTesting(apiKey: apiKeyC))
+
+        XCTAssertEqual(ProjectSwitchGate.shared.endSwitch(succeeded: true)?.apiKey, apiKeyC)
+        XCTAssertTrue(ProjectSwitchGate.shared.isSwitchInProgress,
+                      "the gate must pass to the queued request, not drop between the two switches")
+
+        // What the app does in the window before the queued switch has started running.
+        XCTAssertFalse(ProjectSwitchGate.shared.beginSwitchForTesting(apiKey: apiKeyA),
+                       "a request arriving now must queue behind the inherited switch, not take the gate")
+        XCTAssertEqual(ProjectSwitchGate.shared.endSwitch(succeeded: true)?.apiKey, apiKeyA,
+                       "the request the app made last must be the one the SDK ends on")
+        XCTAssertNil(ProjectSwitchGate.shared.endSwitch(succeeded: true), "the chain is empty now")
+        XCTAssertFalse(ProjectSwitchGate.shared.isSwitchInProgress, "the gate drops once nothing is queued behind it")
     }
 
     func testACallMadeDuringTheSwitchWindowRunsAgainstTheNewInstance() {
@@ -342,23 +402,27 @@ class SwitchProjectTests: XCTestCase {
 
     // MARK: - Nested and repeated switches
 
-    func testRapidSwitchesRunOneTeardownAndFireEveryCallback() {
+    /// Two destinations asked for back to back, which is a brand or region picker being tapped
+    /// twice. The second request used to be dropped while its callback still reported a
+    /// completed switch, leaving the SDK on B with the app convinced it was on C and every
+    /// later event going to the wrong project.
+    func testRapidSwitchesToDifferentProjectsRunInOrderAndTheLastOneWins() {
         initializeProjectA(email: emailA)
 
-        let firstCallback = expectation(description: "first callback")
-        let secondCallback = expectation(description: "second callback")
+        let firstCallback = expectation(description: "the callback that asked for project B")
+        let secondCallback = expectation(description: "the callback that asked for project C")
         IterableAPI.switchProject(apiKey: apiKeyB,
                                   config: configWithoutPush(),
                                   apiEndPointOverride: nil,
                                   dependencyContainer: container()) { _ in firstCallback.fulfill() }
-        IterableAPI.switchProject(apiKey: "project-c-key",
+        IterableAPI.switchProject(apiKey: apiKeyC,
                                   config: configWithoutPush(),
                                   apiEndPointOverride: nil,
                                   dependencyContainer: container()) { _ in secondCallback.fulfill() }
 
         wait(for: [firstCallback, secondCallback], timeout: testExpectationTimeout)
-        XCTAssertEqual(IterableAPI.implementation?.apiKey, apiKeyB,
-                       "the second call only registers its callback, its API key is ignored")
+        XCTAssertEqual(IterableAPI.implementation?.apiKey, apiKeyC,
+                       "the SDK must end on the project that was asked for last")
         XCTAssertFalse(ProjectSwitchGate.shared.isSwitchInProgress)
     }
 

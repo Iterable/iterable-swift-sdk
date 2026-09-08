@@ -23,43 +23,90 @@ final class ProjectSwitchGate {
 
     /// Raises the gate for a new switch.
     ///
-    /// `callback` is registered against the switch either way, so a caller that arrives
-    /// while a switch is running is notified by it rather than starting a second teardown.
+    /// A request that arrives while a switch is running is handled by where it is headed:
+    /// one targeting the project the in-flight switch is already heading to is notified by
+    /// that switch rather than starting a second teardown, and one targeting a different
+    /// project is queued and run once the in-flight switch has finished. Dropping the second
+    /// one would leave the SDK on a project the app has already asked to leave, while its
+    /// callback said the switch was done.
     ///
     /// - Returns: `false` when a switch was already in progress.
-    func beginSwitch(callback: ((Bool) -> Void)?) -> Bool {
+    func beginSwitch(_ request: PendingSwitchRequest) -> Bool {
         lock.lock()
         defer { lock.unlock() }
 
-        if let callback = callback {
-            callbacks.append(callback)
+        guard isRaised else {
+            isRaised = true
+            inFlightApiKey = request.apiKey
+            callbacks.append(contentsOf: request.callbacks)
+            return true
         }
 
-        guard !isRaised else { return false }
-        isRaised = true
-        return true
+        guard request.apiKey != inFlightApiKey else {
+            callbacks.append(contentsOf: request.callbacks)
+            return false
+        }
+
+        if let index = pending.firstIndex(where: { $0.apiKey == request.apiKey }) {
+            pending[index].callbacks.append(contentsOf: request.callbacks)
+        } else {
+            pending.append(request)
+        }
+        return false
     }
 
-    /// Lowers the gate, replays everything queued during the switch in FIFO order against
-    /// the new project, then delivers every registered callback on the main thread.
-    func endSwitch(succeeded: Bool) {
-        lock.lock()
-        isRaised = false
-        let queued = operations
-        operations.removeAll()
-        let toNotify = callbacks
-        callbacks.removeAll()
-        lock.unlock()
+    /// Replays everything queued during the switch in FIFO order against the new project,
+    /// lowers the gate, then delivers every registered callback on the main thread.
+    ///
+    /// The gate stays raised until the queue is observed empty under the same lock
+    /// `queueOrExecute` enqueues under. Lowering it before the replay would let a call made
+    /// during the replay run ahead of the calls already waiting behind the gate, so a
+    /// `setEmail` issued as the switch lands could be overwritten by the older one queued
+    /// during it.
+    ///
+    /// When a switch was requested while this one ran, the gate is *not* lowered: it is
+    /// handed straight to that request, which becomes the new in-flight one along with its
+    /// callbacks. Lowering it in between would open a window in which a brand new
+    /// `switchProject` could take the gate first and then be overtaken by the older queued
+    /// request, leaving the SDK on a project the app did not ask for last.
+    ///
+    /// - Returns: The next switch requested while this one was running, if any. The caller
+    ///            runs it, and inherits the raised gate with it, so the gate stays unaware
+    ///            of how a switch is performed.
+    @discardableResult
+    func endSwitch(succeeded: Bool) -> PendingSwitchRequest? {
+        var toNotify = [(Bool) -> Void]()
+        var next: PendingSwitchRequest?
 
-        for operation in queued {
-            ITBInfo("switchProject: replaying queued call \(operation.description)")
-            operation.run()
+        while true {
+            lock.lock()
+            if !operations.isEmpty {
+                let operation = operations.removeFirst()
+                lock.unlock()
+                ITBInfo("switchProject: replaying queued call \(operation.description)")
+                operation.run()
+                continue
+            }
+            toNotify = callbacks
+            callbacks.removeAll()
+            next = pending.isEmpty ? nil : pending.removeFirst()
+            if let next = next {
+                inFlightApiKey = next.apiKey
+                callbacks = next.callbacks
+            } else {
+                isRaised = false
+                inFlightApiKey = nil
+            }
+            lock.unlock()
+            break
         }
 
-        guard !toNotify.isEmpty else { return }
-        DispatchQueue.main.async {
-            toNotify.forEach { $0(succeeded) }
+        if !toNotify.isEmpty {
+            DispatchQueue.main.async {
+                toNotify.forEach { $0(succeeded) }
+            }
         }
+        return next
     }
 
     /// Runs `operation` immediately, or queues it when a project switch is in progress.
@@ -85,9 +132,22 @@ final class ProjectSwitchGate {
     func resetForTesting() {
         lock.lock()
         isRaised = false
+        inFlightApiKey = nil
         operations.removeAll()
         callbacks.removeAll()
+        pending.removeAll()
         lock.unlock()
+    }
+
+    /// Everything needed to run a switch, so one requested during another can be replayed
+    /// verbatim when the gate is handed over instead of being discarded. Its `callbacks` are
+    /// moved into the gate at handover, so the runner does not carry them itself.
+    struct PendingSwitchRequest {
+        let apiKey: String
+        let config: IterableConfig
+        let apiEndPointOverride: String?
+        let dependencyContainer: DependencyContainerProtocol?
+        var callbacks: [(Bool) -> Void]
     }
 
     private struct QueuedOperation {
@@ -97,8 +157,12 @@ final class ProjectSwitchGate {
 
     private let lock = NSLock()
     private var isRaised = false
+    /// The project the in-flight switch is heading to, so a second request can tell whether it
+    /// is asking for the same destination or a different one.
+    private var inFlightApiKey: String?
     private var operations = [QueuedOperation]()
     private var callbacks = [(Bool) -> Void]()
+    private var pending = [PendingSwitchRequest]()
 }
 
 /// Bounded rendezvous between the outgoing project's `users/disableDevice` and the step of
@@ -186,10 +250,16 @@ public extension IterableAPI {
     /// against the new project, so they are never run against a half-torn-down SDK.
     ///
     /// Special cases:
-    /// - Before the SDK has been initialized, this behaves as `initialize(apiKey:config:)`.
-    /// - With the API key that is already active, this is a no-op and reports `true`.
-    /// - While a switch is already running, the callback joins that switch instead of
-    ///   starting a second teardown.
+    /// - Before the SDK has been initialized, this behaves as `initialize(apiKey:config:)` and
+    ///   reports `.switchedCleanly` once it has started, matching Android. There is no previous
+    ///   project, so there is no teardown step that could have been noisy.
+    /// - With the API key that is already active, this is a no-op and reports
+    ///   `.switchedCleanly`.
+    /// - While a switch to the same project is already running, the callback joins that switch
+    ///   instead of starting a second teardown.
+    /// - While a switch to a *different* project is running, this request is queued and runs as
+    ///   soon as that one finishes, so the SDK ends up on the project asked for last. The
+    ///   callbacks are not merged: each one fires when the project it asked for is live.
     /// An unusable API key cannot reach here: `IterableProject` refuses to hold an empty or
     /// whitespace-only one, so the invalid state is not constructible.
     ///
@@ -240,15 +310,29 @@ public extension IterableAPI {
 
 extension IterableAPI {
     @available(iOSApplicationExtension, unavailable)
+    /// - Parameter resumingGate: `true` when this call is a request that was queued during an
+    ///                           earlier switch and has inherited its still-raised gate, so it
+    ///                           must not raise one of its own and owns releasing it if it
+    ///                           bails out before the teardown starts.
     static func switchProject(apiKey: String,
                               config: IterableConfig,
                               apiEndPointOverride: String?,
                               dependencyContainer: DependencyContainerProtocol?,
-                              callback: ((Bool) -> Void)?) {
+                              callback: ((Bool) -> Void)?,
+                              resumingGate: Bool = false) {
+        // A bail-out on an inherited gate has to release it, or it stays raised for the life of
+        // the process and every later SDK call is queued and never replayed. The callbacks are
+        // already in the gate, so endSwitch delivers them.
+        func releaseInheritedGate(_ succeeded: Bool) {
+            guard resumingGate else { return }
+            runNextSwitchIfAny(ProjectSwitchGate.shared.endSwitch(succeeded: succeeded))
+        }
+
         // Step 1: guard and validate.
         guard !apiKey.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else {
             ITBError("switchProject called with an empty API key. The SDK is left on the project it is already on.")
             deliverOnMainThread(callback, false)
+            releaseInheritedGate(false)
             return
         }
 
@@ -259,20 +343,33 @@ extension IterableAPI {
                         config: config,
                         apiEndPointOverride: apiEndPointOverride,
                         dependencyContainer: dependencyContainer,
-                        callback: { started in deliverOnMainThread(callback, started) })
+                        callback: { started in
+                            deliverOnMainThread(callback, started)
+                            releaseInheritedGate(started)
+                        })
             return
         }
 
         guard outgoing.apiKey != apiKey else {
             ITBInfo("switchProject called with the API key already in use. Nothing to tear down.")
             deliverOnMainThread(callback, true)
+            releaseInheritedGate(true)
             return
         }
 
-        // Step 2: raise the gate so any SDK call made from here until step 8 is queued.
-        guard ProjectSwitchGate.shared.beginSwitch(callback: callback) else {
-            ITBInfo("switchProject is already in progress. The callback will fire when it completes.")
-            return
+        // Step 2: raise the gate so any SDK call made from here until step 8 is queued. Skipped
+        // when the gate was inherited from the switch that queued this request: it was never
+        // lowered, precisely so nothing could take it in between.
+        if !resumingGate {
+            let request = ProjectSwitchGate.PendingSwitchRequest(apiKey: apiKey,
+                                                                 config: config,
+                                                                 apiEndPointOverride: apiEndPointOverride,
+                                                                 dependencyContainer: dependencyContainer,
+                                                                 callbacks: callback.map { [$0] } ?? [])
+            guard ProjectSwitchGate.shared.beginSwitch(request) else {
+                ITBInfo("switchProject is already in progress. This request will be honoured when it completes.")
+                return
+            }
         }
 
         switchQueue.async {
@@ -303,13 +400,36 @@ extension IterableAPI {
                                     if !started {
                                         ITBError("switchProject: the new project's SDK did not start cleanly")
                                     }
-                                    // Step 8: lower the gate, drain queued calls FIFO against
-                                    // the new project, then fire every registered callback on
-                                    // the main thread.
-                                    ProjectSwitchGate.shared.endSwitch(succeeded: teardownWasClean && started)
+                                    // Step 8: drain queued calls FIFO against the new project,
+                                    // lower the gate, then fire every registered callback on
+                                    // the main thread. A switch requested during this one for a
+                                    // different project runs next, so the SDK ends up where the
+                                    // app last asked to be.
+                                    let next = ProjectSwitchGate.shared.endSwitch(succeeded: teardownWasClean && started)
+                                    runNextSwitchIfAny(next)
                                 })
                 }
             }
+        }
+    }
+
+    /// Runs a switch that was requested while another was in flight, on the gate that switch
+    /// handed over rather than a fresh one. Dispatched rather than called inline so a chain of
+    /// rapid requests unwinds the stack between switches.
+    ///
+    /// The callbacks are not passed along: `endSwitch` moved them into the gate at handover, so
+    /// they fire from there when this switch lands, together with any later request for the
+    /// same project that joined it in the meantime.
+    private static func runNextSwitchIfAny(_ next: ProjectSwitchGate.PendingSwitchRequest?) {
+        guard let next = next else { return }
+        ITBInfo("switchProject: running the switch requested while the previous one was in flight")
+        switchQueue.async {
+            switchProject(apiKey: next.apiKey,
+                          config: next.config,
+                          apiEndPointOverride: next.apiEndPointOverride,
+                          dependencyContainer: next.dependencyContainer,
+                          callback: nil,
+                          resumingGate: true)
         }
     }
 
