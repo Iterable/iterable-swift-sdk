@@ -1,0 +1,105 @@
+name: Prepare Release
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version number (e.g., 6.5.0)'
+        required: true
+        type: string
+      ticket:
+        description: 'Jira ticket number (e.g., 1234 for SDK-1234)'
+        required: true
+        type: string
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  prepare-release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
+        with:
+          token: ${{ secrets.SDK_RELEASE_TOKEN }}
+
+      - name: Validate version format
+        run: |
+          if ! [[ "${{ github.event.inputs.version }}" =~ ^[0-9]+\.[0-9]+\.[0-9]+(-[a-zA-Z0-9]+)?$ ]]; then
+            echo "::error::Invalid version format. Use semantic versioning (e.g., 6.5.0 or 6.5.0-beta1)"
+            exit 1
+          fi
+
+      - name: Update Changelog
+        id: update_changelog
+        run: |
+          version="${{ github.event.inputs.version }}"
+          changelog_file="CHANGELOG.md"
+
+          # Extract content from [Unreleased] section
+          unreleased_content=$(awk '/^## \[Unreleased\]/{p=1;next} /^## \[/{p=0} p' "$changelog_file")
+
+          temp_file=$(mktemp)
+          {
+            head -n 4 "$changelog_file"
+            echo "## [Unreleased]"
+            echo ""
+            echo "## [$version]"
+            echo "$unreleased_content"
+            echo ""
+            sed -n '/^## \[[0-9]/,$p' "$changelog_file"
+          } > "$temp_file"
+          mv "$temp_file" "$changelog_file"
+
+          # Capture notes for the draft release
+          echo "notes<<EOF" >> "$GITHUB_OUTPUT"
+          echo "$unreleased_content" >> "$GITHUB_OUTPUT"
+          echo "EOF" >> "$GITHUB_OUTPUT"
+
+      - name: Update Version Numbers
+        run: |
+          version="${{ github.event.inputs.version }}"
+
+          sed -i "s/\(s\.version[[:space:]]*=[[:space:]]*\)\".*\"/\1\"$version\"/" Iterable-iOS-SDK.podspec
+          sed -i "s/\(s\.version[[:space:]]*=[[:space:]]*\)\".*\"/\1\"$version\"/" Iterable-iOS-AppExtensions.podspec
+          find . -name "IterableAPI.swift" -type f \
+            -exec sed -i "s/\(static let sdkVersion[[:space:]]*=[[:space:]]*\)\".*\"/\1\"$version\"/" {} \;
+
+      - name: Create Pull Request
+        uses: peter-evans/create-pull-request@4e1beaa7521e8b457b572c090b25bd3db56bf1c5 # v5
+        with:
+          token: ${{ secrets.SDK_RELEASE_TOKEN }}
+          title: "SDK-${{ github.event.inputs.ticket }}: Prepare for Release ${{ github.event.inputs.version }}"
+          body: |
+            # Prepare for Release ${{ github.event.inputs.version }}
+
+            ## SDK Release Checklist
+            - [ ] CHANGELOG.md updated with correct version
+            - [ ] Version numbers updated:
+              - [ ] Iterable-iOS-SDK.podspec
+              - [ ] Iterable-iOS-AppExtensions.podspec
+              - [ ] sdkVersion in IterableAPI.swift
+            - [ ] README.md reviewed (if needed)
+            - [ ] All tests passing
+            - [ ] Documentation updated (if needed)
+          branch: "release/SDK-${{ github.event.inputs.ticket }}-${{ github.event.inputs.version }}"
+          commit-message: "[SDK-${{ github.event.inputs.ticket }}]: Prepare for release ${{ github.event.inputs.version }}"
+          labels: release
+          delete-branch: true
+
+      - name: Create Draft GitHub Release
+        env:
+          GH_TOKEN: ${{ secrets.SDK_RELEASE_TOKEN }}
+        run: |
+          version="${{ github.event.inputs.version }}"
+          notes="${{ steps.update_changelog.outputs.notes }}"
+
+          if gh release view "$version" &>/dev/null; then
+            echo "Draft release $version already exists, skipping."
+          else
+            gh release create "$version" \
+              --draft \
+              --title "$version" \
+              --notes "${notes:-See CHANGELOG.md for release notes.}"
+          fi
