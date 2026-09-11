@@ -10,13 +10,19 @@ import XCTest
 extension ProjectSwitchGate {
     /// Raises the gate without running a teardown, for the tests that only exercise what the
     /// gate holds and releases. `apiKey` matters only where a test drives two destinations.
+    ///
+    /// `liveApiKey` defaults to a key no test uses as a destination, so the routing decision
+    /// turns on the chain alone. The tests that care about the live project pass it.
     @discardableResult
-    func beginSwitchForTesting(apiKey: String = "gate-test-key") -> Bool {
+    func beginSwitchForTesting(apiKey: String = "gate-test-key",
+                               liveApiKey: String = "gate-test-live-key",
+                               callback: ((Bool) -> Void)? = nil) -> BeginSwitchOutcome {
         beginSwitch(PendingSwitchRequest(apiKey: apiKey,
                                          config: IterableConfig(),
                                          apiEndPointOverride: nil,
                                          dependencyContainer: nil,
-                                         callbacks: []))
+                                         callbacks: callback.map { [$0] } ?? []),
+                    liveApiKey: liveApiKey)
     }
 }
 
@@ -29,6 +35,8 @@ extension ProjectSwitchGate {
 class SwitchProjectGateTests: XCTestCase {
     private let apiKeyA = "project-a-key"
     private let apiKeyB = "project-b-key"
+    private let apiKeyC = "project-c-key"
+    private let apiKeyD = "project-d-key"
     private let emailA = "user-a@example.com"
     private let emailB = "user-b@example.com"
 
@@ -92,7 +100,7 @@ class SwitchProjectGateTests: XCTestCase {
     /// `UIBackgroundFetchResult` past a Core Data purge.
     func testTheSilentPushCompletionHandlerIsNotHeldForTheSwitch() {
         initializeProjectA(email: emailA)
-        XCTAssertTrue(ProjectSwitchGate.shared.beginSwitchForTesting())
+        XCTAssertEqual(ProjectSwitchGate.shared.beginSwitchForTesting(), .run)
 
         var fetchResult: UIBackgroundFetchResult?
         IterableAppIntegration.application(UIApplication.shared,
@@ -107,7 +115,7 @@ class SwitchProjectGateTests: XCTestCase {
     func testTheGateHoldsIdentityAndReleasesEverythingProjectScoped() {
         let networkSessionA = MockNetworkSession()
         initializeProjectA(config: configWithPush(), networkSession: networkSessionA, email: emailA)
-        XCTAssertTrue(ProjectSwitchGate.shared.beginSwitchForTesting())
+        XCTAssertEqual(ProjectSwitchGate.shared.beginSwitchForTesting(), .run)
 
         // Ungated: the payload names project A's campaign, so replaying it against project B
         // would report a campaign that does not exist there.
@@ -143,6 +151,119 @@ class SwitchProjectGateTests: XCTestCase {
         wait(for: [pushOpenSent], timeout: testExpectationTimeout)
         ProjectSwitchGate.shared.endSwitch(succeeded: true)
         XCTAssertEqual(IterableAPI.email, emailB, "the held identity call must replay when the gate drops")
+    }
+
+    // MARK: - Request routing
+    //
+    // Which project the SDK ends on when requests overlap. Every case here turns on the same
+    // rule: a request is resolved against the project the app most recently *asked* for, which
+    // for the whole length of a teardown is not the project that is live.
+
+    func testARequestForTheLiveProjectWithNothingInFlightIsANoOp() {
+        XCTAssertEqual(ProjectSwitchGate.shared.beginSwitchForTesting(apiKey: apiKeyA, liveApiKey: apiKeyA),
+                       .alreadyThere)
+        XCTAssertFalse(ProjectSwitchGate.shared.isSwitchInProgress, "a no-op must not start a chain")
+    }
+
+    /// Rapid A to B to A. While B is tearing down the live instance is still A, so resolving
+    /// against it calls the second request a no-op: it reports a clean switch to A, tears
+    /// nothing down, and B lands anyway. The app is then told it is on A while every event goes
+    /// to B, with nothing in the API to notice it with.
+    func testARequestForTheProjectBeingLeftIsARealSwitchNotANoOp() {
+        XCTAssertEqual(ProjectSwitchGate.shared.beginSwitchForTesting(apiKey: apiKeyB, liveApiKey: apiKeyA), .run)
+
+        XCTAssertEqual(ProjectSwitchGate.shared.beginSwitchForTesting(apiKey: apiKeyA, liveApiKey: apiKeyA),
+                       .joinedOrQueued,
+                       "asking to go back to the project being left is a switch, not a no-op")
+        XCTAssertEqual(ProjectSwitchGate.shared.endSwitch(succeeded: true)?.apiKey, apiKeyA,
+                       "the SDK must end on the project the app asked for last")
+    }
+
+    /// A repeat of the destination in flight can only join it while nothing is queued behind it.
+    /// With C already queued the app's most recent ask is B again, so joining B's callbacks
+    /// would fire them and then let C land, leaving the SDK on the project asked for second to
+    /// last while both callbacks reported success.
+    func testARepeatOfTheInFlightProjectCannotJoinItOnceSomethingIsQueuedBehindIt() {
+        XCTAssertEqual(ProjectSwitchGate.shared.beginSwitchForTesting(apiKey: apiKeyB), .run)
+        XCTAssertEqual(ProjectSwitchGate.shared.beginSwitchForTesting(apiKey: apiKeyB), .joinedOrQueued,
+                       "with nothing queued, a repeat joins the switch in flight")
+        XCTAssertNil(ProjectSwitchGate.shared.endSwitch(succeeded: true),
+                     "joining must not queue a second teardown of the same project")
+
+        XCTAssertEqual(ProjectSwitchGate.shared.beginSwitchForTesting(apiKey: apiKeyB), .run)
+        XCTAssertEqual(ProjectSwitchGate.shared.beginSwitchForTesting(apiKey: apiKeyC), .joinedOrQueued)
+        XCTAssertEqual(ProjectSwitchGate.shared.beginSwitchForTesting(apiKey: apiKeyB), .joinedOrQueued)
+
+        XCTAssertEqual(ProjectSwitchGate.shared.endSwitch(succeeded: true)?.apiKey, apiKeyC)
+        XCTAssertEqual(ProjectSwitchGate.shared.endSwitch(succeeded: true)?.apiKey, apiKeyB,
+                       "the repeat has to run after the destination that was already queued")
+        XCTAssertNil(ProjectSwitchGate.shared.endSwitch(succeeded: true), "the chain is empty now")
+    }
+
+    /// B in flight, then C, D, C. Merging the last C into the queued one leaves the chain as
+    /// C then D, so the SDK settles on D, and reports the last request when the first C lands,
+    /// two switches early.
+    func testARepeatIsNotMergedAcrossAnotherDestination() {
+        let lastRequestReported = expectation(description: "the last request for C reports when its own switch lands")
+        lastRequestReported.assertForOverFulfill = true
+
+        XCTAssertEqual(ProjectSwitchGate.shared.beginSwitchForTesting(apiKey: apiKeyB), .run)
+        XCTAssertEqual(ProjectSwitchGate.shared.beginSwitchForTesting(apiKey: apiKeyC), .joinedOrQueued)
+        XCTAssertEqual(ProjectSwitchGate.shared.beginSwitchForTesting(apiKey: apiKeyD), .joinedOrQueued)
+        XCTAssertEqual(ProjectSwitchGate.shared.beginSwitchForTesting(apiKey: apiKeyC,
+                                                                     callback: { _ in lastRequestReported.fulfill() }),
+                       .joinedOrQueued)
+
+        XCTAssertEqual(ProjectSwitchGate.shared.endSwitch(succeeded: true)?.apiKey, apiKeyC)
+        XCTAssertEqual(ProjectSwitchGate.shared.endSwitch(succeeded: true)?.apiKey, apiKeyD)
+        XCTAssertEqual(ProjectSwitchGate.shared.endSwitch(succeeded: true)?.apiKey, apiKeyC,
+                       "the SDK must end on the project the app asked for last")
+        XCTAssertNil(ProjectSwitchGate.shared.endSwitch(succeeded: true), "the chain is empty now")
+
+        wait(for: [lastRequestReported], timeout: testExpectationTimeout)
+    }
+
+    /// An adjacent repeat still shares one teardown, which is the double-tapped picker.
+    func testAnAdjacentRepeatOfAQueuedDestinationSharesItsSwitch() {
+        XCTAssertEqual(ProjectSwitchGate.shared.beginSwitchForTesting(apiKey: apiKeyB), .run)
+        XCTAssertEqual(ProjectSwitchGate.shared.beginSwitchForTesting(apiKey: apiKeyC), .joinedOrQueued)
+        XCTAssertEqual(ProjectSwitchGate.shared.beginSwitchForTesting(apiKey: apiKeyC), .joinedOrQueued)
+
+        XCTAssertEqual(ProjectSwitchGate.shared.endSwitch(succeeded: true)?.apiKey, apiKeyC)
+        XCTAssertNil(ProjectSwitchGate.shared.endSwitch(succeeded: true),
+                     "two taps on the same queued destination must not run two teardowns")
+    }
+
+    /// The call-queueing gate has to drop at the handover even though the chain stays up. At
+    /// that moment the SDK is fully live on the project that just landed, and the contract tells
+    /// apps to re-identify from the callback, so a `setEmail` made there has to reach that
+    /// project. Holding the gate across the handover queues it and then replays it into the next
+    /// switch, sending B's identity to C.
+    func testCallsRunAgainstTheProjectThatJustLandedWhileTheNextSwitchIsStillQueued() {
+        var ran = [String]()
+
+        XCTAssertEqual(ProjectSwitchGate.shared.beginSwitchForTesting(apiKey: apiKeyB), .run)
+        XCTAssertEqual(ProjectSwitchGate.shared.beginSwitchForTesting(apiKey: apiKeyC), .joinedOrQueued)
+        XCTAssertTrue(ProjectSwitchGate.shared.queueOrExecute("duringB") { ran.append("duringB") })
+
+        XCTAssertEqual(ProjectSwitchGate.shared.endSwitch(succeeded: true)?.apiKey, apiKeyC)
+        XCTAssertEqual(ran, ["duringB"], "the calls queued during B's teardown replay against B")
+        XCTAssertTrue(ProjectSwitchGate.shared.isSwitchInProgress,
+                      "the chain must stay up so C keeps its place ahead of anything arriving now")
+
+        XCTAssertFalse(ProjectSwitchGate.shared.queueOrExecute("fromBsCallback") { ran.append("fromBsCallback") },
+                       "a call made from B's callback must run against B, not be queued into C")
+        XCTAssertEqual(ran, ["duringB", "fromBsCallback"])
+
+        // What C's switchProject does when it picks up the chain it inherited.
+        ProjectSwitchGate.shared.resumeSwitch()
+        XCTAssertTrue(ProjectSwitchGate.shared.queueOrExecute("duringC") { ran.append("duringC") },
+                      "C's own teardown queues again")
+        XCTAssertEqual(ran, ["duringB", "fromBsCallback"])
+
+        XCTAssertNil(ProjectSwitchGate.shared.endSwitch(succeeded: true))
+        XCTAssertEqual(ran, ["duringB", "fromBsCallback", "duringC"])
+        XCTAssertFalse(ProjectSwitchGate.shared.isSwitchInProgress, "the chain is done")
     }
 
     // MARK: - Attribution owned by a project that has been left

@@ -305,7 +305,7 @@ class SwitchProjectTests: XCTestCase {
     func testTheGateQueuesCallsFIFOAndDrainsThemWhenTheSwitchEnds() {
         var order = [String]()
 
-        XCTAssertTrue(ProjectSwitchGate.shared.beginSwitchForTesting())
+        XCTAssertEqual(ProjectSwitchGate.shared.beginSwitchForTesting(), .run)
         XCTAssertTrue(ProjectSwitchGate.shared.queueOrExecute("first") { order.append("first") })
         XCTAssertTrue(ProjectSwitchGate.shared.queueOrExecute("second") { order.append("second") })
         XCTAssertEqual(order, [], "nothing may run while the gate is raised")
@@ -323,7 +323,7 @@ class SwitchProjectTests: XCTestCase {
     func testACallMadeDuringTheReplayDoesNotOvertakeTheQueuedCalls() {
         var order = [String]()
 
-        XCTAssertTrue(ProjectSwitchGate.shared.beginSwitchForTesting())
+        XCTAssertEqual(ProjectSwitchGate.shared.beginSwitchForTesting(), .run)
         XCTAssertTrue(ProjectSwitchGate.shared.queueOrExecute("first") {
             order.append("first")
             // Stands in for a call arriving from another thread while the replay is running.
@@ -344,36 +344,36 @@ class SwitchProjectTests: XCTestCase {
     /// is already heading to joins it. Asking for a different one has to be honoured after it,
     /// because the SDK would otherwise settle on a project the app has already asked to leave.
     func testTheGateJoinsASameProjectRequestAndQueuesADifferentOne() {
-        XCTAssertTrue(ProjectSwitchGate.shared.beginSwitchForTesting(apiKey: apiKeyB))
-        XCTAssertFalse(ProjectSwitchGate.shared.beginSwitchForTesting(apiKey: apiKeyB))
+        XCTAssertEqual(ProjectSwitchGate.shared.beginSwitchForTesting(apiKey: apiKeyB), .run)
+        XCTAssertEqual(ProjectSwitchGate.shared.beginSwitchForTesting(apiKey: apiKeyB), .joinedOrQueued)
         XCTAssertNil(ProjectSwitchGate.shared.endSwitch(succeeded: true),
                      "a request for the project already being switched to must not queue a second switch")
 
-        XCTAssertTrue(ProjectSwitchGate.shared.beginSwitchForTesting(apiKey: apiKeyB))
-        XCTAssertFalse(ProjectSwitchGate.shared.beginSwitchForTesting(apiKey: apiKeyC))
+        XCTAssertEqual(ProjectSwitchGate.shared.beginSwitchForTesting(apiKey: apiKeyB), .run)
+        XCTAssertEqual(ProjectSwitchGate.shared.beginSwitchForTesting(apiKey: apiKeyC), .joinedOrQueued)
         XCTAssertEqual(ProjectSwitchGate.shared.endSwitch(succeeded: true)?.apiKey, apiKeyC,
                        "a request for a different project must run once the one in flight finishes")
     }
 
-    /// The gate is handed to a queued request rather than lowered and re-raised. Lowering it in
-    /// between leaves a window in which a brand new `switchProject` takes the gate first and is
-    /// then overtaken by the older queued request, so the SDK settles on the project the app
-    /// asked for second-to-last while both callbacks report success.
+    /// The chain passes to a queued request rather than being released and claimed again.
+    /// Releasing it in between leaves a window in which a brand new `switchProject` claims it
+    /// first and is then overtaken by the older queued request, so the SDK settles on the
+    /// project the app asked for second-to-last while both callbacks report success.
     func testAQueuedSwitchInheritsTheGateSoALaterRequestCannotOvertakeIt() {
-        XCTAssertTrue(ProjectSwitchGate.shared.beginSwitchForTesting(apiKey: apiKeyB))
-        XCTAssertFalse(ProjectSwitchGate.shared.beginSwitchForTesting(apiKey: apiKeyC))
+        XCTAssertEqual(ProjectSwitchGate.shared.beginSwitchForTesting(apiKey: apiKeyB), .run)
+        XCTAssertEqual(ProjectSwitchGate.shared.beginSwitchForTesting(apiKey: apiKeyC), .joinedOrQueued)
 
         XCTAssertEqual(ProjectSwitchGate.shared.endSwitch(succeeded: true)?.apiKey, apiKeyC)
         XCTAssertTrue(ProjectSwitchGate.shared.isSwitchInProgress,
-                      "the gate must pass to the queued request, not drop between the two switches")
+                      "the chain must pass to the queued request, not end between the two switches")
 
         // What the app does in the window before the queued switch has started running.
-        XCTAssertFalse(ProjectSwitchGate.shared.beginSwitchForTesting(apiKey: apiKeyA),
-                       "a request arriving now must queue behind the inherited switch, not take the gate")
+        XCTAssertEqual(ProjectSwitchGate.shared.beginSwitchForTesting(apiKey: apiKeyA), .joinedOrQueued,
+                       "a request arriving now must queue behind the inherited switch, not claim the chain")
         XCTAssertEqual(ProjectSwitchGate.shared.endSwitch(succeeded: true)?.apiKey, apiKeyA,
                        "the request the app made last must be the one the SDK ends on")
         XCTAssertNil(ProjectSwitchGate.shared.endSwitch(succeeded: true), "the chain is empty now")
-        XCTAssertFalse(ProjectSwitchGate.shared.isSwitchInProgress, "the gate drops once nothing is queued behind it")
+        XCTAssertFalse(ProjectSwitchGate.shared.isSwitchInProgress, "the chain ends once nothing is queued behind it")
     }
 
     func testACallMadeDuringTheSwitchWindowRunsAgainstTheNewInstance() {
@@ -424,6 +424,61 @@ class SwitchProjectTests: XCTestCase {
         XCTAssertEqual(IterableAPI.implementation?.apiKey, apiKeyC,
                        "the SDK must end on the project that was asked for last")
         XCTAssertFalse(ProjectSwitchGate.shared.isSwitchInProgress)
+    }
+
+    /// The same picker, tapped back to the project it started on. While B is tearing down
+    /// `implementation` is still A, so resolving the second request against it calls it a no-op:
+    /// it reports a clean switch to A, tears nothing down, and B lands anyway. The app is then
+    /// told it is on A while every event goes to B.
+    func testRapidSwitchBackToTheProjectBeingLeftLandsOnItRatherThanReportingANoOp() {
+        initializeProjectA(email: emailA)
+
+        let landedOnB = expectation(description: "the callback that asked for project B")
+        let backOnA = expectation(description: "the callback that asked to go back to project A")
+        IterableAPI.switchProject(apiKey: apiKeyB,
+                                  config: configWithoutPush(),
+                                  apiEndPointOverride: nil,
+                                  dependencyContainer: container()) { _ in landedOnB.fulfill() }
+        IterableAPI.switchProject(apiKey: apiKeyA,
+                                  config: configWithoutPush(),
+                                  apiEndPointOverride: nil,
+                                  dependencyContainer: container()) { _ in backOnA.fulfill() }
+
+        wait(for: [landedOnB, backOnA], timeout: testExpectationTimeout)
+        XCTAssertEqual(IterableAPI.implementation?.apiKey, apiKeyA,
+                       "the SDK must end on the project that was asked for last")
+        XCTAssertNil(localStorage.email, "going back to A is a real switch, so its identity is cleared too")
+        XCTAssertFalse(ProjectSwitchGate.shared.isSwitchInProgress)
+    }
+
+    /// The contract tells apps to re-identify from the callback, so the SDK has to be live on the
+    /// project that just landed by the time that callback runs. If the chain still queued calls at
+    /// that point, this `setEmail` would be replayed into C and B's user would be identified on the
+    /// wrong project.
+    func testIdentitySetFromACallbackReachesTheProjectThatJustLanded() {
+        initializeProjectA(email: emailA)
+
+        let landedOnB = expectation(description: "the callback that asked for project B")
+        var emailWhileOnB: String??
+        IterableAPI.switchProject(apiKey: apiKeyB,
+                                  config: configWithoutPush(),
+                                  apiEndPointOverride: nil,
+                                  dependencyContainer: container()) { _ in
+            IterableAPI.setEmail(self.emailB)
+            emailWhileOnB = IterableAPI.email
+            landedOnB.fulfill()
+        }
+        let landedOnC = expectation(description: "the callback that asked for project C")
+        IterableAPI.switchProject(apiKey: apiKeyC,
+                                  config: configWithoutPush(),
+                                  apiEndPointOverride: nil,
+                                  dependencyContainer: container()) { _ in landedOnC.fulfill() }
+
+        wait(for: [landedOnB, landedOnC], timeout: testExpectationTimeout)
+        XCTAssertEqual(emailWhileOnB, emailB,
+                       "identity set from B's callback must apply to B immediately, not be queued into C")
+        XCTAssertEqual(IterableAPI.implementation?.apiKey, apiKeyC)
+        XCTAssertNil(IterableAPI.email, "C must start clean: B's email cannot be replayed into it")
     }
 
     func testSwitchingAToBToALeavesNoResidueFromProjectB() {
