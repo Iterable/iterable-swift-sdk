@@ -22,11 +22,12 @@ jobs:
     steps:
       - uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
         with:
+          ref: master
           token: ${{ secrets.SDK_RELEASE_TOKEN }}
 
       - name: Verify release is ready
         run: |
-          if ! grep -qF "## [$VERSION]" CHANGELOG.md; then
+          if ! grep -qE "^## \[$VERSION\]" CHANGELOG.md; then
             echo "::error::CHANGELOG.md has no entry for [$VERSION]. Merge the prepare-release PR to master before running this workflow."
             exit 1
           fi

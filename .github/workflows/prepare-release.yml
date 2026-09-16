@@ -22,6 +22,7 @@ jobs:
     steps:
       - uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
         with:
+          ref: master
           token: ${{ secrets.SDK_RELEASE_TOKEN }}
 
       - name: Validate version format
@@ -40,6 +41,13 @@ jobs:
           # Extract content from [Unreleased] section
           unreleased_content=$(awk '/^## \[Unreleased\]/{p=1;next} /^## \[/{p=0} p' "$changelog_file")
 
+          notes_file="$RUNNER_TEMP/release-notes.md"
+          if [ -z "$unreleased_content" ]; then
+            echo "::error::No unreleased changes found in $changelog_file. Add release notes to the [Unreleased] section before running this workflow."
+            exit 1
+          fi
+          printf '%s' "$unreleased_content" > "$notes_file"
+
           temp_file=$(mktemp)
           {
             head -n 4 "$changelog_file"
@@ -51,11 +59,6 @@ jobs:
             sed -n '/^## \[[0-9]/,$p' "$changelog_file"
           } > "$temp_file"
           mv "$temp_file" "$changelog_file"
-
-          # Capture notes for the draft release
-          echo "notes<<EOF" >> "$GITHUB_OUTPUT"
-          echo "$unreleased_content" >> "$GITHUB_OUTPUT"
-          echo "EOF" >> "$GITHUB_OUTPUT"
 
       - name: Update Version Numbers
         run: |
@@ -93,7 +96,6 @@ jobs:
           GH_TOKEN: ${{ secrets.SDK_RELEASE_TOKEN }}
         run: |
           version="${{ github.event.inputs.version }}"
-          notes="${{ steps.update_changelog.outputs.notes }}"
 
           if gh release view "$version" &>/dev/null; then
             echo "Draft release $version already exists, skipping."
@@ -101,5 +103,5 @@ jobs:
             gh release create "$version" \
               --draft \
               --title "$version" \
-              --notes "${notes:-See CHANGELOG.md for release notes.}"
+              --notes-file "$RUNNER_TEMP/release-notes.md"
           fi
