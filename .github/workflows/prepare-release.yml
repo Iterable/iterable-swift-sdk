@@ -20,10 +20,16 @@ jobs:
   prepare-release:
     runs-on: ubuntu-latest
     steps:
+      - uses: actions/create-github-app-token@v1
+        id: app-token
+        with:
+          app-id: ${{ vars.ITERABLE_SDK_RELEASE_APP_ID }}
+          private-key: ${{ secrets.ITERABLE_SDK_RELEASE_APP_PRIVATE_KEY }}
+
       - uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
         with:
           ref: master
-          token: ${{ secrets.SDK_RELEASE_TOKEN }}
+          token: ${{ steps.app-token.outputs.token }}
 
       - name: Validate version format
         run: |
@@ -72,7 +78,7 @@ jobs:
       - name: Create Pull Request
         uses: peter-evans/create-pull-request@4e1beaa7521e8b457b572c090b25bd3db56bf1c5 # v5
         with:
-          token: ${{ secrets.SDK_RELEASE_TOKEN }}
+          token: ${{ steps.app-token.outputs.token }}
           title: "SDK-${{ github.event.inputs.ticket }}: Prepare for Release ${{ github.event.inputs.version }}"
           body: |
             # Prepare for Release ${{ github.event.inputs.version }}
@@ -93,7 +99,7 @@ jobs:
 
       - name: Create Draft GitHub Release
         env:
-          GH_TOKEN: ${{ secrets.SDK_RELEASE_TOKEN }}
+          GH_TOKEN: ${{ steps.app-token.outputs.token }}
         run: |
           version="${{ github.event.inputs.version }}"
 

@@ -20,10 +20,16 @@ jobs:
   publish-release:
     runs-on: macos-latest
     steps:
+      - uses: actions/create-github-app-token@v1
+        id: app-token
+        with:
+          app-id: ${{ vars.ITERABLE_SDK_RELEASE_APP_ID }}
+          private-key: ${{ secrets.ITERABLE_SDK_RELEASE_APP_PRIVATE_KEY }}
+
       - uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
         with:
           ref: master
-          token: ${{ secrets.SDK_RELEASE_TOKEN }}
+          token: ${{ steps.app-token.outputs.token }}
 
       - name: Verify release is ready
         run: |
@@ -48,7 +54,7 @@ jobs:
 
       - name: Upload xcframework assets to draft release
         env:
-          GH_TOKEN: ${{ secrets.SDK_RELEASE_TOKEN }}
+          GH_TOKEN: ${{ steps.app-token.outputs.token }}
         run: |
           gh release upload "$VERSION" \
             "./output_dir/IterableSDK.xcframework.zip" \
@@ -56,7 +62,7 @@ jobs:
 
       - name: Publish draft release and tag master
         env:
-          GH_TOKEN: ${{ secrets.SDK_RELEASE_TOKEN }}
+          GH_TOKEN: ${{ steps.app-token.outputs.token }}
         run: |
           gh release edit "$VERSION" \
             --draft=false \
