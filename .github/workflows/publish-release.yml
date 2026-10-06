@@ -26,15 +26,40 @@ jobs:
           app-id: ${{ vars.ITERABLE_SDK_RELEASE_APP_ID }}
           private-key: ${{ secrets.ITERABLE_SDK_RELEASE_APP_PRIVATE_KEY }}
 
+      - name: Ensure workflow runs from master
+        run: |
+          if [ "${{ github.ref }}" != "refs/heads/master" ]; then
+            echo "::error::Run Publish Release from the master branch (Actions → Publish Release → Branch: master)."
+            exit 1
+          fi
+
       - uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
         with:
           ref: master
           token: ${{ steps.app-token.outputs.token }}
 
       - name: Verify release is ready
+        env:
+          GH_TOKEN: ${{ steps.app-token.outputs.token }}
         run: |
           if ! grep -qE "^## \[$VERSION\]" CHANGELOG.md; then
-            echo "::error::CHANGELOG.md has no entry for [$VERSION]. Merge the prepare-release PR to master before running this workflow."
+            echo "::error::CHANGELOG.md has no entry for [$VERSION] on master. Merge the prepare-release PR before running this workflow."
+            exit 1
+          fi
+
+          if ! gh release view "$VERSION" &>/dev/null; then
+            echo "::error::No GitHub release found for $VERSION. Run Prepare Release first."
+            exit 1
+          fi
+
+          is_draft=$(gh release view "$VERSION" --json isDraft -q .isDraft)
+          if [ "$is_draft" != "true" ]; then
+            echo "::error::Release $VERSION is not a draft. It may already be published."
+            exit 1
+          fi
+
+          if git rev-parse "refs/tags/$VERSION" >/dev/null 2>&1; then
+            echo "::error::Git tag $VERSION already exists. Remove or fix the tag before publishing."
             exit 1
           fi
 
