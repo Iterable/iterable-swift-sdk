@@ -78,8 +78,16 @@ jobs:
               exit 1
             fi
             echo "resume_mode=true" >> "$GITHUB_OUTPUT"
-            echo "Release $VERSION is already published; resuming from CocoaPods / verification (upload uses --clobber)."
+            echo "Release $VERSION is already published; resuming at tag $VERSION (skip rebuild and re-upload)."
           fi
+
+      - name: Check out release tag for resume
+        if: steps.verify_release.outputs.resume_mode == 'true'
+        uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
+        with:
+          ref: refs/tags/${{ github.event.inputs.version }}
+          token: ${{ steps.app-token.outputs.token }}
+          fetch-tags: true
 
       - uses: ruby/setup-ruby@v1
         with:
@@ -93,9 +101,11 @@ jobs:
         run: bundle exec fastlane ios clean_and_lint
 
       - name: Build xcframeworks
+        if: steps.verify_release.outputs.resume_mode != 'true'
         run: bundle exec fastlane ios build_xcframework output_dir:./output_dir
 
       - name: Upload xcframework assets to release
+        if: steps.verify_release.outputs.resume_mode != 'true'
         env:
           GH_TOKEN: ${{ steps.app-token.outputs.token }}
         run: |
@@ -112,6 +122,7 @@ jobs:
             gh release edit "$VERSION" \
               --draft=false \
               --prerelease \
+              --latest=false \
               --target "$(git rev-parse HEAD)"
           else
             gh release edit "$VERSION" \
