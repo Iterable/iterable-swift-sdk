@@ -1,0 +1,176 @@
+name: Publish Release
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version to publish (e.g., 6.5.0)'
+        required: true
+        type: string
+
+env:
+  VERSION: ${{ github.event.inputs.version }}
+  SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
+  COCOAPODS_TRUNK_TOKEN: ${{ secrets.COCOAPODS_TRUNK_TOKEN }}
+
+permissions:
+  contents: write
+
+jobs:
+  publish-release:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/create-github-app-token@d72941d797fd3113feb6b93fd0dec494b13a2547 # v1
+        id: app-token
+        with:
+          app-id: ${{ vars.ITERABLE_SDK_RELEASE_APP_ID }}
+          private-key: ${{ secrets.ITERABLE_SDK_RELEASE_APP_PRIVATE_KEY }}
+
+      - name: Ensure workflow runs from master
+        run: |
+          if [ "${{ github.ref }}" != "refs/heads/master" ]; then
+            echo "::error::Run Publish Release from the master branch (Actions → Publish Release → Branch: master)."
+            exit 1
+          fi
+
+      - uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
+        with:
+          ref: master
+          token: ${{ steps.app-token.outputs.token }}
+
+      - name: Verify release is ready
+        id: verify_release
+        env:
+          GH_TOKEN: ${{ steps.app-token.outputs.token }}
+        run: |
+          if ! [[ "$VERSION" =~ ^[0-9]+\.[0-9]+\.[0-9]+(-[a-zA-Z0-9]+)?$ ]]; then
+            echo "::error::Invalid version format. Use semantic versioning (e.g., 6.5.0 or 6.5.0-beta1)"
+            exit 1
+          fi
+
+          if ! grep -qF "## [$VERSION]" CHANGELOG.md; then
+            echo "::error::CHANGELOG.md has no entry for [$VERSION] on master. Merge the prepare-release PR before running this workflow."
+            exit 1
+          fi
+
+          if ! gh release view "$VERSION" &>/dev/null; then
+            echo "::error::No GitHub release found for $VERSION. Run Prepare Release first."
+            exit 1
+          fi
+
+          is_draft=$(gh release view "$VERSION" --json isDraft -q .isDraft)
+          if git ls-remote --exit-code origin "refs/tags/$VERSION" &>/dev/null; then
+            tag_on_remote=true
+          else
+            tag_on_remote=false
+          fi
+
+          if [ "$is_draft" = "true" ]; then
+            if [ "$tag_on_remote" = "true" ]; then
+              echo "::error::Release $VERSION is still a draft but tag $VERSION already exists on origin. Fix the draft or delete the tag before publishing."
+              exit 1
+            fi
+            echo "resume_mode=false" >> "$GITHUB_OUTPUT"
+            echo "Release $VERSION is a draft with no remote tag; full publish path."
+          else
+            if [ "$tag_on_remote" != "true" ]; then
+              echo "::error::Release $VERSION is published but tag $VERSION is missing on origin."
+              exit 1
+            fi
+            echo "resume_mode=true" >> "$GITHUB_OUTPUT"
+            echo "Release $VERSION is already published; resuming at tag $VERSION (skip rebuild and re-upload)."
+          fi
+
+      - name: Check out release tag for resume
+        if: steps.verify_release.outputs.resume_mode == 'true'
+        uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
+        with:
+          ref: refs/tags/${{ github.event.inputs.version }}
+          token: ${{ steps.app-token.outputs.token }}
+          fetch-tags: true
+
+      - uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: "3.2"
+          bundler-cache: false
+
+      - name: Install gems
+        run: bundle install
+
+      - name: Clean and lint
+        run: bundle exec fastlane ios clean_and_lint
+
+      - name: Build xcframeworks
+        if: steps.verify_release.outputs.resume_mode != 'true'
+        run: bundle exec fastlane ios build_xcframework output_dir:./output_dir
+
+      - name: Upload xcframework assets to release
+        if: steps.verify_release.outputs.resume_mode != 'true'
+        env:
+          GH_TOKEN: ${{ steps.app-token.outputs.token }}
+        run: |
+          gh release upload "$VERSION" --clobber \
+            "./output_dir/IterableSDK.xcframework.zip" \
+            "./output_dir/IterableAppExtensions.xcframework.zip"
+
+      - name: Publish draft release and tag master
+        if: steps.verify_release.outputs.resume_mode != 'true'
+        env:
+          GH_TOKEN: ${{ steps.app-token.outputs.token }}
+        run: |
+          if [[ "$VERSION" == *-* ]]; then
+            gh release edit "$VERSION" \
+              --draft=false \
+              --prerelease \
+              --latest=false \
+              --target "$(git rev-parse HEAD)"
+          else
+            gh release edit "$VERSION" \
+              --draft=false \
+              --latest \
+              --target "$(git rev-parse HEAD)"
+          fi
+
+      - name: Push pods to trunk
+        run: bundle exec fastlane ios pod_trunk_push
+
+      - name: Verify CocoaPods publication
+        run: |
+          set -e
+          for pod in Iterable-iOS-SDK Iterable-iOS-AppExtensions; do
+            echo "Checking trunk for $pod $VERSION..."
+            verified=false
+            for attempt in 1 2 3 4 5; do
+              status=$(curl -s -o /dev/null -w "%{http_code}" "https://trunk.cocoapods.org/api/v1/pods/$pod/versions/$VERSION")
+              case "$status" in
+                200)
+                  echo "$pod $VERSION confirmed on trunk."
+                  verified=true
+                  break
+                  ;;
+                404)
+                  echo "::error::$pod $VERSION not on CocoaPods trunk (HTTP 404). Check COCOAPODS_TRUNK_TOKEN."
+                  exit 1
+                  ;;
+                *)
+                  echo "Attempt $attempt got HTTP $status, retrying..."
+                  sleep $((attempt * 5))
+                  ;;
+              esac
+            done
+            if [ "$verified" != "true" ]; then
+              echo "::error::Could not verify $pod $VERSION on CocoaPods trunk after 5 attempts."
+              exit 1
+            fi
+          done
+
+      - name: Slack notification
+        run: bundle exec fastlane ios slack_message version:$VERSION changelog_section:$VERSION slack_webhook:$SLACK_WEBHOOK
+
+      - name: Slack failure notification
+        if: failure()
+        run: |
+          run_url="${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}/attempts/${{ github.run_attempt }}"
+          payload=$(printf '{"text":":alert: iOS SDK release %s failed (attempt %s). Run: %s"}' \
+            "$VERSION" "${{ github.run_attempt }}" "$run_url")
+          curl -sS -X POST -H 'Content-type: application/json' --data "$payload" "$SLACK_WEBHOOK"
