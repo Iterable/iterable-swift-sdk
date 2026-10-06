@@ -11,6 +11,10 @@ on:
         description: 'Jira ticket number (e.g., 1234 for SDK-1234)'
         required: true
         type: string
+      docs_pr:
+        description: 'iterable-docs PR number (e.g., 456 for github.com/Iterable/iterable-docs/pull/456)'
+        required: true
+        type: string
 
 permissions:
   contents: write
@@ -20,7 +24,7 @@ jobs:
   prepare-release:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/create-github-app-token@v1
+      - uses: actions/create-github-app-token@d72941d797fd3113feb6b93fd0dec494b13a2547 # v1
         id: app-token
         with:
           app-id: ${{ vars.ITERABLE_SDK_RELEASE_APP_ID }}
@@ -42,6 +46,10 @@ jobs:
         run: |
           if ! [[ "${{ github.event.inputs.version }}" =~ ^[0-9]+\.[0-9]+\.[0-9]+(-[a-zA-Z0-9]+)?$ ]]; then
             echo "::error::Invalid version format. Use semantic versioning (e.g., 6.5.0 or 6.5.0-beta1)"
+            exit 1
+          fi
+          if ! [[ "${{ github.event.inputs.docs_pr }}" =~ ^[0-9]+$ ]]; then
+            echo "::error::docs_pr must be the iterable-docs pull request number (digits only)."
             exit 1
           fi
 
@@ -99,6 +107,9 @@ jobs:
             - [ ] README.md reviewed (if needed)
             - [ ] All tests passing
             - [ ] Documentation updated (if needed)
+
+            ## Docs PR
+            https://github.com/Iterable/iterable-docs/pull/${{ github.event.inputs.docs_pr }}
           branch: "release/SDK-${{ github.event.inputs.ticket }}-${{ github.event.inputs.version }}"
           commit-message: "[SDK-${{ github.event.inputs.ticket }}]: Prepare for release ${{ github.event.inputs.version }}"
           labels: release

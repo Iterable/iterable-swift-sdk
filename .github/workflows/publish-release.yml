@@ -20,7 +20,7 @@ jobs:
   publish-release:
     runs-on: macos-latest
     steps:
-      - uses: actions/create-github-app-token@v1
+      - uses: actions/create-github-app-token@d72941d797fd3113feb6b93fd0dec494b13a2547 # v1
         id: app-token
         with:
           app-id: ${{ vars.ITERABLE_SDK_RELEASE_APP_ID }}
@@ -39,10 +39,16 @@ jobs:
           token: ${{ steps.app-token.outputs.token }}
 
       - name: Verify release is ready
+        id: verify_release
         env:
           GH_TOKEN: ${{ steps.app-token.outputs.token }}
         run: |
-          if ! grep -qE "^## \[$VERSION\]" CHANGELOG.md; then
+          if ! [[ "$VERSION" =~ ^[0-9]+\.[0-9]+\.[0-9]+(-[a-zA-Z0-9]+)?$ ]]; then
+            echo "::error::Invalid version format. Use semantic versioning (e.g., 6.5.0 or 6.5.0-beta1)"
+            exit 1
+          fi
+
+          if ! grep -qF "## [$VERSION]" CHANGELOG.md; then
             echo "::error::CHANGELOG.md has no entry for [$VERSION] on master. Merge the prepare-release PR before running this workflow."
             exit 1
           fi
@@ -53,14 +59,26 @@ jobs:
           fi
 
           is_draft=$(gh release view "$VERSION" --json isDraft -q .isDraft)
-          if [ "$is_draft" != "true" ]; then
-            echo "::error::Release $VERSION is not a draft. It may already be published."
-            exit 1
+          if git ls-remote --exit-code origin "refs/tags/$VERSION" &>/dev/null; then
+            tag_on_remote=true
+          else
+            tag_on_remote=false
           fi
 
-          if git rev-parse "refs/tags/$VERSION" >/dev/null 2>&1; then
-            echo "::error::Git tag $VERSION already exists. Remove or fix the tag before publishing."
-            exit 1
+          if [ "$is_draft" = "true" ]; then
+            if [ "$tag_on_remote" = "true" ]; then
+              echo "::error::Release $VERSION is still a draft but tag $VERSION already exists on origin. Fix the draft or delete the tag before publishing."
+              exit 1
+            fi
+            echo "resume_mode=false" >> "$GITHUB_OUTPUT"
+            echo "Release $VERSION is a draft with no remote tag; full publish path."
+          else
+            if [ "$tag_on_remote" != "true" ]; then
+              echo "::error::Release $VERSION is published but tag $VERSION is missing on origin."
+              exit 1
+            fi
+            echo "resume_mode=true" >> "$GITHUB_OUTPUT"
+            echo "Release $VERSION is already published; resuming from CocoaPods / verification (upload uses --clobber)."
           fi
 
       - uses: ruby/setup-ruby@v1
@@ -77,22 +95,30 @@ jobs:
       - name: Build xcframeworks
         run: bundle exec fastlane ios build_xcframework output_dir:./output_dir
 
-      - name: Upload xcframework assets to draft release
+      - name: Upload xcframework assets to release
         env:
           GH_TOKEN: ${{ steps.app-token.outputs.token }}
         run: |
-          gh release upload "$VERSION" \
+          gh release upload "$VERSION" --clobber \
             "./output_dir/IterableSDK.xcframework.zip" \
             "./output_dir/IterableAppExtensions.xcframework.zip"
 
       - name: Publish draft release and tag master
+        if: steps.verify_release.outputs.resume_mode != 'true'
         env:
           GH_TOKEN: ${{ steps.app-token.outputs.token }}
         run: |
-          gh release edit "$VERSION" \
-            --draft=false \
-            --target "$(git rev-parse HEAD)" \
-            --latest
+          if [[ "$VERSION" == *-* ]]; then
+            gh release edit "$VERSION" \
+              --draft=false \
+              --prerelease \
+              --target "$(git rev-parse HEAD)"
+          else
+            gh release edit "$VERSION" \
+              --draft=false \
+              --latest \
+              --target "$(git rev-parse HEAD)"
+          fi
 
       - name: Push pods to trunk
         run: bundle exec fastlane ios pod_trunk_push
