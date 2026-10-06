@@ -234,36 +234,63 @@ class SwitchProjectGateTests: XCTestCase {
                      "two taps on the same queued destination must not run two teardowns")
     }
 
-    /// The call-queueing gate has to drop at the handover even though the chain stays up. At
-    /// that moment the SDK is fully live on the project that just landed, and the contract tells
-    /// apps to re-identify from the callback, so a `setEmail` made there has to reach that
-    /// project. Holding the gate across the handover queues it and then replays it into the next
-    /// switch, sending B's identity to C.
-    func testCallsRunAgainstTheProjectThatJustLandedWhileTheNextSwitchIsStillQueued() {
+    /// Two windows, and they belong to different projects. A call made while B is in flight but
+    /// after C was requested belongs to C. A call made from B's callback belongs to B: the gate
+    /// is down, the SDK is live on B, and holding the gate across that handover would replay B's
+    /// identity into C.
+    func testACallMadeAfterALaterDestinationWasRequestedWaitsForThatDestination() {
         var ran = [String]()
 
         XCTAssertEqual(ProjectSwitchGate.shared.beginSwitchForTesting(apiKey: apiKeyB), .run)
+        XCTAssertTrue(ProjectSwitchGate.shared.queueOrExecute("forB") { ran.append("forB") })
         XCTAssertEqual(ProjectSwitchGate.shared.beginSwitchForTesting(apiKey: apiKeyC), .joinedOrQueued)
-        XCTAssertTrue(ProjectSwitchGate.shared.queueOrExecute("duringB") { ran.append("duringB") })
+        XCTAssertTrue(ProjectSwitchGate.shared.queueOrExecute("forC") { ran.append("forC") })
 
         XCTAssertEqual(ProjectSwitchGate.shared.endSwitch(succeeded: true)?.apiKey, apiKeyC)
-        XCTAssertEqual(ran, ["duringB"], "the calls queued during B's teardown replay against B")
+        XCTAssertEqual(ran, ["forB"], "only the calls enqueued for B replay when B lands")
         XCTAssertTrue(ProjectSwitchGate.shared.isSwitchInProgress,
                       "the chain must stay up so C keeps its place ahead of anything arriving now")
 
         XCTAssertFalse(ProjectSwitchGate.shared.queueOrExecute("fromBsCallback") { ran.append("fromBsCallback") },
                        "a call made from B's callback must run against B, not be queued into C")
-        XCTAssertEqual(ran, ["duringB", "fromBsCallback"])
+        XCTAssertEqual(ran, ["forB", "fromBsCallback"])
 
         // What C's switchProject does when it picks up the chain it inherited.
         ProjectSwitchGate.shared.resumeSwitch()
         XCTAssertTrue(ProjectSwitchGate.shared.queueOrExecute("duringC") { ran.append("duringC") },
                       "C's own teardown queues again")
-        XCTAssertEqual(ran, ["duringB", "fromBsCallback"])
+        XCTAssertEqual(ran, ["forB", "fromBsCallback"])
 
         XCTAssertNil(ProjectSwitchGate.shared.endSwitch(succeeded: true))
-        XCTAssertEqual(ran, ["duringB", "fromBsCallback", "duringC"])
+        XCTAssertEqual(ran, ["forB", "fromBsCallback", "forC", "duringC"],
+                       "C replays the call made after it was requested, then the calls from its own teardown, in order")
         XCTAssertFalse(ProjectSwitchGate.shared.isSwitchInProgress, "the chain is done")
+    }
+
+    /// Same API key asked for twice, with another destination between the two asks, is two legs.
+    /// Draining the first must not take the calls that were made for the second.
+    func testFifoIsPreservedWithinEachDestinationAcrossAChain() {
+        var ran = [String]()
+
+        XCTAssertEqual(ProjectSwitchGate.shared.beginSwitchForTesting(apiKey: apiKeyB), .run)
+        XCTAssertTrue(ProjectSwitchGate.shared.queueOrExecute("b1") { ran.append("b1") })
+        XCTAssertTrue(ProjectSwitchGate.shared.queueOrExecute("b2") { ran.append("b2") })
+        XCTAssertEqual(ProjectSwitchGate.shared.beginSwitchForTesting(apiKey: apiKeyC), .joinedOrQueued)
+        XCTAssertTrue(ProjectSwitchGate.shared.queueOrExecute("c1") { ran.append("c1") })
+        XCTAssertEqual(ProjectSwitchGate.shared.beginSwitchForTesting(apiKey: apiKeyD), .joinedOrQueued)
+        XCTAssertTrue(ProjectSwitchGate.shared.queueOrExecute("d1") { ran.append("d1") })
+        XCTAssertTrue(ProjectSwitchGate.shared.queueOrExecute("d2") { ran.append("d2") })
+        XCTAssertEqual(ProjectSwitchGate.shared.beginSwitchForTesting(apiKey: apiKeyC), .joinedOrQueued)
+        XCTAssertTrue(ProjectSwitchGate.shared.queueOrExecute("c2") { ran.append("c2") })
+
+        XCTAssertEqual(ProjectSwitchGate.shared.endSwitch(succeeded: true)?.apiKey, apiKeyC)
+        XCTAssertEqual(ran, ["b1", "b2"])
+        XCTAssertEqual(ProjectSwitchGate.shared.endSwitch(succeeded: true)?.apiKey, apiKeyD)
+        XCTAssertEqual(ran, ["b1", "b2", "c1"])
+        XCTAssertEqual(ProjectSwitchGate.shared.endSwitch(succeeded: true)?.apiKey, apiKeyC)
+        XCTAssertEqual(ran, ["b1", "b2", "c1", "d1", "d2"])
+        XCTAssertNil(ProjectSwitchGate.shared.endSwitch(succeeded: true))
+        XCTAssertEqual(ran, ["b1", "b2", "c1", "d1", "d2", "c2"])
     }
 
     // MARK: - Attribution owned by a project that has been left
