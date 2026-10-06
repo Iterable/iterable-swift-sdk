@@ -301,9 +301,10 @@ public extension IterableAPI {
     ///
     /// Repeated calls are resolved against the project most recently *asked* for, not the one
     /// currently live, so the SDK always ends up where the app last asked to be:
-    /// - Before the SDK has been initialized, this behaves as `initialize(apiKey:config:)` and
-    ///   reports `.switchedCleanly` once it has started, matching Android. There is no previous
-    ///   project, so there is no teardown step that could have been noisy.
+    /// - Before the SDK has been initialized, this behaves as `initialize(apiKey:config:)`.
+    ///   It reports `.switchedCleanly` when `start()` succeeds and `.switchedWithWarnings` when
+    ///   `start()` fails. There is no previous project, so a clean start has no teardown step
+    ///   that could have been noisy. Android reports the same two results.
     /// - Asking for the project already asked for is absorbed: with nothing in flight it is a
     ///   no-op reporting `.switchedCleanly`, and while a switch to it is running the callback
     ///   joins that switch rather than starting a second teardown.
