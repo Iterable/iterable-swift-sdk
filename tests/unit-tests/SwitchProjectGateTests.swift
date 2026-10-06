@@ -301,6 +301,26 @@ class SwitchProjectGateTests: XCTestCase {
 
     // MARK: - Re-initialization
 
+    /// Before any initialize, switchProject is an initialize. A start that succeeds has nothing
+    /// to warn about. A start that fails, the first in-app sync being the usual cause, reports
+    /// warnings. Android reports the same two results.
+    func testSwitchProjectBeforeInitializeReportsCleanlyWhenStartSucceeds() {
+        XCTAssertNil(IterableAPI.implementation)
+        XCTAssertEqual(IterableProjectSwitchResult.from(cleanTeardown: awaitSwitch(to: apiKeyB)),
+                       .switchedCleanly)
+        XCTAssertEqual(IterableAPI.implementation?.apiKey, apiKeyB)
+    }
+
+    func testSwitchProjectBeforeInitializeReportsWarningsWhenStartFails() {
+        XCTAssertNil(IterableAPI.implementation)
+        XCTAssertEqual(IterableProjectSwitchResult.from(cleanTeardown: awaitSwitch(to: apiKeyB,
+                                                                                  inAppFetcher: FailingInAppFetcher())),
+                       .switchedWithWarnings)
+        XCTAssertEqual(IterableAPI.implementation?.apiKey, apiKeyB,
+                       "a failed start still leaves the SDK on the requested project")
+        XCTAssertFalse(ProjectSwitchGate.shared.isSwitchInProgress, "the gate must not be left raised")
+    }
+
     /// Parity with Android, which reports an unclean teardown when its own re-initialization
     /// does not complete. Project A has push on and a registered token, the one shape that
     /// reports a clean teardown, so the `false` here can only come from the new project.
