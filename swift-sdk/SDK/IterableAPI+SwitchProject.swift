@@ -9,8 +9,9 @@ import UIKit
 /// tearing down one project and standing up the next.
 ///
 /// While the gate is raised, calls are queued instead of running against a half-torn-down
-/// SDK, then replayed in FIFO order against the new project. This mirrors the Android SDK's
-/// `queueOrExecute` semantics.
+/// SDK, then replayed in FIFO order against the project they were requested under. A call
+/// made after a later destination has been requested waits for that destination. This mirrors
+/// the Android SDK's `queueOrExecute` semantics.
 ///
 /// Two pieces of state, deliberately separate. `isRaised` is the call-queueing gate and is up
 /// only while a teardown is actually running. `inFlightApiKey` marks the switch chain and stays
@@ -85,6 +86,7 @@ final class ProjectSwitchGate {
 
         isRaised = true
         inFlightApiKey = request.apiKey
+        inFlightLeg = request.leg
         callbacks.append(contentsOf: request.callbacks)
         return .run
     }
@@ -99,8 +101,9 @@ final class ProjectSwitchGate {
         lock.unlock()
     }
 
-    /// Replays everything queued during the switch in FIFO order against the new project,
-    /// lowers the gate, then delivers every registered callback on the main thread.
+    /// Replays calls queued for the leg that is landing, in FIFO order, lowers the gate, then
+    /// delivers every registered callback on the main thread. Calls queued for a later leg stay
+    /// queued until that leg lands.
     ///
     /// The gate stays raised until the queue is observed empty under the same lock
     /// `queueOrExecute` enqueues under. Lowering it before the replay would let a call made
@@ -130,8 +133,9 @@ final class ProjectSwitchGate {
 
         while true {
             lock.lock()
-            if !operations.isEmpty {
-                let operation = operations.removeFirst()
+            if let destination = inFlightLeg,
+               let index = operations.firstIndex(where: { $0.leg === destination }) {
+                let operation = operations.remove(at: index)
                 lock.unlock()
                 ITBInfo("switchProject: replaying queued call \(operation.description)")
                 operation.run()
@@ -143,9 +147,11 @@ final class ProjectSwitchGate {
             isRaised = false
             if let next = next {
                 inFlightApiKey = next.apiKey
+                inFlightLeg = next.leg
                 callbacks = next.callbacks
             } else {
                 inFlightApiKey = nil
+                inFlightLeg = nil
             }
             lock.unlock()
             break
@@ -170,7 +176,8 @@ final class ProjectSwitchGate {
             operation()
             return false
         }
-        operations.append(QueuedOperation(description: description, run: operation))
+        let leg = pending.last?.leg ?? inFlightLeg
+        operations.append(QueuedOperation(description: description, leg: leg, run: operation))
         lock.unlock()
 
         ITBInfo("switchProject in progress, queued \(description)")
@@ -183,6 +190,7 @@ final class ProjectSwitchGate {
         lock.lock()
         isRaised = false
         inFlightApiKey = nil
+        inFlightLeg = nil
         operations.removeAll()
         callbacks.removeAll()
         pending.removeAll()
@@ -198,18 +206,43 @@ final class ProjectSwitchGate {
         let apiEndPointOverride: String?
         let dependencyContainer: DependencyContainerProtocol?
         var callbacks: [(Bool) -> Void]
+        /// Identity of this request. A later ask for the same API key is a different leg when
+        /// another destination sits between them, and queued calls stay with the leg they were
+        /// made under.
+        fileprivate let leg: SwitchLeg
+
+        init(apiKey: String,
+             config: IterableConfig,
+             apiEndPointOverride: String?,
+             dependencyContainer: DependencyContainerProtocol?,
+             callbacks: [(Bool) -> Void]) {
+            self.apiKey = apiKey
+            self.config = config
+            self.apiEndPointOverride = apiEndPointOverride
+            self.dependencyContainer = dependencyContainer
+            self.callbacks = callbacks
+            self.leg = SwitchLeg()
+        }
     }
 
-    private struct QueuedOperation {
+    fileprivate struct QueuedOperation {
         let description: String
+        let leg: SwitchLeg?
         let run: () -> Void
     }
+
+    /// Reference identity for a switch leg. A struct copy of `PendingSwitchRequest` keeps
+    /// pointing at the same leg.
+    fileprivate final class SwitchLeg {}
 
     private let lock = NSLock()
     private var isRaised = false
     /// The project the in-flight switch is heading to, so a second request can tell whether it
     /// is asking for the same destination or a different one.
     private var inFlightApiKey: String?
+    /// The leg `inFlightApiKey` names. Moved to the next request at handover, so calls queued
+    /// for that request are not replayed into the project that just landed.
+    private var inFlightLeg: SwitchLeg?
     private var operations = [QueuedOperation]()
     private var callbacks = [(Bool) -> Void]()
     private var pending = [PendingSwitchRequest]()
@@ -314,7 +347,9 @@ public extension IterableAPI {
     ///
     /// Between two switches in a chain the SDK is fully live on the project that just landed,
     /// so calls made from its callback, re-identifying the user in particular, run against that
-    /// project rather than being replayed into the next one.
+    /// project rather than being replayed into the next one. A call made after a later
+    /// destination has already been requested is replayed against that destination, not against
+    /// the switch that lands first. Calls stay in order within each destination.
     ///
     /// An unusable API key cannot reach here: `IterableProject` refuses to hold an empty or
     /// whitespace-only one, so the invalid state is not constructible.
