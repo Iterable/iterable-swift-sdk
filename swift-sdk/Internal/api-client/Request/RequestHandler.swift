@@ -399,7 +399,10 @@ class RequestHandler: RequestHandlerProtocol {
             return
         }
 
-        DispatchQueue.global(qos: .background).async { [weak self] in
+        // A caller awaiting the purge (`switchProject`) is user-initiated and blocked on it.
+        // `.background` work can be starved for many seconds under load or in Low Power Mode.
+        let qos: DispatchQoS.QoSClass = completion == nil ? .background : .userInitiated
+        DispatchQueue.global(qos: qos).async { [weak self] in
             guard let offlineProcessor = self?.offlineProcessor else {
                 completion?()
                 return
