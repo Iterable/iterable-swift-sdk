@@ -319,6 +319,12 @@ class SwitchProjectGateTests: XCTestCase {
         XCTAssertEqual(IterableAPI.implementation?.apiKey, apiKeyB,
                        "a failed start still leaves the SDK on the requested project")
         XCTAssertFalse(ProjectSwitchGate.shared.isSwitchInProgress, "the gate must not be left raised")
+
+        let failedStart = IterableAPI.implementation
+        XCTAssertTrue(awaitSwitch(to: apiKeyB, inAppFetcher: FailingInAppFetcher()),
+                      "a same-project retry is a no-op reporting a clean switch")
+        XCTAssertTrue(IterableAPI.implementation === failedStart,
+                      "a same-project retry must not stand up a second instance")
     }
 
     /// Parity with Android, which reports an unclean teardown when its own re-initialization

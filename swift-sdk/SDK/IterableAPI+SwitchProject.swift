@@ -329,7 +329,9 @@ public extension IterableAPI {
     ///                `.switchedWithWarnings` means the SDK **is** on the new project but at
     ///                least one cleanup step was noisy, or no device disable was confirmed for
     ///                the outgoing project. Neither case means the switch failed or was rolled
-    ///                back, so the response to both is the same.
+    ///                back, so the response to both is the same. Before the SDK has been
+    ///                initialized there is no teardown, and `.switchedWithWarnings` instead means
+    ///                `start()` failed.
     ///
     /// The SDK reports `.switchedWithWarnings` when push registration is off, when there is no
     /// device token to disable, when no user was identified on the outgoing project, or when the
