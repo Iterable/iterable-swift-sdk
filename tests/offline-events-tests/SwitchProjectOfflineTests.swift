@@ -195,6 +195,23 @@ class SwitchProjectOfflineTests: XCTestCase {
                        "with offline mode off there is no SDK-owned queue to purge")
     }
 
+    func testAnAwaitedPurgeDoesNotRunAtBackgroundQoS() throws {
+        let projectA = makeProjectA()
+        _ = try persistenceContext.create(task: task(named: Const.Path.trackEvent))
+
+        let purged = expectation(description: #function)
+        var qos: qos_class_t?
+        try projectA.requestHandler.handleLogout {
+            qos = qos_class_self()
+            purged.fulfill()
+        }
+
+        wait(for: [purged], timeout: testExpectationTimeout)
+        XCTAssertNotEqual(qos, QOS_CLASS_BACKGROUND,
+                          "switchProject blocks on this purge, so it must not queue behind background work")
+        XCTAssertEqual(try persistenceContext.findAllTasks().count, 0)
+    }
+
     // MARK: - Helpers
 
     private func makeProjectA() -> InternalIterableAPI {
