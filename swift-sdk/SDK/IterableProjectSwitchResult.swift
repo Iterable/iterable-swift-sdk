@@ -9,6 +9,9 @@ import Foundation
 /// Both cases mean the SDK is on the new project. They differ only in whether leaving the previous
 /// project was tidy. Neither is a failure, and neither is a reason to retry the switch or to show the
 /// user an error: the response to both is the same, carry on and re-identify the user.
+///
+/// The exception is a switch made before the SDK was initialized. There is no previous project, so
+/// there `switchedWithWarnings` means that `start()` failed.
 @objc
 public enum IterableProjectSwitchResult: Int {
     /// Every teardown step completed cleanly at the point the callback fired.
@@ -24,6 +27,11 @@ public enum IterableProjectSwitchResult: Int {
     /// This is expected in normal operation rather than exceptional. An app that does not use push
     /// registration, or that has no device token yet, will always see it, because there was no device
     /// disable to confirm. Check the logs for the specific step if you need to know which one it was.
+    ///
+    /// Called before the SDK was initialized, there is no previous project to leave, and this instead
+    /// means that `start()` failed, which happens when the in-app manager fails to start. The SDK is
+    /// still initialized on the requested project. Calling `switchProject` again with the same project
+    /// does not retry `start()`: that is a no-op reporting `switchedCleanly`.
     case switchedWithWarnings
 
     /// Internal plumbing carries a boolean for "was the teardown clean", set by the individual
