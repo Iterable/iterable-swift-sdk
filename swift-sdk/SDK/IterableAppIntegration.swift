@@ -22,6 +22,7 @@ import UserNotifications
                                    fetchCompletionHandler completionHandler: ((UIBackgroundFetchResult) -> Void)?) {
         ITBInfo()
         
+        logIfProjectSwitchInProgress()
         implementation?.application(application,
                                     didReceiveRemoteNotification: userInfo,
                                     fetchCompletionHandler: completionHandler)
@@ -39,6 +40,7 @@ import UserNotifications
                                               withCompletionHandler completionHandler: (() -> Void)?) {
         ITBInfo()
         
+        logIfProjectSwitchInProgress()
         if let implementation = implementation {
             implementation.userNotificationCenter(center,
                                                   didReceive: UserNotificationResponse(response: response),
@@ -49,6 +51,16 @@ import UserNotifications
     }
     
     // MARK: - Private/Internal
+    
+    /// Push is deliberately outside `ProjectSwitchGate`, matching Android: the payload carries
+    /// the sending project's campaign, template and message IDs, so replaying it after the
+    /// switch would attribute it to a project those IDs do not exist in, and holding the OS
+    /// completion handler for the length of a switch risks the watchdog. Logged so support can
+    /// tell a push handled by the outgoing project apart from a misrouted one.
+    private static func logIfProjectSwitchInProgress() {
+        guard ProjectSwitchGate.shared.isSwitchInProgress else { return }
+        ITBInfo("Push received while switchProject is in progress. It is handled by the project the SDK is currently on, not the incoming one.")
+    }
     
     override private init() {
         super.init()
