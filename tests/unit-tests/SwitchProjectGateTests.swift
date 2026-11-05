@@ -329,11 +329,22 @@ class SwitchProjectGateTests: XCTestCase {
     // MARK: - Re-initialization
 
     /// Before any initialize, switchProject is an initialize. A start that succeeds has nothing
-    /// to warn about. A start that fails, the first in-app sync being the usual cause, reports
-    /// warnings. Android reports the same two results.
+    /// to warn about. A start that fails with someone identified reports warnings. Android reports
+    /// the same results.
     func testSwitchProjectBeforeInitializeReportsCleanlyWhenStartSucceeds() {
         XCTAssertNil(IterableAPI.implementation)
         XCTAssertEqual(IterableProjectSwitchResult.from(cleanTeardown: awaitSwitch(to: apiKeyB)),
+                       .switchedCleanly)
+        XCTAssertEqual(IterableAPI.implementation?.apiKey, apiKeyB)
+    }
+
+    /// A fresh install has nobody identified, so the real in-app request is refused and `start()`
+    /// fails. Android reports a clean start here, because nothing timed out or threw, so counting
+    /// the refusal as a failure would break parity in the case most apps hit first.
+    func testSwitchProjectBeforeInitializeWithNoUserYetReportsCleanly() {
+        XCTAssertNil(IterableAPI.implementation)
+        XCTAssertEqual(IterableProjectSwitchResult.from(cleanTeardown: awaitSwitch(to: apiKeyB,
+                                                                                  dependencyContainer: realInAppFetcherContainer(networkSession: MockNetworkSession()))),
                        .switchedCleanly)
         XCTAssertEqual(IterableAPI.implementation?.apiKey, apiKeyB)
     }
@@ -528,6 +539,7 @@ class SwitchProjectGateTests: XCTestCase {
     @discardableResult
     private func awaitSwitch(to apiKey: String,
                              inAppFetcher: InAppFetcherProtocol = MockInAppFetcher(),
+                             dependencyContainer: MockDependencyContainer? = nil,
                              file: StaticString = #filePath,
                              line: UInt = #line) -> Bool {
         let switched = expectation(description: "switch to \"\(apiKey)\"")
@@ -535,7 +547,7 @@ class SwitchProjectGateTests: XCTestCase {
         IterableAPI.switchProject(apiKey: apiKey,
                                   config: configWithoutPush(),
                                   apiEndPointOverride: nil,
-                                  dependencyContainer: container(inAppFetcher: inAppFetcher)) { cleanTeardown in
+                                  dependencyContainer: dependencyContainer ?? container(inAppFetcher: inAppFetcher)) { cleanTeardown in
             reported = cleanTeardown
             switched.fulfill()
         }

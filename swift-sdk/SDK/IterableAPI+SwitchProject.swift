@@ -439,8 +439,9 @@ extension IterableAPI {
                         apiEndPointOverride: apiEndPointOverride,
                         dependencyContainer: dependencyContainer,
                         callback: { started in
-                            deliverOnMainThread(callback, started)
-                            releaseInheritedGate(started)
+                            let startedCleanly = startCountsAsClean(started)
+                            deliverOnMainThread(callback, startedCleanly)
+                            releaseInheritedGate(startedCleanly)
                         })
             return
         }
@@ -523,8 +524,10 @@ extension IterableAPI {
     /// `start()` fails when its first in-app sync fails, and that request is refused before it
     /// reaches the network whenever no identity is set, unknown-user identity included. A switch
     /// always starts the new project with nobody identified, because it cleared the previous user
-    /// and the app re-identifies from the callback, which runs the sync again. That refusal is
-    /// the expected state rather than a failed start.
+    /// and the app re-identifies from the callback, which runs the sync again. A switch before any
+    /// initialize on a fresh install starts the same way. That refusal is the expected state rather
+    /// than a failed start, and Android, whose failure signal is an initialization that times out
+    /// or throws, does not count it either.
     private static func startCountsAsClean(_ started: Bool) -> Bool {
         if started {
             return true
