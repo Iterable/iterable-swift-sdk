@@ -18,10 +18,14 @@ protocol RequestHandlerProtocol: AnyObject {
                   onSuccess: OnSuccessHandler?,
                   onFailure: OnFailureHandler?)
     
+    /// - Parameter onHandoff: see `RequestProcessorProtocol.disableDeviceForCurrentUser`. Use
+    ///   the three-argument overload unless the caller has to know when the request left the
+    ///   SDK's control.
     @discardableResult
     func disableDeviceForCurrentUser(hexToken: String,
                                      withOnSuccess onSuccess: OnSuccessHandler?,
-                                     onFailure: OnFailureHandler?) -> Pending<SendRequestValue, SendRequestError>
+                                     onFailure: OnFailureHandler?,
+                                     onHandoff: ((Bool) -> Void)?) -> Pending<SendRequestValue, SendRequestError>
     
     @discardableResult
     func disableDeviceForAllUsers(hexToken: String,
@@ -157,7 +161,28 @@ protocol RequestHandlerProtocol: AnyObject {
                onFailure: OnFailureHandler?) -> Pending<SendRequestValue, SendRequestError>
     
 
-    func handleLogout() throws
+    /// Purges the persisted offline queue, preserving queued `disableDevice` tasks.
+    ///
+    /// - Parameter completion: invoked once the purge has finished, on an unspecified queue.
+    ///   Pass `nil` (or use the `handleLogout()` overload) for the fire-and-forget behaviour
+    ///   the logout path relies on.
+    func handleLogout(completion: (() -> Void)?) throws
     
     func getRemoteConfiguration() -> Pending<RemoteConfiguration, SendRequestError>
+}
+
+extension RequestHandlerProtocol {
+    func handleLogout() throws {
+        try handleLogout(completion: nil)
+    }
+
+    @discardableResult
+    func disableDeviceForCurrentUser(hexToken: String,
+                                     withOnSuccess onSuccess: OnSuccessHandler?,
+                                     onFailure: OnFailureHandler?) -> Pending<SendRequestValue, SendRequestError> {
+        disableDeviceForCurrentUser(hexToken: hexToken,
+                                    withOnSuccess: onSuccess,
+                                    onFailure: onFailure,
+                                    onHandoff: nil)
+    }
 }

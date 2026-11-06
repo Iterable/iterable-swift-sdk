@@ -1041,26 +1041,41 @@ class RequestHandlerTests: XCTestCase {
     func testDeleteAllTasksOnLogout() throws {
         let localStorage = MockLocalStorage()
         localStorage.offlineMode = true
-        let internalApi = InternalIterableAPI.initializeForTesting(networkSession: MockNetworkSession(),
+        // Seeded rather than assigned through `internalApi.email`, which would run its own
+        // logout and purge before the tasks below are created.
+        localStorage.email = "user@example.com"
+        let config = IterableConfig()
+        // Keeps logout's own device disable, and the token registration `start()` would
+        // otherwise schedule, out of the queue under assertion.
+        config.autoPushRegistration = false
+        let internalApi = InternalIterableAPI.initializeForTesting(config: config,
+                                                                   networkSession: MockNetworkSession(),
                                                                    localStorage: localStorage)
-        internalApi.email = "user@example.com"
-        
-        let taskId = IterableUtil.generateUUID()
-        try persistenceContextProvider.mainQueueContext().create(task: IterableTask(id: taskId,
-                                                                                    type: .apiCall,
-                                                                                    scheduledAt: Date(),
-                                                                                    data: nil,
-                                                                                    requestedAt: Date()))
-        try persistenceContextProvider.mainQueueContext().save()
+        XCTAssertTrue(internalApi.isSDKInitialized())
+
+        try createTask(named: Const.Path.trackEvent)
+        try createTask(named: Const.Path.disableDevice)
 
         internalApi.logoutUser()
 
+        // SDK-297: a queued `disableDevice` carries the identity snapshot it was built with and
+        // is the retry for a logout-time disable, so it is the one task logout must keep.
         let result = TestUtils.tryUntil(attempts: 10) {
-            let count = try! persistenceContextProvider.mainQueueContext().findAllTasks().count
-            return count == 0
+            let names = try! persistenceContextProvider.mainQueueContext().findAllTasks().compactMap { $0.name }
+            return names == [Const.Path.disableDevice]
         }
         
         XCTAssertTrue(result)
+    }
+
+    private func createTask(named name: String) throws {
+        try persistenceContextProvider.mainQueueContext().create(task: IterableTask(id: IterableUtil.generateUUID(),
+                                                                                   name: name,
+                                                                                   type: .apiCall,
+                                                                                   scheduledAt: Date(),
+                                                                                   data: nil,
+                                                                                   requestedAt: Date()))
+        try persistenceContextProvider.mainQueueContext().save()
     }
     
     func testGetRemoteConfiguration() throws {

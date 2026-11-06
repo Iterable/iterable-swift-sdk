@@ -38,16 +38,21 @@ struct OnlineRequestProcessor: RequestProcessorProtocol {
     func disableDeviceForCurrentUser(hexToken: String,
                                      identitySnapshot: UserIdentitySnapshot?,
                                      withOnSuccess onSuccess: OnSuccessHandler? = nil,
-                                     onFailure: OnFailureHandler? = nil) -> Pending<SendRequestValue, SendRequestError> {
+                                     onFailure: OnFailureHandler? = nil,
+                                     onHandoff: ((Bool) -> Void)? = nil) -> Pending<SendRequestValue, SendRequestError> {
         // Honor the caller-captured snapshot so the online fallback (when
         // `HealthMonitor.canSchedule()` returns false) still targets the user who was
         // current at call time — not whoever live `auth` points to after the deferred
         // dispatch resolves.
-        disableDevice(forAllUsers: false,
-                      hexToken: hexToken,
-                      identitySnapshot: identitySnapshot,
-                      onSuccess: onSuccess,
-                      onFailure: onFailure)
+        let pending = disableDevice(forAllUsers: false,
+                                    hexToken: hexToken,
+                                    identitySnapshot: identitySnapshot,
+                                    onSuccess: onSuccess,
+                                    onFailure: onFailure)
+        // The online path builds and dispatches synchronously, so the request is already in
+        // flight and no longer depends on this processor staying alive.
+        onHandoff?(true)
+        return pending
     }
 
     @discardableResult
