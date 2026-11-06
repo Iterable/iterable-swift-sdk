@@ -329,8 +329,8 @@ class SwitchProjectGateTests: XCTestCase {
     // MARK: - Re-initialization
 
     /// Before any initialize, switchProject is an initialize. A start that succeeds has nothing
-    /// to warn about. A start that fails, the first in-app sync being the usual cause, reports
-    /// warnings. Android reports the same two results.
+    /// to warn about. A start that fails with someone identified reports warnings. Android reports
+    /// the same results.
     func testSwitchProjectBeforeInitializeReportsCleanlyWhenStartSucceeds() {
         XCTAssertNil(IterableAPI.implementation)
         XCTAssertEqual(IterableProjectSwitchResult.from(cleanTeardown: awaitSwitch(to: apiKeyB)),
@@ -338,17 +338,28 @@ class SwitchProjectGateTests: XCTestCase {
         XCTAssertEqual(IterableAPI.implementation?.apiKey, apiKeyB)
     }
 
+    /// A fresh install has nobody identified, so the real in-app request is refused and `start()`
+    /// fails. Android reports a clean start here, because nothing timed out or threw, so counting
+    /// the refusal as a failure would break parity in the case most apps hit first.
+    func testSwitchProjectBeforeInitializeWithNoUserYetReportsCleanly() {
+        XCTAssertNil(IterableAPI.implementation)
+        XCTAssertEqual(IterableProjectSwitchResult.from(cleanTeardown: awaitSwitch(to: apiKeyB,
+                                                                                  dependencyContainer: realInAppFetcherContainer(networkSession: MockNetworkSession()))),
+                       .switchedCleanly)
+        XCTAssertEqual(IterableAPI.implementation?.apiKey, apiKeyB)
+    }
+
     func testSwitchProjectBeforeInitializeReportsWarningsWhenStartFails() {
         XCTAssertNil(IterableAPI.implementation)
         XCTAssertEqual(IterableProjectSwitchResult.from(cleanTeardown: awaitSwitch(to: apiKeyB,
-                                                                                  inAppFetcher: FailingInAppFetcher())),
+                                                                                  inAppFetcher: FailingInAppFetcher(localStorage: localStorage))),
                        .switchedWithWarnings)
         XCTAssertEqual(IterableAPI.implementation?.apiKey, apiKeyB,
                        "a failed start still leaves the SDK on the requested project")
         XCTAssertFalse(ProjectSwitchGate.shared.isSwitchInProgress, "the gate must not be left raised")
 
         let failedStart = IterableAPI.implementation
-        XCTAssertTrue(awaitSwitch(to: apiKeyB, inAppFetcher: FailingInAppFetcher()),
+        XCTAssertTrue(awaitSwitch(to: apiKeyB, inAppFetcher: FailingInAppFetcher(localStorage: localStorage)),
                       "a same-project retry is a no-op reporting a clean switch")
         XCTAssertTrue(IterableAPI.implementation === failedStart,
                       "a same-project retry must not stand up a second instance")
@@ -360,10 +371,46 @@ class SwitchProjectGateTests: XCTestCase {
     func testASwitchWhoseNewProjectFailsToStartReportsFalse() {
         initializeProjectA(config: configWithPush(), email: emailA, pushToken: "project-a-token")
 
-        XCTAssertFalse(awaitSwitch(to: apiKeyB, inAppFetcher: FailingInAppFetcher()))
+        XCTAssertFalse(awaitSwitch(to: apiKeyB, inAppFetcher: FailingInAppFetcher(localStorage: localStorage)))
 
         XCTAssertEqual(IterableAPI.implementation?.apiKey, apiKeyB, "the switch still lands on the new project")
         XCTAssertFalse(ProjectSwitchGate.shared.isSwitchInProgress, "the gate must not be left raised")
+    }
+
+    /// The documented path: nobody is identified on the new project until the app re-identifies
+    /// from the callback. The real in-app request is refused before it reaches the network in that
+    /// state, which used to report every switch as noisy. A mock fetcher hides it by succeeding
+    /// without a user, so this goes through the real `InAppFetcher`.
+    func testASwitchWithNoUserYetOnTheNewProjectReportsCleanly() {
+        initializeProjectA(config: configWithPush(), email: emailA, pushToken: "project-a-token")
+        let networkSessionB = MockNetworkSession()
+        func isInAppSync(_ request: URLRequest) -> Bool {
+            request.url?.absoluteString.contains(Const.Path.getInAppMessages) == true
+        }
+
+        let synced = expectation(description: "the new project syncs in-apps once the user is identified")
+        synced.assertForOverFulfill = false
+        networkSessionB.requestCallback = { [apiKeyB] request in
+            guard isInAppSync(request) else { return }
+            XCTAssertEqual(request.value(forHTTPHeaderField: JsonKey.Header.apiKey), apiKeyB)
+            synced.fulfill()
+        }
+
+        let switched = expectation(description: #function)
+        var reported: Bool?
+        IterableAPI.switchProject(apiKey: apiKeyB,
+                                  config: configWithoutPush(),
+                                  apiEndPointOverride: nil,
+                                  dependencyContainer: realInAppFetcherContainer(networkSession: networkSessionB)) { [emailB] cleanTeardown in
+            reported = cleanTeardown
+            XCTAssertFalse(networkSessionB.requests.contains(where: isInAppSync),
+                           "no in-app request can go out before a user is identified")
+            IterableAPI.setEmail(emailB)
+            switched.fulfill()
+        }
+
+        wait(for: [switched, synced], timeout: testExpectationTimeout)
+        XCTAssertEqual(reported, true, "nobody identified yet on the new project is the expected state, not a failed start")
     }
 
     // MARK: - The device disable hand-off bound
@@ -434,6 +481,22 @@ class SwitchProjectGateTests: XCTestCase {
         return config
     }
 
+    private func realInAppFetcherContainer(networkSession: NetworkSessionProtocol) -> MockDependencyContainer {
+        RealInAppFetcherContainer(dateProvider: MockDateProvider(),
+                                  networkSession: networkSession,
+                                  notificationStateProvider: MockNotificationStateProvider(enabled: true),
+                                  localStorage: localStorage,
+                                  inAppFetcher: MockInAppFetcher(),
+                                  inAppDisplayer: MockInAppDisplayer(),
+                                  inAppPersister: MockInAppPersister(),
+                                  urlOpener: MockUrlOpener(),
+                                  applicationStateProvider: MockApplicationStateProvider(applicationState: .active),
+                                  notificationCenter: NotificationCenter.default,
+                                  maxTasks: 1000,
+                                  apnsTypeChecker: MockAPNSTypeChecker(apnsType: .sandbox),
+                                  persistenceContextProvider: nil)
+    }
+
     private func container(networkSession: NetworkSessionProtocol = MockNetworkSession(),
                            inAppFetcher: InAppFetcherProtocol = MockInAppFetcher()) -> MockDependencyContainer {
         MockDependencyContainer(dateProvider: MockDateProvider(),
@@ -476,6 +539,7 @@ class SwitchProjectGateTests: XCTestCase {
     @discardableResult
     private func awaitSwitch(to apiKey: String,
                              inAppFetcher: InAppFetcherProtocol = MockInAppFetcher(),
+                             dependencyContainer: MockDependencyContainer? = nil,
                              file: StaticString = #filePath,
                              line: UInt = #line) -> Bool {
         let switched = expectation(description: "switch to \"\(apiKey)\"")
@@ -483,7 +547,7 @@ class SwitchProjectGateTests: XCTestCase {
         IterableAPI.switchProject(apiKey: apiKey,
                                   config: configWithoutPush(),
                                   apiEndPointOverride: nil,
-                                  dependencyContainer: container(inAppFetcher: inAppFetcher)) { cleanTeardown in
+                                  dependencyContainer: dependencyContainer ?? container(inAppFetcher: inAppFetcher)) { cleanTeardown in
             reported = cleanTeardown
             switched.fulfill()
         }
@@ -498,8 +562,24 @@ class SwitchProjectGateTests: XCTestCase {
 
 /// Stands in for the new project's first in-app sync failing, which is the only way iOS's
 /// re-initialization can report failure: `initialize2` itself cannot throw.
+///
+/// A real sync is refused without an identity, which a switch does not count as a failure, so
+/// this gives the new project an unknown-user identity first. That is the state unknown-user
+/// activation can leave it in, and the one in which a failed sync is a genuine failure.
 private struct FailingInAppFetcher: InAppFetcherProtocol {
+    let localStorage: MockLocalStorage
+
     func fetch() -> Pending<[IterableInAppMessage], Error> {
-        FailPending(error: IterableError.general(description: "in-app sync failed"))
+        localStorage.userIdUnknownUser = "unknown-user-on-the-new-project"
+        return FailPending(error: IterableError.general(description: "in-app sync failed"))
+    }
+}
+
+/// Builds the real `InAppFetcher`, so the in-app request is created the way it is in production.
+/// `MockDependencyContainer` returns a mock fetcher that succeeds whether or not a user is set,
+/// which hides the refusal a switch always meets on the new project.
+private final class RealInAppFetcherContainer: MockDependencyContainer {
+    override func createInAppFetcher(apiClient: ApiClientProtocol, authManager: IterableAuthManagerProtocol?) -> InAppFetcherProtocol {
+        InAppFetcher(apiClient: apiClient, authManager: authManager)
     }
 }

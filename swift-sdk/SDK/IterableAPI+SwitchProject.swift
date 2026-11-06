@@ -439,8 +439,9 @@ extension IterableAPI {
                         apiEndPointOverride: apiEndPointOverride,
                         dependencyContainer: dependencyContainer,
                         callback: { started in
-                            deliverOnMainThread(callback, started)
-                            releaseInheritedGate(started)
+                            let startedCleanly = startCountsAsClean(started)
+                            deliverOnMainThread(callback, startedCleanly)
+                            releaseInheritedGate(startedCleanly)
                         })
             return
         }
@@ -504,20 +505,39 @@ extension IterableAPI {
                                 apiEndPointOverride: apiEndPointOverride,
                                 dependencyContainer: dependencyContainer,
                                 callback: { started in
-                                    if !started {
-                                        ITBError("switchProject: the new project's SDK did not start cleanly")
-                                    }
+                                    let startedCleanly = startCountsAsClean(started)
                                     // Step 8: drain queued calls FIFO against the new project,
                                     // lower the gate, then fire every registered callback on
                                     // the main thread. A switch requested during this one for a
                                     // different project runs next, so the SDK ends up where the
                                     // app last asked to be.
-                                    let next = ProjectSwitchGate.shared.endSwitch(succeeded: teardownWasClean && started)
+                                    let next = ProjectSwitchGate.shared.endSwitch(succeeded: teardownWasClean && startedCleanly)
                                     runNextSwitchIfAny(next)
                                 })
                 }
             }
         }
+    }
+
+    /// Whether the new instance's start counts as clean for the switch result.
+    ///
+    /// `start()` fails when its first in-app sync fails, and that request is refused before it
+    /// reaches the network whenever no identity is set, unknown-user identity included. A switch
+    /// always starts the new project with nobody identified, because it cleared the previous user
+    /// and the app re-identifies from the callback, which runs the sync again. A switch before any
+    /// initialize on a fresh install starts the same way. That refusal is the expected state rather
+    /// than a failed start, and Android, whose failure signal is an initialization that times out
+    /// or throws, does not count it either.
+    private static func startCountsAsClean(_ started: Bool) -> Bool {
+        if started {
+            return true
+        }
+        if let auth = implementation?.auth, case .none = auth.emailOrUserId {
+            ITBInfo("switchProject: in-app sync deferred until a user is identified on the new project")
+            return true
+        }
+        ITBError("switchProject: the new project's SDK did not start cleanly")
+        return false
     }
 
     /// Runs a switch that was requested while another was in flight, on the chain that switch
