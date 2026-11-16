@@ -97,7 +97,12 @@ class ProjectSwitchIntegrationTests: IntegrationTestBase {
         if !row.isHittable {
             app.scrollViews.firstMatch.swipeUp()
         }
-        row.tap()
+        // On CI scroll-to-visible can fail for the row near the bottom, a coordinate tap does not need it
+        if row.isHittable {
+            row.tap()
+        } else {
+            row.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.5)).tap()
+        }
 
         let initButton = app.buttons["project-switch-init-a-button"]
         XCTAssertTrue(initButton.waitForExistence(timeout: standardTimeout), "Init on A button should exist")
