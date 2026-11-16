@@ -18,11 +18,11 @@ class IterableAPIClient {
     
     // MARK: - Initialization
     
-    init(apiKey: String, serverKey: String, projectId: String) {
+    init(apiKey: String, serverKey: String, projectId: String, baseURL: String = BCITDataRegion.defaultServerBaseURL) {
         self.apiKey = apiKey
         self.serverKey = serverKey
         self.projectId = projectId
-        self.baseURL = "https://api.iterable.com"
+        self.baseURL = baseURL
         
         let config = URLSessionConfiguration.default
         config.timeoutIntervalForRequest = requestTimeout

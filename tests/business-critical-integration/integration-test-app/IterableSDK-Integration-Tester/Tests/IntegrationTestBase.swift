@@ -1478,12 +1478,13 @@ struct TestConfiguration {
     let userEmail: String
     let apiEndpoint: String
     
-    init(apiKey: String, serverKey: String, projectId: String, userEmail: String) {
+    init(apiKey: String, serverKey: String, projectId: String, userEmail: String,
+         apiEndpoint: String = BCITDataRegion.defaultServerBaseURL) {
         self.apiKey = apiKey
         self.serverKey = serverKey
         self.projectId = projectId
         self.userEmail = userEmail
-        self.apiEndpoint = "https://api.iterable.com"
+        self.apiEndpoint = apiEndpoint
     }
 }
 
