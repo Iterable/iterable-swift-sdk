@@ -19,10 +19,10 @@ class ProjectSwitchIntegrationTests: IntegrationTestBase {
         print("🚀 Starting project switch A -> B integration test")
         openProjectSwitchScreenOnA()
 
-        app.buttons["project-switch-to-b-button"].tap()
+        tap("project-switch-to-b-button", expectingLogLine: "REQUEST switch -> B")
         waitUntilSettled(on: "B")
 
-        app.buttons["project-switch-track-button"].tap()
+        tap("project-switch-track-button", expectingLogLine: "CALL track name=")
         let lines = waitForTrackThenQuiet(afterCallbackTo: "B")
         assertRequests(after: "B", in: lines, carry: projectBApiKey, notLeavingProject: "A", key: testConfig.apiKey)
 
@@ -52,7 +52,7 @@ class ProjectSwitchIntegrationTests: IntegrationTestBase {
         reidentifyToggle.tap()
         XCTAssertEqual(reidentifyToggle.value as? String, "0", "Re-identify should be off for the rapid chain")
 
-        app.buttons["project-switch-rapid-aba-button"].tap()
+        tap("project-switch-rapid-aba-button", expectingLogLine: "INFO rapid A -> B -> A")
         _ = waitForLog { lines in lines.contains { $0.contains("CALLBACK A result=") } }
         waitUntilSettled(on: "A")
         assertIsAProjectSwitchResult(app.staticTexts["project-switch-result-label"].label)
@@ -69,8 +69,8 @@ class ProjectSwitchIntegrationTests: IntegrationTestBase {
         XCTAssertLessThan(requestB ?? .max, requestA ?? .min, "Requests should be logged in the order they were made")
         XCTAssertLessThan(callbackB ?? .max, callbackA ?? .min, "Callbacks should fire in request order, B then A")
 
-        app.buttons["project-switch-identify-button"].tap()
-        app.buttons["project-switch-track-button"].tap()
+        tap("project-switch-identify-button", expectingLogLine: "CALL setEmail project=")
+        tap("project-switch-track-button", expectingLogLine: "CALL track name=")
         let lines = waitForTrackThenQuiet(afterCallbackTo: "A")
         assertRequests(after: "A", in: lines, carry: testConfig.apiKey, notLeavingProject: "B", key: projectBApiKey)
 
@@ -101,12 +101,12 @@ class ProjectSwitchIntegrationTests: IntegrationTestBase {
 
         let initButton = app.buttons["project-switch-init-a-button"]
         XCTAssertTrue(initButton.waitForExistence(timeout: standardTimeout), "Init on A button should exist")
-        initButton.tap()
+        tap("project-switch-init-a-button", expectingLogLine: "INFO init on A")
 
         let reidentifyToggle = app.switches["project-switch-reidentify-toggle"]
         XCTAssertEqual(reidentifyToggle.value as? String, "1", "Re-identify from callback should default to on")
 
-        app.buttons["project-switch-identify-button"].tap()
+        tap("project-switch-identify-button", expectingLogLine: "CALL setEmail project=")
         if isRunningInCI {
             let registeredOnA = { (lines: [String]) in
                 lines.contains { $0.contains("/api/users/registerDeviceToken key=\(self.mask(self.testConfig.apiKey)) [A]") }
@@ -115,6 +115,21 @@ class ProjectSwitchIntegrationTests: IntegrationTestBase {
         }
         _ = waitForQuiet()
         app.buttons["project-switch-clear-log-button"].tap()
+    }
+
+    /// CI has dropped a synthesized tap on a hittable button, so a tap whose log line never
+    /// appears is retried once. The line only appears when the action ran, so a retry cannot double it.
+    private func tap(_ identifier: String, expectingLogLine marker: String) {
+        let count = { (lines: [String]) in lines.filter { $0.contains(marker) }.count }
+        let before = count(logLines())
+        for attempt in 1...2 {
+            app.buttons[identifier].tap()
+            if count(waitForLog(timeout: 5.0) { count($0) > before }) > before {
+                return
+            }
+            print("⚠️ Tap on \(identifier) did not reach the app, attempt \(attempt)")
+        }
+        XCTFail("Tap on \(identifier) never reached the app")
     }
 
     private func waitUntilSettled(on label: String) {
