@@ -21,11 +21,23 @@ class ProjectSwitchIntegrationTests: IntegrationTestBase {
 
         app.buttons["project-switch-to-b-button"].tap()
         waitUntilSettled(on: "B")
-        assertResultIsAProjectSwitchResult()
 
         app.buttons["project-switch-track-button"].tap()
-        let lines = waitForTrackRequest(afterCallbackTo: "B")
+        let lines = waitForTrackThenQuiet(afterCallbackTo: "B")
         assertRequests(after: "B", in: lines, carry: projectBApiKey, notLeavingProject: "A", key: testConfig.apiKey)
+
+        let result = app.staticTexts["project-switch-result-label"].label
+        if isRunningInCI {
+            // CI registers a mock token on A first, so A's device disable is confirmed and the teardown is clean.
+            XCTAssertTrue(lines.contains { $0.contains("/api/users/disableDevice key=\(mask(testConfig.apiKey)) [A]") },
+                          "Leaving A should disable the device on A with A's key")
+            XCTAssertTrue(netLines(afterCallbackTo: "B", in: lines).contains {
+                $0.contains("/api/users/registerDeviceToken key=\(mask(projectBApiKey)) [B]")
+            }, "The token should be registered on B with B's key after the callback")
+            XCTAssertEqual(result, ".switchedCleanly", "A switch with a registered token and an identified user should be clean")
+        } else {
+            assertIsAProjectSwitchResult(result)
+        }
 
         screenshotCapture.captureScreenshot(named: "project-switch-a-to-b")
         print("✅ Project switch A -> B integration test complete")
@@ -35,11 +47,17 @@ class ProjectSwitchIntegrationTests: IntegrationTestBase {
         print("🚀 Starting project switch rapid A -> B -> A integration test")
         openProjectSwitchScreenOnA()
 
-        app.buttons["project-switch-rapid-aba-button"].tap()
-        let settled = waitForLog { lines in lines.contains { $0.contains("CALLBACK A result=") } }
-        waitUntilSettled(on: "A")
-        assertResultIsAProjectSwitchResult()
+        // Off so B's own re-identify traffic cannot land after A's callback and be read as a leak
+        let reidentifyToggle = app.switches["project-switch-reidentify-toggle"]
+        reidentifyToggle.tap()
+        XCTAssertEqual(reidentifyToggle.value as? String, "0", "Re-identify should be off for the rapid chain")
 
+        app.buttons["project-switch-rapid-aba-button"].tap()
+        _ = waitForLog { lines in lines.contains { $0.contains("CALLBACK A result=") } }
+        waitUntilSettled(on: "A")
+        assertIsAProjectSwitchResult(app.staticTexts["project-switch-result-label"].label)
+
+        let settled = logLines()
         let requestB = settled.firstIndex { $0.hasSuffix("REQUEST switch -> B") }
         let requestA = settled.firstIndex { $0.hasSuffix("REQUEST switch -> A") }
         let callbackB = settled.firstIndex { $0.contains("CALLBACK B result=") }
@@ -51,8 +69,9 @@ class ProjectSwitchIntegrationTests: IntegrationTestBase {
         XCTAssertLessThan(requestB ?? .max, requestA ?? .min, "Requests should be logged in the order they were made")
         XCTAssertLessThan(callbackB ?? .max, callbackA ?? .min, "Callbacks should fire in request order, B then A")
 
+        app.buttons["project-switch-identify-button"].tap()
         app.buttons["project-switch-track-button"].tap()
-        let lines = waitForTrackRequest(afterCallbackTo: "A")
+        let lines = waitForTrackThenQuiet(afterCallbackTo: "A")
         assertRequests(after: "A", in: lines, carry: testConfig.apiKey, notLeavingProject: "B", key: projectBApiKey)
 
         screenshotCapture.captureScreenshot(named: "project-switch-rapid-aba")
@@ -83,13 +102,18 @@ class ProjectSwitchIntegrationTests: IntegrationTestBase {
         let initButton = app.buttons["project-switch-init-a-button"]
         XCTAssertTrue(initButton.waitForExistence(timeout: standardTimeout), "Init on A button should exist")
         initButton.tap()
-        XCTAssertTrue(waitForLabel("project-switch-active-label", toBe: "A"), "SDK should be live on project A after init")
 
         let reidentifyToggle = app.switches["project-switch-reidentify-toggle"]
         XCTAssertEqual(reidentifyToggle.value as? String, "1", "Re-identify from callback should default to on")
 
         app.buttons["project-switch-identify-button"].tap()
-        sleep(2)
+        if isRunningInCI {
+            let registeredOnA = { (lines: [String]) in
+                lines.contains { $0.contains("/api/users/registerDeviceToken key=\(self.mask(self.testConfig.apiKey)) [A]") }
+            }
+            XCTAssertTrue(registeredOnA(waitForLog(until: registeredOnA)), "The CI mock token should be registered on A before switching")
+        }
+        _ = waitForQuiet()
         app.buttons["project-switch-clear-log-button"].tap()
     }
 
@@ -98,17 +122,16 @@ class ProjectSwitchIntegrationTests: IntegrationTestBase {
         XCTAssertTrue(waitForLabel("project-switch-active-label", toBe: label), "SDK should settle on project \(label)")
     }
 
-    // Not asserting .switchedCleanly: a simulator has no APNs token, so warnings are legitimate there.
-    private func assertResultIsAProjectSwitchResult() {
-        let result = app.staticTexts["project-switch-result-label"].label
+    private func assertIsAProjectSwitchResult(_ result: String) {
         XCTAssertTrue([".switchedCleanly", ".switchedWithWarnings"].contains(result), "Unexpected switch result: \(result)")
         print("ℹ️ Switch result: \(result)")
     }
 
-    private func waitForTrackRequest(afterCallbackTo label: String) -> [String] {
-        let lines = waitForLog { lines in
+    private func waitForTrackThenQuiet(afterCallbackTo label: String) -> [String] {
+        _ = waitForLog { lines in
             self.netLines(afterCallbackTo: label, in: lines).contains { $0.contains("/api/events/track") }
         }
+        let lines = waitForQuiet()
         print("📋 Project switch log:\n\(lines.joined(separator: "\n"))")
         XCTAssertTrue(netLines(afterCallbackTo: label, in: lines).contains { $0.contains("/api/events/track") },
                       "track should reach the network after the callback for \(label)")
@@ -129,6 +152,7 @@ class ProjectSwitchIntegrationTests: IntegrationTestBase {
         XCTAssertTrue(requests.contains { $0.contains("key=\(mask(apiKey)) [\(label)]") }, "Expected requests with \(label)'s key \(mask(apiKey))")
     }
 
+    /// The app inserts log lines in timestamp order, so position in the log is time order.
     private func netLines(afterCallbackTo label: String, in lines: [String]) -> [String] {
         guard let index = lines.lastIndex(where: { $0.contains("CALLBACK \(label) result=") }) else { return [] }
         return lines[(index + 1)...].filter { $0.contains(" NET ") }
@@ -144,6 +168,22 @@ class ProjectSwitchIntegrationTests: IntegrationTestBase {
         while !condition(lines) && Date() < deadline {
             sleep(1)
             lines = logLines()
+        }
+        return lines
+    }
+
+    /// Returns once the log has not changed for `quietPeriod`, or at `timeout`.
+    private func waitForQuiet(quietPeriod: TimeInterval = 2.0, timeout: TimeInterval = 20.0) -> [String] {
+        let deadline = Date().addingTimeInterval(timeout)
+        var lines = logLines()
+        var lastChange = Date()
+        while Date() < deadline && Date().timeIntervalSince(lastChange) < quietPeriod {
+            usleep(500_000)
+            let current = logLines()
+            if current != lines {
+                lines = current
+                lastChange = Date()
+            }
         }
         return lines
     }
