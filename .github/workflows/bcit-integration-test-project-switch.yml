@@ -1,0 +1,119 @@
+name: BCIT Project Switch Integration Test
+permissions:
+  contents: read
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, labeled]
+  workflow_dispatch:
+    inputs:
+      ref:
+        description: 'Branch or commit to test (leave empty for current branch)'
+        required: false
+        type: string
+
+jobs:
+  project-switch-test:
+    name: BCIT Project Switch Integration Test
+    runs-on: macos-15
+    timeout-minutes: 30
+    env:
+      XCODE_VERSION: '16.4'
+    # Also runs on every PR into or out of the switchProject feature branch, without a label,
+    # because that is where the API under test lives until it reaches master.
+    if: >
+      github.event_name == 'workflow_dispatch' ||
+      (
+        github.event_name == 'pull_request' && (
+          contains(github.event.pull_request.labels.*.name, 'bcit') ||
+          contains(github.event.pull_request.labels.*.name, 'BCIT') ||
+          contains(github.event.pull_request.labels.*.name, 'bcit-projectswitch') ||
+          contains(github.event.pull_request.labels.*.name, 'BCIT-PROJECTSWITCH') ||
+          contains(github.event.pull_request.labels.*.name, 'Bcit') ||
+          contains(github.event.pull_request.labels.*.name, 'Bcit-Projectswitch') ||
+          github.event.pull_request.base.ref == 'feature/SDK-674-switch-project' ||
+          github.event.pull_request.head.ref == 'feature/SDK-674-switch-project' ||
+          startsWith(github.event.pull_request.head.ref, 'release/')
+        )
+      )
+
+    steps:
+    - name: Check Project B Secrets
+      id: project-b
+      env:
+        B_PROJECT_ID: ${{ secrets.BCIT_B_TEST_PROJECT_ID }}
+        B_MOBILE_KEY: ${{ secrets.BCIT_B_ITERABLE_API_KEY }}
+        B_SERVER_KEY: ${{ secrets.BCIT_B_ITERABLE_SERVER_KEY }}
+      run: |
+        if [[ -n "$B_PROJECT_ID" && -n "$B_MOBILE_KEY" && -n "$B_SERVER_KEY" ]]; then
+          echo "configured=true" >> "$GITHUB_OUTPUT"
+        else
+          echo "::notice::Project B secrets are not available, skipping the project switch integration test"
+          echo "configured=false" >> "$GITHUB_OUTPUT"
+        fi
+
+    - name: Checkout Repository
+      if: steps.project-b.outputs.configured == 'true'
+      uses: actions/checkout@v4
+      with:
+        ref: ${{ github.event.inputs.ref || github.ref }}
+
+    - name: Setup Xcode
+      if: steps.project-b.outputs.configured == 'true'
+      uses: maxim-lobanov/setup-xcode@v1
+      with:
+        xcode-version: ${{ env.XCODE_VERSION }}
+
+    - name: Validate Xcode Version
+      if: steps.project-b.outputs.configured == 'true'
+      run: |
+        ACTUAL_XCODE_VERSION=$(xcodebuild -version | head -n 1 | awk '{print $2}')
+        echo "Xcode version: $ACTUAL_XCODE_VERSION (expected $XCODE_VERSION)"
+        if ! echo "$ACTUAL_XCODE_VERSION" | grep -q "$XCODE_VERSION"; then
+          echo "❌ Incorrect Xcode version!"
+          exit 1
+        fi
+
+    - name: Setup Local Environment
+      if: steps.project-b.outputs.configured == 'true'
+      working-directory: tests/business-critical-integration
+      run: |
+        echo "🚀 Setting up local environment for project switch integration tests..."
+
+        ./scripts/setup-local-environment.sh \
+          "${{ secrets.BCIT_TEST_PROJECT_ID }}" \
+          "${{ secrets.BCIT_ITERABLE_SERVER_KEY }}" \
+          "${{ secrets.BCIT_ITERABLE_API_KEY }}" \
+          "${{ secrets.BCIT_JWT_API_KEY }}" \
+          "${{ secrets.BCIT_JWT_SECRET }}" \
+          "${{ secrets.BCIT_B_TEST_PROJECT_ID }}" \
+          "${{ secrets.BCIT_B_ITERABLE_API_KEY }}" \
+          "${{ secrets.BCIT_B_ITERABLE_SERVER_KEY }}" \
+          "${{ secrets.BCIT_C_ITERABLE_API_KEY }}" \
+          "${{ secrets.BCIT_D_ITERABLE_API_KEY }}" \
+          "${{ secrets.BCIT_B_DATA_REGION }}"
+
+    - name: Validate Setup
+      if: steps.project-b.outputs.configured == 'true'
+      working-directory: tests/business-critical-integration
+      run: |
+        echo "🔍 Validating environment setup..."
+        ./scripts/validate-setup.sh
+
+    - name: Run Project Switch Tests
+      if: steps.project-b.outputs.configured == 'true'
+      working-directory: tests/business-critical-integration
+      run: |
+        echo "🧪 Running project switch integration tests..."
+        CI=true ./scripts/run-tests.sh projectswitch
+
+    - name: Upload Test Results
+      if: always() && steps.project-b.outputs.configured == 'true'
+      uses: actions/upload-artifact@v4
+      with:
+        name: project-switch-test-results
+        path: |
+          tests/business-critical-integration/reports/
+          tests/business-critical-integration/screenshots/
+          tests/business-critical-integration/logs/
+        retention-days: 7
