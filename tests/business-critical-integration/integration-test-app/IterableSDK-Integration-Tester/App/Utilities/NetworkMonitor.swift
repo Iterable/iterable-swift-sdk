@@ -127,6 +127,10 @@ class NetworkMonitor: NSObject {
     
     var onRequestAdded: ((NetworkRequest) -> Void)?
     var onRequestUpdated: ((NetworkRequest) -> Void)?
+
+    /// Posted on the main thread for every captured request, `userInfo["request"]` is the `NetworkRequest`.
+    /// Lets more than one screen observe requests without taking over `onRequestAdded`.
+    static let didAddRequest = Notification.Name("NetworkMonitorDidAddRequest")
     
     override private init() {
         super.init()
@@ -148,6 +152,7 @@ class NetworkMonitor: NSObject {
             
             DispatchQueue.main.async {
                 self.onRequestAdded?(request)
+                NotificationCenter.default.post(name: NetworkMonitor.didAddRequest, object: self, userInfo: ["request": request])
             }
         }
     }
