@@ -17,22 +17,32 @@ jobs:
     name: BCIT Project Switch Integration Test
     runs-on: macos-15
     timeout-minutes: 30
+    # On the job, not the workflow, so a run whose if is false cannot cancel one in progress
+    concurrency:
+      group: bcit-project-switch-${{ github.event.pull_request.number || github.ref }}
+      cancel-in-progress: true
     env:
       XCODE_VERSION: '16.4'
-    # Also runs on every PR into or out of the switchProject feature branch, without a label,
+    # Also runs on every PR into or out of the switchProject feature branches, without a label,
     # because that is where the API under test lives until it reaches master.
+    # TODO(SDK-759): drop the hardcoded feature branch refs once switchProject ships to master.
+    # Expression string comparisons are case-insensitive, so one spelling per label is enough.
     if: >
       github.event_name == 'workflow_dispatch' ||
       (
-        github.event_name == 'pull_request' && (
+        github.event_name == 'pull_request' &&
+        (
+          github.event.action != 'labeled' ||
+          github.event.label.name == 'bcit' ||
+          github.event.label.name == 'bcit-projectswitch'
+        ) &&
+        (
           contains(github.event.pull_request.labels.*.name, 'bcit') ||
-          contains(github.event.pull_request.labels.*.name, 'BCIT') ||
           contains(github.event.pull_request.labels.*.name, 'bcit-projectswitch') ||
-          contains(github.event.pull_request.labels.*.name, 'BCIT-PROJECTSWITCH') ||
-          contains(github.event.pull_request.labels.*.name, 'Bcit') ||
-          contains(github.event.pull_request.labels.*.name, 'Bcit-Projectswitch') ||
           github.event.pull_request.base.ref == 'feature/SDK-674-switch-project' ||
           github.event.pull_request.head.ref == 'feature/SDK-674-switch-project' ||
+          github.event.pull_request.base.ref == 'feature/switch-project-api' ||
+          github.event.pull_request.head.ref == 'feature/switch-project-api' ||
           startsWith(github.event.pull_request.head.ref, 'release/')
         )
       )
@@ -41,15 +51,19 @@ jobs:
     - name: Check Project B Secrets
       id: project-b
       env:
+        IS_FORK: ${{ github.event.pull_request.head.repo.fork == true }}
         B_PROJECT_ID: ${{ secrets.BCIT_B_TEST_PROJECT_ID }}
         B_MOBILE_KEY: ${{ secrets.BCIT_B_ITERABLE_API_KEY }}
         B_SERVER_KEY: ${{ secrets.BCIT_B_ITERABLE_SERVER_KEY }}
       run: |
-        if [[ -n "$B_PROJECT_ID" && -n "$B_MOBILE_KEY" && -n "$B_SERVER_KEY" ]]; then
+        if [[ "$IS_FORK" == "true" ]]; then
+          echo "::notice::Fork PRs get no repository secrets, skipping the project switch integration test"
+          echo "configured=false" >> "$GITHUB_OUTPUT"
+        elif [[ -n "$B_PROJECT_ID" && -n "$B_MOBILE_KEY" && -n "$B_SERVER_KEY" ]]; then
           echo "configured=true" >> "$GITHUB_OUTPUT"
         else
-          echo "::notice::Project B secrets are not available, skipping the project switch integration test"
-          echo "configured=false" >> "$GITHUB_OUTPUT"
+          echo "::error::BCIT_B_TEST_PROJECT_ID, BCIT_B_ITERABLE_API_KEY and BCIT_B_ITERABLE_SERVER_KEY must be set to run the project switch integration test"
+          exit 1
         fi
 
     - name: Checkout Repository
