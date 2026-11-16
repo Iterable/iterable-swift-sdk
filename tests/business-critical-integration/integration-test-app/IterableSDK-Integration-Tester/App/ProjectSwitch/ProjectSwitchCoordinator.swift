@@ -120,7 +120,10 @@ final class ProjectSwitchCoordinator {
         IterableAPI.track(event: Self.trackEventName)
     }
 
-    func switchTo(_ label: String) {
+    /// - Parameter reidentify: whether the callback calls `setEmail`, fixed at request time.
+    ///   Defaults to the re-identify toggle.
+    func switchTo(_ label: String, reidentify: Bool? = nil) {
+        let reidentify = reidentify ?? reidentifyFromCallback
         guard let project = iterableProjects[label] else {
             info("project \(label) is not configured")
             return
@@ -132,7 +135,7 @@ final class ProjectSwitchCoordinator {
         requestCountsSinceLastSwitch = [:]
         log("REQUEST switch -> \(label)")
         IterableAPI.switchProject(project: project) { [weak self] result in
-            self?.handleCallback(label: label, result: result)
+            self?.handleCallback(label: label, result: result, reidentify: reidentify)
         }
     }
 
@@ -141,12 +144,14 @@ final class ProjectSwitchCoordinator {
     func rapidFire(_ path: [String]) {
         info("rapid \(path.joined(separator: " -> "))")
         let steps = path.first == requestedLabel ? Array(path.dropFirst()) : path
-        steps.forEach(switchTo)
+        steps.forEach { switchTo($0) }
     }
 
+    /// Never re-identifies from the callback, which would mask whether the setEmail made
+    /// during the switch was replayed against the right project.
     func switchAndCallDuring() {
         let target = ["A", "C"].contains(requestedLabel) ? "B" : "A"
-        switchTo(target)
+        switchTo(target, reidentify: false)
         identifyOnRequestedProject()
         track()
     }
@@ -178,11 +183,11 @@ final class ProjectSwitchCoordinator {
         return config
     }
 
-    private func handleCallback(label: String, result: IterableProjectSwitchResult) {
+    private func handleCallback(label: String, result: IterableProjectSwitchResult, reidentify: Bool) {
         pendingCallbacks -= 1
         lastResult = result
         log("CALLBACK \(label) result=\(Self.name(of: result))")
-        guard reidentifyFromCallback, let project = projects[label] else { return }
+        guard reidentify, let project = projects[label] else { return }
         info("re-identify from callback \(label)")
         log("CALL setEmail project=\(label)")
         IterableAPI.setEmail(project.testUserEmail)
