@@ -329,8 +329,19 @@ public extension IterableAPI {
     /// `apiKey` and `config`. The device ID and visitor consent are project-agnostic and are
     /// deliberately preserved.
     ///
-    /// SDK calls made between this call and `callback` are queued and replayed in FIFO order
-    /// against the new project, so they are never run against a half-torn-down SDK.
+    /// Identity and generic tracking calls made between this call and `callback` are queued and
+    /// replayed in FIFO order against the new project, so they never run against a half-torn-down
+    /// SDK. Exactly these are queued: the `email` and `userId` setters, `setEmail`, `setUserId`,
+    /// `logoutUser`, `register(token:)`, `updateUser`, `updateEmail`, `updateCart`,
+    /// `track(purchase:)` and `track(event:)`, in all their overloads.
+    ///
+    /// Everything else runs against whichever project is live when it is made: device disables,
+    /// push opens (`track(pushOpen:)` and the `IterableAppIntegration` handlers), in-app and inbox
+    /// tracking, `inAppConsume`, the JSON-only message calls, embedded tracking, calls on
+    /// `inAppManager` and `embeddedManager`, `updateSubscriptions`, device attributes, visitor
+    /// consent, `pauseAuthRetries`, `handle(universalLink:)` and `attributionInfo`. During the
+    /// teardown, the ones that need an identified user are dropped by the `isSDKInitialized()`
+    /// check, because the outgoing project's identity has already been cleared.
     ///
     /// Repeated calls are resolved against the project most recently *asked* for, not the one
     /// currently live, so the SDK always ends up where the app last asked to be:
@@ -346,11 +357,16 @@ public extension IterableAPI {
     ///   project currently being left, which is a real switch and not a no-op. Each callback
     ///   fires when the project it asked for is live, so `A → B → A` reports B and then A.
     ///
-    /// Between two switches in a chain the SDK is fully live on the project that just landed,
-    /// so calls made from its callback, re-identifying the user in particular, run against that
-    /// project rather than being replayed into the next one. A call made after a later
-    /// destination has already been requested is replayed against that destination, not against
-    /// the switch that lands first. Calls stay in order within each destination.
+    /// When a switch lands, the SDK is fully live on that project, so calls made from that
+    /// switch's callback, re-identifying the user in particular, run against it rather than being
+    /// replayed into a switch queued behind it. A call made after a later destination has already
+    /// been requested is replayed against that destination, not against the switch that lands
+    /// first. Calls stay in order within each destination.
+    ///
+    /// A request for the project already asked for, with nothing in flight, tears nothing down and
+    /// leaves identity alone, so there is nothing to re-identify. Its callback is delivered
+    /// asynchronously, so a call made from it follows the rule above and goes to the project asked
+    /// for last when it runs (SDK-856).
     ///
     /// An unusable API key cannot reach here: `IterableProject` refuses to hold an empty or
     /// whitespace-only one, so the invalid state is not constructible.
@@ -374,6 +390,10 @@ public extension IterableAPI {
     /// expected in normal operation and is not an error: carry on and re-identify the user with
     /// `setEmail` or `setUserId` exactly as you would after `.switchedCleanly`.
     ///
+    /// - Note: Push opens are not queued, by design. A push opened while the previous project is
+    ///         being torn down can be lost: the teardown clears the in-memory identity before it
+    ///         waits for the device disable hand-off, so `track(pushOpen:)` drops the open
+    ///         (SDK-855).
     /// - Note: Queued `disableDevice` tasks survive the purge and still reach the project
     ///         they were created for, because each persisted task carries its own API key and
     ///         endpoint.
@@ -423,7 +443,8 @@ extension IterableAPI {
             runNextSwitchIfAny(ProjectSwitchGate.shared.endSwitch(succeeded: succeeded))
         }
 
-        // Step 1: guard and validate.
+        // Step 1: guard and validate. Defensive for internal callers: on the public path
+        // `IterableProject`'s failable init has already refused a blank key.
         guard !apiKey.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else {
             ITBError("switchProject called with an empty API key. The SDK is left on the project it is already on.")
             deliverOnMainThread(callback, false)
