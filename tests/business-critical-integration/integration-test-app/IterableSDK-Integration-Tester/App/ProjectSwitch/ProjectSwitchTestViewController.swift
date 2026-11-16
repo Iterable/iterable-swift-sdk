@@ -8,6 +8,8 @@ final class ProjectSwitchTestViewController: UIViewController {
     private let coordinator = ProjectSwitchCoordinator.shared
     private var statusTimer: Timer?
     private var changeObserver: NSObjectProtocol?
+    private var isLogStale = false
+    private lazy var initButton = makeButton("Init on A", "project-switch-init-a-button", .systemGreen, #selector(initializeOnA))
 
     // MARK: - UI Components
 
@@ -56,6 +58,9 @@ final class ProjectSwitchTestViewController: UIViewController {
         }
         statusTimer = Timer.scheduledTimer(withTimeInterval: 0.5, repeats: true) { [weak self] _ in
             self?.refreshState()
+            if self?.isLogStale == true {
+                self?.refreshLog()
+            }
         }
         refresh()
     }
@@ -84,7 +89,7 @@ final class ProjectSwitchTestViewController: UIViewController {
         stateStack.spacing = 2
 
         let setupRow = makeButtonRow([
-            makeButton("Init on A", "project-switch-init-a-button", .systemGreen, #selector(initializeOnA)),
+            initButton,
             makeButton("setEmail", "project-switch-identify-button", .systemBlue, #selector(identify)),
             makeButton("track", "project-switch-track-button", .systemIndigo, #selector(track))
         ])
@@ -161,9 +166,22 @@ final class ProjectSwitchTestViewController: UIViewController {
 
     private func refresh() {
         refreshState()
+        refreshLog()
+    }
+
+    /// Held while the tester has text selected, and only follows the tail when already at the bottom.
+    private func refreshLog() {
+        guard logTextView.selectedRange.length == 0 else {
+            isLogStale = true
+            return
+        }
+        isLogStale = false
+        let maxOffset = logTextView.contentSize.height - logTextView.bounds.height
+        let wasAtBottom = logTextView.contentOffset.y >= maxOffset - 20
         logTextView.text = coordinator.logLines.joined(separator: "\n")
-        let end = NSRange(location: (logTextView.text as NSString).length, length: 0)
-        logTextView.scrollRangeToVisible(end)
+        if wasAtBottom {
+            logTextView.scrollRangeToVisible(NSRange(location: (logTextView.text as NSString).length, length: 0))
+        }
     }
 
     private func refreshState() {
@@ -173,6 +191,7 @@ final class ProjectSwitchTestViewController: UIViewController {
         baseURLValueLabel.text = coordinator.liveBaseURL ?? "-"
         identityValueLabel.text = "\(IterableAPI.email ?? "-") / \(IterableAPI.userId ?? "-")"
         pendingValueLabel.text = "\(coordinator.pendingCallbacks)"
+        setEnabled(initButton, coordinator.canInitialize)
         resultValueLabel.text = coordinator.lastResult.map { ".\(ProjectSwitchCoordinator.name(of: $0))" } ?? "-"
         let counts = coordinator.requestCountsSinceLastSwitch
         summaryValueLabel.text = (ProjectSwitchCoordinator.labels + ["?"]).map { "\($0)=\(counts[$0] ?? 0)" }.joined(separator: " ")

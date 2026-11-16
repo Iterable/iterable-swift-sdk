@@ -314,6 +314,8 @@ final class HomeViewController: UIViewController, UITextFieldDelegate {
         userIdField.addTarget(self, action: #selector(onTextChanged), for: .editingChanged)
         emailField.addTarget(self, action: #selector(onTextChanged), for: .editingChanged)
 
+        projectSwitchTestRow.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(showProjectSwitchTest)))
+
         if let configEmail = AppDelegate.loadTestUserEmailFromConfig() {
             emailField.text = configEmail
         }
@@ -391,9 +393,6 @@ final class HomeViewController: UIViewController, UITextFieldDelegate {
 
         let offlineRetryTapGesture = UITapGestureRecognizer(target: self, action: #selector(showOfflineRetryTest))
         offlineRetryTestRow.addGestureRecognizer(offlineRetryTapGesture)
-
-        let projectSwitchTapGesture = UITapGestureRecognizer(target: self, action: #selector(showProjectSwitchTest))
-        projectSwitchTestRow.addGestureRecognizer(projectSwitchTapGesture)
 
         let remoteConfigTapGesture = UITapGestureRecognizer(target: self, action: #selector(showRemoteConfigOverride))
         remoteConfigOverrideRow.addGestureRecognizer(remoteConfigTapGesture)

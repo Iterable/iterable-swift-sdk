@@ -359,7 +359,7 @@ extension AppDelegate {
     }
     
     // Generate a realistic fake device token for CI
-    private static func generateMockDeviceToken() -> String {
+    static func generateMockDeviceToken() -> String {
         // Generate a 64-byte (128 character) hex token similar to real device tokens
         let mockToken = (0..<64).map { _ in String(format: "%02x", Int.random(in: 0...255)) }.joined()
         print("🎭 [APP] Generated 64-byte mock device token for CI testing: \(mockToken)")

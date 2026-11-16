@@ -18,14 +18,17 @@ final class ProjectSwitchCoordinator {
     static let shared = ProjectSwitchCoordinator()
     static let didChange = Notification.Name("ProjectSwitchCoordinatorDidChange")
     static let labels = ["A", "B", "C", "D"]
-    static let trackEventName = "bcitProjectSwitch"
+    static let trackEventName = "bcit_project_switch"
 
     let projects: [String: BCITSwitchProject]
     private let iterableProjects: [String: IterableProject]
 
-    private(set) var logLines: [String] = []
+    var logLines: [String] { entries.map { $0.line } }
+    private var entries: [(date: Date, line: String)] = []
     private(set) var lastRequestedLabel: String?
     private(set) var pendingCallbacks = 0
+    private(set) var hasSwitched = false
+    private let isRunningInCI = AppDelegate.isRunningInCI
     private(set) var lastResult: IterableProjectSwitchResult?
     private(set) var requestCountsSinceLastSwitch: [String: Int] = [:]
     var reidentifyFromCallback = true
@@ -72,6 +75,7 @@ final class ProjectSwitchCoordinator {
     var liveBaseURL: String? { IterableAPI.implementation?.apiEndPointForTest }
     var liveLabel: String { liveApiKey.map(label(forKey:)) ?? "-" }
     var requestedLabel: String { lastRequestedLabel ?? liveLabel }
+    var canInitialize: Bool { pendingCallbacks == 0 && !hasSwitched }
 
     func label(forKey key: String?) -> String {
         guard let key = key else { return "?" }
@@ -93,12 +97,16 @@ final class ProjectSwitchCoordinator {
 
     // MARK: - Actions
 
+    /// Calls `initialize` directly, so it is refused once a switch has run until the log is cleared.
     func initializeOnA() {
-        guard let project = iterableProjects["A"] else { return }
+        guard canInitialize, let project = iterableProjects["A"] else { return }
         AppDelegate.lastInitMode = .standard
         IterableAPI.initialize(apiKey: project.apiKey, launchOptions: nil, config: project.config)
         lastRequestedLabel = "A"
-        info("initialized on A autoPushRegistration=true")
+        info("init on A re-initializes the SDK without a switch, autoPushRegistration=true")
+        if isRunningInCI {
+            registerCIMockToken(project: "A")
+        }
     }
 
     func identifyOnRequestedProject() {
@@ -118,6 +126,7 @@ final class ProjectSwitchCoordinator {
             return
         }
         lastRequestedLabel = label
+        hasSwitched = true
         pendingCallbacks += 1
         lastResult = nil
         requestCountsSinceLastSwitch = [:]
@@ -143,8 +152,11 @@ final class ProjectSwitchCoordinator {
     }
 
     func clearLog() {
-        logLines.removeAll()
+        entries.removeAll()
         requestCountsSinceLastSwitch = [:]
+        if pendingCallbacks == 0 {
+            hasSwitched = false
+        }
         notifyChange()
     }
 
@@ -158,7 +170,7 @@ final class ProjectSwitchCoordinator {
         config.urlDelegate = appDelegate
         config.logDelegate = SDKLogCapture.shared
         config.inAppDisplayInterval = 1
-        // On, unlike the rest of BCIT: with it off every teardown reports warnings and B never gets a registerToken.
+        // On, unlike the rest of BCIT: with it off the teardown never disables the device on the outgoing project.
         config.autoPushRegistration = true
         config.allowedProtocols = ["tester", "https", "http"]
         config.enableEmbeddedMessaging = true
@@ -172,8 +184,20 @@ final class ProjectSwitchCoordinator {
         log("CALLBACK \(label) result=\(Self.name(of: result))")
         guard reidentifyFromCallback, let project = projects[label] else { return }
         info("re-identify from callback \(label)")
-        log("CALL setEmail project=\(requestedLabel)")
+        log("CALL setEmail project=\(label)")
         IterableAPI.setEmail(project.testUserEmail)
+        if isRunningInCI {
+            registerCIMockToken(project: label)
+        }
+    }
+
+    /// CI simulators get no APNs token, so this stands in for the token the OS hands back after
+    /// `autoPushRegistration` asks for one. Only the app can register it, as on a device.
+    private func registerCIMockToken(project label: String) {
+        let token = AppDelegate.getRegisteredDeviceToken() ?? AppDelegate.generateMockDeviceToken()
+        info("CI mock device token stands in for APNs")
+        log("CALL registerToken project=\(label)")
+        AppDelegate.registerDeviceToken(token.hexStringToData())
     }
 
     private func logRequest(_ request: NetworkRequest) {
@@ -190,10 +214,13 @@ final class ProjectSwitchCoordinator {
         log("INFO \(text)")
     }
 
+    /// Inserted by timestamp: a request is stamped when it is captured but reaches the main
+    /// queue later, so appending would put it after events that happened after it.
     private func log(_ event: String, at date: Date = Date()) {
-        logLines.append("\(timeFormatter.string(from: date)) \(event)")
-        if logLines.count > maxLogLines {
-            logLines.removeFirst(logLines.count - maxLogLines)
+        let index = entries.lastIndex { $0.date <= date }.map { $0 + 1 } ?? 0
+        entries.insert((date, "\(timeFormatter.string(from: date)) \(event)"), at: index)
+        if entries.count > maxLogLines {
+            entries.removeFirst(entries.count - maxLogLines)
         }
         notifyChange()
     }
