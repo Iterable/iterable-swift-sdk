@@ -200,7 +200,7 @@ configure_api_keys() {
         PROJECT_B_SERVER_KEY="${PARAM_B_SERVER_KEY:-}"
         PROJECT_C_MOBILE_KEY="${PARAM_C_MOBILE_KEY:-}"
         PROJECT_D_MOBILE_KEY="${PARAM_D_MOBILE_KEY:-}"
-        PROJECT_B_DATA_REGION="${PARAM_B_DATA_REGION:-US}"
+        PROJECT_B_DATA_REGION="${PARAM_B_DATA_REGION:-}"
         echo_info "Using provided parameters:"
         echo_info "Project ID: $PROJECT_ID"
         echo_info "Server API Key: ${SERVER_KEY:0:8}***"
@@ -222,9 +222,13 @@ configure_api_keys() {
                     SERVER_KEY=$(jq -r '.serverApiKey' "$LOCAL_CONFIG_FILE") 
                     MOBILE_KEY=$(jq -r '.mobileApiKey' "$LOCAL_CONFIG_FILE")
                     TEST_USER_EMAIL=$(jq -r '.testUserEmail' "$LOCAL_CONFIG_FILE")
-                    PROJECT_B_ID=$(jq -r '.projectB.projectId // empty' "$LOCAL_CONFIG_FILE")
-                    PROJECT_B_SERVER_KEY=$(jq -r '.projectB.serverApiKey // empty' "$LOCAL_CONFIG_FILE")
-                    PROJECT_B_DATA_REGION=$(jq -r '.projectB.dataRegion // "US"' "$LOCAL_CONFIG_FILE")
+                    if jq -e '.projectB' "$LOCAL_CONFIG_FILE" > /dev/null; then
+                        PROJECT_B_CONFIGURED=true
+                        PROJECT_B_ID=$(jq -r '.projectB.projectId' "$LOCAL_CONFIG_FILE")
+                        PROJECT_B_SERVER_KEY=$(jq -r '.projectB.serverApiKey' "$LOCAL_CONFIG_FILE")
+                        PROJECT_B_TEST_USER_EMAIL=$(jq -r '.projectB.testUserEmail' "$LOCAL_CONFIG_FILE")
+                        PROJECT_B_DATA_REGION=$(jq -r '.projectB.dataRegion' "$LOCAL_CONFIG_FILE")
+                    fi
                     echo_info "Loaded existing configuration"
                 else
                     echo_warning "jq not available, cannot load existing config"
@@ -286,17 +290,24 @@ configure_api_keys() {
         read -p "📱 Key C, a second MOBILE API Key on this project: " PROJECT_C_MOBILE_KEY
         read -p "📱 Key D, a second MOBILE API Key on project B: " PROJECT_D_MOBILE_KEY
         read -p "🌍 Project B data region, US or EU (default US): " PROJECT_B_DATA_REGION
-        PROJECT_B_DATA_REGION="${PROJECT_B_DATA_REGION:-US}"
     fi
 
     # Optional project switch blocks, omitted when absent so single-project runs are unchanged
     PROJECT_SWITCH_BLOCKS=""
     if [[ -n "$PROJECT_B_ID" && -n "$PROJECT_B_MOBILE_KEY" && -n "$PROJECT_B_SERVER_KEY" ]]; then
+        PROJECT_B_DATA_REGION=$(echo "${PROJECT_B_DATA_REGION:-US}" | tr '[:lower:]' '[:upper:]')
+        if [[ "$PROJECT_B_DATA_REGION" != "US" && "$PROJECT_B_DATA_REGION" != "EU" ]]; then
+            echo_error "Project B data region must be US or EU, got '$PROJECT_B_DATA_REGION'"
+            exit 1
+        fi
+        PROJECT_B_CONFIGURED=true
+        # Distinct from A's user so a call replayed into the wrong project shows the wrong identity
+        PROJECT_B_TEST_USER_EMAIL="${TEST_USER_EMAIL%@*}-b@${TEST_USER_EMAIL#*@}"
         PROJECT_SWITCH_BLOCKS+="  \"projectB\": {
     \"projectId\": \"$PROJECT_B_ID\",
     \"mobileApiKey\": \"$PROJECT_B_MOBILE_KEY\",
     \"serverApiKey\": \"$PROJECT_B_SERVER_KEY\",
-    \"testUserEmail\": \"$TEST_USER_EMAIL\",
+    \"testUserEmail\": \"$PROJECT_B_TEST_USER_EMAIL\",
     \"dataRegion\": \"$PROJECT_B_DATA_REGION\"
   },
 "
@@ -357,6 +368,7 @@ create_test_user() {
     local SERVER_KEY="${1:-$SERVER_KEY}"
     local PROJECT_ID="${2:-$PROJECT_ID}"
     local BASE_URL="${3:-https://api.iterable.com}"
+    local TEST_USER_EMAIL="${4:-$TEST_USER_EMAIL}"
 
     echo_header "Setting Up Test User"
     
@@ -479,12 +491,12 @@ main() {
         
     create_test_user
 
-    if [[ -n "$PROJECT_B_ID" && -n "$PROJECT_B_SERVER_KEY" ]]; then
+    if [[ "$PROJECT_B_CONFIGURED" == true ]]; then
         local PROJECT_B_BASE_URL="https://api.iterable.com"
-        if [[ "$(echo "$PROJECT_B_DATA_REGION" | tr '[:lower:]' '[:upper:]')" == "EU" ]]; then
+        if [[ "$PROJECT_B_DATA_REGION" == "EU" ]]; then
             PROJECT_B_BASE_URL="https://api.eu.iterable.com"
         fi
-        create_test_user "$PROJECT_B_SERVER_KEY" "$PROJECT_B_ID" "$PROJECT_B_BASE_URL"
+        create_test_user "$PROJECT_B_SERVER_KEY" "$PROJECT_B_ID" "$PROJECT_B_BASE_URL" "$PROJECT_B_TEST_USER_EMAIL"
     fi
     
     echo_header "Setup Complete! 🎉"

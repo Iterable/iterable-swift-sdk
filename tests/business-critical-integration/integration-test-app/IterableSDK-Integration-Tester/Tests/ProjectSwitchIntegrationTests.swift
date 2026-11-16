@@ -3,13 +3,13 @@ import XCTest
 
 class ProjectSwitchIntegrationTests: IntegrationTestBase {
 
-    private var projectB: TestConfiguration!
+    private var projectBApiKey: String!
 
     override func setUpWithError() throws {
-        guard let projectB = loadProjectBConfiguration() else {
+        guard let projectBApiKey = loadProjectBApiKey() else {
             throw XCTSkip("No projectB block in test-config.json, skipping project switch tests")
         }
-        self.projectB = projectB
+        self.projectBApiKey = projectBApiKey
         try super.setUpWithError()
     }
 
@@ -25,7 +25,7 @@ class ProjectSwitchIntegrationTests: IntegrationTestBase {
 
         app.buttons["project-switch-track-button"].tap()
         let lines = waitForTrackRequest(afterCallbackTo: "B")
-        assertRequests(after: "B", in: lines, carry: projectB.apiKey, notLeavingProject: "A", key: testConfig.apiKey)
+        assertRequests(after: "B", in: lines, carry: projectBApiKey, notLeavingProject: "A", key: testConfig.apiKey)
 
         screenshotCapture.captureScreenshot(named: "project-switch-a-to-b")
         print("✅ Project switch A -> B integration test complete")
@@ -53,7 +53,7 @@ class ProjectSwitchIntegrationTests: IntegrationTestBase {
 
         app.buttons["project-switch-track-button"].tap()
         let lines = waitForTrackRequest(afterCallbackTo: "A")
-        assertRequests(after: "A", in: lines, carry: testConfig.apiKey, notLeavingProject: "B", key: projectB.apiKey)
+        assertRequests(after: "A", in: lines, carry: testConfig.apiKey, notLeavingProject: "B", key: projectBApiKey)
 
         screenshotCapture.captureScreenshot(named: "project-switch-rapid-aba")
         print("✅ Project switch rapid A -> B -> A integration test complete")
@@ -61,7 +61,7 @@ class ProjectSwitchIntegrationTests: IntegrationTestBase {
 
     // MARK: - Helpers
 
-    private func loadProjectBConfiguration() -> TestConfiguration? {
+    private func loadProjectBApiKey() -> String? {
         guard let path = Bundle(for: type(of: self)).path(forResource: "test-config", ofType: "json"),
               let data = try? Data(contentsOf: URL(fileURLWithPath: path)),
               let json = try? JSONSerialization.jsonObject(with: data) as? [String: Any],
@@ -69,12 +69,7 @@ class ProjectSwitchIntegrationTests: IntegrationTestBase {
               let mobileApiKey = block["mobileApiKey"] as? String, !mobileApiKey.isEmpty else {
             return nil
         }
-        let region = block["dataRegion"] as? String ?? BCITDataRegion.us
-        return TestConfiguration(apiKey: mobileApiKey,
-                                 serverKey: block["serverApiKey"] as? String ?? "",
-                                 projectId: block["projectId"] as? String ?? "",
-                                 userEmail: block["testUserEmail"] as? String ?? json["testUserEmail"] as? String ?? "",
-                                 apiEndpoint: BCITDataRegion.serverBaseURL(for: region))
+        return mobileApiKey
     }
 
     private func openProjectSwitchScreenOnA() {

@@ -97,10 +97,9 @@ extension AppDelegate {
     // MARK: - Project Switch Config (optional, nil when absent)
 
     struct SwitchProjectConfig {
-        let projectId: String?
         let mobileApiKey: String
-        let serverApiKey: String?
         let testUserEmail: String?
+        /// One of the `IterableDataRegion` endpoints, for `IterableConfig.dataRegion`.
         let dataRegion: String
     }
 
@@ -111,11 +110,11 @@ extension AppDelegate {
             return nil
         }
         print("✅ Loaded projectB config from test-config.json")
-        return SwitchProjectConfig(projectId: block["projectId"] as? String,
-                                   mobileApiKey: mobileApiKey,
-                                   serverApiKey: block["serverApiKey"] as? String,
+        // setup-local-environment.sh only writes US or EU
+        let isEU = block["dataRegion"] as? String == "EU"
+        return SwitchProjectConfig(mobileApiKey: mobileApiKey,
                                    testUserEmail: block["testUserEmail"] as? String,
-                                   dataRegion: block["dataRegion"] as? String ?? "US")
+                                   dataRegion: isEU ? IterableDataRegion.EU : IterableDataRegion.US)
     }
 
     static func loadProjectCApiKeyFromConfig() -> String? {

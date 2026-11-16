@@ -18,11 +18,11 @@ class IterableAPIClient {
     
     // MARK: - Initialization
     
-    init(apiKey: String, serverKey: String, projectId: String, baseURL: String = BCITDataRegion.defaultServerBaseURL) {
+    init(apiKey: String, serverKey: String, projectId: String) {
         self.apiKey = apiKey
         self.serverKey = serverKey
         self.projectId = projectId
-        self.baseURL = baseURL
+        self.baseURL = "https://api.iterable.com"
         
         // Create URLSession for backend requests (will be monitored)
         let config = URLSessionConfiguration.default

@@ -7,6 +7,7 @@ struct BCITSwitchProject {
     let label: String
     let mobileApiKey: String
     let testUserEmail: String
+    /// One of the `IterableDataRegion` endpoints.
     let dataRegion: String
 }
 
@@ -38,7 +39,7 @@ final class ProjectSwitchCoordinator {
     }()
 
     private init() {
-        let configA = (email: AppDelegate.loadTestUserEmailFromConfig() ?? "", region: BCITDataRegion.us)
+        let configA = (email: AppDelegate.loadTestUserEmailFromConfig() ?? "", region: IterableDataRegion.US)
         var projects = ["A": BCITSwitchProject(label: "A", mobileApiKey: AppDelegate.loadApiKeyFromConfig(),
                                                testUserEmail: configA.email, dataRegion: configA.region)]
         if let configB = AppDelegate.loadProjectBConfig() {
@@ -161,7 +162,7 @@ final class ProjectSwitchCoordinator {
         config.autoPushRegistration = true
         config.allowedProtocols = ["tester", "https", "http"]
         config.enableEmbeddedMessaging = true
-        config.dataRegion = project.dataRegion.uppercased() == BCITDataRegion.eu ? IterableDataRegion.EU : IterableDataRegion.US
+        config.dataRegion = project.dataRegion
         return config
     }
 
