@@ -110,7 +110,8 @@ TEST_TYPE:
   inapp       Run in-app message integration tests  
   embedded    Run embedded message integration tests
   deeplink    Run deep linking integration tests
-  all         Run all integration tests sequentially
+  projectswitch  Run switchProject integration tests (needs projectB in config, skipped otherwise)
+  all         Run all integration tests sequentially (excludes projectswitch)
 
 OPTIONS:
   --verbose, -v          Enable verbose output
@@ -140,7 +141,7 @@ EOF
 parse_arguments() {
     while [[ $# -gt 0 ]]; do
         case $1 in
-            push|inapp|embedded|deeplink|all)
+            push|inapp|embedded|deeplink|projectswitch|all)
                 TEST_TYPE="$1"
                 shift
                 ;;
@@ -813,6 +814,33 @@ run_deep_linking_tests() {
     return $EXIT_CODE
 }
 
+run_project_switch_tests() {
+    echo_header "Running Project Switch Integration Tests"
+
+    if [[ "$DRY_RUN" == true ]]; then
+        echo_info "[DRY RUN] Would run project switch tests"
+        echo_info "[DRY RUN] - Switch A to B with re-identify from the callback"
+        echo_info "[DRY RUN] - Request attribution by API key after the callback"
+        echo_info "[DRY RUN] - Rapid A -> B -> A settles on A"
+        return
+    fi
+
+    if [[ "$(jq -r '.projectB.mobileApiKey // empty' "$LOCAL_CONFIG_FILE")" == "" ]]; then
+        echo_warning "No projectB block in test-config.json, the project switch tests will skip"
+    fi
+
+    TEST_REPORT="$REPORTS_DIR/project-switch-test-$(date +%Y%m%d-%H%M%S).json"
+
+    local EXIT_CODE=0
+    run_xcode_tests "ProjectSwitchIntegrationTests" || EXIT_CODE=$?
+
+    generate_test_report "project_switch" "$TEST_REPORT"
+
+    echo_success "Project switch tests completed"
+    echo_info "Report: $TEST_REPORT"
+
+    return $EXIT_CODE
+}
 
 generate_test_report() {
     local test_suite="$1"
@@ -1043,6 +1071,9 @@ main() {
             ;;
         deeplink)
             run_deep_linking_tests || OVERALL_TEST_EXIT_CODE=$?
+            ;;
+        projectswitch)
+            run_project_switch_tests || OVERALL_TEST_EXIT_CODE=$?
             ;;
         all)
             run_push_notification_tests || OVERALL_TEST_EXIT_CODE=$?
