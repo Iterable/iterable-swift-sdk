@@ -4,7 +4,9 @@
 # This script configures your local macOS environment for running integration tests
 #
 # Usage: ./setup-local-environment.sh [PROJECT_ID] [SERVER_API_KEY] [MOBILE_API_KEY] [JWT_API_KEY] [JWT_SECRET]
+#            [B_PROJECT_ID] [B_MOBILE_API_KEY] [B_SERVER_API_KEY] [C_MOBILE_API_KEY] [D_MOBILE_API_KEY] [B_DATA_REGION]
 # If parameters are provided, the script will skip interactive prompts
+# Parameters 6 to 11 are optional and only needed for project switch testing
 
 set -e
 
@@ -27,6 +29,12 @@ PARAM_SERVER_KEY="$2"
 PARAM_MOBILE_KEY="$3"
 PARAM_JWT_API_KEY="$4"
 PARAM_JWT_SECRET="$5"
+PARAM_B_PROJECT_ID="$6"
+PARAM_B_MOBILE_KEY="$7"
+PARAM_B_SERVER_KEY="$8"
+PARAM_C_MOBILE_KEY="$9"
+PARAM_D_MOBILE_KEY="${10}"
+PARAM_B_DATA_REGION="${11}"
 
 # Check if all parameters were provided and not empty
 if [[ -n "$PARAM_PROJECT_ID" && -n "$PARAM_SERVER_KEY" && -n "$PARAM_MOBILE_KEY" ]]; then
@@ -187,6 +195,12 @@ configure_api_keys() {
         echo_info "Running in non-interactive mode with provided parameters"
         JWT_API_KEY="${PARAM_JWT_API_KEY:-}"
         JWT_SECRET="${PARAM_JWT_SECRET:-}"
+        PROJECT_B_ID="${PARAM_B_PROJECT_ID:-}"
+        PROJECT_B_MOBILE_KEY="${PARAM_B_MOBILE_KEY:-}"
+        PROJECT_B_SERVER_KEY="${PARAM_B_SERVER_KEY:-}"
+        PROJECT_C_MOBILE_KEY="${PARAM_C_MOBILE_KEY:-}"
+        PROJECT_D_MOBILE_KEY="${PARAM_D_MOBILE_KEY:-}"
+        PROJECT_B_DATA_REGION="${PARAM_B_DATA_REGION:-US}"
         echo_info "Using provided parameters:"
         echo_info "Project ID: $PROJECT_ID"
         echo_info "Server API Key: ${SERVER_KEY:0:8}***"
@@ -208,6 +222,9 @@ configure_api_keys() {
                     SERVER_KEY=$(jq -r '.serverApiKey' "$LOCAL_CONFIG_FILE") 
                     MOBILE_KEY=$(jq -r '.mobileApiKey' "$LOCAL_CONFIG_FILE")
                     TEST_USER_EMAIL=$(jq -r '.testUserEmail' "$LOCAL_CONFIG_FILE")
+                    PROJECT_B_ID=$(jq -r '.projectB.projectId // empty' "$LOCAL_CONFIG_FILE")
+                    PROJECT_B_SERVER_KEY=$(jq -r '.projectB.serverApiKey // empty' "$LOCAL_CONFIG_FILE")
+                    PROJECT_B_DATA_REGION=$(jq -r '.projectB.dataRegion // "US"' "$LOCAL_CONFIG_FILE")
                     echo_info "Loaded existing configuration"
                 else
                     echo_warning "jq not available, cannot load existing config"
@@ -259,6 +276,43 @@ configure_api_keys() {
         # Set test user email with date prefix for daily unique users
         DATE_PREFIX=$(date +"%Y-%m-%d")
         TEST_USER_EMAIL="${DATE_PREFIX}-integration-test-user@test.com"
+
+        echo
+        echo_info "Optional: a second project (B) and extra mobile keys (C on this project, D on B) for project switch testing."
+        echo_info "Press Enter to skip any of them."
+        read -p "🏗️  Project B ID: " PROJECT_B_ID
+        read -p "📱 Project B MOBILE API Key: " PROJECT_B_MOBILE_KEY
+        read -p "🔑 Project B SERVER-SIDE API Key: " PROJECT_B_SERVER_KEY
+        read -p "📱 Key C, a second MOBILE API Key on this project: " PROJECT_C_MOBILE_KEY
+        read -p "📱 Key D, a second MOBILE API Key on project B: " PROJECT_D_MOBILE_KEY
+        read -p "🌍 Project B data region, US or EU (default US): " PROJECT_B_DATA_REGION
+        PROJECT_B_DATA_REGION="${PROJECT_B_DATA_REGION:-US}"
+    fi
+
+    # Optional project switch blocks, omitted when absent so single-project runs are unchanged
+    PROJECT_SWITCH_BLOCKS=""
+    if [[ -n "$PROJECT_B_ID" && -n "$PROJECT_B_MOBILE_KEY" && -n "$PROJECT_B_SERVER_KEY" ]]; then
+        PROJECT_SWITCH_BLOCKS+="  \"projectB\": {
+    \"projectId\": \"$PROJECT_B_ID\",
+    \"mobileApiKey\": \"$PROJECT_B_MOBILE_KEY\",
+    \"serverApiKey\": \"$PROJECT_B_SERVER_KEY\",
+    \"testUserEmail\": \"$TEST_USER_EMAIL\",
+    \"dataRegion\": \"$PROJECT_B_DATA_REGION\"
+  },
+"
+        echo_info "Project B configured: ${PROJECT_B_ID} (${PROJECT_B_DATA_REGION}), mobile key ${PROJECT_B_MOBILE_KEY:0:4}***"
+    elif [[ -n "$PROJECT_B_ID$PROJECT_B_MOBILE_KEY$PROJECT_B_SERVER_KEY" ]]; then
+        echo_warning "Project B needs an ID, a mobile key and a server key. Skipping project B."
+    fi
+    if [[ -n "$PROJECT_C_MOBILE_KEY" ]]; then
+        PROJECT_SWITCH_BLOCKS+="  \"projectC\": { \"mobileApiKey\": \"$PROJECT_C_MOBILE_KEY\" },
+"
+        echo_info "Key C configured: ${PROJECT_C_MOBILE_KEY:0:4}***"
+    fi
+    if [[ -n "$PROJECT_D_MOBILE_KEY" ]]; then
+        PROJECT_SWITCH_BLOCKS+="  \"projectD\": { \"mobileApiKey\": \"$PROJECT_D_MOBILE_KEY\" },
+"
+        echo_info "Key D configured: ${PROJECT_D_MOBILE_KEY:0:4}***"
     fi
     
     # Create local config file
@@ -270,7 +324,7 @@ configure_api_keys() {
   "jwtSecret": "${JWT_SECRET:-}",
   "projectId": "$PROJECT_ID",
   "testUserEmail": "$TEST_USER_EMAIL",
-  "baseUrl": "https://api.iterable.com",
+${PROJECT_SWITCH_BLOCKS}  "baseUrl": "https://api.iterable.com",
   "environment": "local",
   "simulator": {
     "deviceType": "iPhone 16 Pro",
@@ -300,6 +354,10 @@ EOF
 }
 
 create_test_user() {
+    local SERVER_KEY="${1:-$SERVER_KEY}"
+    local PROJECT_ID="${2:-$PROJECT_ID}"
+    local BASE_URL="${3:-https://api.iterable.com}"
+
     echo_header "Setting Up Test User"
     
     echo_info "Working with test user: $TEST_USER_EMAIL"
@@ -307,7 +365,7 @@ create_test_user() {
     
     # First, check if user already exists
     echo_info "Checking if test user exists..."
-    USER_CHECK=$(curl -s -X GET "https://api.iterable.com/api/users/getByEmail?email=$TEST_USER_EMAIL" \
+    USER_CHECK=$(curl -s -X GET "$BASE_URL/api/users/getByEmail?email=$TEST_USER_EMAIL" \
         -H "Api-Key: $SERVER_KEY")
     
     if echo "$USER_CHECK" | jq -e '.user' > /dev/null 2>&1; then
@@ -323,7 +381,7 @@ create_test_user() {
     
     # Create/Update test user via API using server-side key
     echo_info "📡 Sending user update request..."
-    RESPONSE=$(curl -s -X POST "https://api.iterable.com/api/users/update" \
+    RESPONSE=$(curl -s -X POST "$BASE_URL/api/users/update" \
         -H "Api-Key: $SERVER_KEY" \
         -H "Content-Type: application/json" \
         -d '{
@@ -366,7 +424,8 @@ create_test_user() {
 
 
 show_usage() {
-    echo "Usage: $0 [PROJECT_ID] [SERVER_API_KEY] [MOBILE_API_KEY] [JWT_API_KEY] [JWT_SECRET]"
+    echo "Usage: $0 [PROJECT_ID] [SERVER_API_KEY] [MOBILE_API_KEY] [JWT_API_KEY] [JWT_SECRET] \\"
+    echo "          [B_PROJECT_ID] [B_MOBILE_API_KEY] [B_SERVER_API_KEY] [C_MOBILE_API_KEY] [D_MOBILE_API_KEY] [B_DATA_REGION]"
     echo "       $0 --help"
     echo
     echo "Parameters:"
@@ -375,6 +434,12 @@ show_usage() {
     echo "  MOBILE_API_KEY  Mobile API key for SDK testing"
     echo "  JWT_API_KEY     (optional) JWT-enabled API key for auth testing"
     echo "  JWT_SECRET      (optional) JWT secret for signing tokens"
+    echo "  B_PROJECT_ID      (optional) Project B ID for project switch testing"
+    echo "  B_MOBILE_API_KEY  (optional) Project B mobile API key"
+    echo "  B_SERVER_API_KEY  (optional) Project B server-side API key, creates B's test user"
+    echo "  C_MOBILE_API_KEY  (optional) Second mobile API key on the main project"
+    echo "  D_MOBILE_API_KEY  (optional) Second mobile API key on project B"
+    echo "  B_DATA_REGION     (optional) US or EU, defaults to US"
     echo
     echo "Examples:"
     echo "  $0                                              # Interactive mode"
@@ -413,6 +478,14 @@ main() {
     setup_ios_simulator
         
     create_test_user
+
+    if [[ -n "$PROJECT_B_ID" && -n "$PROJECT_B_SERVER_KEY" ]]; then
+        local PROJECT_B_BASE_URL="https://api.iterable.com"
+        if [[ "$(echo "$PROJECT_B_DATA_REGION" | tr '[:lower:]' '[:upper:]')" == "EU" ]]; then
+            PROJECT_B_BASE_URL="https://api.eu.iterable.com"
+        fi
+        create_test_user "$PROJECT_B_SERVER_KEY" "$PROJECT_B_ID" "$PROJECT_B_BASE_URL"
+    fi
     
     echo_header "Setup Complete! 🎉"
     echo_success "Local environment is configured for integration testing"

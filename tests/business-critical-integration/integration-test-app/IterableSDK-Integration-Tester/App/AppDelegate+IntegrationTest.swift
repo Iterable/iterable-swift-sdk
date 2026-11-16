@@ -93,6 +93,50 @@ extension AppDelegate {
         print("✅ Loaded CI mode from test-config.json: \(ciMode)")
         return ciMode
     }
+
+    // MARK: - Project Switch Config (optional, nil when absent)
+
+    struct SwitchProjectConfig {
+        let projectId: String?
+        let mobileApiKey: String
+        let serverApiKey: String?
+        let testUserEmail: String?
+        let dataRegion: String
+    }
+
+    static func loadProjectBConfig() -> SwitchProjectConfig? {
+        guard let block = loadOptionalConfigBlock("projectB"),
+              let mobileApiKey = block["mobileApiKey"] as? String, !mobileApiKey.isEmpty else {
+            print("⚠️ No projectB block in test-config.json, project switch testing disabled")
+            return nil
+        }
+        print("✅ Loaded projectB config from test-config.json")
+        return SwitchProjectConfig(projectId: block["projectId"] as? String,
+                                   mobileApiKey: mobileApiKey,
+                                   serverApiKey: block["serverApiKey"] as? String,
+                                   testUserEmail: block["testUserEmail"] as? String,
+                                   dataRegion: block["dataRegion"] as? String ?? "US")
+    }
+
+    static func loadProjectCApiKeyFromConfig() -> String? {
+        guard let key = loadOptionalConfigBlock("projectC")?["mobileApiKey"] as? String, !key.isEmpty else { return nil }
+        return key
+    }
+
+    static func loadProjectDApiKeyFromConfig() -> String? {
+        guard let key = loadOptionalConfigBlock("projectD")?["mobileApiKey"] as? String, !key.isEmpty else { return nil }
+        return key
+    }
+
+    private static func loadOptionalConfigBlock(_ name: String) -> [String: Any]? {
+        guard let path = Bundle.main.path(forResource: "test-config", ofType: "json"),
+              let data = try? Data(contentsOf: URL(fileURLWithPath: path)),
+              let json = try? JSONSerialization.jsonObject(with: data) as? [String: Any],
+              let block = json[name] as? [String: Any] else {
+            return nil
+        }
+        return block
+    }
         
     static func initializeIterableSDK() {
         lastInitMode = .standard
