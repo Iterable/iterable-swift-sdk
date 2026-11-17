@@ -1065,19 +1065,13 @@ class RequestHandlerTests: XCTestCase {
             return names == [Const.Path.disableDevice]
         }
         
-        let left = try persistenceContextProvider.mainQueueContext().findAllTasks().map {
-            "\($0.name ?? "nil") processing=\($0.processing) data=\($0.data != nil)"
-        }
-        XCTAssertTrue(result, "tasks left after logout: \(left)")
+        XCTAssertTrue(result)
     }
 
     private func createTask(named name: String) throws {
-        // Marked processing so the task runner started by initialize skips them. It would otherwise
-        // reject these data-less fixtures and delete them before logout runs.
         try persistenceContextProvider.mainQueueContext().create(task: IterableTask(id: IterableUtil.generateUUID(),
                                                                                    name: name,
                                                                                    type: .apiCall,
-                                                                                   processing: true,
                                                                                    scheduledAt: Date(),
                                                                                    data: nil,
                                                                                    requestedAt: Date()))
