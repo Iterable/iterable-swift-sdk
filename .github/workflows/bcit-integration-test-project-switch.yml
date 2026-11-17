@@ -122,7 +122,7 @@ jobs:
         CI=true ./scripts/run-tests.sh projectswitch
 
     - name: Upload Test Results
-      if: always() && steps.project-b.outputs.configured == 'true'
+      if: failure() && steps.project-b.outputs.configured == 'true'
       uses: actions/upload-artifact@v4
       with:
         name: project-switch-test-results
