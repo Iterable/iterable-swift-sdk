@@ -1069,9 +1069,12 @@ class RequestHandlerTests: XCTestCase {
     }
 
     private func createTask(named name: String) throws {
+        // Marked processing so the task runner started by initialize skips them. It would otherwise
+        // reject these data-less fixtures and delete them before logout runs.
         try persistenceContextProvider.mainQueueContext().create(task: IterableTask(id: IterableUtil.generateUUID(),
                                                                                    name: name,
                                                                                    type: .apiCall,
+                                                                                   processing: true,
                                                                                    scheduledAt: Date(),
                                                                                    data: nil,
                                                                                    requestedAt: Date()))
