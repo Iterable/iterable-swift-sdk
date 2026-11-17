@@ -235,13 +235,18 @@ class SwitchProjectGateTests: XCTestCase {
     }
 
     /// Two windows, and they belong to different projects. A call made while B is in flight but
-    /// after C was requested belongs to C. A call made from B's callback belongs to B: the gate
-    /// is down, the SDK is live on B, and holding the gate across that handover would replay B's
-    /// identity into C.
+    /// after C was requested belongs to C, including one made once B has landed. A call made from
+    /// B's callback belongs to B: the SDK is live on B, and replaying it into C would identify B's
+    /// user on C.
     func testACallMadeAfterALaterDestinationWasRequestedWaitsForThatDestination() {
         var ran = [String]()
+        let landedOnB = expectation(description: "the callback that asked for project B")
 
-        XCTAssertEqual(ProjectSwitchGate.shared.beginSwitchForTesting(apiKey: apiKeyB), .run)
+        XCTAssertEqual(ProjectSwitchGate.shared.beginSwitchForTesting(apiKey: apiKeyB, callback: { _ in
+            XCTAssertFalse(ProjectSwitchGate.shared.queueOrExecute("fromBsCallback") { ran.append("fromBsCallback") },
+                           "a call made from B's callback must run against B, not be queued into C")
+            landedOnB.fulfill()
+        }), .run)
         XCTAssertTrue(ProjectSwitchGate.shared.queueOrExecute("forB") { ran.append("forB") })
         XCTAssertEqual(ProjectSwitchGate.shared.beginSwitchForTesting(apiKey: apiKeyC), .joinedOrQueued)
         XCTAssertTrue(ProjectSwitchGate.shared.queueOrExecute("forC") { ran.append("forC") })
@@ -251,8 +256,9 @@ class SwitchProjectGateTests: XCTestCase {
         XCTAssertTrue(ProjectSwitchGate.shared.isSwitchInProgress,
                       "the chain must stay up so C keeps its place ahead of anything arriving now")
 
-        XCTAssertFalse(ProjectSwitchGate.shared.queueOrExecute("fromBsCallback") { ran.append("fromBsCallback") },
-                       "a call made from B's callback must run against B, not be queued into C")
+        XCTAssertTrue(ProjectSwitchGate.shared.queueOrExecute("afterBLanded") { ran.append("afterBLanded") },
+                      "a call made outside B's callback after C was requested must wait for C")
+        wait(for: [landedOnB], timeout: testExpectationTimeout)
         XCTAssertEqual(ran, ["forB", "fromBsCallback"])
 
         // What C's switchProject does when it picks up the chain it inherited.
@@ -262,9 +268,43 @@ class SwitchProjectGateTests: XCTestCase {
         XCTAssertEqual(ran, ["forB", "fromBsCallback"])
 
         XCTAssertNil(ProjectSwitchGate.shared.endSwitch(succeeded: true))
-        XCTAssertEqual(ran, ["forB", "fromBsCallback", "forC", "duringC"],
-                       "C replays the call made after it was requested, then the calls from its own teardown, in order")
+        XCTAssertEqual(ran, ["forB", "fromBsCallback", "forC", "afterBLanded", "duringC"],
+                       "C replays the calls made after it was requested, then the calls from its own teardown, in order")
         XCTAssertFalse(ProjectSwitchGate.shared.isSwitchInProgress, "the chain is done")
+    }
+
+    /// The bypass is for the chain as it was handed over. A switch claimed after B's chain was
+    /// released is already tearing B down, so a call from B's callback cannot run against B.
+    func testACallbackDeliveredAfterANewSwitchWasClaimedDoesNotBypassItsTeardown() {
+        let landedOnB = expectation(description: "the callback that asked for project B")
+        var queued: Bool?
+
+        XCTAssertEqual(ProjectSwitchGate.shared.beginSwitchForTesting(apiKey: apiKeyB, callback: { _ in
+            queued = ProjectSwitchGate.shared.queueOrExecute("fromBsCallback") {}
+            landedOnB.fulfill()
+        }), .run)
+        XCTAssertNil(ProjectSwitchGate.shared.endSwitch(succeeded: true))
+        XCTAssertEqual(ProjectSwitchGate.shared.beginSwitchForTesting(apiKey: apiKeyC), .run)
+
+        wait(for: [landedOnB], timeout: testExpectationTimeout)
+        XCTAssertEqual(queued, true, "C's teardown is running, so the call has to wait for C")
+    }
+
+    /// A callback that asks for another project and then makes a call has made that call after
+    /// the later request, so it waits for that project too.
+    func testACallMadeFromACallbackAfterItRequestedAnotherProjectWaitsForThatProject() {
+        let landedOnB = expectation(description: "the callback that asked for project B")
+        var queued: Bool?
+
+        XCTAssertEqual(ProjectSwitchGate.shared.beginSwitchForTesting(apiKey: apiKeyB, callback: { [apiKeyC] _ in
+            XCTAssertEqual(ProjectSwitchGate.shared.beginSwitchForTesting(apiKey: apiKeyC), .run)
+            queued = ProjectSwitchGate.shared.queueOrExecute("fromBsCallback") {}
+            landedOnB.fulfill()
+        }), .run)
+        XCTAssertNil(ProjectSwitchGate.shared.endSwitch(succeeded: true))
+
+        wait(for: [landedOnB], timeout: testExpectationTimeout)
+        XCTAssertEqual(queued, true, "the call was made after C was requested, so it has to wait for C")
     }
 
     /// Same API key asked for twice, with another destination between the two asks, is two legs.

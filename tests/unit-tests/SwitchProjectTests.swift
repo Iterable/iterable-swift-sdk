@@ -481,6 +481,40 @@ class SwitchProjectTests: XCTestCase {
         XCTAssertNil(IterableAPI.email, "C must start clean: B's email cannot be replayed into it")
     }
 
+    /// Only B's callback is let through at the handover to C. A call another thread makes while
+    /// that callback runs came after C was requested, so it waits for C behind the call already
+    /// queued for C, rather than running on B ahead of it.
+    func testACallFromAnotherThreadAtTheHandoverWaitsForTheNextProject() {
+        initializeProjectA(email: emailA)
+
+        var ran = [String]()
+        func record(_ name: String) -> () -> Void {
+            { ran.append("\(name)@\(IterableAPI.implementation?.apiKey ?? "none")") }
+        }
+        let landedOnB = expectation(description: "the callback that asked for project B")
+        IterableAPI.switchProject(apiKey: apiKeyB,
+                                  config: configWithoutPush(),
+                                  apiEndPointOverride: nil,
+                                  dependencyContainer: container()) { _ in
+            let called = DispatchSemaphore(value: 0)
+            DispatchQueue.global().async {
+                ProjectSwitchGate.shared.queueOrExecute("fromAnotherThread", record("fromAnotherThread"))
+                called.signal()
+            }
+            XCTAssertEqual(called.wait(timeout: .now() + testExpectationTimeout), .success)
+            landedOnB.fulfill()
+        }
+        let landedOnC = expectation(description: "the callback that asked for project C")
+        IterableAPI.switchProject(apiKey: apiKeyC,
+                                  config: configWithoutPush(),
+                                  apiEndPointOverride: nil,
+                                  dependencyContainer: container()) { _ in landedOnC.fulfill() }
+        ProjectSwitchGate.shared.queueOrExecute("queuedForC", record("queuedForC"))
+
+        wait(for: [landedOnB, landedOnC], timeout: testExpectationTimeout)
+        XCTAssertEqual(ran, ["queuedForC@\(apiKeyC)", "fromAnotherThread@\(apiKeyC)"])
+    }
+
     func testSwitchingAToBToALeavesNoResidueFromProjectB() {
         initializeProjectA(email: emailA)
 

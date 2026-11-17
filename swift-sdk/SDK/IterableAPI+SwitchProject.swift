@@ -14,9 +14,10 @@ import UIKit
 /// the Android SDK's `queueOrExecute` semantics.
 ///
 /// Two pieces of state, deliberately separate. `isRaised` is the call-queueing gate and is up
-/// only while a teardown is actually running. `inFlightApiKey` marks the switch chain and stays
-/// set across a handover from one queued switch to the next, so requests keep being ordered
-/// behind it even in the moment between two switches when the SDK is live and calls run.
+/// while a teardown is running and across a handover to the next one. `inFlightApiKey` marks
+/// the switch chain and stays set across that handover, so requests keep being ordered behind
+/// it even in the moment between two switches when the SDK is live and the landed project's
+/// callbacks run.
 final class ProjectSwitchGate {
     static let shared = ProjectSwitchGate()
 
@@ -24,7 +25,7 @@ final class ProjectSwitchGate {
     ///
     /// This is not the same as "calls are being queued". A chain hands the gate from one switch
     /// to the next, and in the moment between them the SDK is fully live on the project that
-    /// just landed, so calls run rather than queue while this is still `true`.
+    /// just landed, so that project's callbacks run their calls while this is still `true`.
     var isSwitchInProgress: Bool {
         lock.lock()
         defer { lock.unlock() }
@@ -91,19 +92,19 @@ final class ProjectSwitchGate {
         return .run
     }
 
-    /// Raises the call-queueing gate again for a switch that inherited the chain.
+    /// Raises the call-queueing gate for the teardown of a switch that inherited the chain.
     ///
-    /// `endSwitch` drops that gate at the handover so the project that just landed can serve
-    /// the calls its own callback makes, and this puts it back for the teardown that follows.
+    /// `endSwitch` already keeps that gate up across the handover, letting only the landed
+    /// project's callbacks past it, and this keeps it up for the teardown that follows.
     func resumeSwitch() {
         lock.lock()
         isRaised = true
         lock.unlock()
     }
 
-    /// Replays calls queued for the leg that is landing, in FIFO order, lowers the gate, then
-    /// delivers every registered callback on the main thread. Calls queued for a later leg stay
-    /// queued until that leg lands.
+    /// Replays calls queued for the leg that is landing, in FIFO order, lowers the gate unless
+    /// another switch is queued, then delivers every registered callback on the main thread.
+    /// Calls queued for a later leg stay queued until that leg lands.
     ///
     /// The gate stays raised until the queue is observed empty under the same lock
     /// `queueOrExecute` enqueues under. Lowering it before the replay would let a call made
@@ -117,11 +118,12 @@ final class ProjectSwitchGate {
     /// new `switchProject` could claim the gate first and then be overtaken by the older queued
     /// request, leaving the SDK on a project the app did not ask for last.
     ///
-    /// The call-queueing gate drops either way. At the handover the SDK is fully live on the
+    /// The call-queueing gate stays raised across that handover, and only the callbacks being
+    /// delivered on the main thread get past it. At the handover the SDK is fully live on the
     /// project that just landed, and the contract tells apps to re-identify from the callback,
-    /// so a `setEmail` made there has to run against that project. Holding the gate across the
-    /// handover would queue it and then replay it into the next project in the chain, which is
-    /// the identity leak the gate exists to prevent.
+    /// so a `setEmail` made there has to run against that project rather than be replayed into
+    /// the next one. Any other call made in that window came after the next destination was
+    /// requested, so it waits for that destination like it would during the teardown.
     ///
     /// - Returns: The next switch requested while this one was running, if any. The caller
     ///            runs it, and inherits the chain with it, so the gate stays unaware of how a
@@ -144,7 +146,7 @@ final class ProjectSwitchGate {
             toNotify = callbacks
             callbacks.removeAll()
             next = pending.isEmpty ? nil : pending.removeFirst()
-            isRaised = false
+            isRaised = next != nil
             if let next = next {
                 inFlightApiKey = next.apiKey
                 inFlightLeg = next.leg
@@ -158,8 +160,19 @@ final class ProjectSwitchGate {
         }
 
         if !toNotify.isEmpty {
+            let handedOverTo = next?.leg
             DispatchQueue.main.async {
+                // A switch claimed after this chain was released is already tearing down, and a
+                // call made after a later request belongs to that request, so the bypass only
+                // covers the chain exactly as it was handed over.
+                self.lock.lock()
+                self.isDeliveringLandedCallbacks = self.inFlightLeg === handedOverTo
+                self.landedCallbacksTail = self.pending.last?.leg ?? self.inFlightLeg
+                self.lock.unlock()
                 toNotify.forEach { $0(succeeded) }
+                self.lock.lock()
+                self.isDeliveringLandedCallbacks = false
+                self.lock.unlock()
             }
         }
         return next
@@ -171,12 +184,12 @@ final class ProjectSwitchGate {
     @discardableResult
     func queueOrExecute(_ description: String, _ operation: @escaping () -> Void) -> Bool {
         lock.lock()
-        guard isRaised else {
+        let leg = pending.last?.leg ?? inFlightLeg
+        guard isRaised, !(isDeliveringLandedCallbacks && Thread.isMainThread && leg === landedCallbacksTail) else {
             lock.unlock()
             operation()
             return false
         }
-        let leg = pending.last?.leg ?? inFlightLeg
         operations.append(QueuedOperation(description: description, leg: leg, run: operation))
         lock.unlock()
 
@@ -189,6 +202,8 @@ final class ProjectSwitchGate {
     func resetForTesting() {
         lock.lock()
         isRaised = false
+        isDeliveringLandedCallbacks = false
+        landedCallbacksTail = nil
         inFlightApiKey = nil
         inFlightLeg = nil
         operations.removeAll()
@@ -237,6 +252,12 @@ final class ProjectSwitchGate {
 
     private let lock = NSLock()
     private var isRaised = false
+    /// `true` while the callbacks of a switch that just landed run on the main thread. The gate
+    /// stays raised across a handover, and these are the only calls that get past it.
+    private var isDeliveringLandedCallbacks = false
+    /// The most recently requested leg when that delivery started. A call made from a callback
+    /// after it requested another switch belongs to that switch.
+    private var landedCallbacksTail: SwitchLeg?
     /// The project the in-flight switch is heading to, so a second request can tell whether it
     /// is asking for the same destination or a different one.
     private var inFlightApiKey: String?
@@ -361,7 +382,9 @@ public extension IterableAPI {
     /// switch's callback, re-identifying the user in particular, run against it rather than being
     /// replayed into a switch queued behind it. A call made after a later destination has already
     /// been requested is replayed against that destination, not against the switch that lands
-    /// first. Calls stay in order within each destination.
+    /// first. Calls stay in order within each destination. Re-identify synchronously in the
+    /// callback: work it dispatches to run later or on another thread is treated like any other
+    /// later call.
     ///
     /// A request for the project already asked for, with nothing in flight, tears nothing down and
     /// leaves identity alone, so there is nothing to re-identify. Its callback is delivered
@@ -475,9 +498,8 @@ extension IterableAPI {
         // so a request to go back to it would look like a no-op and report a clean switch while
         // the switch in flight carried on somewhere else.
         if resumingGate {
-            // The destination was decided when this was queued. Only the call-queueing gate has
-            // to go back up: endSwitch dropped it at the handover so the project that landed
-            // could serve its own callback, and the chain itself was never released.
+            // The destination was decided when this was queued, and the chain itself was never
+            // released. Only the call-queueing gate is raised again, for the teardown.
             guard outgoing.apiKey != apiKey else {
                 ITBInfo("switchProject: the queued request is for the project that is now live. Nothing to tear down.")
                 releaseInheritedGate(true)
