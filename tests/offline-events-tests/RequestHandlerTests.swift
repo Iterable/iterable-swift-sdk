@@ -1065,7 +1065,10 @@ class RequestHandlerTests: XCTestCase {
             return names == [Const.Path.disableDevice]
         }
         
-        XCTAssertTrue(result)
+        let left = try persistenceContextProvider.mainQueueContext().findAllTasks().map {
+            "\($0.name ?? "nil") processing=\($0.processing) data=\($0.data != nil)"
+        }
+        XCTAssertTrue(result, "tasks left after logout: \(left)")
     }
 
     private func createTask(named name: String) throws {
