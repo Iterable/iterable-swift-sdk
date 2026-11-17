@@ -5,7 +5,7 @@
 import Foundation
 import UIKit
 
-/// Serializes SDK calls made while `IterableAPI.switchProject(apiKey:config:callback:)` is
+/// Serializes SDK calls made while `IterableAPI.switchProject(project:callback:)` is
 /// tearing down one project and standing up the next.
 ///
 /// While the gate is raised, calls are queued instead of running against a half-torn-down
