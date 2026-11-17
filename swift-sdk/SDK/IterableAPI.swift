@@ -14,7 +14,7 @@ import UIKit
         get {
             implementation?.email
         } set {
-            implementation?.email = newValue
+            ProjectSwitchGate.shared.queueOrExecute("email=") { implementation?.email = newValue }
         }
     }
     
@@ -23,7 +23,7 @@ import UIKit
         get {
             implementation?.userId
         } set {
-            implementation?.userId = newValue
+            ProjectSwitchGate.shared.queueOrExecute("userId=") { implementation?.userId = newValue }
         }
     }
     
@@ -115,11 +115,29 @@ import UIKit
                                    config: IterableConfig = IterableConfig(),
                                    apiEndPointOverride: String? = nil,
                                    callback: ((Bool) -> Void)? = nil) {
+        initialize2(apiKey: apiKey,
+                    launchOptions: launchOptions,
+                    config: config,
+                    apiEndPointOverride: apiEndPointOverride,
+                    dependencyContainer: nil,
+                    callback: callback)
+    }
+
+    /// Shared by `initialize2` and `switchProject`, which needs to stand the replacement
+    /// instance up against the same dependency container.
+    @available(iOSApplicationExtension, unavailable)
+    static func initialize2(apiKey: String,
+                            launchOptions: [UIApplication.LaunchOptionsKey: Any]?,
+                            config: IterableConfig,
+                            apiEndPointOverride: String?,
+                            dependencyContainer: DependencyContainerProtocol?,
+                            callback: ((Bool) -> Void)?) {
         AppExtensionHelper.initialize()
         implementation = InternalIterableAPI(apiKey: apiKey,
                                                      launchOptions: launchOptions,
                                                      config: config,
-                                                     apiEndPointOverride: apiEndPointOverride)
+                                                     apiEndPointOverride: apiEndPointOverride,
+                                                     dependencyContainer: dependencyContainer ?? DependencyContainer())
         _ = implementation?.start().onSuccess { _ in
             callback?(true)
         }.onError { _ in
@@ -145,11 +163,15 @@ import UIKit
     // MARK: - SDK
     
     public static func setEmail(_ email: String?, _ authToken: String? = nil,  _ identityResolution: IterableIdentityResolution? = nil, _ successHandler: OnSuccessHandler? = nil, _ failureHandler: OnFailureHandler? = nil) {
-        implementation?.setEmail(email, authToken: authToken, successHandler: successHandler, failureHandler: failureHandler, identityResolution: identityResolution)
+        ProjectSwitchGate.shared.queueOrExecute("setEmail") {
+            implementation?.setEmail(email, authToken: authToken, successHandler: successHandler, failureHandler: failureHandler, identityResolution: identityResolution)
+        }
     }
     
     public static func setUserId(_ userId: String?, _ authToken: String? = nil,  _ identityResolution: IterableIdentityResolution? = nil, _ successHandler: OnSuccessHandler? = nil, _ failureHandler: OnFailureHandler? = nil) {
-        implementation?.setUserId(userId, authToken: authToken, successHandler: successHandler, failureHandler: failureHandler, identityResolution: identityResolution)
+        ProjectSwitchGate.shared.queueOrExecute("setUserId") {
+            implementation?.setUserId(userId, authToken: authToken, successHandler: successHandler, failureHandler: failureHandler, identityResolution: identityResolution)
+        }
     }
     
     /// Checks if a URL is an Iterable deep link
@@ -247,12 +269,14 @@ import UIKit
     ///
     /// - SeeAlso: OnSuccessHandler, OnFailureHandler
     public static func logoutUser(withOnSuccess onSuccess: OnSuccessHandler?, onFailure: OnFailureHandler?) {
-        guard let implementation else {
-            onFailure?("Iterable SDK is not initialized", nil)
-            return
-        }
+        ProjectSwitchGate.shared.queueOrExecute("logoutUser") {
+            guard let implementation else {
+                onFailure?("Iterable SDK is not initialized", nil)
+                return
+            }
 
-        implementation.logoutUser(withOnSuccess: onSuccess, onFailure: onFailure)
+            implementation.logoutUser(withOnSuccess: onSuccess, onFailure: onFailure)
+        }
     }
     
     /// The instance that manages getting and showing in-app messages
@@ -318,8 +342,10 @@ import UIKit
     /// - SeeAlso: IterableConfig, OnSuccessHandler, OnFailureHandler
     @objc(registerToken:onSuccess:OnFailure:)
     public static func register(token: Data, onSuccess: OnSuccessHandler? = nil, onFailure: OnFailureHandler? = nil) {
-        guard let implementation, implementation.isSDKInitialized() else { return }
-        implementation.register(token: token, onSuccess: onSuccess, onFailure: onFailure)
+        ProjectSwitchGate.shared.queueOrExecute("register(token:)") {
+            guard let implementation, implementation.isSDKInitialized() else { return }
+            implementation.register(token: token, onSuccess: onSuccess, onFailure: onFailure)
+        }
     }
     
     @objc(pauseAuthRetries:)
@@ -433,11 +459,12 @@ import UIKit
                                   mergeNestedObjects: Bool,
                                   onSuccess: OnSuccessHandler? = nil,
                                   onFailure: OnFailureHandler? = nil) {
-        
-        implementation?.updateUser(dataFields,
-                                  mergeNestedObjects: mergeNestedObjects,
-                                  onSuccess: onSuccess,
-                                  onFailure: onFailure)
+        ProjectSwitchGate.shared.queueOrExecute("updateUser") {
+            implementation?.updateUser(dataFields,
+                                      mergeNestedObjects: mergeNestedObjects,
+                                      onSuccess: onSuccess,
+                                      onFailure: onFailure)
+        }
     }
     
     /// Updates the current user's email
@@ -480,14 +507,16 @@ import UIKit
                                    withToken token: String? = nil,
                                    onSuccess: OnSuccessHandler?,
                                    onFailure: OnFailureHandler?) {
-        guard let implementation, implementation.isSDKInitialized() else { return }
-        
-        implementation.updateEmail(
-            newEmail,
-            withToken: token,
-            onSuccess: onSuccess,
-            onFailure: onFailure
-        )
+        ProjectSwitchGate.shared.queueOrExecute("updateEmail") {
+            guard let implementation, implementation.isSDKInitialized() else { return }
+            
+            implementation.updateEmail(
+                newEmail,
+                withToken: token,
+                onSuccess: onSuccess,
+                onFailure: onFailure
+            )
+        }
     }
     
     /// Tracks what's in the shopping cart (or equivalent) at this point in time
@@ -513,8 +542,9 @@ import UIKit
     public static func updateCart(items: [CommerceItem],
                                   onSuccess: OnSuccessHandler?,
                                   onFailure: OnFailureHandler?) {
-                
-        implementation?.updateCart(items: items, onSuccess: onSuccess, onFailure: onFailure)
+        ProjectSwitchGate.shared.queueOrExecute("updateCart") {
+            implementation?.updateCart(items: items, onSuccess: onSuccess, onFailure: onFailure)
+        }
     }
     
     /// Tracks a purchase
@@ -605,14 +635,15 @@ import UIKit
                              templateId: NSNumber?,
                              onSuccess: OnSuccessHandler?,
                              onFailure: OnFailureHandler?) {
-
-        implementation?.trackPurchase(withTotal,
-                                     items: items,
-                                     dataFields: dataFields,
-                                     campaignId: campaignId,
-                                     templateId: templateId,
-                                     onSuccess: onSuccess,
-                                     onFailure: onFailure)
+        ProjectSwitchGate.shared.queueOrExecute("trackPurchase") {
+            implementation?.trackPurchase(withTotal,
+                                         items: items,
+                                         dataFields: dataFields,
+                                         campaignId: campaignId,
+                                         templateId: templateId,
+                                         onSuccess: onSuccess,
+                                         onFailure: onFailure)
+        }
     }
 
     
@@ -776,10 +807,12 @@ import UIKit
                              dataFields: [AnyHashable: Any]?,
                              onSuccess: OnSuccessHandler?,
                              onFailure: OnFailureHandler?) {
-        implementation?.track(eventName,
-                                      dataFields: dataFields,
-                                      onSuccess: onSuccess,
-                                      onFailure: onFailure)
+        ProjectSwitchGate.shared.queueOrExecute("track(event:)") {
+            implementation?.track(eventName,
+                                          dataFields: dataFields,
+                                          onSuccess: onSuccess,
+                                          onFailure: onFailure)
+        }
     }
     
     /// Updates a user's subscription preferences

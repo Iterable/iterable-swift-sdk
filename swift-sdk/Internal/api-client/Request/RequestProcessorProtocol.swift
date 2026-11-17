@@ -39,11 +39,18 @@ protocol RequestProcessorProtocol {
                   onSuccess: OnSuccessHandler?,
                   onFailure: OnFailureHandler?) -> Pending<SendRequestValue, SendRequestError>
 
+    /// - Parameter onHandoff: called with `true` once the request has left the SDK's control —
+    ///   persisted to the offline queue, or in flight for the online processor — and with
+    ///   `false` when it could not be built. `users/disableDevice` is scoped to the project
+    ///   whose API key built the request, so `IterableAPI.switchProject` waits on this before
+    ///   it releases the outgoing instance. Deliberately not the network response: a queued
+    ///   task may not run for hours.
     @discardableResult
     func disableDeviceForCurrentUser(hexToken: String,
                                      identitySnapshot: UserIdentitySnapshot?,
                                      withOnSuccess onSuccess: OnSuccessHandler?,
-                                     onFailure: OnFailureHandler?) -> Pending<SendRequestValue, SendRequestError>
+                                     onFailure: OnFailureHandler?,
+                                     onHandoff: ((Bool) -> Void)?) -> Pending<SendRequestValue, SendRequestError>
 
     @discardableResult
     func disableDeviceForAllUsers(hexToken: String,
