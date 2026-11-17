@@ -572,10 +572,10 @@ extension IterableAPI {
                                 callback: { started in
                                     let startedCleanly = startCountsAsClean(started)
                                     // Step 8: drain queued calls FIFO against the new project,
-                                    // lower the gate, then fire every registered callback on
-                                    // the main thread. A switch requested during this one for a
-                                    // different project runs next, so the SDK ends up where the
-                                    // app last asked to be.
+                                    // lower the gate unless another switch is queued, then fire
+                                    // every registered callback on the main thread. A switch
+                                    // requested during this one for a different project runs
+                                    // next, so the SDK ends up where the app last asked to be.
                                     let next = ProjectSwitchGate.shared.endSwitch(succeeded: teardownWasClean && startedCleanly)
                                     runNextSwitchIfAny(next)
                                 })
