@@ -300,6 +300,51 @@ class SwitchProjectTests: XCTestCase {
         XCTAssertTrue(inAppPersister.getMessages().isEmpty, "project A's persisted in-apps must be purged")
     }
 
+    /// An unknown-user session is not `isSDKInitialized()`, so the teardown skips `logoutUser` and
+    /// nothing changes the identity before the in-app reset. A sync in flight at the switch can then
+    /// persist project A's messages after that reset, into the file project B loads on init, and B
+    /// cannot sync them away until someone is identified on it.
+    func testAnInAppSyncInFlightDuringAnUnknownUserSwitchDoesNotReachTheNewProject() {
+        localStorage.userIdUnknownUser = "project-a-unknown-user"
+        let fetcherA = HeldInAppFetcher()
+        let configA = configWithoutPush()
+        configA.inAppDelegate = MockInAppDelegate(showInApp: .skip)
+        let projectA = initializeProjectA(config: configA, dependencyContainer: container(inAppFetcher: fetcherA))
+        XCTAssertFalse(projectA.isSDKInitialized(), "the teardown has to skip logoutUser for this to mean anything")
+        fetcherA.isHolding = true
+        _ = projectA.inAppManager.scheduleSync()
+
+        // The held sync answers once the reset has persisted, and the teardown is held right after
+        // the reset until that answer is persisted too: the order a slow getMessages produces.
+        let persister = inAppPersister!
+        let persistedA = DispatchSemaphore(value: 0)
+        var released = false
+        persister.onPersist = { [weak persister] in
+            if persister?.getMessages().isEmpty == false {
+                persistedA.signal()
+            } else if !released {
+                released = true
+                fetcherA.release(with: [InAppTestHelper.emptyInAppMessage(messageId: "project-a-message")])
+            }
+        }
+        var heldTeardown = false
+        let observer = NotificationCenter.default.addObserver(forName: .iterableInboxChanged,
+                                                              object: projectA.inAppManager as AnyObject,
+                                                              queue: nil) { _ in
+            guard !heldTeardown else { return }
+            heldTeardown = true
+            XCTAssertEqual(persistedA.wait(timeout: .now() + testExpectationTimeout), .success)
+        }
+        defer { NotificationCenter.default.removeObserver(observer) }
+
+        let configB = configWithoutPush()
+        configB.inAppDelegate = MockInAppDelegate(showInApp: .skip)
+        awaitSwitch(to: apiKeyB, config: configB, dependencyContainer: container(inAppFetcher: UnidentifiedInAppFetcher()))
+
+        XCTAssertTrue(persister.getMessages().isEmpty, "project A's in-apps must not be left in the shared store")
+        XCTAssertTrue(IterableAPI.inAppManager.getMessages().isEmpty, "project A's in-apps must not show up on project B")
+    }
+
     // MARK: - Switch window
 
     func testTheGateQueuesCallsFIFOAndDrainsThemWhenTheSwitchEnds() {
@@ -656,6 +701,29 @@ class SwitchProjectTests: XCTestCase {
             return false
         }
         return reported
+    }
+}
+
+/// Answers syncs straight away until `isHolding` is set, then holds them until `release`.
+private final class HeldInAppFetcher: InAppFetcherProtocol {
+    var isHolding = false
+    private let held = Fulfill<[IterableInAppMessage], Error>()
+
+    func fetch() -> Pending<[IterableInAppMessage], Error> {
+        isHolding ? held : Fulfill(value: [])
+    }
+
+    func release(with messages: [IterableInAppMessage]) {
+        held.resolve(with: messages)
+    }
+}
+
+/// Stands in for the real fetcher refusing to sync while nobody is identified, which is the
+/// state every switch leaves the new project in. A mock that succeeds would sync stale messages
+/// away and hide what the new project loaded on init.
+private struct UnidentifiedInAppFetcher: InAppFetcherProtocol {
+    func fetch() -> Pending<[IterableInAppMessage], Error> {
+        FailPending(error: IterableError.general(description: "no identity set"))
     }
 }
 

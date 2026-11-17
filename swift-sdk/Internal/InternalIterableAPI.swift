@@ -477,6 +477,9 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
     /// as is visitor consent.
     private func clearProjectScopedStorage() {
         setIdentity(email: nil, userId: nil)
+        // After the identity is published, so an in-app sync started under the outgoing identity
+        // can no longer write its messages back into the file the new project loads on init.
+        dependencyContainer.inAppPersister.clear()
         localStorage.email = nil
         localStorage.userId = nil
         localStorage.userIdUnknownUser = nil
