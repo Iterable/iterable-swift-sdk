@@ -12,6 +12,7 @@ class SwitchProjectTests: XCTestCase {
     private let apiKeyA = "project-a-key"
     private let apiKeyB = "project-b-key"
     private let apiKeyC = "project-c-key"
+    private let apiKeyD = "project-d-key"
     private let emailA = "user-a@example.com"
     private let emailB = "user-b@example.com"
 
@@ -558,6 +559,40 @@ class SwitchProjectTests: XCTestCase {
 
         wait(for: [landedOnB, landedOnC], timeout: testExpectationTimeout)
         XCTAssertEqual(ran, ["queuedForC@\(apiKeyC)", "fromAnotherThread@\(apiKeyC)"])
+    }
+
+    /// B's callback gets past the gate held for C, but a call it makes after asking for D was made
+    /// after D was requested, so it belongs to D rather than to B or C.
+    func testACallMadeFromACallbackAfterItRequestedAnotherProjectReachesThatProject() {
+        initializeProjectA(email: emailA)
+
+        let landedOnB = expectation(description: "the callback that asked for project B")
+        let landedOnC = expectation(description: "the callback that asked for project C")
+        let landedOnD = expectation(description: "the callback that asked for project D")
+        var emailOnC: String??
+        IterableAPI.switchProject(apiKey: apiKeyB,
+                                  config: configWithoutPush(),
+                                  apiEndPointOverride: nil,
+                                  dependencyContainer: container()) { _ in
+            IterableAPI.switchProject(apiKey: self.apiKeyD,
+                                      config: self.configWithoutPush(),
+                                      apiEndPointOverride: nil,
+                                      dependencyContainer: self.container()) { _ in landedOnD.fulfill() }
+            IterableAPI.setEmail(self.emailB)
+            landedOnB.fulfill()
+        }
+        IterableAPI.switchProject(apiKey: apiKeyC,
+                                  config: configWithoutPush(),
+                                  apiEndPointOverride: nil,
+                                  dependencyContainer: container()) { _ in
+            emailOnC = IterableAPI.email
+            landedOnC.fulfill()
+        }
+
+        wait(for: [landedOnB, landedOnC, landedOnD], timeout: testExpectationTimeout)
+        XCTAssertEqual(emailOnC, .some(nil), "C must not replay a call made after D was requested")
+        XCTAssertEqual(IterableAPI.implementation?.apiKey, apiKeyD)
+        XCTAssertEqual(IterableAPI.email, emailB, "the call made after D was requested must reach D")
     }
 
     /// A request absorbed as already there tears nothing down, but its callback is still where the
