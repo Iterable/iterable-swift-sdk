@@ -392,8 +392,10 @@ public extension IterableAPI {
     ///
     /// - Note: Push opens are not queued, by design. A push opened while the previous project is
     ///         being torn down can be lost: the teardown clears the in-memory identity before it
-    ///         waits for the device disable hand-off, so `track(pushOpen:)` drops the open
-    ///         (SDK-855).
+    ///         waits for the device disable hand-off, so `track(pushOpen:)` drops the open. Once
+    ///         the new project is up and a user is identified on it, a push from the previous
+    ///         project is sent to the new project with the previous project's campaign, template
+    ///         and message IDs, because the payload does not say which project sent it (SDK-855).
     /// - Note: Queued `disableDevice` tasks survive the purge and still reach the project
     ///         they were created for, because each persisted task carries its own API key and
     ///         endpoint.
