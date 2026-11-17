@@ -162,7 +162,12 @@ class SwitchProjectGateTests: XCTestCase {
     func testARequestForTheLiveProjectWithNothingInFlightIsANoOp() {
         XCTAssertEqual(ProjectSwitchGate.shared.beginSwitchForTesting(apiKey: apiKeyA, liveApiKey: apiKeyA),
                        .alreadyThere)
-        XCTAssertFalse(ProjectSwitchGate.shared.isSwitchInProgress, "a no-op must not start a chain")
+        XCTAssertFalse(ProjectSwitchGate.shared.queueOrExecute("whileAlreadyThere") {},
+                       "nothing is torn down, so calls are not held")
+        XCTAssertTrue(ProjectSwitchGate.shared.isSwitchInProgress,
+                      "the chain is held until it is released, so a later switch queues behind its callback")
+        XCTAssertNil(ProjectSwitchGate.shared.endSwitch(succeeded: true), "a no-op must not queue a teardown")
+        XCTAssertFalse(ProjectSwitchGate.shared.isSwitchInProgress)
     }
 
     /// Rapid A to B to A. While B is tearing down the live instance is still A, so resolving

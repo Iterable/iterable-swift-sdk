@@ -34,7 +34,8 @@ final class ProjectSwitchGate {
 
     /// How `switchProject` should treat a request.
     enum BeginSwitchOutcome {
-        /// The SDK is already on the requested project and no switch is running. Nothing to do.
+        /// The SDK is already on the requested project and no switch is running. Nothing to tear
+        /// down, but this call holds the chain until it releases it with `endSwitch`.
         case alreadyThere
         /// Registered with the switch that is going to deliver this project, or queued behind
         /// the chain. Either way this call does not run a teardown of its own.
@@ -72,6 +73,11 @@ final class ProjectSwitchGate {
             } else if inFlightApiKey != nil {
                 callbacks.append(contentsOf: request.callbacks)
             } else {
+                // Held as a leg with no teardown, so a switch requested before its callback has
+                // run queues behind it rather than claiming the gate under it.
+                inFlightApiKey = request.apiKey
+                inFlightLeg = request.leg
+                callbacks.append(contentsOf: request.callbacks)
                 return .alreadyThere
             }
             return .joinedOrQueued
@@ -82,6 +88,7 @@ final class ProjectSwitchGate {
             // another destination reorders the chain: C, D, C would run C then D and settle on
             // D, and the second C's callback would fire when the first C landed.
             pending.append(request)
+            isRaised = true
             return .joinedOrQueued
         }
 
@@ -387,9 +394,8 @@ public extension IterableAPI {
     /// later call.
     ///
     /// A request for the project already asked for, with nothing in flight, tears nothing down and
-    /// leaves identity alone, so there is nothing to re-identify. Its callback is delivered
-    /// asynchronously, so a call made from it follows the rule above and goes to the project asked
-    /// for last when it runs (SDK-856).
+    /// leaves identity alone. Its callback, like the callback of a call made before the SDK was
+    /// initialized, is ordered like any other switch's.
     ///
     /// An unusable API key cannot reach here: `IterableProject` refuses to hold an empty or
     /// whitespace-only one, so the invalid state is not constructible.
@@ -477,8 +483,19 @@ extension IterableAPI {
             return
         }
 
+        let request = ProjectSwitchGate.PendingSwitchRequest(apiKey: apiKey,
+                                                             config: config,
+                                                             apiEndPointOverride: apiEndPointOverride,
+                                                             dependencyContainer: dependencyContainer,
+                                                             callbacks: callback.map { [$0] } ?? [])
+
         guard let outgoing = implementation else {
             ITBError("switchProject called before the SDK was initialized. Initializing with the supplied API key instead.")
+            // The new instance is installed synchronously, so a switch requested before its start
+            // has finished must queue behind it rather than claim the gate under its callback.
+            if !resumingGate {
+                guard ProjectSwitchGate.shared.beginSwitch(request, liveApiKey: apiKey) == .alreadyThere else { return }
+            }
             initialize2(apiKey: apiKey,
                         launchOptions: nil,
                         config: config,
@@ -486,8 +503,12 @@ extension IterableAPI {
                         dependencyContainer: dependencyContainer,
                         callback: { started in
                             let startedCleanly = startCountsAsClean(started)
-                            deliverOnMainThread(callback, startedCleanly)
-                            releaseInheritedGate(startedCleanly)
+                            // start() can finish on another thread before the caller's next line
+                            // runs, so the release waits for a main thread turn like an
+                            // already-there request does.
+                            DispatchQueue.main.async {
+                                runNextSwitchIfAny(ProjectSwitchGate.shared.endSwitch(succeeded: startedCleanly))
+                            }
                         })
             return
         }
@@ -507,15 +528,14 @@ extension IterableAPI {
             }
             ProjectSwitchGate.shared.resumeSwitch()
         } else {
-            let request = ProjectSwitchGate.PendingSwitchRequest(apiKey: apiKey,
-                                                                 config: config,
-                                                                 apiEndPointOverride: apiEndPointOverride,
-                                                                 dependencyContainer: dependencyContainer,
-                                                                 callbacks: callback.map { [$0] } ?? [])
             switch ProjectSwitchGate.shared.beginSwitch(request, liveApiKey: outgoing.apiKey) {
             case .alreadyThere:
                 ITBInfo("switchProject called with the API key already in use. Nothing to tear down.")
-                deliverOnMainThread(callback, true)
+                // Released on a later main thread turn, so a switch requested in this one queues
+                // behind it and its callback is delivered before that switch starts.
+                DispatchQueue.main.async {
+                    runNextSwitchIfAny(ProjectSwitchGate.shared.endSwitch(succeeded: true))
+                }
                 return
             case .joinedOrQueued:
                 ITBInfo("switchProject is already in progress. This request will be honoured when it completes.")

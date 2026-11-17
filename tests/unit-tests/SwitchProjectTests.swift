@@ -515,6 +515,23 @@ class SwitchProjectTests: XCTestCase {
         XCTAssertEqual(ran, ["queuedForC@\(apiKeyC)", "fromAnotherThread@\(apiKeyC)"])
     }
 
+    /// A request absorbed as already there tears nothing down, but its callback is still where the
+    /// app re-identifies, so a switch requested right after it must not claim the gate first and
+    /// replay that identity into the next project.
+    func testACallbackOfARequestAbsorbedAsAlreadyThereRunsBeforeALaterSwitch() {
+        initializeProjectA()
+
+        assertTheFirstCallbackRunsAgainstAAndTheLaterCallReachesB()
+    }
+
+    /// Before initialize, the switch installs A synchronously and its callback waits for `start()`,
+    /// so a switch requested before that has to queue behind A the same way.
+    func testACallbackOfASwitchBeforeInitializeRunsBeforeALaterSwitch() {
+        XCTAssertNil(IterableAPI.implementation)
+
+        assertTheFirstCallbackRunsAgainstAAndTheLaterCallReachesB()
+    }
+
     func testSwitchingAToBToALeavesNoResidueFromProjectB() {
         initializeProjectA(email: emailA)
 
@@ -582,6 +599,39 @@ class SwitchProjectTests: XCTestCase {
             projectA.register(token: pushToken)
         }
         return projectA
+    }
+
+    /// Asks for A and then B in one main thread turn, sets identity from A's callback, and makes
+    /// one more identity call after B was requested.
+    private func assertTheFirstCallbackRunsAgainstAAndTheLaterCallReachesB(file: StaticString = #filePath,
+                                                                           line: UInt = #line) {
+        let landedOnA = expectation(description: "the callback that asked for project A")
+        var apiKeyAtCallback: String?
+        var emailAtCallback: String?
+        IterableAPI.switchProject(apiKey: apiKeyA,
+                                  config: configWithoutPush(),
+                                  apiEndPointOverride: nil,
+                                  dependencyContainer: container()) { _ in
+            IterableAPI.setEmail(self.emailA)
+            apiKeyAtCallback = IterableAPI.implementation?.apiKey
+            emailAtCallback = IterableAPI.email
+            landedOnA.fulfill()
+        }
+        let landedOnB = expectation(description: "the callback that asked for project B")
+        IterableAPI.switchProject(apiKey: apiKeyB,
+                                  config: configWithoutPush(),
+                                  apiEndPointOverride: nil,
+                                  dependencyContainer: container()) { _ in landedOnB.fulfill() }
+        IterableAPI.setEmail(emailB)
+
+        wait(for: [landedOnA, landedOnB], timeout: testExpectationTimeout)
+        XCTAssertEqual(apiKeyAtCallback, apiKeyA, file: file, line: line)
+        XCTAssertEqual(emailAtCallback, emailA,
+                       "identity set from A's callback must apply to A immediately, not be queued into B",
+                       file: file, line: line)
+        XCTAssertEqual(IterableAPI.implementation?.apiKey, apiKeyB, file: file, line: line)
+        XCTAssertEqual(IterableAPI.email, emailB, "only the call made after B was requested reaches B",
+                       file: file, line: line)
     }
 
     /// - Returns: the `cleanTeardown` value the switch reported.
