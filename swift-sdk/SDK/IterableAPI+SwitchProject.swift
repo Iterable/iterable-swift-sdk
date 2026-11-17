@@ -379,7 +379,11 @@ public extension IterableAPI {
     ///   that could have been noisy. Android reports the same two results.
     /// - Asking for the project already asked for is absorbed: with nothing in flight it is a
     ///   no-op reporting `.switchedCleanly`, and while a switch to it is running the callback
-    ///   joins that switch rather than starting a second teardown.
+    ///   joins that switch rather than starting a second teardown. Requests are matched by API key
+    ///   alone, so an absorbed request's `config` is ignored and the project keeps the config it
+    ///   was started or requested with: the same key with a different data region or
+    ///   `authDelegate` has no effect. To run a project under a different config, switch to it
+    ///   with a different API key.
     /// - Asking for anything else while a switch is running queues this request behind it, and
     ///   requests run in the order they were made. That includes asking to go back to the
     ///   project currently being left, which is a real switch and not a no-op. Each callback
