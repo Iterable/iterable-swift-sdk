@@ -368,8 +368,9 @@ public extension IterableAPI {
     /// tracking, `inAppConsume`, the JSON-only message calls, embedded tracking, calls on
     /// `inAppManager` and `embeddedManager`, `updateSubscriptions`, device attributes, visitor
     /// consent, `pauseAuthRetries`, `handle(universalLink:)` and `attributionInfo`. During the
-    /// teardown, the ones that need an identified user are dropped by the `isSDKInitialized()`
-    /// check, because the outgoing project's identity has already been cleared.
+    /// teardown, the ones that need an identified user are dropped, either by the
+    /// `isSDKInitialized()` check or when the request is built, because the outgoing project's
+    /// identity has already been cleared.
     ///
     /// Repeated calls are resolved against the project most recently *asked* for, not the one
     /// currently live, so the SDK always ends up where the app last asked to be:
@@ -425,7 +426,9 @@ public extension IterableAPI {
     ///
     /// - Note: Push opens are not queued, by design. A push opened while the previous project is
     ///         being torn down can be lost: the teardown clears the in-memory identity before it
-    ///         waits for the device disable hand-off, so `track(pushOpen:)` drops the open. Once
+    ///         waits for the device disable hand-off, so the open is dropped. `track(pushOpen:)`
+    ///         drops it at its `isSDKInitialized()` check, and a tap handled through
+    ///         `IterableAppIntegration` is refused when the request is built. Once
     ///         the new project is up and a user is identified on it, a push from the previous
     ///         project is sent to the new project with the previous project's campaign, template
     ///         and message IDs, because the payload does not say which project sent it (SDK-855).
