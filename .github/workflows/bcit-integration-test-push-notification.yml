@@ -93,7 +93,7 @@ jobs:
         CI=true ./scripts/run-tests.sh push
 
     - name: Upload Test Results
-      if: always()
+      if: failure()
       uses: actions/upload-artifact@v4
       with:
         name: push-notification-test-results

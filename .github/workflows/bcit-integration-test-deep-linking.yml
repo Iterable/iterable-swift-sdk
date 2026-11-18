@@ -97,7 +97,7 @@ jobs:
         CI=true ./scripts/run-tests.sh deeplink
 
     - name: Upload Test Results
-      if: always()
+      if: failure()
       uses: actions/upload-artifact@v4
       with:
         name: deep-linking-test-results

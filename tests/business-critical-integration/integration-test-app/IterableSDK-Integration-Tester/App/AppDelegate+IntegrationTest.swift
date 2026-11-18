@@ -93,6 +93,49 @@ extension AppDelegate {
         print("✅ Loaded CI mode from test-config.json: \(ciMode)")
         return ciMode
     }
+
+    // MARK: - Project Switch Config (optional, nil when absent)
+
+    struct SwitchProjectConfig {
+        let mobileApiKey: String
+        let testUserEmail: String?
+        /// One of the `IterableDataRegion` endpoints, for `IterableConfig.dataRegion`.
+        let dataRegion: String
+    }
+
+    static func loadProjectBConfig() -> SwitchProjectConfig? {
+        guard let block = loadOptionalConfigBlock("projectB"),
+              let mobileApiKey = block["mobileApiKey"] as? String, !mobileApiKey.isEmpty else {
+            print("⚠️ No projectB block in test-config.json, project switch testing disabled")
+            return nil
+        }
+        print("✅ Loaded projectB config from test-config.json")
+        // setup-local-environment.sh only writes US or EU
+        let isEU = block["dataRegion"] as? String == "EU"
+        return SwitchProjectConfig(mobileApiKey: mobileApiKey,
+                                   testUserEmail: block["testUserEmail"] as? String,
+                                   dataRegion: isEU ? IterableDataRegion.EU : IterableDataRegion.US)
+    }
+
+    static func loadProjectCApiKeyFromConfig() -> String? {
+        guard let key = loadOptionalConfigBlock("projectC")?["mobileApiKey"] as? String, !key.isEmpty else { return nil }
+        return key
+    }
+
+    static func loadProjectDApiKeyFromConfig() -> String? {
+        guard let key = loadOptionalConfigBlock("projectD")?["mobileApiKey"] as? String, !key.isEmpty else { return nil }
+        return key
+    }
+
+    private static func loadOptionalConfigBlock(_ name: String) -> [String: Any]? {
+        guard let path = Bundle.main.path(forResource: "test-config", ofType: "json"),
+              let data = try? Data(contentsOf: URL(fileURLWithPath: path)),
+              let json = try? JSONSerialization.jsonObject(with: data) as? [String: Any],
+              let block = json[name] as? [String: Any] else {
+            return nil
+        }
+        return block
+    }
         
     static func initializeIterableSDK() {
         lastInitMode = .standard
@@ -316,7 +359,7 @@ extension AppDelegate {
     }
     
     // Generate a realistic fake device token for CI
-    private static func generateMockDeviceToken() -> String {
+    static func generateMockDeviceToken() -> String {
         // Generate a 64-byte (128 character) hex token similar to real device tokens
         let mockToken = (0..<64).map { _ in String(format: "%02x", Int.random(in: 0...255)) }.joined()
         print("🎭 [APP] Generated 64-byte mock device token for CI testing: \(mockToken)")

@@ -96,11 +96,9 @@ class IntegrationTestBase: XCTestCase {
             configPath = foundPath
             
             if let data = try? Data(contentsOf: URL(fileURLWithPath: foundPath)) {
-                // Print the entire config contents for debugging
+                // Never print the config: it holds API keys and the JWT secret, and test logs are uploaded as CI artifacts
                 if let configString = String(data: data, encoding: .utf8) {
                     configContents = configString
-                    print("📋 [TEST] Full config.json contents:")
-                    print(configString)
                 }
                 
                 if let json = try? JSONSerialization.jsonObject(with: data) as? [String: Any],
