@@ -6,6 +6,8 @@ final class HomeViewController: UIViewController, UITextFieldDelegate {
     
     private let statusView = IterableSDKStatusView()
 
+    private lazy var hasProjectBConfig = AppDelegate.loadProjectBConfig() != nil
+
     private let initializeButton: UIButton = {
         let button = UIButton(type: .system)
         button.setTitle("Initialize SDK", for: .normal)
@@ -263,6 +265,41 @@ final class HomeViewController: UIViewController, UITextFieldDelegate {
         return container
     }()
 
+    private let projectSwitchTestRow: UIView = {
+        let container = UIView()
+        container.backgroundColor = .systemGray6
+        container.layer.cornerRadius = 8
+        container.layer.borderWidth = 1
+        container.layer.borderColor = UIColor.systemGray4.cgColor
+        container.isUserInteractionEnabled = true
+        container.accessibilityIdentifier = "project-switch-test-row"
+
+        let titleLabel = UILabel()
+        titleLabel.text = "Project Switch Testing"
+        titleLabel.font = .systemFont(ofSize: 16, weight: .medium)
+        titleLabel.textColor = .label
+        titleLabel.translatesAutoresizingMaskIntoConstraints = false
+
+        let chevronImageView = UIImageView(image: UIImage(systemName: "chevron.right"))
+        chevronImageView.tintColor = .systemGray3
+        chevronImageView.translatesAutoresizingMaskIntoConstraints = false
+
+        container.addSubview(titleLabel)
+        container.addSubview(chevronImageView)
+
+        NSLayoutConstraint.activate([
+            container.heightAnchor.constraint(equalToConstant: 50),
+            titleLabel.leadingAnchor.constraint(equalTo: container.leadingAnchor, constant: 16),
+            titleLabel.centerYAnchor.constraint(equalTo: container.centerYAnchor),
+            chevronImageView.trailingAnchor.constraint(equalTo: container.trailingAnchor, constant: -16),
+            chevronImageView.centerYAnchor.constraint(equalTo: container.centerYAnchor),
+            chevronImageView.widthAnchor.constraint(equalToConstant: 12),
+            chevronImageView.heightAnchor.constraint(equalToConstant: 20)
+        ])
+
+        return container
+    }()
+
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .systemBackground
@@ -276,6 +313,8 @@ final class HomeViewController: UIViewController, UITextFieldDelegate {
         emailField.delegate = self
         userIdField.addTarget(self, action: #selector(onTextChanged), for: .editingChanged)
         emailField.addTarget(self, action: #selector(onTextChanged), for: .editingChanged)
+
+        projectSwitchTestRow.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(showProjectSwitchTest)))
 
         if let configEmail = AppDelegate.loadTestUserEmailFromConfig() {
             emailField.text = configEmail
@@ -298,6 +337,7 @@ final class HomeViewController: UIViewController, UITextFieldDelegate {
                                                    inAppMessageTestRow,
                                                    embeddedMessageTestRow,
                                                    offlineRetryTestRow,
+                                                   projectSwitchTestRow,
                                                    remoteConfigOverrideRow])
         stack.axis = .vertical
         stack.alignment = .fill
@@ -419,6 +459,7 @@ final class HomeViewController: UIViewController, UITextFieldDelegate {
         updateInAppMessageButtonState()
         updateEmbeddedMessageButtonState()
         updateOfflineRetryButtonState()
+        updateProjectSwitchButtonState()
         updateConfigOverrideButtonState()
     }
     
@@ -477,6 +518,18 @@ final class HomeViewController: UIViewController, UITextFieldDelegate {
     @objc private func showOfflineRetryTest() {
         let offlineRetryVC = OfflineRetryTestViewController()
         navigationController?.pushViewController(offlineRetryVC, animated: true)
+    }
+
+    private func updateProjectSwitchButtonState() {
+        projectSwitchTestRow.isHidden = !hasProjectBConfig
+        let isSDKInitialized = IterableSDKStatusView.isSDKInitialized()
+        projectSwitchTestRow.isUserInteractionEnabled = isSDKInitialized
+        projectSwitchTestRow.alpha = isSDKInitialized ? 1.0 : 0.5
+    }
+
+    @objc private func showProjectSwitchTest() {
+        let projectSwitchVC = ProjectSwitchTestViewController()
+        navigationController?.pushViewController(projectSwitchVC, animated: true)
     }
 
     private func updateConfigOverrideButtonState() {

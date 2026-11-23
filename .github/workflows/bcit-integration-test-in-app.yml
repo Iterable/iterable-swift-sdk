@@ -93,7 +93,7 @@ jobs:
         ./scripts/run-tests.sh inapp
 
     - name: Upload Test Results
-      if: always()
+      if: failure()
       uses: actions/upload-artifact@v4
       with:
         name: inapp-messaging-test-results
