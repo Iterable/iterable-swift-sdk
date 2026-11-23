@@ -490,6 +490,14 @@ class InAppManager: NSObject, IterableInternalInAppManagerProtocol {
             return
         }
         
+        guard !InAppManager.isExpired(message: message, currentDate: dateProvider.currentDate) else {
+            ITBError("Could not show message: message \(message.messageId) has expired")
+            if consume {
+                consumeExpired(message: message)
+            }
+            return
+        }
+        
         let onClickCallback: (URL) -> Void = { [weak self] url in
             ITBDebug("in-app clicked")
             
@@ -854,6 +862,23 @@ class InAppManager: NSObject, IterableInternalInAppManagerProtocol {
                                      inboxSessionId: inboxSessionId,
                                      onSuccess: successHandler,
                                      onFailure: failureHandler)
+    }
+    
+    // SDK-initiated, so this uses the context-free consume rather than the client delete path.
+    private func consumeExpired(message: IterableInAppMessage) {
+        guard !message.consumed else {
+            return
+        }
+        
+        updateMessage(message, didProcessTrigger: true, consumed: true).onSuccess { [weak self] _ in
+            guard message.saveToInbox else { return }
+            self?.callbackQueue.async { [weak self] in
+                self?.notificationCenter.post(name: .iterableInboxChanged, object: self, userInfo: nil)
+            }
+        }
+        requestHandler?.inAppConsume(message.messageId,
+                                     onSuccess: nil,
+                                     onFailure: nil)
     }
     
     private static func isExpired(message: IterableInAppMessage, currentDate: Date) -> Bool {

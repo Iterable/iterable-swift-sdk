@@ -1316,6 +1316,116 @@ class InAppTests: XCTestCase {
         wait(for: [expectation1], timeout: testExpectationTimeout)
     }
     
+    func testShowDoesNotDisplayExpiredMessage() {
+        let expectation1 = expectation(description: "message fetched")
+        let expectation2 = expectation(description: "expired message should not be shown")
+        expectation2.isInverted = true
+        let expectation3 = expectation(description: "expired message consumed")
+        
+        let mockDateProvider = MockDateProvider()
+        let mockInAppFetcher = MockInAppFetcher()
+        let mockInAppDisplayer = MockInAppDisplayer()
+        mockInAppDisplayer.onShow.onSuccess { _ in
+            expectation2.fulfill()
+        }
+        
+        let mockNetworkSession = MockNetworkSession()
+        mockNetworkSession.requestCallback = { urlRequest in
+            guard urlRequest.url!.absoluteString.contains(Const.Path.inAppConsume) else {
+                return
+            }
+            let body = urlRequest.httpBody!.json() as! [String: Any]
+            XCTAssertEqual(body[JsonKey.messageId] as? String, "messageId-1")
+            TestUtils.validateNil(keyPath: KeyPath(keys: JsonKey.deleteAction), inDictionary: body, message: "deleteAction should be nil")
+            expectation3.fulfill()
+        }
+        
+        let config = IterableConfig()
+        config.inAppDelegate = MockInAppDelegate(showInApp: .skip)
+        
+        let internalApi = InternalIterableAPI.initializeForTesting(config: config,
+                                                                   dateProvider: mockDateProvider,
+                                                                   networkSession: mockNetworkSession,
+                                                                   inAppFetcher: mockInAppFetcher,
+                                                                   inAppDisplayer: mockInAppDisplayer)
+        internalApi.email = "user@example.com"
+        
+        let message = IterableInAppMessage(messageId: "messageId-1",
+                                           campaignId: 1,
+                                           expiresAt: mockDateProvider.currentDate.addingTimeInterval(1.0 * 60.0),
+                                           content: IterableHtmlInAppContent(edgeInsets: .zero, html: "<html></html>"))
+        mockInAppFetcher.mockMessagesAvailableFromServer(internalApi: internalApi, messages: [message]).onSuccess { [weak internalApi] _ in
+            guard let internalApi = internalApi else {
+                XCTFail("Expected internalApi to be not nil")
+                return
+            }
+            let messages = internalApi.inAppManager.getMessages()
+            XCTAssertEqual(messages.count, 1)
+            
+            mockDateProvider.currentDate = mockDateProvider.currentDate.addingTimeInterval(2.0 * 60)
+            
+            internalApi.inAppManager.show(message: messages[0])
+            expectation1.fulfill()
+        }
+        
+        wait(for: [expectation1, expectation3], timeout: testExpectationTimeout)
+        wait(for: [expectation2], timeout: testExpectationTimeoutForInverted)
+        XCTAssertEqual(internalApi.inAppManager.getMessage(withId: "messageId-1")?.consumed, true)
+    }
+    
+    func testShowWithNoConsumeDoesNotConsumeExpiredMessage() {
+        let expectation1 = expectation(description: "message fetched")
+        let expectation2 = expectation(description: "expired message should not be shown or consumed")
+        expectation2.isInverted = true
+        
+        let mockDateProvider = MockDateProvider()
+        let mockInAppFetcher = MockInAppFetcher()
+        let mockInAppDisplayer = MockInAppDisplayer()
+        mockInAppDisplayer.onShow.onSuccess { _ in
+            expectation2.fulfill()
+        }
+        
+        let mockNetworkSession = MockNetworkSession()
+        mockNetworkSession.requestCallback = { urlRequest in
+            guard urlRequest.url!.absoluteString.contains(Const.Path.inAppConsume) else {
+                return
+            }
+            expectation2.fulfill()
+        }
+        
+        let config = IterableConfig()
+        config.inAppDelegate = MockInAppDelegate(showInApp: .skip)
+        
+        let internalApi = InternalIterableAPI.initializeForTesting(config: config,
+                                                                   dateProvider: mockDateProvider,
+                                                                   networkSession: mockNetworkSession,
+                                                                   inAppFetcher: mockInAppFetcher,
+                                                                   inAppDisplayer: mockInAppDisplayer)
+        internalApi.email = "user@example.com"
+        
+        let message = IterableInAppMessage(messageId: "messageId-1",
+                                           campaignId: 1,
+                                           expiresAt: mockDateProvider.currentDate.addingTimeInterval(1.0 * 60.0),
+                                           content: IterableHtmlInAppContent(edgeInsets: .zero, html: "<html></html>"))
+        mockInAppFetcher.mockMessagesAvailableFromServer(internalApi: internalApi, messages: [message]).onSuccess { [weak internalApi] _ in
+            guard let internalApi = internalApi else {
+                XCTFail("Expected internalApi to be not nil")
+                return
+            }
+            let messages = internalApi.inAppManager.getMessages()
+            XCTAssertEqual(messages.count, 1)
+            
+            mockDateProvider.currentDate = mockDateProvider.currentDate.addingTimeInterval(2.0 * 60)
+            
+            internalApi.inAppManager.show(message: messages[0], consume: false, callback: nil)
+            expectation1.fulfill()
+        }
+        
+        wait(for: [expectation1], timeout: testExpectationTimeout)
+        wait(for: [expectation2], timeout: testExpectationTimeoutForInverted)
+        XCTAssertEqual(internalApi.inAppManager.getMessage(withId: "messageId-1")?.consumed, false)
+    }
+    
     func testEmptyInAppManager() {
         let expectation1 = expectation(description: "scheduleSync() returns a true value")
         let expectation2 = expectation(description: "reset() returns a true value")

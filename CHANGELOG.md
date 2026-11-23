@@ -3,6 +3,8 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 ## [Unreleased]
+### Fixed
+- `IterableInAppManagerProtocol.show(message:)` no longer displays a message whose `expiresAt` has passed. Previously, automatic display and `getMessages()` skipped expired messages, but an app that held a message reference and called `show(message:)` later could still present it. When `consume` is `true` (the default), the expired message is also marked consumed locally and an `inAppConsume` request is sent so it is removed server-side; with `consume: false` the message is left in place.
 
 ## [6.7.5]
 ### Added
